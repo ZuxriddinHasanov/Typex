@@ -1,59 +1,56 @@
 import TypeUZError from "../utils/error";
 import * as db from "../init/db";
-import { ObjectId, type Filter, Collection, type WithId } from "mongodb";
 import { EditPresetRequest, Preset } from "@typeuz/schemas/presets";
-import { WithObjectId, omit } from "../utils/misc";
+import { omit } from "../utils/misc";
 
 const MAX_PRESETS = 10;
 
-type DBConfigPreset = WithObjectId<
-  Preset & {
-    uid: string;
-  }
->;
-
-function getPresetKeyFilter(
-  uid: string,
-  keyId: string,
-): Filter<DBConfigPreset> {
-  return {
-    _id: new ObjectId(keyId),
-    uid,
-  };
-}
+type DBConfigPreset = {
+  _id: string;
+  uid: string;
+  name: string;
+  config: Record<string, unknown>;
+  timestamp: number;
+};
 
 type PresetCreationResult = {
   presetId: string;
 };
 
-export const getPresetsCollection = (): Collection<WithId<DBConfigPreset>> =>
-  db.collection<DBConfigPreset>("presets");
-
 export async function getPresets(uid: string): Promise<DBConfigPreset[]> {
-  const presets = await getPresetsCollection()
-    .find({ uid })
-    .sort({ timestamp: -1 })
-    .toArray(); // this needs to be changed to later take patreon into consideration
-  return presets;
+  return await db.queryAll<DBConfigPreset>(
+    "SELECT * FROM presets WHERE uid = $1 ORDER BY timestamp DESC",
+    [uid],
+  );
 }
 
 export async function addPreset(
   uid: string,
   preset: Omit<Preset, "_id">,
 ): Promise<PresetCreationResult> {
-  const presets = await getPresetsCollection().countDocuments({ uid });
+  const countResult = await db.queryOne<{ count: number }>(
+    "SELECT COUNT(*)::int AS count FROM presets WHERE uid = $1",
+    [uid],
+  );
+  const presets = countResult?.count ?? 0;
 
   if (presets >= MAX_PRESETS) {
     throw new TypeUZError(409, "Too many presets");
   }
 
-  const result = await getPresetsCollection().insertOne({
-    ...preset,
-    _id: new ObjectId(),
-    uid,
-  });
+  const result = await db.queryOne<{ _id: string }>(
+    `INSERT INTO presets (uid, name, config, timestamp)
+     VALUES ($1, $2, $3::jsonb, $4)
+     RETURNING _id`,
+    [uid, preset.name, JSON.stringify(preset.config), (preset as Record<string, unknown>)["timestamp"] ?? Date.now()],
+  );
+
+  if (result === null) {
+    throw new TypeUZError(500, "Failed to add preset", "add preset");
+  }
+
   return {
-    presetId: result.insertedId.toHexString(),
+    presetId: result._id,
   };
 }
 
@@ -70,24 +67,45 @@ export async function editPreset(
     delete update.config;
   }
 
-  await getPresetsCollection().updateOne(getPresetKeyFilter(uid, preset._id), {
-    $set: update,
-  });
+  const setClauses: string[] = [];
+  const values: unknown[] = [];
+  let idx = 1;
+
+  if (update.name !== undefined) {
+    setClauses.push(`name = $${idx++}`);
+    values.push(update.name);
+  }
+  if (update.config !== undefined) {
+    setClauses.push(`config = $${idx++}::jsonb`);
+    values.push(JSON.stringify(update.config));
+  }
+  if ((update as Record<string, unknown>)["timestamp"] !== undefined) {
+    setClauses.push(`timestamp = $${idx++}`);
+    values.push((update as Record<string, unknown>)["timestamp"]);
+  }
+
+  if (setClauses.length === 0) return;
+
+  values.push(uid, preset._id);
+  await db.query(
+    `UPDATE presets SET ${setClauses.join(", ")} WHERE uid = $${idx++} AND _id = $${idx}::uuid`,
+    values,
+  );
 }
 
 export async function removePreset(
   uid: string,
   presetId: string,
 ): Promise<void> {
-  const deleteResult = await getPresetsCollection().deleteOne(
-    getPresetKeyFilter(uid, presetId),
+  const result = await db.query(
+    "DELETE FROM presets WHERE uid = $1 AND _id = $2::uuid",
+    [uid, presetId],
   );
-
-  if (deleteResult.deletedCount === 0) {
+  if (result.rowCount === 0) {
     throw new TypeUZError(404, "Preset not found");
   }
 }
 
 export async function deleteAllPresets(uid: string): Promise<void> {
-  await getPresetsCollection().deleteMany({ uid });
+  await db.query("DELETE FROM presets WHERE uid = $1", [uid]);
 }

@@ -188,6 +188,12 @@ const routes: Route[] = [
       await PageController.change("account", options);
     },
   },
+  {
+    path: "/profile/:uidOrName",
+    load: async (params, options) => {
+      await PageController.change("profile", { ...options, params });
+    },
+  },
 ];
 
 export async function navigate(

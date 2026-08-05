@@ -1,6 +1,6 @@
+import crypto from "crypto";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { setup } from "../../__testData__/controller-test";
-import { ObjectId } from "mongodb";
 import * as LeaderboardDal from "../../../src/dal/leaderboards";
 import * as ConnectionsDal from "../../../src/dal/connections";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
@@ -8,6 +8,7 @@ import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboar
 import * as Configuration from "../../../src/init/configuration";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { XpLeaderboardEntry } from "@typeuz/schemas/leaderboards";
+import { DBLeaderboardEntry } from "../../../src/dal/leaderboards";
 
 const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -70,9 +71,9 @@ describe("Loaderboard Controller", () => {
       };
       const mockData = resultData.entries.map((it) => ({
         ...it,
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
       }));
-      getLeaderboardMock.mockResolvedValue(mockData);
+      getLeaderboardMock.mockResolvedValue(mockData as any);
       getLeaderboardCountMock.mockResolvedValue(42);
 
       //WHEN
@@ -297,9 +298,9 @@ describe("Loaderboard Controller", () => {
     it("should get for english time 60", async () => {
       //GIVEN
 
-      const entryId = new ObjectId();
+      const entryId = crypto.randomUUID();
       const resultEntry = {
-        _id: entryId,
+        id: entryId,
         wpm: 10,
         acc: 80,
         timestamp: 1200,
@@ -308,7 +309,7 @@ describe("Loaderboard Controller", () => {
         name: "user2",
         rank: 2,
       };
-      getLeaderboardRankMock.mockResolvedValue(resultEntry);
+      getLeaderboardRankMock.mockResolvedValue(resultEntry as unknown as DBLeaderboardEntry);
 
       //WHEN
 
@@ -682,8 +683,8 @@ describe("Loaderboard Controller", () => {
       const premiumEnabled = (await configuration).users.premium.enabled;
       await enableConnectionsFeature(true);
       const friends = [
-        new ObjectId().toHexString(),
-        new ObjectId().toHexString(),
+        crypto.randomUUID(),
+        crypto.randomUUID(),
       ];
       getFriendsUidsMock.mockResolvedValue(friends);
 
@@ -1205,8 +1206,8 @@ describe("Loaderboard Controller", () => {
       const page = 2;
       const pageSize = 25;
       const friends = [
-        new ObjectId().toHexString(),
-        new ObjectId().toHexString(),
+        crypto.randomUUID(),
+        crypto.randomUUID(),
       ];
       getFriendsUidsMock.mockResolvedValue(friends);
 

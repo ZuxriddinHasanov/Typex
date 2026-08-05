@@ -93,33 +93,24 @@ export function EditProfile() {
       modalClass="max-w-[600px]"
     >
       <form
-        class="grid gap-4"
+        class="flex flex-col gap-6 p-2"
         onSubmit={(e) => {
           e.preventDefault();
           void form.handleSubmit();
         }}
       >
-        <div>
-          <label class="mb-[0.25em] block text-sub">name</label>
-          <div class="flex items-center gap-2">
-            <span class="text-text">{snapshot.name}</span>
-            <Button onClick={() => showUpdateNameModal()} class="px-2 py-1">
-              <Fa icon="fa-pen" />
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Ism</label>
+          <div class="flex items-center gap-3">
+            <span class="text-lg font-bold text-text">{snapshot.name}</span>
+            <Button onClick={() => showUpdateNameModal()} class="px-3 py-1.5 rounded-lg bg-sub-alt/50 hover:bg-main/20 hover:text-main transition-colors">
+              <Fa icon="fa-pen" /> O&apos;zgartirish
             </Button>
           </div>
         </div>
 
-        <div>
-          <label class="mb-[0.25em] block text-sub">avatar</label>
-          <div>
-            To update your avatar make sure your Discord account is linked, then
-            go to Account Settings &gt; Account &gt; Discord Integration and
-            click &quot;Update Avatar&quot;
-          </div>
-        </div>
-
-        <div>
-          <label class="mb-[0.25em] block text-sub">bio</label>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Bio</label>
           <form.Field
             name="bio"
             validators={{
@@ -137,8 +128,8 @@ export function EditProfile() {
           </form.Field>
         </div>
 
-        <div>
-          <label class="mb-[0.25em] block text-sub">keyboard</label>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Klaviatura</label>
           <form.Field
             name="keyboard"
             validators={{
@@ -148,7 +139,7 @@ export function EditProfile() {
             {(field) => (
               <>
                 <TextareaField field={field} maxLength={75} />
-                <div class="mt-1 text-base">
+                <div class="mt-1 text-xs text-sub/70">
                   {field().state.value.length}/75
                 </div>
               </>
@@ -156,11 +147,11 @@ export function EditProfile() {
           </form.Field>
         </div>
 
-        <div>
-          <label class="mb-[0.25em] block text-sub">github</label>
-          <div class="flex items-center">
-            <p class="my-2 mr-2">https://github.com/</p>
-            <div class="w-full max-w-60">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">GitHub</label>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <p class="text-sub font-mono text-sm whitespace-nowrap">https://github.com/</p>
+            <div class="w-full">
               <form.Field
                 name="github"
                 validators={{
@@ -170,7 +161,7 @@ export function EditProfile() {
                 {(field) => (
                   <InputField
                     field={field}
-                    class="github"
+                    class="github w-full"
                     type="text"
                     maxLength={39}
                   />
@@ -180,11 +171,11 @@ export function EditProfile() {
           </div>
         </div>
 
-        <div>
-          <label class="mb-[0.25em] block text-sub">twitter</label>
-          <div class="flex items-center">
-            <p class="my-2 mr-2">https://x.com/</p>
-            <div class="w-full max-w-60">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Twitter / X</label>
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <p class="text-sub font-mono text-sm whitespace-nowrap">https://x.com/</p>
+            <div class="w-full">
               <form.Field
                 name="twitter"
                 validators={{
@@ -194,7 +185,7 @@ export function EditProfile() {
                 {(field) => (
                   <InputField
                     field={field}
-                    class="twitter"
+                    class="twitter w-full"
                     type="text"
                     maxLength={15}
                   />
@@ -204,8 +195,8 @@ export function EditProfile() {
           </div>
         </div>
 
-        <div>
-          <label class="mb-[0.25em] block text-sub">website</label>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Vebsayt</label>
           <form.Field
             name="website"
             validators={{
@@ -215,7 +206,7 @@ export function EditProfile() {
             {(field) => (
               <InputField
                 field={field}
-                class="website"
+                class="website w-full"
                 type="text"
                 maxLength={200}
               />
@@ -223,23 +214,23 @@ export function EditProfile() {
           </form.Field>
         </div>
 
-        <div>
-          <label class="mb-[0.25em] block text-sub">badge</label>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Nishon</label>
           <form.Field name="badgeId">
             {(field) => (
               <div class="flex flex-wrap gap-2">
                 <For each={[{ id: -1 }, ...badges]}>
                   {(badge) => (
                     <Button
-                      class={cn("p-0 opacity-25 hover:opacity-100", {
-                        "opacity-100": field().state.value === badge.id,
+                      class={cn("p-0 rounded-lg transition-all border-2", {
+                        "border-main bg-main/10 shadow-sm opacity-100": field().state.value === badge.id,
+                        "border-transparent opacity-50 hover:bg-sub-alt hover:opacity-100": field().state.value !== badge.id,
                       })}
-                      active={field().state.value === badge.id}
                       onClick={() => field().handleChange(badge.id)}
                     >
                       <UserBadge
                         id={badge.id}
-                        class="p-1.5 text-em-sm"
+                        class="p-2 text-xl"
                         hideDescription
                       />
                     </Button>
@@ -250,19 +241,23 @@ export function EditProfile() {
           </form.Field>
         </div>
 
-        <div>
-          <label class="mb-[0.25em] block text-sub">public activity</label>
+        <div class="flex flex-col gap-1.5 pt-2 border-t border-sub/10">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Ommaviy faollik</label>
           <form.Field name="showActivityOnPublicProfile">
             {(field) => (
               <Checkbox
                 field={field}
-                label="Include test activity graph on your public profile."
+                label="Ommaviy profilda test faollik grafigini ko'rsatish"
               />
             )}
           </form.Field>
         </div>
 
-        <SubmitButton form={form}>save</SubmitButton>
+        <div class="pt-4 flex justify-end">
+          <SubmitButton form={form} class="px-6 py-2.5 rounded-full font-bold text-sm bg-main text-bg hover:scale-105 transition-transform">
+            Saqlash
+          </SubmitButton>
+        </div>
       </form>
     </AnimatedModal>
   );

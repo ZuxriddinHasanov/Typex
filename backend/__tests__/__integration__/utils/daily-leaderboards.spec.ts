@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, afterEach } from "vitest";
+import crypto from "crypto";
 import { Mode, Mode2 } from "@typeuz/schemas/shared";
 import * as DailyLeaderboards from "../../../src/utils/daily-leaderboards";
 import { cleanupKeys, redisSetup } from "../redis";
 import { Language } from "@typeuz/schemas/languages";
 
 import { RedisDailyLeaderboardEntry } from "@typeuz/schemas/leaderboards";
-import { ObjectId } from "mongodb";
 import { Configuration } from "@typeuz/schemas/configuration";
 
 const dailyLeaderboardsConfig: Configuration["dailyLeaderboards"] = {
@@ -105,7 +105,7 @@ describe("Daily Leaderboards", () => {
     describe("addResult", () => {
       it("adds best result for user", async () => {
         //GIVEN
-        const uid = new ObjectId().toHexString();
+        const uid = crypto.randomUUID();
         await givenResult({ uid, wpm: 50 });
         const bestResult = await givenResult({ uid, wpm: 55 });
         await givenResult({ uid, wpm: 53 });
@@ -250,7 +250,7 @@ describe("Daily Leaderboards", () => {
           5,
           dailyLeaderboardsConfig,
           true,
-          [user2.uid, user4.uid, new ObjectId().toHexString()],
+          [user2.uid, user4.uid, crypto.randomUUID()],
         );
         //THEN
         expect(results).toEqual({
@@ -278,7 +278,7 @@ describe("Daily Leaderboards", () => {
           2,
           dailyLeaderboardsConfig,
           true,
-          [user1.uid, user2.uid, user4.uid, new ObjectId().toHexString()],
+          [user1.uid, user2.uid, user4.uid, crypto.randomUUID()],
         );
 
         //THEN
@@ -382,7 +382,7 @@ describe("Daily Leaderboards", () => {
     async function givenResult(
       entry?: Partial<RedisDailyLeaderboardEntry>,
     ): Promise<RedisDailyLeaderboardEntry> {
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       const result = {
         acc: 85,
         name: `User ${uid}`,

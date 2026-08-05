@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import crypto from "crypto";
 import { setup } from "../../__testData__/controller-test";
 import { Test as SuperTest } from "supertest";
 import * as ApeKeyDal from "../../../src/dal/ape-keys";
-import { ObjectId } from "mongodb";
 import * as Configuration from "../../../src/init/configuration";
 import * as UserDal from "../../../src/dal/user";
 
@@ -45,19 +45,19 @@ describe("ApeKeyController", () => {
 
       //THEN
       expect(body).toHaveProperty("message", "ApeKeys retrieved");
-      expect(body.data).toHaveProperty(keyOne._id.toHexString(), {
+      expect(body.data).toHaveProperty(keyOne._id, {
         name: keyOne.name,
         enabled: keyOne.enabled,
-        createdOn: keyOne.createdOn,
-        modifiedOn: keyOne.modifiedOn,
-        lastUsedOn: keyOne.lastUsedOn,
+        createdOn: keyOne.created_on,
+        modifiedOn: keyOne.modified_on,
+        lastUsedOn: keyOne.last_used_on,
       });
-      expect(body.data).toHaveProperty(keyTwo._id.toHexString(), {
+      expect(body.data).toHaveProperty(keyTwo._id, {
         name: keyTwo.name,
         enabled: keyTwo.enabled,
-        createdOn: keyTwo.createdOn,
-        modifiedOn: keyTwo.modifiedOn,
-        lastUsedOn: keyTwo.lastUsedOn,
+        createdOn: keyTwo.created_on,
+        modifiedOn: keyTwo.modified_on,
+        lastUsedOn: keyTwo.last_used_on,
       });
       expect(body.data).keys([keyOne._id, keyTwo._id]);
 
@@ -115,13 +115,13 @@ describe("ApeKeyController", () => {
 
       expect(addApeKeyMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          createdOn: 1000,
+          created_on: 1000,
           enabled: true,
-          lastUsedOn: -1,
-          modifiedOn: 1000,
+          last_used_on: -1,
+          modified_on: 1000,
           name: "test",
           uid: uid,
-          useCount: 0,
+          use_count: 0,
         }),
       );
     });
@@ -190,7 +190,7 @@ describe("ApeKeyController", () => {
 
   describe("edit ape key", () => {
     const editApeKeyMock = vi.spyOn(ApeKeyDal, "editApeKey");
-    const apeKeyId = new ObjectId().toHexString();
+    const apeKeyId = crypto.randomUUID();
 
     afterEach(() => {
       editApeKeyMock.mockClear();
@@ -275,7 +275,7 @@ describe("ApeKeyController", () => {
   });
   describe("delete ape key", () => {
     const deleteApeKeyMock = vi.spyOn(ApeKeyDal, "deleteApeKey");
-    const apeKeyId = new ObjectId().toHexString();
+    const apeKeyId = crypto.randomUUID();
 
     afterEach(() => {
       deleteApeKeyMock.mockClear();
@@ -339,15 +339,15 @@ function apeKeyDb(
   data?: Partial<ApeKeyDal.DBApeKey>,
 ): ApeKeyDal.DBApeKey {
   return {
-    _id: new ObjectId(),
+    _id: crypto.randomUUID(),
     uid,
     hash: "hash",
-    useCount: 1,
+    use_count: 1,
     name: "name",
     enabled: true,
-    createdOn: Math.random() * Date.now(),
-    lastUsedOn: Math.random() * Date.now(),
-    modifiedOn: Math.random() * Date.now(),
+    created_on: Math.random() * Date.now(),
+    last_used_on: Math.random() * Date.now(),
+    modified_on: Math.random() * Date.now(),
     ...data,
   };
 }

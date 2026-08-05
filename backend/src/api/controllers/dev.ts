@@ -1,11 +1,11 @@
 import { TypeUZResponse } from "../../utils/typeuz-response";
 import * as UserDal from "../../dal/user";
 import FirebaseAdmin from "../../init/firebase-admin";
+import * as db from "../../init/db";
 import Logger from "../../utils/logger";
 import * as DateUtils from "date-fns";
 import { UTCDate } from "@date-fns/utc";
-import * as ResultDal from "../../dal/result";
-import { ObjectId } from "mongodb";
+import crypto from "crypto";
 import * as LeaderboardDal from "../../dal/leaderboards";
 import TypeUZError from "../../utils/error";
 
@@ -130,8 +130,7 @@ async function createTestResults(
       createResult(user, day.timestamp),
     );
     if (results.length > 0) {
-      await ResultDal.getResultCollection().insertMany(results);
-    }
+      await (db.collection("results") as unknown as { insertMany: (docs: Record<string, unknown>[]) => Promise<void> }).insertMany(results);    }
   }
 }
 
@@ -156,7 +155,7 @@ function createResult(
 
   timestamp = DateUtils.addSeconds(timestamp, testDuration);
   return {
-    _id: new ObjectId(),
+    _id: crypto.randomUUID(),
     uid: user.uid,
     wpm: random(80, 120),
     rawWpm: random(80, 120),
@@ -189,8 +188,7 @@ function createResult(
 
 async function updateUser(uid: string): Promise<void> {
   //update timetyping and completedTests
-  const stats = await ResultDal.getResultCollection()
-    .aggregate([
+  const stats = await (db.collection("results") as unknown as { aggregate: (pipeline: Record<string, unknown>[]) => { toArray: () => Promise<Record<string, unknown>[]> } }).aggregate([
       {
         $match: {
           uid,
@@ -214,9 +212,9 @@ async function updateUser(uid: string): Promise<void> {
     ])
     .toArray();
 
-  const timeTyping = stats.reduce((a, c) => (a + c["timeTyping"]) as number, 0);
+  const timeTyping = stats.reduce((a, c) => a + (c["timeTyping"] as number), 0);
   const completedTests = stats.reduce(
-    (a, c) => (a + c["completedTests"]) as number,
+    (a, c) => a + (c["completedTests"] as number),
     0,
   );
 
@@ -246,7 +244,7 @@ async function updateUser(uid: string): Promise<void> {
   );
 
   for (const mode of modes) {
-    const best = (await ResultDal.getResultCollection().findOne(
+    const best = await (db.collection("results") as unknown as { findOne: (filter: Record<string, unknown>, options?: Record<string, unknown>) => Promise<DBResult | null> }).findOne(
       {
         uid,
         language: mode.language,
@@ -254,7 +252,7 @@ async function updateUser(uid: string): Promise<void> {
         mode2: mode.mode2,
       },
       { sort: { wpm: -1, timestamp: 1 } },
-    )) as DBResult;
+    ) as DBResult;
 
     personalBests[mode.mode] ??= {};
     if (personalBests[mode.mode][mode.mode2] === undefined) {
@@ -290,7 +288,7 @@ async function updateUser(uid: string): Promise<void> {
   }
 
   //update the user
-  await UserDal.getUsersCollection().updateOne(
+  await (db.collection("users") as unknown as { updateOne: (filter: Record<string, unknown>, update: Record<string, unknown>) => Promise<void> }).updateOne(
     { uid },
     {
       $set: {
@@ -319,8 +317,7 @@ function createArray<T>(size: number, builder: () => T): T[] {
 }
 
 async function updateTestActivity(uid: string): Promise<void> {
-  await ResultDal.getResultCollection()
-    .aggregate(
+  await (db.collection("results") as unknown as { aggregate: (pipeline: Record<string, unknown>[], options?: Record<string, unknown>) => { toArray: () => Promise<Record<string, unknown>[]> } }).aggregate(
       [
         {
           $match: {

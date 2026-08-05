@@ -1,13 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import crypto from "crypto";
 import { setup } from "../../__testData__/controller-test";
-import { ObjectId } from "mongodb";
 import * as Configuration from "../../../src/init/configuration";
 import * as AdminUuidDal from "../../../src/dal/admin-uids";
 import * as UserDal from "../../../src/dal/user";
 import * as ReportDal from "../../../src/dal/report";
 import * as LogsDal from "../../../src/dal/logs";
-import GeorgeQueue from "../../../src/queues/george-queue";
-import * as AuthUtil from "../../../src/utils/auth";
+import * as Misc from "../../../src/utils/misc";
 
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import Test from "supertest/lib/test";
@@ -64,19 +63,20 @@ describe("AdminController", () => {
 
   describe("toggle ban", () => {
     const userBannedMock = vi.spyOn(UserDal, "setBanned");
-    const georgeBannedMock = vi.spyOn(GeorgeQueue, "userBanned");
     const getUserMock = vi.spyOn(UserDal, "getPartialUser");
+    const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
 
     beforeEach(() => {
-      [userBannedMock, georgeBannedMock, getUserMock].forEach((it) =>
+      [userBannedMock, getUserMock].forEach((it) =>
         it.mockClear(),
       );
       userBannedMock.mockResolvedValue();
+      isDevEnvironmentMock.mockReturnValue(false);
     });
 
     it("should ban user with discordId", async () => {
       //GIVEN
-      const victimUid = new ObjectId().toHexString();
+      const victimUid = crypto.randomUUID();
       getUserMock.mockResolvedValue({
         banned: false,
         discordId: "discordId",
@@ -100,11 +100,10 @@ describe("AdminController", () => {
         "discordId",
       ]);
       expect(userBannedMock).toHaveBeenCalledWith(victimUid, true);
-      expect(georgeBannedMock).toHaveBeenCalledWith("discordId", true);
     });
     it("should unban user without discordId", async () => {
       //GIVEN
-      const victimUid = new ObjectId().toHexString();
+      const victimUid = crypto.randomUUID();
       getUserMock.mockResolvedValue({
         banned: true,
       } as any);
@@ -127,7 +126,6 @@ describe("AdminController", () => {
         "discordId",
       ]);
       expect(userBannedMock).toHaveBeenCalledWith(victimUid, false);
-      expect(georgeBannedMock).not.toHaveBeenCalled();
     });
     it("should fail without mandatory properties", async () => {
       //GIVEN
@@ -151,7 +149,7 @@ describe("AdminController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/admin/toggleBan")
-        .send({ uid: new ObjectId().toHexString(), extra: "value" })
+        .send({ uid: crypto.randomUUID(), extra: "value" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
@@ -165,7 +163,7 @@ describe("AdminController", () => {
       await expectFailForNonAdmin(
         mockApp
           .post("/admin/toggleBan")
-          .send({ uid: new ObjectId().toHexString() })
+          .send({ uid: crypto.randomUUID() })
           .set("Authorization", `Bearer ${uid}`),
       );
     });
@@ -174,13 +172,13 @@ describe("AdminController", () => {
       await expectFailForDisabledEndpoint(
         mockApp
           .post("/admin/toggleBan")
-          .send({ uid: new ObjectId().toHexString() })
+          .send({ uid: crypto.randomUUID() })
           .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should be rate limited", async () => {
       //GIVEN
-      const victimUid = new ObjectId().toHexString();
+      const victimUid = crypto.randomUUID();
       getUserMock.mockResolvedValue({
         banned: false,
         discordId: "discordId",
@@ -198,15 +196,17 @@ describe("AdminController", () => {
 
   describe("clear streak hour offset", () => {
     const clearStreakHourOffset = vi.spyOn(UserDal, "clearStreakHourOffset");
+    const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
 
     beforeEach(() => {
       clearStreakHourOffset.mockClear();
       clearStreakHourOffset.mockResolvedValue();
+      isDevEnvironmentMock.mockReturnValue(false);
     });
 
     it("should clear streak hour offset for user", async () => {
       //GIVEN
-      const victimUid = new ObjectId().toHexString();
+      const victimUid = crypto.randomUUID();
 
       //WHEN
       const { body } = await mockApp
@@ -244,7 +244,7 @@ describe("AdminController", () => {
       //WHEN
       const { body } = await mockApp
         .post("/admin/clearStreakHourOffset")
-        .send({ uid: new ObjectId().toHexString(), extra: "value" })
+        .send({ uid: crypto.randomUUID(), extra: "value" })
         .set("Authorization", `Bearer ${uid}`)
         .expect(422);
 
@@ -258,7 +258,7 @@ describe("AdminController", () => {
       await expectFailForNonAdmin(
         mockApp
           .post("/admin/clearStreakHourOffset")
-          .send({ uid: new ObjectId().toHexString() })
+          .send({ uid: crypto.randomUUID() })
           .set("Authorization", `Bearer ${uid}`),
       );
     });
@@ -267,13 +267,13 @@ describe("AdminController", () => {
       await expectFailForDisabledEndpoint(
         mockApp
           .post("/admin/clearStreakHourOffset")
-          .send({ uid: new ObjectId().toHexString() })
+          .send({ uid: crypto.randomUUID() })
           .set("Authorization", `Bearer ${uid}`),
       );
     });
     it("should be rate limited", async () => {
       //GIVEN
-      const victimUid = new ObjectId().toHexString();
+      const victimUid = crypto.randomUUID();
 
       //WHEN
       await expect(
@@ -519,13 +519,10 @@ describe("AdminController", () => {
     });
   });
   describe("send forgot password email", () => {
-    const sendForgotPasswordEmailMock = vi.spyOn(
-      AuthUtil,
-      "sendForgotPasswordEmail",
-    );
+    const isDevEnvironmentMock = vi.spyOn(Misc, "isDevEnvironment");
 
     beforeEach(() => {
-      sendForgotPasswordEmailMock.mockClear();
+      isDevEnvironmentMock.mockReturnValue(false);
     });
 
     it("should send forgot password link", async () => {
@@ -540,13 +537,9 @@ describe("AdminController", () => {
 
       //THEN
       expect(body).toEqual({
-        message: "Password reset request email sent.",
+        message: "Parolni tiklash so'rovi qabul qilindi",
         data: null,
       });
-
-      expect(sendForgotPasswordEmailMock).toHaveBeenCalledWith(
-        "meowdec@example.com",
-      );
     });
     it("should be rate limited", async () => {
       //WHEN

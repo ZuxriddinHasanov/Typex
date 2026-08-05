@@ -42,38 +42,61 @@ export function LoginPage(): JSXElement {
       <Show
         when={isSignUpDisabled()}
         fallback={
-          <div class="flex h-full flex-col items-center justify-around gap-4 md:flex-row">
-            <Register />
-            <div class="flex flex-col gap-4">
-              <Login />
-              <Show when={isDevEnvironment()}>
-                <div class="rounded-2xl border border-sub/10 bg-bg/50 p-4">
-                  <p class="mb-2 text-sm font-semibold text-sub">Dev Login</p>
-                  <div class="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Username"
-                      value={devLoginUsername()}
-                      onInput={(e) => setDevLoginUsername(e.currentTarget.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") void handleDevLogin();
-                      }}
-                      class="min-w-0 flex-1 rounded-lg border border-sub/20 bg-bg px-3 py-2 text-sm text-text outline-none transition-colors focus:border-main"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleDevLogin}
-                      disabled={devLoggingIn()}
-                      class="rounded-lg bg-main px-4 py-2 text-sm font-semibold text-bg transition-opacity hover:opacity-80 disabled:opacity-50"
-                    >
-                      {devLoggingIn() ? "..." : "Kirish"}
-                    </button>
+          <div class="flex h-full flex-col items-center justify-center gap-12 py-10 w-full max-w-5xl">
+            <div class="flex w-full flex-col items-start justify-around gap-16 md:flex-row md:gap-8">
+              <Register />
+              <div class="hidden h-[500px] w-px bg-sub/10 md:block"></div>
+              <div class="flex flex-col gap-4">
+                <Login />
+                <Show when={isDevEnvironment()}>
+                  <div class="rounded-2xl border border-sub/10 bg-bg/50 p-4">
+                    <p class="mb-2 text-sm font-semibold text-sub">Dev Login</p>
+                    <div class="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Username"
+                        value={devLoginUsername()}
+                        onInput={(e) => setDevLoginUsername(e.currentTarget.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") void handleDevLogin();
+                        }}
+                        class="min-w-0 flex-1 rounded-lg border border-sub/20 bg-bg px-3 py-2 text-sm text-text outline-none transition-colors focus:border-main"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleDevLogin}
+                        disabled={devLoggingIn()}
+                        class="rounded-lg bg-main px-4 py-2 text-sm font-semibold text-bg transition-opacity hover:opacity-80 disabled:opacity-50"
+                      >
+                        {devLoggingIn() ? "..." : "Kirish"}
+                      </button>
+                    </div>
+                    <Show when={devLoginFeedback()}>
+                      <p class="mt-1 text-xs text-error">{devLoginFeedback()}</p>
+                    </Show>
                   </div>
-                  <Show when={devLoginFeedback()}>
-                    <p class="mt-1 text-xs text-error">{devLoginFeedback()}</p>
-                  </Show>
-                </div>
-              </Show>
+                </Show>
+              </div>
+            </div>
+            
+            <div class="mt-12 w-full max-w-3xl rounded-2xl border border-main/10 bg-main/5 px-8 py-6 text-center shadow-lg shadow-main/5 backdrop-blur-md">
+              <p class="text-sm leading-relaxed text-sub">
+                Tizimga kirish yoki ro&apos;yxatdan o&apos;tish orqali siz TypeUZ platformasining qoidalariga rozi bo&apos;lasiz:
+              </p>
+              <div class="mt-6 flex flex-wrap items-center justify-center gap-4">
+                <a href="/privacy-policy" router-link class="group flex items-center gap-3 rounded-xl border border-sub/10 bg-sub/5 pr-5 pl-2 py-2 text-sm font-semibold text-sub transition-all hover:border-main/30 hover:bg-main/5 hover:text-main hover:-translate-y-0.5">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-bg text-[10px] text-sub shadow-sm transition-colors group-hover:bg-main/15 group-hover:text-main"><Fa icon="fa-shield-alt" /></span>
+                  Maxfiylik
+                </a>
+                <a href="/terms-of-service" router-link class="group flex items-center gap-3 rounded-xl border border-sub/10 bg-sub/5 pr-5 pl-2 py-2 text-sm font-semibold text-sub transition-all hover:border-main/30 hover:bg-main/5 hover:text-main hover:-translate-y-0.5">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-bg text-[10px] text-sub shadow-sm transition-colors group-hover:bg-main/15 group-hover:text-main"><Fa icon="fa-file-contract" /></span>
+                  Shartlar
+                </a>
+                <a href="/security-policy" router-link class="group flex items-center gap-3 rounded-xl border border-sub/10 bg-sub/5 pr-5 pl-2 py-2 text-sm font-semibold text-sub transition-all hover:border-main/30 hover:bg-main/5 hover:text-main hover:-translate-y-0.5">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-bg text-[10px] text-sub shadow-sm transition-colors group-hover:bg-main/15 group-hover:text-main"><Fa icon="fa-lock" /></span>
+                  Xavfsizlik
+                </a>
+              </div>
             </div>
           </div>
         }

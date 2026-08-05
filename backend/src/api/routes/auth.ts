@@ -2,11 +2,11 @@ import { Router, Request, Response } from "express";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { rateLimit } from "express-rate-limit";
-import { WithId } from "mongodb";
 import * as UserDAL from "../../dal/user";
 import { TypeUZResponse } from "../../utils/typeuz-response";
 import { signToken, verifyToken } from "../../utils/jwt";
 import Logger from "../../utils/logger";
+import * as db from "../../init/db";
 import { collection } from "../../init/db";
 import { isDevEnvironment } from "../../utils/misc";
 import { devGet, devSet } from "../../utils/dev-store";
@@ -49,7 +49,7 @@ async function savePwDoc(doc: PwDoc): Promise<void> {
     devSet(`pw_${doc.uid}`, doc);
   } else {
     await collection("user-passwords").insertOne(
-      doc as unknown as WithId<PwDoc>,
+      doc,
     );
   }
 }
@@ -556,9 +556,9 @@ async function getAdminCredDoc(username: string): Promise<AdminCredDoc | null> {
     const creds = devGet<Record<string, AdminCredDoc>>(ADMIN_CRED_KEY) ?? {};
     return creds[username.toLowerCase()] ?? null;
   }
-  const doc = await collection<AdminCredDoc>("admin-credentials").findOne({
-    username: username.toLowerCase(),
-  });
+  const doc = await (db.collection("admin-credentials") as unknown as {
+    findOne: (filter: Record<string, unknown>) => Promise<AdminCredDoc | null>;
+  }).findOne({ username: username.toLowerCase() });
   return doc;
 }
 

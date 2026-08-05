@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import {
   describe,
   it,
@@ -26,7 +27,6 @@ import * as Captcha from "../../../src/utils/captcha";
 import * as FirebaseAdmin from "../../../src/init/firebase-admin";
 import * as ApeKeysDal from "../../../src/dal/ape-keys";
 import * as LogDal from "../../../src/dal/logs";
-import { ObjectId } from "mongodb";
 import { PersonalBest } from "@typeuz/schemas/shared";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { randomUUID } from "node:crypto";
@@ -1993,7 +1993,7 @@ describe("user controller test", () => {
         none: true,
       },
     };
-    const generatedId = new ObjectId();
+    const generatedId = crypto.randomUUID();
 
     const addResultFilterPresetMock = vi.spyOn(
       UserDal,
@@ -2017,7 +2017,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Result filter preset created",
-        data: generatedId.toHexString(),
+        data: generatedId,
       });
 
       expect(addResultFilterPresetMock).toHaveBeenCalledWith(
@@ -2129,7 +2129,7 @@ describe("user controller test", () => {
   describe("add tag", () => {
     const addTagMock = vi.spyOn(UserDal, "addTag");
     const newTag = {
-      _id: new ObjectId(),
+      _id: crypto.randomUUID(),
       name: "tagName",
       personalBests: {
         time: {},
@@ -2158,7 +2158,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Tag updated",
-        data: { ...newTag, _id: newTag._id.toHexString() },
+        data: { ...newTag, _id: newTag._id },
       });
       expect(addTagMock).toHaveBeenCalledWith(uid, "tagName");
     });
@@ -2203,7 +2203,7 @@ describe("user controller test", () => {
 
     it("should clear tag pb", async () => {
       //GIVEN
-      const tagId = new ObjectId().toHexString();
+      const tagId = crypto.randomUUID();
       //WHEN
       const { body } = await mockApp
         .delete(`/users/tags/${tagId}/personalBest`)
@@ -2227,7 +2227,7 @@ describe("user controller test", () => {
 
     it("should update tag", async () => {
       //GIVEN
-      const tagId = new ObjectId().toHexString();
+      const tagId = crypto.randomUUID();
 
       //WHEN
       const { body } = await mockApp
@@ -2262,7 +2262,7 @@ describe("user controller test", () => {
         .patch(`/users/tags`)
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          tagId: new ObjectId().toHexString(),
+          tagId: crypto.randomUUID(),
           newName: "newName",
           extra: "value",
         })
@@ -2284,7 +2284,7 @@ describe("user controller test", () => {
 
     it("should remove tag", async () => {
       //GIVEN
-      const tagId = new ObjectId().toHexString();
+      const tagId = crypto.randomUUID();
 
       //WHEN
       const { body } = await mockApp
@@ -2311,12 +2311,12 @@ describe("user controller test", () => {
     it("should get tags", async () => {
       //GIVEN
       const tagOne: UserDal.DBUserTag = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagOne",
         personalBests: {} as any,
       };
       const tagTwo: UserDal.DBUserTag = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagOne",
         personalBests: {} as any,
       };
@@ -2333,8 +2333,8 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Tags retrieved",
         data: [
-          { ...tagOne, _id: tagOne._id.toHexString() },
-          { ...tagTwo, _id: tagTwo._id.toHexString() },
+          { ...tagOne, _id: tagOne._id },
+          { ...tagTwo, _id: tagTwo._id },
         ],
       });
       expect(getTagsMock).toHaveBeenCalledWith(uid);
@@ -2421,12 +2421,12 @@ describe("user controller test", () => {
     it("should get custom themes", async () => {
       //GIVEN
       const themeOne: UserDal.DBCustomTheme = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "themeOne",
         colors: new Array(10).fill("#000000") as any,
       };
       const themeTwo: UserDal.DBCustomTheme = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "themeTwo",
         colors: new Array(10).fill("#FFFFFF") as any,
       };
@@ -2442,8 +2442,8 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Custom themes retrieved",
         data: [
-          { ...themeOne, _id: themeOne._id.toHexString() },
-          { ...themeTwo, _id: themeTwo._id.toHexString() },
+          { ...themeOne, _id: themeOne._id },
+          { ...themeTwo, _id: themeTwo._id },
         ],
       });
     });
@@ -2457,7 +2457,7 @@ describe("user controller test", () => {
     it("should add", async () => {
       //GIVEN
       const addedTheme: UserDal.DBCustomTheme = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "custom",
         colors: new Array(10).fill("#000000") as any,
       };
@@ -2476,7 +2476,7 @@ describe("user controller test", () => {
       //THEN
       expect(body).toEqual({
         message: "Custom theme added",
-        data: { ...addedTheme, _id: addedTheme._id.toHexString() },
+        data: { ...addedTheme, _id: addedTheme._id },
       });
       expect(addThemeMock).toHaveBeenCalledWith(uid, {
         name: "customTheme",
@@ -2544,7 +2544,7 @@ describe("user controller test", () => {
 
     it("should remove theme", async () => {
       //GIVEN
-      const themeId = new ObjectId().toHexString();
+      const themeId = crypto.randomUUID();
 
       //WHEN
       const { body } = await mockApp
@@ -2578,7 +2578,7 @@ describe("user controller test", () => {
       const { body } = await mockApp
         .delete("/users/customThemes")
         .set("Authorization", `Bearer ${uid}`)
-        .send({ themeId: new ObjectId().toHexString(), extra: "value" })
+        .send({ themeId: crypto.randomUUID(), extra: "value" })
         .expect(422);
 
       //THEN
@@ -2596,7 +2596,7 @@ describe("user controller test", () => {
 
     it("should edit custom theme", async () => {
       //GIVEN
-      const themeId = new ObjectId().toHexString();
+      const themeId = crypto.randomUUID();
       const theme = {
         name: "newName",
         colors: new Array(10).fill("#000000") as any,
@@ -2638,7 +2638,7 @@ describe("user controller test", () => {
         .patch("/users/customThemes")
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          themeId: new ObjectId().toHexString(),
+          themeId: crypto.randomUUID(),
           theme: {
             name: "newName",
             colors: new Array(10).fill("#000000") as any,
@@ -2735,7 +2735,7 @@ describe("user controller test", () => {
       expect(body).toEqual({
         message: "Invalid query schema",
         validationErrors: [
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'mood'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen' | 'ai', received 'mood'`,
           `"mode2" Needs to be a number or a number represented as a string e.g. "10".`,
         ],
       });
@@ -2923,8 +2923,8 @@ describe("user controller test", () => {
     const leaderboardGetCountMock = vi.spyOn(LeaderboardDal, "getCount");
 
     const foundUser: Partial<UserDal.DBUser> = {
-      _id: new ObjectId(),
-      uid: new ObjectId().toHexString(),
+
+      uid: crypto.randomUUID(),
       name: "bob",
       banned: false,
       inventory: { badges: [{ id: 1, selected: true }, { id: 2 }] },
@@ -3569,7 +3569,7 @@ describe("user controller test", () => {
 
     it("should report", async () => {
       //WHEN
-      const uidToReport = new ObjectId().toHexString();
+      const uidToReport = crypto.randomUUID();
 
       const { body } = await mockApp
         .post("/users/report")
@@ -3592,7 +3592,7 @@ describe("user controller test", () => {
           type: "user",
           timestamp: 125000,
           uid,
-          contentId: uidToReport,
+          content_id: uidToReport,
           reason: "Suspected cheating",
           comment: "comment",
         }),
@@ -3626,7 +3626,7 @@ describe("user controller test", () => {
         .post("/users/report")
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          uid: new ObjectId().toHexString(),
+          uid: crypto.randomUUID(),
           reason: "Suspected cheating",
           comment: "comment",
           captcha: "captcha",
@@ -3649,7 +3649,7 @@ describe("user controller test", () => {
         .post("/users/report")
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          uid: new ObjectId().toHexString(),
+          uid: crypto.randomUUID(),
           reason: "Suspected cheating",
           comment: "comment",
           captcha: "captcha",
@@ -3693,7 +3693,7 @@ describe("user controller test", () => {
         .post("/users/report")
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          uid: new ObjectId().toHexString(),
+          uid: crypto.randomUUID(),
           reason: "Suspected cheating",
           comment: "comment",
           captcha: "captcha",
@@ -3712,7 +3712,7 @@ describe("user controller test", () => {
         .post("/users/report")
         .set("Authorization", `Bearer ${uid}`)
         .send({
-          uid: new ObjectId().toHexString(),
+          uid: crypto.randomUUID(),
           reason: "Suspected cheating",
           comment: "comment",
           captcha: "captcha",

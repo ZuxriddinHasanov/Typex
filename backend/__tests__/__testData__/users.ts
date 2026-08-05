@@ -1,12 +1,12 @@
 import * as DB from "../../src/init/db";
+import crypto from "crypto";
 import * as UserDAL from "../../src/dal/user";
-import { ObjectId } from "mongodb";
 import { PersonalBest } from "@typeuz/schemas/shared";
 
 export async function createUser(
   user?: Partial<UserDAL.DBUser>,
 ): Promise<UserDAL.DBUser> {
-  const uid = new ObjectId().toHexString();
+  const uid = crypto.randomUUID();
   await UserDAL.addUser(`user${uid}`, `${uid}@example.com`, uid);
   await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
   return await UserDAL.getUser(uid, "test");
@@ -15,7 +15,7 @@ export async function createUser(
 export async function createUserWithoutMigration(
   user?: Partial<UserDAL.DBUser>,
 ): Promise<UserDAL.DBUser> {
-  const uid = new ObjectId().toHexString();
+  const uid = crypto.randomUUID();
   await UserDAL.addUser(`user${uid}`, `${uid}@example.com`, uid);
   await DB.collection("users").updateOne({ uid }, { $set: { ...user } });
   await DB.collection("users").updateOne(

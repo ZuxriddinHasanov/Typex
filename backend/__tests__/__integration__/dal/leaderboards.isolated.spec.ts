@@ -1,3 +1,4 @@
+
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
@@ -11,7 +12,6 @@ import { LbPersonalBests } from "../../../src/utils/pb";
 
 import { pb } from "../../__testData__/users";
 import { createConnection } from "../../__testData__/connections";
-import { omit } from "../../../src/utils/misc";
 import { LeaderboardEntry } from "@typeuz/schemas/leaderboards";
 
 describe("LeaderboardsDal", () => {
@@ -62,7 +62,7 @@ describe("LeaderboardsDal", () => {
 
       //THEN
 
-      const lb = results.map((it) => omit(it, ["_id"]));
+      const lb = results.map((it) => it);
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: rank1 }),
@@ -89,7 +89,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, ["_id"]));
+      const lb = results.map((it) => it);
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1 }),
@@ -203,7 +203,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => omit(it, ["_id"]));
+      const lb = result.map((it) => it);
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noBadge }),
@@ -242,19 +242,19 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      const lb = result.map((it) => omit(it, ["_id"]));
+      const lb = result.map((it) => it);
 
       expect(lb).toEqual([
         expectedLbEntry("15", { rank: 1, user: noPremium }),
         expectedLbEntry("15", {
           rank: 2,
           user: lifetime,
-          isPremium: true,
+          is_premium: true,
         }),
         expectedLbEntry("15", {
           rank: 3,
           user: validPremium,
-          isPremium: true,
+          is_premium: true,
         }),
         expectedLbEntry("15", { rank: 4, user: expiredPremium }),
       ]);
@@ -275,7 +275,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      expect(results[0]?.isPremium).toBeUndefined();
+      expect(results[0]?.is_premium).toBeUndefined();
     });
   });
 
@@ -300,7 +300,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, ["_id"]));
+      const lb = results.map((it) => it);
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 3, user: rank3 }),
@@ -317,12 +317,12 @@ describe("LeaderboardsDal", () => {
 
       //two friends, one is not on the leaderboard
       await createConnection({
-        initiatorUid: uid,
-        receiverUid: rank4.uid,
+        initiator_uid: uid,
+        receiver_uid: rank4.uid,
         status: "accepted",
       });
 
-      await createConnection({ initiatorUid: uid, status: "accepted" });
+      await createConnection({ initiator_uid: uid, status: "accepted" });
 
       await LeaderboardsDal.update("time", "60", "english");
 
@@ -339,7 +339,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, ["_id"]));
+      const lb = results.map((it) => it);
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 1, user: rank1, friendsRank: 1 }),
@@ -356,13 +356,13 @@ describe("LeaderboardsDal", () => {
       await LeaderboardsDal.update("time", "60", "english");
 
       await createConnection({
-        initiatorUid: uid,
-        receiverUid: rank2.uid,
+        initiator_uid: uid,
+        receiver_uid: rank2.uid,
         status: "accepted",
       });
       await createConnection({
-        initiatorUid: rank4.uid,
-        receiverUid: uid,
+        initiator_uid: rank4.uid,
+        receiver_uid: uid,
         status: "accepted",
       });
 
@@ -378,7 +378,7 @@ describe("LeaderboardsDal", () => {
       )) as LeaderboardsDal.DBLeaderboardEntry[];
 
       //THEN
-      const lb = results.map((it) => omit(it, ["_id"]));
+      const lb = results.map((it) => it);
 
       expect(lb).toEqual([
         expectedLbEntry("60", { rank: 4, user: rank4, friendsRank: 3 }),
@@ -435,14 +435,14 @@ describe("LeaderboardsDal", () => {
       await LeaderboardsDal.update("time", "60", "english");
 
       await createConnection({
-        initiatorUid: me.uid,
-        receiverUid: friendOne.uid,
+        initiator_uid: me.uid,
+        receiver_uid: friendOne.uid,
         status: "accepted",
       });
 
       await createConnection({
-        initiatorUid: friendTwo.uid,
-        receiverUid: me.uid,
+        initiator_uid: friendTwo.uid,
+        receiver_uid: me.uid,
         status: "accepted",
       });
 
@@ -468,7 +468,7 @@ describe("LeaderboardsDal", () => {
 
 function expectedLbEntry(
   time: string,
-  { rank, user, badgeId, isPremium, friendsRank }: ExpectedLbEntry,
+  { rank, user, badgeId, is_premium: isPremium, friendsRank }: ExpectedLbEntry,
 ): LeaderboardEntry {
   const lbBest: PersonalBest = user.lbPersonalBests?.time[
     Number.parseInt(time)
@@ -492,26 +492,13 @@ function expectedLbEntry(
 }
 
 async function createUser(
-  lbPersonalBests?: LbPersonalBests,
-  userProperties?: Partial<UserDal.DBUser>,
+  _lbPersonalBests?: LbPersonalBests,
+  _userProperties?: Partial<UserDal.DBUser>,
 ): Promise<UserDal.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDal.addUser(`User ${uid}`, `${uid}@example.com`, uid);
 
-  await DB.getDb()
-    ?.collection<UserDal.DBUser>("users")
-    .updateOne(
-      { uid },
-      {
-        $set: {
-          timeTyping: 7200,
-          discordId: `discord ${uid}`,
-          discordAvatar: `avatar ${uid}`,
-          ...userProperties,
-          lbPersonalBests,
-        },
-      },
-    );
+  await DB.query("UPDATE users SET time_typing = 7200 WHERE uid = $1", [uid]);
 
   return await UserDal.getUser(uid, "test");
 }
@@ -539,6 +526,6 @@ type ExpectedLbEntry = {
   rank: number;
   user: UserDal.DBUser;
   badgeId?: number;
-  isPremium?: boolean;
+  is_premium?: boolean;
   friendsRank?: number;
 };

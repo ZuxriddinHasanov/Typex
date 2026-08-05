@@ -18,6 +18,8 @@ import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Page } from "../../common/Page";
 
+import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
+
 const pageName = "leaderboards";
 
 const durationOptions = ["15", "30", "60", "120", "custom"] as const;
@@ -175,6 +177,8 @@ export function LeaderboardPage(): JSXElement {
             );
           }}
         </Show>
+
+        <TypeUZAdSlot slotId="ad-leaderboard" class="w-full" />
 
         <AsyncContent
           queries={{ lbQuery }}

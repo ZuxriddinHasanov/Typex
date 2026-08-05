@@ -1,6 +1,6 @@
 import { Config, ConfigKey, ConfigSchema } from "@typeuz/schemas/configs";
-import { createForm } from "@tanstack/solid-form";
-import { For, JSXElement } from "solid-js";
+import { createForm, AnyFieldApi } from "@tanstack/solid-form";
+import { Accessor, For, JSXElement } from "solid-js";
 import { z } from "zod";
 
 import {
@@ -43,6 +43,13 @@ export function SearchableAutoSetting<T extends ConfigKey>(props: {
       ConfigSchema.shape[props.key]._def.typeName ===
       z.ZodFirstPartyTypeKind.ZodNumber
     ) {
+      // simplify the type to prevent typescript error
+      // typescript(TS2589): Type instantiation is excessively deep and possibly infinite.
+      const Field = form.Field as (props: {
+        name: string;
+        validators: Record<string, unknown> | undefined;
+        children: (field: Accessor<AnyFieldApi>) => JSXElement;
+      }) => JSXElement;
       return (
         <div class="grid w-full gap-2">
           <form
@@ -52,13 +59,16 @@ export function SearchableAutoSetting<T extends ConfigKey>(props: {
               void form.handleSubmit();
             }}
           >
-            <form.Field
-              // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
-              name={props.key as never}
+            {
+              // simplify the type to prevent typescript error
+              // typescript(TS2589): Type instantiation is excessively deep and possibly infinite.
+            }
+            <Field
+              name={props.key}
               validators={{
                 // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
                 onChange: fromSchema(
-                  // oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+                  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion
                   ConfigSchema.shape[props.key] as z.ZodNumber,
                 ),
                 onBlur: () => {

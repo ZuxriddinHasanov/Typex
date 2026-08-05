@@ -23,8 +23,9 @@ import bcrypt from "bcrypt";
 import { devGet, devSet } from "./utils/dev-store";
 import { isDevEnvironment } from "./utils/misc";
 
+const ADMIN_CRED_KEY = "admin_credentials";
+
 async function seedDefaultAdmin(): Promise<void> {
-  const ADMIN_CRED_KEY = "admin_credentials";
   const hash = await bcrypt.hash("admin123", 10);
   if (isDevEnvironment()) {
     const existing = devGet<Record<string, unknown>>(ADMIN_CRED_KEY);
@@ -37,20 +38,22 @@ async function seedDefaultAdmin(): Promise<void> {
       },
     });
   } else {
-    const existing = await db
-      .collection<{ username: string }>(ADMIN_CRED_KEY)
-      .findOne({ username: "admin" });
+    const existing = await db.queryOne<{ username: string }>(
+      "SELECT username FROM admin_credentials WHERE username = $1",
+      ["admin"],
+    );
     if (existing !== null) return;
-    await db.collection(ADMIN_CRED_KEY).updateOne(
-      { username: "admin" },
-      {
-        $set: {
+    await db.query(
+      `INSERT INTO admin_credentials (username, data) VALUES ($1, $2::jsonb)
+       ON CONFLICT (username) DO NOTHING`,
+      [
+        "admin",
+        JSON.stringify({
           username: "admin",
           passwordHash: hash,
           createdAt: Date.now(),
-        },
-      },
-      { upsert: true },
+        }),
+      ],
     );
   }
   Logger.success("Default admin created: admin / admin123");

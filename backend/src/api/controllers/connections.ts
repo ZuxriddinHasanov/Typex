@@ -10,13 +10,30 @@ import { TypeUZRequest } from "../types";
 import { TypeUZResponse } from "../../utils/typeuz-response";
 import * as ConnectionsDal from "../../dal/connections";
 import * as UserDal from "../../dal/user";
-import { replaceObjectId, omit } from "../../utils/misc";
 import TypeUZError from "../../utils/error";
 
 import { Connection } from "@typeuz/schemas/connections";
 
-function convert(db: ConnectionsDal.DBConnection): Connection {
-  return replaceObjectId(omit(db, ["key"]));
+type DBConnectionRow = {
+  _id: string;
+  initiator_uid: string;
+  initiator_name: string;
+  receiver_uid: string;
+  receiver_name: string;
+  last_modified: number;
+  status: string;
+};
+
+function convert(db: DBConnectionRow): Connection {
+  return {
+    _id: db._id,
+    initiatorUid: db.initiator_uid,
+    initiatorName: db.initiator_name,
+    receiverUid: db.receiver_uid,
+    receiverName: db.receiver_name,
+    lastModified: db.last_modified,
+    status: db.status as Connection["status"],
+  };
 }
 export async function getConnections(
   req: TypeUZRequest<GetConnectionsQuery>,

@@ -5,7 +5,6 @@ import { DecodedIdToken } from "firebase-admin/auth";
 import { NextFunction, Request, Response } from "express";
 import { getCachedConfiguration } from "../../src/init/configuration";
 import * as ApeKeys from "../../src/dal/ape-keys";
-import { ObjectId } from "mongodb";
 import { hashSync } from "bcrypt";
 import TypeUZError from "../../src/utils/error";
 import * as Misc from "../../src/utils/misc";
@@ -29,14 +28,14 @@ const mockDecodedToken: DecodedIdToken = {
 vi.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
 
 const mockApeKey = {
-  _id: new ObjectId(),
+  _id: crypto.randomUUID(),
   uid: "123",
   name: "test",
   hash: hashSync("key", 5),
-  createdOn: Date.now(),
-  modifiedOn: Date.now(),
-  lastUsedOn: Date.now(),
-  useCount: 0,
+  created_on: Date.now(),
+  modified_on: Date.now(),
+  last_used_on: Date.now(),
+  use_count: 0,
   enabled: true,
 };
 vi.spyOn(ApeKeys, "getApeKey").mockResolvedValue(mockApeKey);

@@ -3,7 +3,7 @@ import { JSXElement, Show } from "solid-js";
 import Ape from "../../ape";
 import { cn } from "../../utils/cn";
 
-type SlotId = "ad-result" | "ad-about-1" | "ad-about-2" | "ad-account-1" | "ad-account-2";
+type SlotId = "ad-result" | "ad-about-1" | "ad-about-2" | "ad-account-1" | "ad-account-2" | "ad-landing-hero" | "ad-leaderboard";
 
 export function TypeUZAdSlot(props: {
   slotId: SlotId;

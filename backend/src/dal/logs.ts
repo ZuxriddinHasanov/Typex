@@ -1,47 +1,5 @@
-import { Collection, ObjectId } from "mongodb";
 import * as db from "../init/db";
 import Logger from "../utils/logger";
-
-type DbLog = {
-  _id: ObjectId;
-  type?: string;
-  timestamp: number;
-  uid: string;
-  important?: boolean;
-  event: string;
-  message: string | Record<string, unknown>;
-};
-
-export const getLogsCollection = (): Collection<DbLog> =>
-  db.collection<DbLog>("logs");
-
-async function insertIntoDb(
-  event: string,
-  message: string | Record<string, unknown>,
-  uid = "",
-  important = false,
-): Promise<void> {
-  const dbLog: DbLog = {
-    _id: new ObjectId(),
-    timestamp: Date.now(),
-    uid: uid ?? "",
-    event: event,
-    message: message,
-    important: important,
-  };
-
-  if (!important) delete dbLog.important;
-
-  const stringified = JSON.stringify(message);
-
-  Logger.info(
-    `${event}\t${uid}\t${
-      stringified.length > 100 ? `${stringified.slice(0, 100)}...` : stringified
-    }`,
-  );
-
-  await getLogsCollection().insertOne(dbLog);
-}
 
 export async function addLog(
   event: string,
@@ -60,5 +18,27 @@ export async function addImportantLog(
 }
 
 export async function deleteUserLogs(uid: string): Promise<void> {
-  await getLogsCollection().deleteMany({ uid });
+  await db.query("DELETE FROM logs WHERE uid = $1", [uid]);
+}
+
+async function insertIntoDb(
+  event: string,
+  message: string | Record<string, unknown>,
+  uid = "",
+  important = false,
+): Promise<void> {
+  const msg = typeof message === "string" ? message : JSON.stringify(message);
+
+  const stringified = JSON.stringify(message);
+  Logger.info(
+    `${event}\t${uid}\t${
+      stringified.length > 100 ? `${stringified.slice(0, 100)}...` : stringified
+    }`,
+  );
+
+  await db.query(
+    `INSERT INTO logs (timestamp, uid, important, event, message)
+     VALUES ($1, $2, $3, $4, $5::jsonb)`,
+    [Date.now(), uid ?? "", important, event, msg],
+  );
 }

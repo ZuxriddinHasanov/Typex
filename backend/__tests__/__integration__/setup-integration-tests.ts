@@ -1,43 +1,69 @@
 import { afterAll, beforeAll, afterEach, vi } from "vitest";
-import { Collection, Db, MongoClient, WithId } from "mongodb";
+import pg, { Pool } from "pg";
 import { setupCommonMocks } from "../setup-common-mocks";
 import { getConnection } from "../../src/init/redis";
 
 process.env["MODE"] = "dev";
+process.env["DATABASE_URL"] = process.env["TEST_DATABASE_URL"] ?? "";
 
-let db: Db | undefined;
-let client: MongoClient | undefined;
+let pool: pg.Pool | undefined;
 
 beforeAll(async () => {
-  client = new MongoClient(process.env["TEST_DB_URL"] as string);
-  await client.connect();
-  db = client.db();
+  pool = new Pool({
+    connectionString: process.env["TEST_DATABASE_URL"],
+  });
+  await pool.query("SELECT 1");
 
-  vi.mock("../../src/init/db", () => ({
-    __esModule: true,
-    getDb: (): Db => db as Db,
-    collection: <T>(name: string): Collection<WithId<T>> =>
-      (db as Db).collection<WithId<T>>(name),
-    close: () => {
-      //
-    },
-  }));
+  // Run migrations
+  const fs = await import("fs");
+  const path = await import("path");
+  const migrationSql = fs.readFileSync(
+    path.resolve(__dirname, "../../supabase/migrations/0001_init.sql"),
+    "utf8",
+  );
+  await pool.query(migrationSql);
+
+  vi.mock("../../src/init/db", async () => {
+    const actual = await vi.importActual<typeof import("../../src/init/db")>("../../src/init/db");
+    const mockPool: Pool = pool as unknown as Pool;
+    return {
+      ...actual,
+      getPool: () => mockPool,
+      query: async (text: string, params?: unknown[]) => mockPool.query(text, params),
+      queryOne: async <T>(text: string, params?: unknown[]) => {
+        const result = await mockPool.query(text, params);
+        return (result.rows[0] ?? null) as T;
+      },
+      queryAll: async <T>(text: string, params?: unknown[]) => {
+        const result = await mockPool.query(text, params);
+        return result.rows as T[];
+      },
+    };
+  });
 
   setupCommonMocks();
 
-  //we compare the time in mongodb to calculate premium status, so we have to use real time here
+  //we compare the time in database to calculate premium status, so we have to use real time here
   vi.useRealTimers();
 });
 
 afterEach(async () => {
-  //nothing
+  // Clean all tables between tests
+  if (pool) {
+    const tables = [
+      "results", "users", "presets", "ape_keys", "connections",
+      "configs", "leaderboard_entries", "new_quotes", "quote_ratings",
+      "logs", "reports", "blocklist", "psa", "admin_uids",
+    ];
+    for (const table of tables) {
+      await pool.query(`DELETE FROM ${table}`).catch(() => undefined);
+    }
+  }
 });
 
 afterAll(async () => {
-  await client?.close();
-
-  db = undefined;
-  client = undefined;
+  await pool?.end();
+  pool = undefined;
 
   await getConnection()?.quit();
 

@@ -19,7 +19,6 @@ import leaderboards from "./leaderboards";
 import connections from "./connections";
 import addSwaggerMiddlewares from "./swagger";
 import { TypeUZResponse } from "../../utils/typeuz-response";
-import { ObjectId } from "mongodb";
 import * as UserDAL from "../../dal/user";
 import {
   Application,
@@ -196,7 +195,7 @@ function applyDevApiRoutes(app: Application): void {
           );
           return;
         }
-        const uid = new ObjectId().toHexString();
+        const uid = crypto.randomUUID();
         const email = `${username}@dev.local`;
         await UserDAL.addUser(username, email, uid);
         if (isDevEnvironment()) {

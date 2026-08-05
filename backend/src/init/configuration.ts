@@ -1,7 +1,6 @@
 import * as db from "./db";
-import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
-import { identity, isPlainObject, omit } from "../utils/misc";
+import { identity, isPlainObject } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
 import { Configuration } from "@typeuz/schemas/configuration";
 import { addLog } from "../dal/logs";
@@ -16,7 +15,7 @@ import { parseWithSchema as parseJsonWithSchema } from "@typeuz/util/json";
 import { z } from "zod";
 import { intersect } from "@typeuz/util/arrays";
 
-const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
+const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000;
 const SERVER_CONFIG_FILE_PATH = join(
   __dirname,
   "../backend-configuration.json",
@@ -32,14 +31,11 @@ function mergeConfigurations(
 
   function merge(base: object, source: object): void {
     const commonKeys = intersect(Object.keys(base), Object.keys(source), true);
-
     commonKeys.forEach((key) => {
       const baseValue = base[key] as object;
       const sourceValue = source[key] as object;
-
       const isBaseValueObject = isPlainObject(baseValue);
       const isSourceValueObject = isPlainObject(sourceValue);
-
       if (isBaseValueObject && isSourceValueObject) {
         merge(baseValue, sourceValue);
       } else if (identity(baseValue) === identity(sourceValue)) {
@@ -65,26 +61,24 @@ export async function getCachedConfiguration(
     Logger.info("Cached configuration is stale.");
     return await getLiveConfiguration();
   }
-
   return configuration;
 }
 
 export async function getLiveConfiguration(): Promise<Configuration> {
   lastFetchTime = Date.now();
 
-  const configurationCollection = db.collection("configuration");
-
   try {
-    const liveConfiguration = await configurationCollection.findOne();
+    const row = await db.queryOne<{ data: unknown }>(
+      "SELECT data FROM configuration WHERE _id = 'default'",
+    );
 
-    if (liveConfiguration) {
+    if (row?.data !== undefined && row.data !== null) {
+      const liveConfig = row.data as PartialConfiguration;
       const baseConfiguration = structuredClone(BASE_CONFIGURATION);
-
-      const liveConfigurationWithoutId = omit(liveConfiguration, [
-        "_id",
-      ]) as Configuration;
-      mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
-
+      mergeConfigurations(baseConfiguration, liveConfig);
+      if (process.env["ADMIN_ENDPOINTS_ENABLED"] === "true") {
+        baseConfiguration.admin.endpointsEnabled = true;
+      }
       await pushConfiguration(baseConfiguration);
       configuration = baseConfiguration;
     } else {
@@ -95,9 +89,12 @@ export async function getLiveConfiguration(): Promise<Configuration> {
           endpointsEnabled:
             process.env["ADMIN_ENDPOINTS_ENABLED"] === "true",
         },
-        _id: new ObjectId(),
       };
-      await configurationCollection.insertOne(configToSeed);
+      await db.query(
+        `INSERT INTO configuration (_id, data) VALUES ('default', $1::jsonb)
+         ON CONFLICT (_id) DO NOTHING`,
+        [JSON.stringify(configToSeed)],
+      );
     }
   } catch (error) {
     const errorMessage = getErrorMessage(error) ?? "Unknown error";
@@ -113,12 +110,14 @@ export async function getLiveConfiguration(): Promise<Configuration> {
 async function pushConfiguration(
   configurationToPush: Configuration,
 ): Promise<void> {
-  if (serverConfigurationUpdated) {
-    return;
-  }
+  if (serverConfigurationUpdated) return;
 
   try {
-    await db.collection("configuration").replaceOne({}, configurationToPush);
+    await db.query(
+      `INSERT INTO configuration (_id, data) VALUES ('default', $1::jsonb)
+       ON CONFLICT (_id) DO UPDATE SET data = $1::jsonb`,
+      [JSON.stringify(configurationToPush)],
+    );
     serverConfigurationUpdated = true;
   } catch (error) {
     const errorMessage = getErrorMessage(error) ?? "Unknown error";
@@ -136,18 +135,16 @@ export async function patchConfiguration(
     const currentConfiguration = structuredClone(configuration);
     mergeConfigurations(currentConfiguration, configurationUpdates);
 
-    await db
-      .collection("configuration")
-      .updateOne({}, { $set: currentConfiguration }, { upsert: true });
+    await db.query(
+      `INSERT INTO configuration (_id, data) VALUES ('default', $1::jsonb)
+       ON CONFLICT (_id) DO UPDATE SET data = $1::jsonb`,
+      [JSON.stringify(currentConfiguration)],
+    );
 
     await getLiveConfiguration();
   } catch (error) {
     const errorMessage = getErrorMessage(error) ?? "Unknown error";
-    void addLog(
-      "patch_configuration_failure",
-      `Could not patch configuration: ${errorMessage}`,
-    );
-
+    void addLog("patch_configuration_failure", errorMessage);
     return false;
   }
 
@@ -166,7 +163,6 @@ export async function updateFromConfigurationFile(): Promise<void> {
         configuration: PartialConfigurationSchema,
       }),
     );
-
     await patchConfiguration(data.configuration);
   }
 }

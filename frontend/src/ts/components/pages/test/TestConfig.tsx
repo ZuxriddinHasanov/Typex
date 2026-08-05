@@ -34,7 +34,8 @@ export function TestConfig(): JSXElement {
     <div
       class={cn(
         "flex flex-col items-center gap-4 py-6 transition-opacity duration-125",
-        getFocus() || getResultVisible() ? "pointer-events-none opacity-0" : "",
+        getFocus() && !getResultVisible() ? "pointer-events-none opacity-0" : "",
+        getResultVisible() ? "hidden" : "",
       )}
       data-ui-element="testConfig"
     >

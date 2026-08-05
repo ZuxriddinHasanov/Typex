@@ -6,8 +6,6 @@ import { __testing } from "../src/init/configuration";
 process.env["MODE"] = "dev";
 process.env.TZ = "UTC";
 beforeAll(async () => {
-  //don't add any configuration here, add to global-setup.ts instead.
-
   vi.mock("../src/init/configuration", async (importOriginal) => {
     const orig = (await importOriginal()) as any;
 
@@ -22,7 +20,10 @@ beforeAll(async () => {
   vi.mock("../src/init/db", () => ({
     __esModule: true,
     getDb: () => undefined,
-    collection: () => undefined,
+    getPool: () => undefined,
+    query: (async () => ({ rows: [], rowCount: 0 })) as any,
+    queryOne: (async () => null) as any,
+    queryAll: (async () => []) as any,
     close: () => {
       //
     },

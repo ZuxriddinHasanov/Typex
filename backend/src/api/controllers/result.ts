@@ -667,7 +667,7 @@ export async function addResult(
   const data: PostResultResponse = {
     isPb,
     tagPbs,
-    insertedId: addedResult.insertedId.toHexString(),
+    insertedId: addedResult.insertedId,
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
     xpBreakdown: xpGained.breakdown ?? {},

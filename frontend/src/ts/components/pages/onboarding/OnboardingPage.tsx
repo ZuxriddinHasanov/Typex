@@ -12,6 +12,7 @@ import { Page } from "../../common/Page";
 import { InputField } from "../../ui/form/InputField";
 import { SelectField } from "../../ui/form/SelectField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
+import { navigate } from "../../../controllers/route-controller";
 
 const AVATARS = [
   "fa-user-astronaut",
@@ -48,7 +49,9 @@ export function OnboardingPage(): JSXElement {
         if (value.firstName) body["firstName"] = value.firstName;
         if (value.lastName) body["lastName"] = value.lastName;
         if (value.gender) body["gender"] = value.gender;
-        if (value.age !== "" && value.age !== undefined) body["age"] = Number(value.age);
+        if (value.age !== "" && value.age !== undefined) {
+          body["age"] = Number(value.age);
+        }
         const av = selectedAvatar();
         if (av) body["avatar"] = av;
 
@@ -61,7 +64,7 @@ export function OnboardingPage(): JSXElement {
         }
 
         localStorage.setItem("typeuz_onboarding_done", "true");
-        window.location.href = "/account";
+        void navigate("/");
       } catch (e) {
         showErrorNotification(`Xatolik: ${(e as Error).message}`);
       } finally {
@@ -221,7 +224,7 @@ export function OnboardingPage(): JSXElement {
                   type="button"
                   onClick={() => {
                     localStorage.setItem("typeuz_onboarding_done", "true");
-                    window.location.href = "/account";
+                    void navigate("/");
                   }}
                   class="text-sm text-sub/60 transition-colors hover:text-text"
                 >
@@ -236,7 +239,7 @@ export function OnboardingPage(): JSXElement {
           type="button"
           onClick={() => {
             localStorage.setItem("typeuz_onboarding_done", "true");
-            window.location.href = "/account";
+            void navigate("/");
           }}
           class="inline-flex items-center gap-2 rounded-full bg-main px-10 py-4 text-base font-semibold text-bg transition-all hover:scale-105 hover:shadow-lg hover:shadow-main/25"
         >

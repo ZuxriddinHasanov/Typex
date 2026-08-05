@@ -1,8 +1,7 @@
 import { expect, vi } from "vitest";
+import crypto, { randomBytes } from "crypto";
 import { Configuration } from "@typeuz/schemas/configuration";
-import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
-import { ObjectId } from "mongodb";
 import { base64UrlEncode } from "../../src/utils/misc";
 import * as ApeKeyDal from "../../src/dal/ape-keys";
 import { DecodedIdToken } from "firebase-admin/auth";
@@ -21,18 +20,18 @@ export async function mockAuthenticateWithApeKey(
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
   const apeKey: ApeKeyDal.DBApeKey = {
-    _id: new ObjectId(),
+    _id: crypto.randomUUID(),
     name: "bob",
     enabled: true,
     uid,
     hash: saltyHash,
-    createdOn: Date.now(),
-    modifiedOn: Date.now(),
-    lastUsedOn: -1,
-    useCount: 0,
+    created_on: Date.now(),
+    modified_on: Date.now(),
+    last_used_on: -1,
+    use_count: 0,
   };
 
-  const apeKeyId = new ObjectId().toHexString();
+  const apeKeyId = crypto.randomUUID();
 
   vi.spyOn(ApeKeyDal, "getApeKey").mockResolvedValue(apeKey);
   vi.spyOn(ApeKeyDal, "updateLastUsedOn").mockResolvedValue();

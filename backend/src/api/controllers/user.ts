@@ -23,7 +23,6 @@ import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 import { purgeUserFromXpLeaderboards } from "../../services/weekly-xp-leaderboard";
 import { v4 as uuidv4 } from "uuid";
-import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
@@ -542,7 +541,6 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
     "inbox",
     "nameHistory",
     "lastNameChange",
-    "_id",
     "lastResultHashes",
     "note",
     "ips",
@@ -637,7 +635,11 @@ export async function getUser(req: TypeUZRequest): Promise<GetUserResponse> {
     ...relevantUserInfo,
     resultFilterPresets,
     tags,
-    customThemes,
+    customThemes: customThemes?.map((t) => ({
+      _id: t._id,
+      name: t.name,
+      colors: t.colors as [string, string, string, string, string, string, string, string, string, string],
+    })),
     isPremium,
     allTimeLbs,
     testActivity,
@@ -764,7 +766,7 @@ export async function addResultFilterPreset(
   );
   return new TypeUZResponse(
     "Result filter preset created",
-    createdId.toHexString(),
+    createdId,
   );
 }
 
@@ -841,10 +843,12 @@ export async function getCustomThemes(
 ): Promise<GetCustomThemesResponse> {
   const { uid } = req.ctx.decodedToken;
   const customThemes = await UserDAL.getThemes(uid);
-  return new TypeUZResponse(
-    "Custom themes retrieved",
-    replaceObjectIds(customThemes),
-  );
+  const mapped = customThemes.map((t) => ({
+    _id: t._id,
+    name: t.name,
+    colors: t.colors as [string, string, string, string, string, string, string, string, string, string],
+  }));
+  return new TypeUZResponse("Custom themes retrieved", mapped);
 }
 
 export async function addCustomTheme(
@@ -882,8 +886,8 @@ export async function getPersonalBests(
   const { uid } = req.ctx.decodedToken;
   const { mode, mode2 } = req.query;
 
-  const data = (await UserDAL.getPersonalBests(uid, mode, mode2)) ?? null;
-  return new TypeUZResponse("Personal bests retrieved", data);
+  const data = await UserDAL.getPersonalBests(uid, mode, mode2) ?? null;
+  return new TypeUZResponse("Personal bests retrieved", data as never);
 }
 
 export async function getStats(req: TypeUZRequest): Promise<GetStatsResponse> {
@@ -1145,12 +1149,11 @@ export async function reportUser(
   await verifyCaptcha(captcha);
 
   const newReport: ReportDAL.DBReport = {
-    _id: new ObjectId(),
     id: uuidv4(),
     type: "user",
     timestamp: new Date().getTime(),
     uid,
-    contentId: `${uidToReport}`,
+    content_id: `${uidToReport}`,
     reason,
     comment: comment ?? "",
   };

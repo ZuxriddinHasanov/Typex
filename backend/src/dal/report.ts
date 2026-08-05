@@ -1,30 +1,27 @@
 import TypeUZError from "../utils/error";
 import * as db from "../init/db";
-import { ObjectId } from "mongodb";
 
 type ReportTypes = "quote" | "user";
 
 export type DBReport = {
-  _id: ObjectId;
   id: string;
   type: ReportTypes;
   timestamp: number;
   uid: string;
-  contentId: string;
+  content_id: string;
   reason: string;
   comment: string;
 };
 
-const COLLECTION_NAME = "reports";
-
 export async function getReports(reportIds: string[]): Promise<DBReport[]> {
-  const query = { id: { $in: reportIds } };
-  return await db.collection<DBReport>(COLLECTION_NAME).find(query).toArray();
+  return await db.queryAll<DBReport>(
+    "SELECT * FROM reports WHERE id = ANY($1::text[])",
+    [reportIds],
+  );
 }
 
 export async function deleteReports(reportIds: string[]): Promise<void> {
-  const query = { id: { $in: reportIds } };
-  await db.collection(COLLECTION_NAME).deleteMany(query);
+  await db.query("DELETE FROM reports WHERE id = ANY($1::text[])", [reportIds]);
 }
 
 export async function createReport(
@@ -32,13 +29,14 @@ export async function createReport(
   maxReports: number,
   contentReportLimit: number,
 ): Promise<void> {
-  if (report.type === "user" && report.contentId === report.uid) {
+  if (report.type === "user" && report.content_id === report.uid) {
     throw new TypeUZError(400, "You cannot report yourself.");
   }
 
-  const reportsCount = await db
-    .collection<DBReport>(COLLECTION_NAME)
-    .estimatedDocumentCount();
+  const countResult = await db.queryOne<{ count: number }>(
+    "SELECT COUNT(*)::int AS count FROM reports",
+  );
+  const reportsCount = countResult?.count ?? 0;
 
   if (reportsCount >= maxReports) {
     throw new TypeUZError(
@@ -47,10 +45,10 @@ export async function createReport(
     );
   }
 
-  const sameReports = await db
-    .collection<DBReport>(COLLECTION_NAME)
-    .find({ contentId: report.contentId })
-    .toArray();
+  const sameReports = await db.queryAll<DBReport>(
+    "SELECT * FROM reports WHERE content_id = $1",
+    [report.content_id],
+  );
 
   if (sameReports.length >= contentReportLimit) {
     throw new TypeUZError(
@@ -67,5 +65,9 @@ export async function createReport(
     throw new TypeUZError(409, "You have already reported this content.");
   }
 
-  await db.collection<DBReport>(COLLECTION_NAME).insertOne(report);
+  await db.query(
+    `INSERT INTO reports (id, type, timestamp, uid, content_id, reason, comment)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [report.id, report.type, report.timestamp, report.uid, report.content_id, report.reason, report.comment],
+  );
 }

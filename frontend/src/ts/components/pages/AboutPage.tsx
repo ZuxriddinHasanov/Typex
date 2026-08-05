@@ -1,5 +1,6 @@
 import { For, JSXElement } from "solid-js";
 import { Fa } from "../common/Fa";
+import { TypeUZAdSlot } from "../common/TypeUZAdSlot";
 
 export function AboutPage(): JSXElement {
   return (
@@ -44,6 +45,8 @@ export function AboutPage(): JSXElement {
           )}
         </For>
       </section>
+
+      <TypeUZAdSlot slotId="ad-about-1" class="mx-auto w-full max-w-3xl" />
 
       {/* How it works */}
       <section id="qanday-ishlaydi" class="rounded-2xl border border-sub/10 bg-bg/50 backdrop-blur-sm p-8">
@@ -195,6 +198,8 @@ export function AboutPage(): JSXElement {
           </For>
         </div>
       </section>
+
+      <TypeUZAdSlot slotId="ad-about-2" class="mx-auto w-full max-w-3xl" />
 
       {/* AI Weekly Analysis */}
       <section id="ai-tahlil" class="rounded-2xl border border-main/10 bg-bg/50 backdrop-blur-sm p-8">

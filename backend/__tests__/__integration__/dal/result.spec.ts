@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import crypto from "crypto";
 import * as ResultDal from "../../../src/dal/result";
-import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
 import { DBResult } from "../../../src/utils/result";
 import * as ResultUtils from "../../../src/utils/result";
@@ -14,7 +14,7 @@ async function createDummyData(
   modify?: Partial<DBResult>,
 ): Promise<void> {
   const dummyUser: UserDal.DBUser = {
-    _id: new ObjectId(),
+    
     uid,
     addedAt: 0,
     email: "test@example.com",
@@ -34,7 +34,7 @@ async function createDummyData(
   for (let i = 0; i < count; i++) {
     await ResultDal.addResult(uid, {
       ...{
-        _id: new ObjectId(),
+        
         wpm: i,
         rawWpm: i,
         charStats: [0, 0, 0, 0],
@@ -59,8 +59,8 @@ async function createDummyData(
         language: "english",
         isPb: false,
         name: "Test",
-        funbox: ["58008", "read_ahead"],
-      },
+        funbox: "none",
+      } as unknown as DBResult,
       ...modify,
     });
   }
@@ -69,7 +69,7 @@ describe("ResultDal", () => {
   const replaceLegacyValuesMock = vi.spyOn(ResultUtils, "replaceLegacyValues");
 
   beforeEach(() => {
-    uid = new ObjectId().toHexString();
+    uid = crypto.randomUUID();
   });
   afterEach(async () => {
     if (uid) await ResultDal.deleteAll(uid);
@@ -155,7 +155,7 @@ describe("ResultDal", () => {
     it("should call replaceLegacyValues", async () => {
       //GIVEN
       await createDummyData(uid, 1);
-      const resultId = (await ResultDal.getLastResult(uid))._id.toHexString();
+      const resultId = (await ResultDal.getLastResult(uid))._id;
 
       //WHEN
       await ResultDal.getResult(uid, resultId);

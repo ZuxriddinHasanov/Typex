@@ -83,9 +83,13 @@ In plan mode, before writing up a plan, ask clarifying questions if needed. At t
 ### Hali tozalanmagan monkeytype reference
 - ✅ All cleaned. Remaining: `frontend/static/challenges/sourcecode.txt` (historical typing content), `scripts/rename-packages.sh` (migration script), `AGENTS.md` (status doc).
 
-### Jul 19 — Admin dashboard + contract fixes
-- **AdminDashboardPage.tsx**: Added 7 tabs (Dashboard, Users, Content, Appearance, Ads, AI, Settings) with full Uzbek UI. Content/theme/ad config CRUD. ChartBars CSS component. AI test button. Password change.
-- **Contracts**: `admin.ts` — all new endpoints now use `responseWithData(...)` for typed response data. `public.ts` — `getSiteContent` uses typed response.
-- **TS fixes**: Changed `contentQuery()` / `themeQuery()` signal call → `.data` property. Replaced all `Record<string,unknown>` / `any` casts with proper `AdConfig` / `AiAnalysis` types. Removed unused imports (`onCleanup` from admin, `Show` from landing). Fixed style prop object, unescaped entities (file-level disable), ad config spread typing.
-- **Validation**: frontend `tsc --noEmit` clean, backend `tsc --noEmit` clean, contracts `tsc --noEmit` clean, oxlint clean (pre-existing SearchableAutoSetting errors only).
-- **Remaining**: monkeytype refs cleanup still pending (list above unchanged).
+### Jul 22 — MongoDB → Supabase PostgreSQL migration (backend)
+- **DAL rewrite**: All 13 DAL files (`psa.ts`, `admin-uids.ts`, `quote-ratings.ts`, `config.ts`, `logs.ts`, `report.ts`, `preset.ts`, `ape-keys.ts`, `blocklist.ts`, `public.ts`, `result.ts`, `new-quotes.ts`, `connections.ts`, `leaderboards.ts`, `user.ts`) rewritten from MongoDB driver to `pg` (PostgreSQL) with JSONB columns.
+- **db.ts**: Replaced `collection<T>()` with `query()`, `queryOne()`, `queryAll()`, backward-compatible `collection()` shim for admin.ts / legacy code.
+- **`.env`**: Changed `DB_URI`/`DB_NAME` → `DATABASE_URL`.
+- **`misc.ts`**: Removed `ObjectId`, `replaceObjectId`/`replaceObjectIds` now identity (since `_id` is always `string`).
+- **Controllers fixed**: `admin.ts`, `ape-key.ts`, `connections.ts`, `result.ts`, `user.ts`, `quote.ts`, `leaderboard.ts`, `public.ts`, `dev.ts` — updated all MongoDB method calls, `toHexString()` → direct use, `contentId` → `content_id`, snake_case ↔ camelCase mappings.
+- **Jobs**: `delete-inactive-users.ts` rewritten to `db.query()`; `update-leaderboards.ts` fixed type.
+- **Migration**: `supabase/migrations/0001_init.sql` created with full PG schema.
+- **Build**: `pnpm build-be` passes cleanly (7 packages, 0 errors).
+- **Still todo**: integration tests (PG testcontainer), deploy (Railway backend, Netlify frontend), frontend owa.uz‑style UI enhancements.

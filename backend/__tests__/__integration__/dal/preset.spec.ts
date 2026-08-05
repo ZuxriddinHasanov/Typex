@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { ObjectId } from "mongodb";
+import crypto from "crypto";
 import * as PresetDal from "../../../src/dal/preset";
 
 describe("PresetDal", () => {
   describe("readPreset", () => {
     it("should read", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
+      const decoyUid = crypto.randomUUID();
       const first = await PresetDal.addPreset(uid, {
         name: "first",
         config: { ads: "sellout" },
@@ -36,13 +36,13 @@ describe("PresetDal", () => {
       expect(read).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first.presetId),
+            _id: first.presetId,
             uid: uid,
             name: "first",
             config: { ads: "sellout" },
           }),
           expect.objectContaining({
-            _id: new ObjectId(second.presetId),
+            _id: second.presetId,
             uid: uid,
             name: "second",
             settingGroups: ["hideElements"],
@@ -61,7 +61,7 @@ describe("PresetDal", () => {
   describe("addPreset", () => {
     it("should return error if maximum is reached", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       for (let i = 0; i < 10; i++) {
         await PresetDal.addPreset(uid, { name: "test", config: {} });
       }
@@ -73,7 +73,7 @@ describe("PresetDal", () => {
     });
     it("should add preset", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       for (let i = 0; i < 9; i++) {
         await PresetDal.addPreset(uid, { name: "test", config: {} });
       }
@@ -93,7 +93,7 @@ describe("PresetDal", () => {
       expect(read).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(newPreset.presetId),
+            _id: newPreset.presetId,
             uid: uid,
             name: "new",
             config: { ads: "sellout" },
@@ -105,9 +105,9 @@ describe("PresetDal", () => {
 
   describe("editPreset", () => {
     it("should not fail if preset is unknown", async () => {
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       await PresetDal.editPreset(uid, {
-        _id: new ObjectId().toHexString(),
+        _id: crypto.randomUUID(),
         name: "new",
         config: {},
       });
@@ -115,8 +115,8 @@ describe("PresetDal", () => {
 
     it("should edit", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
+      const decoyUid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -151,13 +151,13 @@ describe("PresetDal", () => {
       expect(read).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first),
+            _id: first,
             uid: uid,
             name: "newName",
             config: { ads: "off" },
           }),
           expect.objectContaining({
-            _id: new ObjectId(second),
+            _id: second,
             uid: uid,
             name: "second",
             config: { ads: "result" },
@@ -167,7 +167,7 @@ describe("PresetDal", () => {
       expect(await PresetDal.getPresets(decoyUid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(decoy),
+            _id: decoy,
             uid: decoyUid,
             name: "unknown",
             config: { ads: "result" },
@@ -178,7 +178,7 @@ describe("PresetDal", () => {
 
     it("should edit with name only - full preset", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -194,7 +194,7 @@ describe("PresetDal", () => {
       expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first),
+            _id: first,
             uid: uid,
             name: "newName",
             config: { ads: "sellout" },
@@ -204,7 +204,7 @@ describe("PresetDal", () => {
     });
     it("should edit with name only - partial preset", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -226,7 +226,7 @@ describe("PresetDal", () => {
       expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first),
+            _id: first,
             uid: uid,
             name: "newName",
             settingGroups: ["hideElements"],
@@ -242,8 +242,8 @@ describe("PresetDal", () => {
     });
     it("should not edit present not matching uid", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
+      const decoyUid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -264,7 +264,7 @@ describe("PresetDal", () => {
       expect(read).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first),
+            _id: first,
             uid: uid,
             name: "first",
             config: { ads: "sellout" },
@@ -274,7 +274,7 @@ describe("PresetDal", () => {
     });
     it("should edit when partial is edited to full", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -299,7 +299,7 @@ describe("PresetDal", () => {
       expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first),
+            _id: first,
             uid: uid,
             name: "newName",
             config: { ads: "off" },
@@ -310,7 +310,7 @@ describe("PresetDal", () => {
     });
     it("should edit when full is edited to partial", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -337,7 +337,7 @@ describe("PresetDal", () => {
       expect(await PresetDal.getPresets(uid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first),
+            _id: first,
             uid: uid,
             name: "newName",
             settingGroups: ["hideElements"],
@@ -355,15 +355,15 @@ describe("PresetDal", () => {
 
   describe("removePreset", () => {
     it("should fail if preset is unknown", async () => {
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       await expect(async () =>
-        PresetDal.removePreset(uid, new ObjectId().toHexString()),
+        PresetDal.removePreset(uid, crypto.randomUUID()),
       ).rejects.toThrow("Preset not found");
     });
     it("should remove", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
+      const decoyUid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, { name: "first", config: {} })
       ).presetId;
@@ -389,7 +389,7 @@ describe("PresetDal", () => {
       expect(read).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(second),
+            _id: second,
             uid: uid,
             name: "second",
             config: { ads: "result" },
@@ -399,7 +399,7 @@ describe("PresetDal", () => {
       expect(await PresetDal.getPresets(decoyUid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(decoy),
+            _id: decoy,
             uid: decoyUid,
             name: "unknown",
             config: { ads: "result" },
@@ -409,8 +409,8 @@ describe("PresetDal", () => {
     });
     it("should not remove present not matching uid", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
+      const decoyUid = crypto.randomUUID();
       const first = (
         await PresetDal.addPreset(uid, {
           name: "first",
@@ -429,7 +429,7 @@ describe("PresetDal", () => {
       expect(read).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(first),
+            _id: first,
             uid: uid,
             name: "first",
             config: { ads: "sellout" },
@@ -441,13 +441,13 @@ describe("PresetDal", () => {
 
   describe("deleteAllPresets", () => {
     it("should not fail if preset is unknown", async () => {
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       await PresetDal.deleteAllPresets(uid);
     });
     it("should delete all", async () => {
       //GIVEN
-      const uid = new ObjectId().toHexString();
-      const decoyUid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
+      const decoyUid = crypto.randomUUID();
       await PresetDal.addPreset(uid, { name: "first", config: {} });
       await PresetDal.addPreset(uid, {
         name: "second",
@@ -470,7 +470,7 @@ describe("PresetDal", () => {
       expect(await PresetDal.getPresets(decoyUid)).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
-            _id: new ObjectId(decoy),
+            _id: decoy,
             uid: decoyUid,
             name: "unknown",
             config: { ads: "result" },

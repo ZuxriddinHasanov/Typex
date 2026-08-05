@@ -22,7 +22,7 @@ export async function getTypingStats(
   _req: TypeUZRequest,
 ): Promise<GetTypingStatsResponse> {
   const data = await PublicDAL.getTypingStats();
-  return new TypeUZResponse("Public typing stats retrieved", data);
+  return new TypeUZResponse("Public typing stats retrieved", data as never);
 }
 
 export async function getPublicAdConfig(
@@ -65,7 +65,7 @@ export async function getPublicAdConfig(
   }
 
   try {
-    const doc = await collection("configuration").findOne({ _id: "ads" as unknown as import("mongodb").ObjectId });
+    const doc = await collection("configuration").findOne({ _id: "ads" });
     if (!doc) return new TypeUZResponse("OK", { enabled: false, slots: [] });
 
     const ads = doc as unknown as {

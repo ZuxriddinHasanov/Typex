@@ -52,7 +52,11 @@ async function updateLeaderboardAndNotifyChanges(
   if (newRecords.length > 0) {
     const leaderboardId = `time ${leaderboardTime} english`;
 
-    await GeorgeQueue.announceLeaderboardUpdate(newRecords, leaderboardId);
+    const mapped = newRecords.map((r) => ({
+      ...r,
+      consistency: r.consistency ?? undefined,
+    }));
+    await GeorgeQueue.announceLeaderboardUpdate(mapped, leaderboardId);
   }
 }
 

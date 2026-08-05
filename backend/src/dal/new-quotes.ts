@@ -1,13 +1,11 @@
 import { simpleGit } from "simple-git";
-import { Collection, ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
 import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import TypeUZError from "../utils/error";
 import { compareTwoStrings } from "string-similarity";
-import { ApproveQuote, Quote } from "@typeuz/schemas/quotes";
-import { WithObjectId } from "../utils/misc";
+import { ApproveQuote } from "@typeuz/schemas/quotes";
 import { parseWithSchema as parseJsonWithSchema } from "@typeuz/util/json";
 import { z } from "zod";
 import { tryCatchSync } from "@typeuz/util/trycatch";
@@ -29,7 +27,6 @@ const QuoteDataSchema = z.object({
 });
 
 const PATH_TO_REPO = "../../../../typeuz-new-quotes";
-
 const repoPath = path.join(__dirname, PATH_TO_REPO);
 const git = existsSync(repoPath)
   ? tryCatchSync(() => simpleGit(repoPath)).data
@@ -45,11 +42,15 @@ type AddQuoteReturn = {
   similarityScore?: number;
 };
 
-export type DBNewQuote = WithObjectId<Quote>;
-
-// Export for use in tests
-export const getNewQuoteCollection = (): Collection<DBNewQuote> =>
-  db.collection<DBNewQuote>("new-quotes");
+export type DBNewQuote = {
+  _id: string;
+  text: string;
+  source: string;
+  language: string;
+  submitted_by: string;
+  timestamp: number;
+  approved: boolean;
+};
 
 export async function add(
   text: string,
@@ -58,23 +59,16 @@ export async function add(
   uid: string,
 ): Promise<AddQuoteReturn | undefined> {
   if (git === undefined) throw new TypeUZError(500, "Git not available.");
-  const quote = {
-    _id: new ObjectId(),
-    text: text,
-    source: source,
-    language: language.toLowerCase(),
-    submittedBy: uid,
-    timestamp: Date.now(),
-    approved: false,
-  };
 
   if (!/^\w+$/.test(language)) {
-    throw new TypeUZError(500, `Invalid language name`, language);
+    throw new TypeUZError(500, "Invalid language name", language);
   }
 
-  const count = await getNewQuoteCollection().countDocuments({
-    language: language,
-  });
+  const countResult = await db.queryOne<{ count: number }>(
+    "SELECT COUNT(*)::int AS count FROM new_quotes WHERE language = $1",
+    [language.toLowerCase()],
+  );
+  const count = countResult?.count ?? 0;
 
   if (count >= 100) {
     throw new TypeUZError(
@@ -83,7 +77,6 @@ export async function add(
     );
   }
 
-  //check for duplicate first
   const fileDir = path.join(
     __dirname,
     `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`,
@@ -97,9 +90,9 @@ export async function add(
       QuoteDataSchema,
     );
     quoteFileJSON.quotes.every((old) => {
-      if (compareTwoStrings(old.text, quote.text) > 0.9) {
+      if (compareTwoStrings(old.text, text) > 0.9) {
         duplicateId = old.id;
-        similarityScore = compareTwoStrings(old.text, quote.text);
+        similarityScore = compareTwoStrings(old.text, text);
         return false;
       }
       return true;
@@ -110,31 +103,31 @@ export async function add(
   if (duplicateId !== -1) {
     return { duplicateId, similarityScore };
   }
-  await db.collection("new-quotes").insertOne(quote);
+
+  await db.query(
+    `INSERT INTO new_quotes (text, source, language, submitted_by, timestamp, approved)
+     VALUES ($1, $2, $3, $4, $5, false)`,
+    [text, source, language.toLowerCase(), uid, Date.now()],
+  );
   return undefined;
 }
 
 export async function get(language: Language | "all"): Promise<DBNewQuote[]> {
   if (git === undefined) throw new TypeUZError(500, "Git not available.");
-  const where: {
-    approved: boolean;
-    language?: Language;
-  } = {
-    approved: false,
-  };
 
   if (!/^\w+$/.test(language)) {
-    throw new TypeUZError(500, `Invalid language name`, language);
+    throw new TypeUZError(500, "Invalid language name", language);
   }
 
-  if (language !== "all") {
-    where.language = language;
+  if (language === "all") {
+    return await db.queryAll<DBNewQuote>(
+      "SELECT * FROM new_quotes WHERE approved = false ORDER BY timestamp ASC LIMIT 10",
+    );
   }
-  return await getNewQuoteCollection()
-    .find(where)
-    .sort({ timestamp: 1 })
-    .limit(10)
-    .toArray();
+  return await db.queryAll<DBNewQuote>(
+    "SELECT * FROM new_quotes WHERE approved = false AND language = $1 ORDER BY timestamp ASC LIMIT 10",
+    [language],
+  );
 }
 
 type ApproveReturn = {
@@ -149,16 +142,18 @@ export async function approve(
   name: string,
 ): Promise<ApproveReturn> {
   if (!git) throw new TypeUZError(500, "Git not available.");
-  //check mod status
-  const targetQuote = await getNewQuoteCollection().findOne({
-    _id: new ObjectId(quoteId),
-  });
+
+  const targetQuote = await db.queryOne<DBNewQuote>(
+    "SELECT * FROM new_quotes WHERE _id = $1::uuid",
+    [quoteId],
+  );
   if (!targetQuote) {
     throw new TypeUZError(
       404,
       "Quote not found. It might have already been reviewed. Please refresh the list.",
     );
   }
+
   const language = targetQuote.language;
   const quote: ApproveQuote = {
     text: editQuote ?? targetQuote.text,
@@ -170,7 +165,7 @@ export async function approve(
   let message = "";
 
   if (!/^\w+$/.test(language)) {
-    throw new TypeUZError(500, `Invalid language name`, language);
+    throw new TypeUZError(500, "Invalid language name", language);
   }
 
   const fileDir = path.join(
@@ -191,10 +186,8 @@ export async function approve(
       return true;
     });
     let maxid = 0;
-    quoteObject.quotes.map(function (q) {
-      if (q.id > maxid) {
-        maxid = q.id;
-      }
+    quoteObject.quotes.forEach((q) => {
+      if (q.id > maxid) maxid = q.id;
     });
     quote.id = maxid + 1;
 
@@ -206,7 +199,6 @@ export async function approve(
     writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
     message = `Added quote to ${language}.json.`;
   } else {
-    //file doesnt exist, create it
     quote.id = 1;
     writeFileSync(
       fileDir,
@@ -226,11 +218,11 @@ export async function approve(
   await git.add([`frontend/static/quotes/${language}.json`]);
   await git.commit(`Added quote to ${language}.json`);
   await git.push("origin", "master");
-  await getNewQuoteCollection().deleteOne({ _id: new ObjectId(quoteId) });
+  await db.query("DELETE FROM new_quotes WHERE _id = $1::uuid", [quoteId]);
   return { quote, message };
 }
 
 export async function refuse(quoteId: string): Promise<void> {
   if (git === undefined) throw new TypeUZError(500, "Git not available.");
-  await getNewQuoteCollection().deleteOne({ _id: new ObjectId(quoteId) });
+  await db.query("DELETE FROM new_quotes WHERE _id = $1::uuid", [quoteId]);
 }

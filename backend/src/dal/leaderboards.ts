@@ -5,39 +5,32 @@ import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment, omit } from "../utils/misc";
 import {
   getCachedConfiguration,
-  getLiveConfiguration,
 } from "../init/configuration";
 
 import { addLog } from "./logs";
-import { Collection, Document, ObjectId } from "mongodb";
-import { LeaderboardEntry } from "@typeuz/schemas/leaderboards";
-import { DBUser, getUsersCollection } from "./user";
+import { getFriendsUids } from "./connections";
 import TypeUZError from "../utils/error";
-import { aggregateWithAcceptedConnections } from "./connections";
 
-export type DBLeaderboardEntry = LeaderboardEntry & {
-  _id: ObjectId;
+export type DBLeaderboardEntry = {
+  uid: string;
+  language: string;
+  mode: string;
+  mode2: string;
+  numbers: boolean;
+  wpm: number;
+  acc: number;
+  raw: number;
+  consistency: number | null;
+  timestamp: number;
+  rank: number;
+  name: string;
+  first_name: string | null;
+  last_name: string | null;
+  discord_id: string | null;
+  discord_avatar: string | null;
+  badge_id: number | null;
+  is_premium: boolean;
 };
-
-function getCollectionName(key: {
-  language: string;
-  mode: string;
-  mode2: string;
-  numbers?: boolean;
-}): string {
-  const base = `leaderboards.${key.language}.${key.mode}.${key.mode2}`;
-  if (key.numbers === true) {
-    return `${base}.numbers`;
-  }
-  return base;
-}
-export const getCollection = (key: {
-  language: string;
-  mode: string;
-  mode2: string;
-  numbers?: boolean;
-}): Collection<DBLeaderboardEntry> =>
-  db.collection<DBLeaderboardEntry>(getCollectionName(key));
 
 export async function get(
   mode: string,
@@ -56,47 +49,40 @@ export async function get(
   const skip = page * pageSize;
   const limit = pageSize;
 
-  let leaderboard: DBLeaderboardEntry[] | false = [];
-
-  const pipeline: Document[] = [
-    { $sort: { rank: 1 } },
-    { $skip: skip },
-    { $limit: limit },
-  ];
-
-  const collectionKey = { language, mode, mode2, numbers };
-
   try {
     if (uid !== undefined) {
-      leaderboard = await aggregateWithAcceptedConnections(
-        {
-          uid,
-          collectionName: getCollectionName(collectionKey),
-        },
-        [
-          {
-            $setWindowFields: {
-              sortBy: { rank: 1 },
-              output: { friendsRank: { $documentNumber: {} } },
-            },
-          },
-          ...pipeline,
-        ],
-      );
-    } else {
-      leaderboard = await getCollection(collectionKey)
-        .aggregate<DBLeaderboardEntry>(pipeline)
-        .toArray();
-    }
-    if (!premiumFeaturesEnabled) {
-      leaderboard = leaderboard.map((it) => omit(it, ["isPremium"]));
-    }
+      const friendUids = await getFriendsUids(uid);
+      const allUids = [...friendUids, uid];
 
-    return leaderboard;
+      const rows = await db.queryAll<DBLeaderboardEntry>(
+        `SELECT * FROM leaderboard_entries
+         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
+         AND uid = ANY($5::text[])
+         ORDER BY rank ASC
+         LIMIT $6 OFFSET $7`,
+        [language, mode, mode2, numbers ?? false, allUids, limit, skip],
+      );
+
+      if (!premiumFeaturesEnabled) {
+        return rows.map((it) => omit(it, ["is_premium"])) as DBLeaderboardEntry[];
+      }
+      return rows;
+    } else {
+      const rows = await db.queryAll<DBLeaderboardEntry>(
+        `SELECT * FROM leaderboard_entries
+         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
+         ORDER BY rank ASC
+         LIMIT $5 OFFSET $6`,
+        [language, mode, mode2, numbers ?? false, limit, skip],
+      );
+
+      if (!premiumFeaturesEnabled) {
+        return rows.map((it) => omit(it, ["is_premium"])) as DBLeaderboardEntry[];
+      }
+      return rows;
+    }
   } catch (e) {
-    // oxlint-disable-next-line no-unsafe-member-access
-    if (e.error === 175) {
-      //QueryPlanKilled, collection was removed during the query
+    if ((e as Record<string, unknown>)?.["message"] === "relation not found") {
       return false;
     }
     throw e;
@@ -117,25 +103,24 @@ export async function getCount(
     return cachedCounts.get(key) as number;
   } else {
     if (uid === undefined) {
-      const count = await getCollection({
-        language,
-        mode,
-        mode2,
-        numbers,
-      }).estimatedDocumentCount();
+      const result = await db.queryOne<{ count: number }>(
+        `SELECT COUNT(*)::int AS count FROM leaderboard_entries
+         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
+        [language, mode, mode2, numbers ?? false],
+      );
+      const count = result?.count ?? 0;
       cachedCounts.set(key, count);
       return count;
     } else {
-      const result = await aggregateWithAcceptedConnections<{
-        total: number;
-      }>(
-        {
-          collectionName: getCollectionName({ language, mode, mode2, numbers }),
-          uid,
-        },
-        [{ $count: "total" }],
+      const friendUids = await getFriendsUids(uid);
+      const allUids = [...friendUids, uid];
+      const result = await db.queryOne<{ count: number }>(
+        `SELECT COUNT(*)::int AS count FROM leaderboard_entries
+         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
+         AND uid = ANY($5::text[])`,
+        [language, mode, mode2, numbers ?? false, allUids],
       );
-      return result[0]?.total ?? 0;
+      return result?.count ?? 0;
     }
   }
 }
@@ -149,36 +134,31 @@ export async function getRank(
   numbers?: boolean,
 ): Promise<DBLeaderboardEntry | null | false> {
   try {
-    const collectionKey = { language, mode, mode2, numbers };
     if (!friendsOnly) {
-      const entry = await getCollection(collectionKey).findOne({
-        uid,
-      });
-
+      const entry = await db.queryOne<DBLeaderboardEntry>(
+        `SELECT * FROM leaderboard_entries
+         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4 AND uid = $5`,
+        [language, mode, mode2, numbers ?? false, uid],
+      );
       return entry;
     } else {
-      const results =
-        await aggregateWithAcceptedConnections<DBLeaderboardEntry>(
-          {
-            collectionName: getCollectionName(collectionKey),
-            uid,
-          },
-          [
-            {
-              $setWindowFields: {
-                sortBy: { rank: 1 },
-                output: { friendsRank: { $documentNumber: {} } },
-              },
-            },
-            { $match: { uid } },
-          ],
-        );
-      return results[0] ?? null;
+      const friendUids = await getFriendsUids(uid);
+      const allUids = [...friendUids, uid];
+      const rows = await db.queryAll<DBLeaderboardEntry>(
+        `SELECT * FROM leaderboard_entries
+         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
+         AND uid = ANY($5::text[])
+         ORDER BY rank ASC`,
+        [language, mode, mode2, numbers ?? false, allUids],
+      );
+      const rankedRows = rows.map((row, idx) => ({
+        ...row,
+        friendsRank: idx + 1,
+      }));
+      return rankedRows.find((r) => r.uid === uid) ?? null;
     }
   } catch (e) {
-    // oxlint-disable-next-line no-unsafe-member-access
-    if (e.error === 175) {
-      //QueryPlanKilled, collection was removed during the query
+    if ((e as Record<string, unknown>)?.["message"] === "relation not found") {
       return false;
     }
     throw e;
@@ -194,162 +174,112 @@ export async function update(
   message: string;
   rank?: number;
 }> {
-  const key = `lbPersonalBests.${mode}.${mode2}.${language}${numbers ? ".numbers" : ""}`;
-  const lbCollectionName = getCollectionName({ language, mode, mode2, numbers });
   const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
     .minTimeTyping;
-  const lb = db.collection<DBUser>("users").aggregate<LeaderboardEntry>(
-    [
-      {
-        $match: {
-          [`${key}.wpm`]: {
-            $gt: 0,
-          },
-          [`${key}.acc`]: {
-            $gt: 0,
-          },
-          [`${key}.timestamp`]: {
-            $gt: 0,
-          },
-          banned: {
-            $ne: true,
-          },
-          lbOptOut: {
-            $ne: true,
-          },
-          needsToChangeName: {
-            $ne: true,
-          },
-          timeTyping: {
-            $gt: isDevEnvironment() ? 0 : minTimeTyping,
-          },
-        },
-      },
-      {
-        $sort: {
-          [`${key}.wpm`]: -1,
-          [`${key}.acc`]: -1,
-          [`${key}.timestamp`]: -1,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          [`${key}.wpm`]: 1,
-          [`${key}.acc`]: 1,
-          [`${key}.raw`]: 1,
-          [`${key}.consistency`]: 1,
-          [`${key}.timestamp`]: 1,
-          uid: 1,
-          name: 1,
-          firstName: 1,
-          lastName: 1,
-          discordId: 1,
-          discordAvatar: 1,
-          inventory: 1,
-          premium: 1,
-        },
-      },
-
-      {
-        $addFields: {
-          "user.uid": "$uid",
-          "user.name": "$name",
-          "user.firstName": "$firstName",
-          "user.lastName": "$lastName",
-          "user.discordId": { $ifNull: ["$discordId", "$$REMOVE"] },
-          "user.discordAvatar": { $ifNull: ["$discordAvatar", "$$REMOVE"] },
-          [`${key}.consistency`]: {
-            $ifNull: [`$${key}.consistency`, "$$REMOVE"],
-          },
-          calculated: {
-            $function: {
-              lang: "js",
-              args: [
-                "$premium.expirationTimestamp",
-                "$$NOW",
-                "$inventory.badges",
-              ],
-              body: `function(expiration, currentTime, badges) { 
-                        try {row_number+= 1;} catch (e) {row_number= 1;} 
-                        var badgeId = undefined;
-                        if(badges)for(let i=0; i<badges.length; i++){
-                            if(badges[i].selected){ badgeId = badges[i].id; break}
-                        }
-                        var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
-                        return {rank:row_number,badgeId, isPremium};
-                      }`,
-            },
-          },
-        },
-      },
-      {
-        $replaceWith: {
-          $mergeObjects: [`$${key}`, "$user", "$calculated"],
-        },
-      },
-      { $out: lbCollectionName },
-    ],
-    { allowDiskUse: true },
-  );
 
   const start1 = performance.now();
-  await lb.toArray();
+  await db.query(
+    `DELETE FROM leaderboard_entries
+     WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
+    [language, mode, mode2, numbers ?? false],
+  );
+
+  await db.query(
+    `INSERT INTO leaderboard_entries (
+      uid, language, mode, mode2, numbers,
+      wpm, acc, raw, consistency, timestamp,
+      rank, name, first_name, last_name,
+      discord_id, discord_avatar, badge_id, is_premium
+    )
+    SELECT
+      u.uid,
+      $1 AS language,
+      $2 AS mode,
+      $3 AS mode2,
+      $4 AS numbers,
+      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm' AS wpm,
+      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'acc' AS acc,
+      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'raw' AS raw,
+      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'consistency' AS consistency,
+      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'timestamp' AS timestamp,
+      ROW_NUMBER() OVER (
+        ORDER BY (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm' DESC NULLS LAST,
+                 (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'acc' DESC NULLS LAST,
+                 (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'timestamp' DESC NULLS LAST
+      ) AS rank,
+      u.name,
+      u.first_name,
+      u.last_name,
+      u.discord_id,
+      u.discord_avatar,
+      (SELECT (jsonb_array_elements(COALESCE(u.inventory->'badges', '[]'::jsonb))->>'id')::int
+       WHERE (jsonb_array_elements(COALESCE(u.inventory->'badges', '[]'::jsonb))->>'selected')::bool = true
+       LIMIT 1) AS badge_id,
+      CASE
+        WHEN u.premium->>'expirationTimestamp' IS NULL THEN false
+        WHEN (u.premium->>'expirationTimestamp')::bigint = -1 THEN true
+        WHEN (u.premium->>'expirationTimestamp')::bigint > EXTRACT(EPOCH FROM NOW())::bigint * 1000 THEN true
+        ELSE false
+      END AS is_premium
+    FROM users u
+    WHERE
+      u.personal_bests#>'{${mode},${mode2}}' IS NOT NULL
+      AND (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm' IS NOT NULL
+      AND (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm'::text::numeric > 0
+      AND (u.banned IS NOT TRUE OR u.banned IS NULL)
+      AND (u.lb_opt_out IS NOT TRUE OR u.lb_opt_out IS NULL)
+      AND (u.needs_to_change_name IS NOT TRUE OR u.needs_to_change_name IS NULL)
+      AND u.time_typing > $5`,
+    [language, mode, mode2, numbers ?? false, isDevEnvironment() ? 0 : minTimeTyping],
+  );
   const end1 = performance.now();
+  const timeToRunAggregate = (end1 - start1) / 1000;
 
   const start2 = performance.now();
-  await db.collection(lbCollectionName).createIndex({ uid: -1 });
-  await db.collection(lbCollectionName).createIndex({ rank: 1 });
+  await db.query(
+    `CREATE INDEX IF NOT EXISTS idx_lb_${language}_${mode}_${mode2}_${numbers ? "nums" : "words"}_uid
+     ON leaderboard_entries(uid) WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
+    [language, mode, mode2, numbers ?? false],
+  );
+  await db.query(
+    `CREATE INDEX IF NOT EXISTS idx_lb_${language}_${mode}_${mode2}_${numbers ? "nums" : "words"}_rank
+     ON leaderboard_entries(rank) WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
+    [language, mode, mode2, numbers ?? false],
+  );
   const end2 = performance.now();
+  const timeToRunIndex = (end2 - start2) / 1000;
 
   cachedCounts.delete(`${language}_${mode}_${mode2}_${numbers ?? "nowords"}`);
 
-  //update speedStats
   const boundaries = [...Array(32).keys()].map((it) => it * 10);
   const statsKey = `${language}_${mode}_${mode2}_${numbers ?? "nowords"}`;
-  const src = db.collection(lbCollectionName);
-  const histogram = src.aggregate(
-    [
-      {
-        $bucket: {
-          groupBy: "$wpm",
-          boundaries: boundaries,
-          default: "Other",
-        },
-      },
-      {
-        $replaceRoot: {
-          newRoot: {
-            $arrayToObject: [[{ k: { $toString: "$_id" }, v: "$count" }]],
-          },
-        },
-      },
-      {
-        $group: {
-          _id: "speedStatsHistogram", //we only expect one document with type=speedStats
-          [`${statsKey}`]: {
-            $mergeObjects: "$$ROOT",
-          },
-        },
-      },
-      {
-        $merge: {
-          into: "public",
-          on: "_id",
-          whenMatched: "merge",
-          whenNotMatched: "insert",
-        },
-      },
-    ],
-    { allowDiskUse: true },
-  );
-  const start3 = performance.now();
-  await histogram.toArray();
-  const end3 = performance.now();
 
-  const timeToRunAggregate = (end1 - start1) / 1000;
-  const timeToRunIndex = (end2 - start2) / 1000;
+  const start3 = performance.now();
+  const buckets: Record<string, number> = {};
+  for (let i = 0; i < boundaries.length - 1; i++) {
+    const result = await db.queryOne<{ count: number }>(
+      `SELECT COUNT(*)::int AS count FROM leaderboard_entries
+       WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
+       AND wpm >= $5 AND wpm < $6`,
+      [language, mode, mode2, numbers ?? false, boundaries[i], boundaries[i + 1]],
+    );
+    if (result && result.count > 0) {
+      buckets[String(boundaries[i])] = result.count;
+    }
+  }
+  const end3 = performance.now();
   const timeToSaveHistogram = (end3 - start3) / 1000;
+
+  const existingHistogram = await db.queryOne<{ data: Record<string, unknown> }>(
+    "SELECT data FROM public_stats WHERE _id = 'speedStatsHistogram'",
+  );
+  const histogramData = existingHistogram?.data ?? {};
+  histogramData[statsKey] = buckets;
+  await db.query(
+    `INSERT INTO public_stats (_id, data) VALUES ('speedStatsHistogram', $1::jsonb)
+     ON CONFLICT (_id) DO UPDATE SET data = $1::jsonb`,
+    [JSON.stringify(histogramData)],
+  );
 
   void addLog(
     `system_lb_update_${language}_${mode}_${mode2}_${numbers ?? "nowords"}`,
@@ -368,70 +298,7 @@ export async function update(
   };
 }
 
-async function createIndex(
-  key: string,
-  minTimeTyping: number,
-  dropIfMismatch = true,
-): Promise<void> {
-  const index = {
-    [`${key}.wpm`]: -1,
-    [`${key}.acc`]: -1,
-    [`${key}.timestamp`]: -1,
-    [`${key}.raw`]: -1,
-    [`${key}.consistency`]: -1,
-    banned: 1,
-    lbOptOut: 1,
-    needsToChangeName: 1,
-    timeTyping: 1,
-    uid: 1,
-    name: 1,
-    discordId: 1,
-    discordAvatar: 1,
-    inventory: 1,
-    premium: 1,
-  };
-  const partial = {
-    partialFilterExpression: {
-      [`${key}.wpm`]: {
-        $gt: 0,
-      },
-      timeTyping: {
-        $gt: minTimeTyping,
-      },
-    },
-  };
-  try {
-    await getUsersCollection().createIndex(index, partial);
-  } catch (e) {
-    if (!dropIfMismatch) throw e;
-    if (
-      (e as Error).message.startsWith(
-        "An existing index has the same name as the requested index",
-      )
-    ) {
-      Logger.warning(`Index ${key} not matching, dropping and recreating...`);
-
-      const indexes = (await getUsersCollection().listIndexes().toArray()) as Array<{ name: string }>;
-      const existingIndex = indexes
-        .map((it) => it.name)
-        .find((it) => it.startsWith(key));
-
-      if (existingIndex !== undefined && existingIndex !== null) {
-        await getUsersCollection().dropIndex(existingIndex);
-        return createIndex(key, minTimeTyping, false);
-      } else {
-        throw e;
-      }
-    }
-  }
-}
-
 export async function createIndicies(): Promise<void> {
-  const minTimeTyping = (await getLiveConfiguration()).leaderboards
-    .minTimeTyping;
-  await createIndex("lbPersonalBests.time.15.english", minTimeTyping);
-  await createIndex("lbPersonalBests.time.60.english", minTimeTyping);
-
   if (isDevEnvironment()) {
     Logger.info("Updating leaderboards in dev mode...");
     const combos = [

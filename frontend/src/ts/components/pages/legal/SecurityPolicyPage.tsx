@@ -94,19 +94,21 @@ export function SecurityPolicyPage(): JSXElement {
         </p>
       </header>
 
-      <For each={sections}>
-        {(section) => (
-          <SectionWrapper>
-            <h2 class="flex items-center gap-3 text-2xl font-bold text-text">
-              <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-main/10 text-lg text-main shrink-0">
-                <Fa icon={section.icon as never} />
-              </span>
-              {section.title}
-            </h2>
-            <div>{section.content}</div>
-          </SectionWrapper>
-        )}
-      </For>
+      <div class="flex flex-col gap-12">
+        <For each={sections}>
+          {(section) => (
+            <SectionWrapper>
+              <h2 class="flex items-center gap-3 text-2xl font-bold text-text">
+                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-main/10 text-lg text-main">
+                  <Fa icon={section.icon as never} />
+                </span>
+                {section.title}
+              </h2>
+              <div>{section.content}</div>
+            </SectionWrapper>
+          )}
+        </For>
+      </div>
     </div>
   );
 }

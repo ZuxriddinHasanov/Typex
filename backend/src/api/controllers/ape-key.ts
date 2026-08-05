@@ -3,8 +3,7 @@ import { hash } from "bcrypt";
 import * as ApeKeysDAL from "../../dal/ape-keys";
 import TypeUZError from "../../utils/error";
 import { TypeUZResponse } from "../../utils/typeuz-response";
-import { base64UrlEncode, omit } from "../../utils/misc";
-import { ObjectId } from "mongodb";
+import { base64UrlEncode } from "../../utils/misc";
 
 import {
   AddApeKeyRequest,
@@ -17,7 +16,13 @@ import { ApeKey } from "@typeuz/schemas/ape-keys";
 import { TypeUZRequest } from "../types";
 
 function cleanApeKey(apeKey: ApeKeysDAL.DBApeKey): ApeKey {
-  return omit(apeKey, ["hash", "_id", "uid", "useCount"]);
+  return {
+    name: apeKey.name,
+    enabled: apeKey.enabled,
+    createdOn: apeKey.created_on,
+    modifiedOn: apeKey.modified_on,
+    lastUsedOn: apeKey.last_used_on,
+  };
 }
 
 export async function getApeKeys(
@@ -27,7 +32,7 @@ export async function getApeKeys(
 
   const apeKeys = await ApeKeysDAL.getApeKeys(uid);
   const cleanedKeys: Record<string, ApeKey> = Object.fromEntries(
-    apeKeys.map((item) => [item._id.toHexString(), cleanApeKey(item)]),
+    apeKeys.map((item) => [item._id, cleanApeKey(item)]),
   );
 
   return new TypeUZResponse("ApeKeys retrieved", cleanedKeys);
@@ -51,15 +56,15 @@ export async function generateApeKey(
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
   const apeKey: ApeKeysDAL.DBApeKey = {
-    _id: new ObjectId(),
+    _id: crypto.randomUUID(),
     name,
     enabled,
     uid,
     hash: saltyHash,
-    createdOn: Date.now(),
-    modifiedOn: Date.now(),
-    lastUsedOn: -1,
-    useCount: 0,
+    created_on: Date.now(),
+    modified_on: Date.now(),
+    last_used_on: -1,
+    use_count: 0,
   };
 
   const apeKeyId = await ApeKeysDAL.addApeKey(apeKey);

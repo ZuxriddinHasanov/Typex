@@ -599,9 +599,9 @@
 
 .word {
   position: relative;
-  font-size: 1.35em;
-  line-height: 1.2em;
-  margin: 0.3em 0.35em 0.3em 0;
+  font-size: 1.65em;
+  line-height: 1.3em;
+  margin: 0.35em 0.45em 0.35em 0;
   font-variant: no-common-ligatures;
   border-bottom: 2px solid transparent;
   letter {
@@ -1345,6 +1345,8 @@
 
   &.resultVisible {
     grid-template-rows: auto;
+    align-content: start;
+    padding-top: 2rem;
   }
 }
 

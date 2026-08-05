@@ -1,7 +1,6 @@
 import { CronJob } from "cron";
 import * as db from "../init/db";
 import { isDevEnvironment } from "../utils/misc";
-import { collection } from "../init/db";
 import Logger from "../utils/logger";
 
 const INACTIVITY_DAYS = 14;
@@ -15,31 +14,24 @@ async function deleteInactiveUsers(): Promise<void> {
 
   const cutoff = Date.now() - INACTIVITY_DAYS * 24 * 60 * 60 * 1000;
 
-  const users = db.collection("users");
-  const results = collection("results");
-  const passwords = collection("user-passwords");
-
   let totalDeleted = 0;
 
   while (true) {
-    const inactive = await users
-      .find({
-        $or: [
-          { lastLoginAt: { $lt: cutoff } },
-          { lastLoginAt: { $exists: false }, addedAt: { $lt: cutoff } },
-        ],
-      })
-      .project({ uid: 1, _id: 0 })
-      .limit(BATCH_SIZE)
-      .toArray();
+    const inactive = await db.queryAll<{ uid: string }>(
+      `SELECT uid FROM users
+       WHERE (last_login_at IS NOT NULL AND last_login_at < $1)
+          OR (last_login_at IS NULL AND added_at < $1)
+       LIMIT $2`,
+      [cutoff, BATCH_SIZE],
+    );
 
     if (inactive.length === 0) break;
 
-    const uids = inactive.map((u) => (u as Record<string, unknown>)["uid"] as string);
+    const uids = inactive.map((u) => u.uid);
 
-    await results.deleteMany({ uid: { $in: uids } });
-    await passwords.deleteMany({ uid: { $in: uids } });
-    await users.deleteMany({ uid: { $in: uids } });
+    await db.query("DELETE FROM results WHERE uid = ANY($1::text[])", [uids]);
+    await db.query("DELETE FROM user_passwords WHERE uid = ANY($1::text[])", [uids]);
+    await db.query("DELETE FROM users WHERE uid = ANY($1::text[])", [uids]);
 
     totalDeleted += uids.length;
     Logger.info(`Deleted ${uids.length} inactive users (total: ${totalDeleted})`);

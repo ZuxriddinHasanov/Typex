@@ -169,23 +169,7 @@ export function Login(): JSXElement {
         onClick={() => showModal("ForgotPassword")}
         disabled={!getLoginPageInputsEnabled()}
       />
-      <div class="mt-6 rounded-xl border border-sub/10 bg-bg/50 p-5 text-center text-sm text-sub">
-        <p class="space-y-1">
-          Tizimga kirish orqali siz
-          <a href="/privacy-policy" class="text-main underline hover:no-underline">
-            Maxfiylik siyosati
-          </a>{" "}
-          va
-          <a href="/terms-of-service" class="text-main underline hover:no-underline">
-            Foydalanish shartlari
-          </a>{" "}
-          hamda
-          <a href="/security-policy" class="text-main underline hover:no-underline">
-            Xavfsizlik siyosati
-          </a>{" "}
-          ni qabul qilasiz.
-        </p>
-      </div>
+
     </div>
   );
 }

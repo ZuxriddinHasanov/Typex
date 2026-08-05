@@ -5,7 +5,7 @@ import {
   Result,
 } from "@typeuz/schemas/results";
 import { Mode } from "@typeuz/schemas/shared";
-import { ObjectId } from "mongodb";
+import crypto from "crypto";
 import { WithObjectId } from "./misc";
 import { FunboxName } from "@typeuz/schemas/configs";
 
@@ -23,7 +23,7 @@ export function buildDbResult(
 ): DBResult {
   const ce = completedEvent;
   const res: DBResult = {
-    _id: new ObjectId(),
+    _id: crypto.randomUUID(),
     uid: ce.uid,
     wpm: ce.wpm,
     rawWpm: ce.rawWpm,

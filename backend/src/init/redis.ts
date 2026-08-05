@@ -2,7 +2,6 @@ import fs from "fs";
 import { join } from "path";
 import IORedis, { Redis } from "ioredis";
 import Logger from "../utils/logger";
-import { isDevEnvironment } from "../utils/misc";
 import { getErrorMessage } from "../utils/error";
 import { kebabToCamelCase } from "@typeuz/util/strings";
 
@@ -80,17 +79,19 @@ export async function connect(): Promise<void> {
   const { REDIS_URI } = process.env;
 
   if (!(REDIS_URI ?? "")) {
-    if (isDevEnvironment()) {
-      Logger.warning("No redis configuration provided. Running without redis.");
-      return;
-    }
-    throw new Error("No redis configuration provided");
+    Logger.warning("No redis configuration provided. Running without redis.");
+    return;
   }
 
   connection = new IORedis(REDIS_URI, {
     maxRetriesPerRequest: null, // These options are required for BullMQ
     enableReadyCheck: false,
     lazyConnect: true,
+    retryStrategy: () => null,
+  });
+
+  connection.on("error", (error: Error) => {
+    Logger.error(`Redis connection error: ${error.message}`);
   });
 
   try {
@@ -102,17 +103,12 @@ export async function connect(): Promise<void> {
     connected = true;
   } catch (error) {
     Logger.error(getErrorMessage(error) ?? "Unknown error");
-    if (isDevEnvironment()) {
-      await connection.quit();
-      Logger.warning(
-        `Failed to connect to redis. Continuing in dev mode, running without redis.`,
-      );
-    } else {
-      Logger.error(
-        "Failed to connect to redis. Exiting with exit status code 1.",
-      );
-      process.exit(1);
-    }
+    await connection.quit().catch(() => {
+      /* ignore */
+    });
+    Logger.warning(
+      "Failed to connect to redis. Running without redis.",
+    );
   }
 }
 

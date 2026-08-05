@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll, vi } from "vitest";
 import * as Misc from "../../src/utils/misc";
-import { ObjectId } from "mongodb";
+import crypto from "crypto";
 
 describe("Misc Utils", () => {
   afterAll(() => {
@@ -319,52 +319,37 @@ describe("Misc Utils", () => {
   });
 
   describe("replaceObjectId", () => {
-    it("replaces objecId with string", () => {
+    it("returns the same object (identity function)", () => {
       const fromDatabase = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         test: "test",
         number: 1,
       };
-      expect(Misc.replaceObjectId(fromDatabase)).toStrictEqual({
-        _id: fromDatabase._id.toHexString(),
-        test: "test",
-        number: 1,
-      });
+      expect(Misc.replaceObjectId(fromDatabase)).toStrictEqual(fromDatabase);
     });
     it("ignores null values", () => {
-      expect(Misc.replaceObjectId(null)).toBeNull();
+      expect(Misc.replaceObjectId(null as unknown as { _id: string })).toBeNull();
     });
   });
 
   describe("replaceObjectIds", () => {
-    it("replaces objecIds with string", () => {
+    it("returns the same array (identity function)", () => {
       const fromDatabase = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         test: "test",
         number: 1,
       };
       const fromDatabase2 = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         test: "bob",
         number: 2,
       };
       expect(
         Misc.replaceObjectIds([fromDatabase, fromDatabase2]),
-      ).toStrictEqual([
-        {
-          _id: fromDatabase._id.toHexString(),
-          test: "test",
-          number: 1,
-        },
-        {
-          _id: fromDatabase2._id.toHexString(),
-          test: "bob",
-          number: 2,
-        },
-      ]);
+      ).toStrictEqual([fromDatabase, fromDatabase2]);
     });
     it("handles undefined", () => {
-      expect(Misc.replaceObjectIds(undefined as any)).toBeUndefined();
+      expect(Misc.replaceObjectIds(undefined as unknown as { _id: string }[])).toBeUndefined();
     });
   });
 

@@ -1,15 +1,15 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
+import crypto from "crypto";
 import request, { Test as SuperTest } from "supertest";
 import app from "../../../src/app";
 import { mockBearerAuthentication } from "../../__testData__/auth";
 import * as Configuration from "../../../src/init/configuration";
-import { ObjectId } from "mongodb";
 import * as ConnectionsDal from "../../../src/dal/connections";
 import * as UserDal from "../../../src/dal/user";
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
-const uid = new ObjectId().toHexString();
+const uid = crypto.randomUUID();
 const mockAuth = mockBearerAuthentication(uid);
 
 describe("ConnectionsController", () => {
@@ -30,12 +30,12 @@ describe("ConnectionsController", () => {
     it("should get for the current user", async () => {
       //GIVEN
       const friend: ConnectionsDal.DBConnection = {
-        _id: new ObjectId(),
-        lastModified: 42,
-        initiatorUid: new ObjectId().toHexString(),
-        initiatorName: "Bob",
-        receiverUid: new ObjectId().toHexString(),
-        receiverName: "Kevin",
+        _id: crypto.randomUUID(),
+        last_modified: 42,
+        initiator_uid: crypto.randomUUID(),
+        initiator_name: "Bob",
+        receiver_uid: crypto.randomUUID(),
+        receiver_name: "Kevin",
         status: "pending",
         key: "key",
       };
@@ -50,7 +50,15 @@ describe("ConnectionsController", () => {
 
       //THEN
       expect(body.data).toEqual([
-        { ...friend, _id: friend._id.toHexString(), key: undefined },
+        {
+          _id: friend._id,
+          initiatorUid: friend.initiator_uid,
+          initiatorName: friend.initiator_name,
+          receiverUid: friend.receiver_uid,
+          receiverName: friend.receiver_name,
+          lastModified: friend.last_modified,
+          status: friend.status,
+        },
       ]);
       expect(getConnectionsMock).toHaveBeenCalledWith({
         initiatorUid: uid,
@@ -184,17 +192,17 @@ describe("ConnectionsController", () => {
     it("should create", async () => {
       //GIVEN
       const me = { uid, name: "Bob" };
-      const myFriend = { uid: new ObjectId().toHexString(), name: "Kevin" };
+      const myFriend = { uid: crypto.randomUUID(), name: "Kevin" };
       getUserByNameMock.mockResolvedValue(myFriend as any);
       getPartialUserMock.mockResolvedValue(me as any);
 
       const result: ConnectionsDal.DBConnection = {
-        _id: new ObjectId(),
-        lastModified: 42,
-        initiatorUid: me.uid,
-        initiatorName: me.name,
-        receiverUid: myFriend.uid,
-        receiverName: myFriend.name,
+        _id: crypto.randomUUID(),
+        last_modified: 42,
+        initiator_uid: me.uid,
+        initiator_name: me.name,
+        receiver_uid: myFriend.uid,
+        receiver_name: myFriend.name,
         key: "test",
         status: "pending",
       };
@@ -209,13 +217,13 @@ describe("ConnectionsController", () => {
 
       //THEN
       expect(body.data).toEqual({
-        _id: result._id.toHexString(),
-        lastModified: 42,
-        initiatorUid: me.uid,
-        initiatorName: me.name,
-        receiverUid: myFriend.uid,
-        receiverName: myFriend.name,
-        status: "pending",
+        _id: result._id,
+        lastModified: result.last_modified,
+        initiatorUid: result.initiator_uid,
+        initiatorName: result.initiator_name,
+        receiverUid: result.receiver_uid,
+        receiverName: result.receiver_name,
+        status: result.status,
       });
 
       expect(getUserByNameMock).toHaveBeenCalledWith(

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import crypto from "crypto";
 import { setup } from "../../__testData__/controller-test";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
 import * as LogsDal from "../../../src/dal/logs";
 import * as PublicDal from "../../../src/dal/public";
-import { ObjectId } from "mongodb";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { enableRateLimitExpects } from "../../__testData__/rate-limit";
 import { DBResult } from "../../../src/utils/result";
@@ -47,8 +47,8 @@ describe("result controller test", () => {
 
       expect(body.message).toEqual("Results retrieved");
       expect(body.data).toEqual([
-        { ...resultOne, _id: resultOne._id.toHexString() },
-        { ...resultTwo, _id: resultTwo._id.toHexString() },
+        { ...resultOne, _id: resultOne._id },
+        { ...resultTwo, _id: resultTwo._id },
       ]);
     });
     it("should get results with ape key", async () => {
@@ -309,7 +309,7 @@ describe("result controller test", () => {
 
       //THEN
       expect(body.message).toEqual("Result retrieved");
-      expect(body.data).toEqual({ ...result, _id: result._id.toHexString() });
+      expect(body.data).toEqual({ ...result, _id: result._id });
     });
     it("should get last result with ape key", async () => {
       //GIVEN
@@ -365,7 +365,7 @@ describe("result controller test", () => {
 
       //THEN
       expect(body.message).toEqual("Result retrieved");
-      expect(body.data).toEqual({ ...result, _id: result._id.toHexString() });
+      expect(body.data).toEqual({ ...result, _id: result._id });
     });
     it("should get last result with ape key", async () => {
       //GIVEN
@@ -409,7 +409,7 @@ describe("result controller test", () => {
     it("should delete", async () => {
       //GIVEN
       mockAuth.modifyToken({ iat: Date.now() - 1000 });
-      deleteAllMock.mockResolvedValue(undefined as any);
+      deleteAllMock.mockResolvedValue(undefined);
 
       //WHEN
       const { body } = await mockApp
@@ -455,10 +455,10 @@ describe("result controller test", () => {
     it("should update tags", async () => {
       //GIVEN
       const result = givenDbResult(uid);
-      const resultIdString = result._id.toHexString();
+      const resultIdString = result._id;
       const tagIds = [
-        new ObjectId().toHexString(),
-        new ObjectId().toHexString(),
+        crypto.randomUUID(),
+        crypto.randomUUID(),
       ];
       const partialUser = { tags: [] };
       getResultMock.mockResolvedValue(result);
@@ -498,10 +498,10 @@ describe("result controller test", () => {
         "numbers",
       ]);
 
-      const resultIdString = result._id.toHexString();
+      const resultIdString = result._id;
       const tagIds = [
-        new ObjectId().toHexString(),
-        new ObjectId().toHexString(),
+        crypto.randomUUID(),
+        crypto.randomUUID(),
       ];
       const partialUser = { tags: [] };
       getResultMock.mockResolvedValue(partialResult);
@@ -576,7 +576,7 @@ describe("result controller test", () => {
   });
   describe("addResult", () => {
     //TODO improve test coverage for addResult
-    const insertedId = new ObjectId();
+    const insertedId = crypto.randomUUID();
     const userGetMock = vi.spyOn(UserDal, "getUser");
     const userUpdateStreakMock = vi.spyOn(UserDal, "updateStreak");
     const userCheckIfTagPbMock = vi.spyOn(UserDal, "checkIfTagPb");
@@ -638,7 +638,7 @@ describe("result controller test", () => {
           funbox: 80,
         },
         streak: 0,
-        insertedId: insertedId.toHexString(),
+        insertedId: insertedId,
       });
 
       expect(resultAddMock).toHaveBeenCalledWith(
@@ -832,7 +832,7 @@ async function enablePremiumFeatures(enabled: boolean): Promise<void> {
 }
 function givenDbResult(uid: string, customize?: Partial<DBResult>): DBResult {
   return {
-    _id: new ObjectId(),
+    _id: crypto.randomUUID(),
     wpm: Math.random() * 100,
     rawWpm: Math.random() * 100,
     charStats: [

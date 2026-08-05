@@ -19,8 +19,8 @@ describe("PublicDAL", function () {
     const priorStats = await PublicDAL.getTypingStats();
     await PublicDAL.updateStats(1, 60);
     const afterStats = await PublicDAL.getTypingStats();
-    expect(afterStats.testsCompleted).toBe(priorStats.testsCompleted + 1);
-    expect(afterStats.testsStarted).toBe(priorStats.testsStarted + 2);
-    expect(afterStats.timeTyping).toBe(priorStats.timeTyping + 60);
+    expect(afterStats['testsCompleted']).toBe((priorStats as any)['testsCompleted'] + 1);
+    expect(afterStats['testsStarted']).toBe((priorStats as any)['testsStarted'] + 2);
+    expect(afterStats['timeTyping']).toBe((priorStats as any)['timeTyping'] + 60);
   });
 });

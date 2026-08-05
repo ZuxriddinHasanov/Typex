@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import {
   describe,
   it,
@@ -7,8 +8,8 @@ import {
   afterEach,
   vi,
 } from "vitest";
-import { ObjectId } from "mongodb";
 import * as BlacklistDal from "../../../src/dal/blocklist";
+import * as db from "../../../src/init/db";
 
 describe("BlocklistDal", () => {
   beforeAll(async () => {
@@ -26,7 +27,7 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
 
       //WHEN
@@ -34,21 +35,23 @@ describe("BlocklistDal", () => {
 
       //THEN
       await expect(
-        BlacklistDal.getCollection().findOne({
-          emailHash: BlacklistDal.hash(email),
-        }),
+        db.queryOne(
+          "SELECT email_hash, timestamp FROM blocklist WHERE email_hash = email",
+          [BlacklistDal.hash(email)],
+        )
       ).resolves.toMatchObject({
-        emailHash: BlacklistDal.hash(email),
-        timestamp: now,
+        email_hash: BlacklistDal.hash(email),
+        timestamp: now.toString(),
       });
 
       await expect(
-        BlacklistDal.getCollection().findOne({
-          usernameHash: BlacklistDal.hash(name),
-        }),
+        db.queryOne(
+          "SELECT username_hash, timestamp FROM blocklist WHERE username_hash = name",
+          [BlacklistDal.hash(name)],
+        )
       ).resolves.toMatchObject({
-        usernameHash: BlacklistDal.hash(name),
-        timestamp: now,
+        username_hash: BlacklistDal.hash(name),
+        timestamp: now.toString(),
       });
     });
     it("adds user with discordId", async () => {
@@ -56,7 +59,7 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
 
@@ -65,12 +68,13 @@ describe("BlocklistDal", () => {
 
       //THEN
       await expect(
-        BlacklistDal.getCollection().findOne({
-          discordIdHash: BlacklistDal.hash(discordId),
-        }),
+        db.queryOne(
+          "SELECT discord_id_hash, timestamp FROM blocklist WHERE discord_id_hash = discordId",
+          [BlacklistDal.hash(discordId)],
+        )
       ).resolves.toMatchObject({
-        discordIdHash: BlacklistDal.hash(discordId),
-        timestamp: now,
+        discord_id_hash: BlacklistDal.hash(discordId),
+        timestamp: now.toString(),
       });
     });
     it("adds user should not create duplicate name", async () => {
@@ -78,7 +82,7 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       const email2 = `${name}@otherdomain.com`;
       await BlacklistDal.add({ name, email });
@@ -88,25 +92,22 @@ describe("BlocklistDal", () => {
 
       //THEN
       await expect(
-        BlacklistDal.getCollection()
-          .find({
-            usernameHash: BlacklistDal.hash(name),
-          })
-          .toArray(),
+        db.queryAll(
+          "SELECT * FROM blocklist WHERE username_hash = name",
+          [BlacklistDal.hash(name)]
+        )
       ).resolves.toHaveLength(1);
       await expect(
-        BlacklistDal.getCollection()
-          .find({
-            emailHash: BlacklistDal.hash(email),
-          })
-          .toArray(),
+        db.queryAll(
+          "SELECT * FROM blocklist WHERE email_hash = email",
+          [BlacklistDal.hash(email)]
+        )
       ).resolves.toHaveLength(1);
       await expect(
-        BlacklistDal.getCollection()
-          .find({
-            emailHash: BlacklistDal.hash(email2),
-          })
-          .toArray(),
+        db.queryAll(
+          "SELECT * FROM blocklist WHERE email_hash = email2",
+          [BlacklistDal.hash(email2)]
+        )
       ).resolves.toHaveLength(1);
     });
     it("adds user should not create duplicate email", async () => {
@@ -114,9 +115,9 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
-      const name2 = `user${new ObjectId().toHexString()}`;
+      const name2 = `user${crypto.randomUUID()}`;
       await BlacklistDal.add({ name, email });
 
       //WHEN
@@ -124,11 +125,10 @@ describe("BlocklistDal", () => {
 
       //THEN
       await expect(
-        BlacklistDal.getCollection()
-          .find({
-            emailHash: BlacklistDal.hash(email),
-          })
-          .toArray(),
+        db.queryAll(
+          "SELECT * FROM blocklist WHERE email_hash = email",
+          [BlacklistDal.hash(email)]
+        )
       ).resolves.toHaveLength(1);
     });
     it("adds user should not create duplicate discordId", async () => {
@@ -136,8 +136,8 @@ describe("BlocklistDal", () => {
       const now = 1715082588;
       vi.setSystemTime(now);
 
-      const name = `user${new ObjectId().toHexString()}`;
-      const name2 = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
+      const name2 = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
 
@@ -149,18 +149,17 @@ describe("BlocklistDal", () => {
       //THEN
 
       await expect(
-        BlacklistDal.getCollection()
-          .find({
-            discordIdHash: BlacklistDal.hash(discordId),
-          })
-          .toArray(),
+        db.queryAll(
+          "SELECT * FROM blocklist WHERE discord_id_hash = discordId",
+          [BlacklistDal.hash(discordId)]
+        )
       ).resolves.toHaveLength(1);
     });
   });
   describe("contains", () => {
     it("contains user", async () => {
       //GIVEN
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -229,7 +228,7 @@ describe("BlocklistDal", () => {
   describe("remove", () => {
     it("removes existing username", async () => {
       //GIVEN
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       await BlacklistDal.add({ name, email });
       await BlacklistDal.add({ name: "test", email: "test@example.com" });
@@ -251,7 +250,7 @@ describe("BlocklistDal", () => {
     });
     it("removes existing email", async () => {
       //GIVEN
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       await BlacklistDal.add({ name, email });
       await BlacklistDal.add({ name: "test", email: "test@example.com" });
@@ -273,7 +272,7 @@ describe("BlocklistDal", () => {
     });
     it("removes existing discordId", async () => {
       //GIVEN
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -304,7 +303,7 @@ describe("BlocklistDal", () => {
     });
     it("removes existing username,email and discordId", async () => {
       //GIVEN
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });
@@ -336,7 +335,7 @@ describe("BlocklistDal", () => {
 
     it("does not remove for empty user", async () => {
       //GIVEN
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const email = `${name}@example.com`;
       const discordId = `${name}DiscordId`;
       await BlacklistDal.add({ name, email, discordId });

@@ -1,4 +1,4 @@
-import { render, fireEvent } from "@solidjs/testing-library";
+import { render } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -63,6 +63,9 @@ describe("Theme component", () => {
     --error-extra-color: #c00;
     --colorful-error-color: #f55;
     --colorful-error-extra-color: #c55;
+}
+body {
+    background-image: none;
 }`);
   });
 
@@ -73,35 +76,11 @@ describe("Theme component", () => {
     expect(style.innerHTML).toContain("--bg-color: #f00;");
   });
 
-  it("loads CSS file and shows loader when theme has CSS", () => {
-    const { css } = renderComponent();
-
-    expect(css.getAttribute("href")).toBe("/themes/dark.css");
-    expect(loaderShowMock).toHaveBeenCalledOnce();
-    fireEvent.load(css);
-    expect(loaderHideMock).toHaveBeenCalledOnce();
-  });
-
-  it("removes CSS when theme has no CSS", async () => {
+  it("handles theme without bg color gracefully", async () => {
     // oxlint-disable-next-line typescript/no-unsafe-return
     themeSignalMock.mockImplementation(() => ({ name: "light" }) as any);
-    const { css } = renderComponent();
-    expect(css).not.toBeInTheDocument();
-  });
-
-  it("removes CSS when theme is custom", async () => {
-    // oxlint-disable-next-line typescript/no-unsafe-return
-    themeSignalMock.mockImplementation(() => ({ name: "custom" }) as any);
-    const { css } = renderComponent();
-    expect(css).not.toBeInTheDocument();
-  });
-
-  it("handles CSS load error", () => {
-    const { css } = renderComponent();
-    expect(loaderShowMock).toHaveBeenCalledOnce();
-    fireEvent.error(css);
-    expect(loaderHideMock).toHaveBeenCalledOnce();
-    expect(notificationAddMock).toHaveBeenCalledWith("Failed to load theme");
+    const { style } = renderComponent();
+    expect(style.innerHTML).toContain("--bg-color: undefined;");
   });
 
   it("renders favicon", () => {

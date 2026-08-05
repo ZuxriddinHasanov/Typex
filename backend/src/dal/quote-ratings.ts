@@ -1,14 +1,14 @@
-import { QuoteRating } from "@typeuz/schemas/quotes";
 import * as db from "../init/db";
-import { Collection } from "mongodb";
-import { WithObjectId } from "../utils/misc";
 import { Language } from "@typeuz/schemas/languages";
 
-type DBQuoteRating = WithObjectId<QuoteRating>;
-
-// Export for use in tests
-export const getQuoteRatingCollection = (): Collection<DBQuoteRating> =>
-  db.collection<DBQuoteRating>("quote-rating");
+type DBQuoteRating = {
+  id: number;
+  quote_id: number;
+  language: string;
+  average: number | null;
+  ratings: number;
+  total_rating: number;
+};
 
 export async function submit(
   quoteId: number,
@@ -17,16 +17,20 @@ export async function submit(
   update: boolean,
 ): Promise<void> {
   if (update) {
-    await getQuoteRatingCollection().updateOne(
-      { quoteId, language },
-      { $inc: { totalRating: rating } },
-      { upsert: true },
+    await db.query(
+      `INSERT INTO quote_ratings (quote_id, language, total_rating)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (quote_id, language)
+       DO UPDATE SET total_rating = quote_ratings.total_rating + $3`,
+      [quoteId, language, rating],
     );
   } else {
-    await getQuoteRatingCollection().updateOne(
-      { quoteId, language },
-      { $inc: { ratings: 1, totalRating: rating } },
-      { upsert: true },
+    await db.query(
+      `INSERT INTO quote_ratings (quote_id, language, ratings, total_rating)
+       VALUES ($1, $2, 1, $3)
+       ON CONFLICT (quote_id, language)
+       DO UPDATE SET ratings = quote_ratings.ratings + 1, total_rating = quote_ratings.total_rating + $3`,
+      [quoteId, language, rating],
     );
   }
 
@@ -36,13 +40,13 @@ export async function submit(
   }
   const average = parseFloat(
     (
-      Math.round((quoteRating.totalRating / quoteRating.ratings) * 10) / 10
+      Math.round((quoteRating.total_rating / quoteRating.ratings) * 10) / 10
     ).toFixed(1),
   );
 
-  await getQuoteRatingCollection().updateOne(
-    { quoteId, language },
-    { $set: { average } },
+  await db.query(
+    "UPDATE quote_ratings SET average = $1 WHERE quote_id = $2 AND language = $3",
+    [average, quoteId, language],
   );
 }
 
@@ -50,5 +54,8 @@ export async function get(
   quoteId: number,
   language: Language,
 ): Promise<DBQuoteRating | null> {
-  return await getQuoteRatingCollection().findOne({ quoteId, language });
+  return await db.queryOne<DBQuoteRating>(
+    "SELECT * FROM quote_ratings WHERE quote_id = $1 AND language = $2",
+    [quoteId, language],
+  );
 }

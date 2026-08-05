@@ -1,9 +1,13 @@
-import { PSA } from "@typeuz/schemas/psas";
 import * as db from "../init/db";
-import { WithObjectId } from "../utils/misc";
 
-export type DBPSA = WithObjectId<PSA>;
+export type DBPSA = {
+  _id: string;
+  message: string;
+  date?: number;
+  level?: number;
+  sticky?: boolean;
+};
 
 export async function get(): Promise<DBPSA[]> {
-  return await db.collection<DBPSA>("psa").find().toArray();
+  return await db.queryAll<DBPSA>("SELECT * FROM psa");
 }

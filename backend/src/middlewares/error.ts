@@ -15,18 +15,6 @@ import { version } from "../version";
 import { addLog } from "../dal/logs";
 import { ExpressRequestWithContext } from "../api/types";
 
-type DBError = {
-  _id: string; //we are using uuid here, not objectIds
-  timestamp: number;
-  status: number;
-  uid: string;
-  message: string;
-  stack?: string;
-  endpoint: string;
-  method: string;
-  url: string;
-};
-
 type ErrorData = {
   errorId?: string;
   uid: string;
@@ -79,7 +67,9 @@ async function errorHandlingMiddleware(
           `${status} ${errorId} ${error.message} ${error.stack}`,
           uid,
         );
-        await db.collection<DBError>("errors").insertOne({
+        await (db.collection("errors") as unknown as {
+          insertOne: (doc: Record<string, unknown>) => Promise<void>;
+        }).insertOne({
           _id: errorId,
           timestamp: Date.now(),
           status: status,

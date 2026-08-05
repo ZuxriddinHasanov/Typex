@@ -373,30 +373,7 @@ export function Register(): JSXElement {
           text="ro'yxatdan o'tish"
           disabled={!getLoginPageInputsEnabled()}
         />
-        <p class="text-center text-sm text-sub">
-          Ro&apos;yxatdan o&apos;tish orqali siz{" "}
-          <a
-            href="/privacy-policy"
-            class="text-main underline hover:no-underline"
-          >
-            Maxfiylik siyosati
-          </a>
-          ,{" "}
-          <a
-            href="/terms-of-service"
-            class="text-main underline hover:no-underline"
-          >
-            Foydalanish shartlari
-          </a>{" "}
-          va{" "}
-          <a
-            href="/security-policy"
-            class="text-main underline hover:no-underline"
-          >
-            Xavfsizlik siyosati
-          </a>{" "}
-          ni qabul qilasiz.
-        </p>
+
       </form>
     </div>
   );

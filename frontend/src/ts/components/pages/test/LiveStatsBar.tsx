@@ -22,9 +22,9 @@ export function LiveStatsBar(): JSXElement {
     <div
       class={cn(
         "flex items-center justify-center gap-6 text-xs transition-opacity duration-125",
-        getFocus() || getResultVisible()
+        getFocus() && !getResultVisible()
           ? "pointer-events-none opacity-0"
-          : "opacity-100",
+          : getResultVisible() ? "hidden" : "opacity-100",
       )}
     >
       <span class="text-sub">

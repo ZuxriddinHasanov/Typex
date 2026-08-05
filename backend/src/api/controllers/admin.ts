@@ -25,11 +25,10 @@ import {
 import TypeUZError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@typeuz/schemas/configuration";
 import { addImportantLog } from "../../dal/logs";
+import * as db from "../../init/db";
 import { TypeUZRequest } from "../types";
 import { isDevEnvironment, getFrontendUrl } from "../../utils/misc";
 import { devGet, devSet } from "../../utils/dev-store";
-import { collection } from "../../init/db";
-import { ObjectId } from "mongodb";
 
 // --- Analytics Helpers ---
 function getUsersArray(): Array<Record<string, unknown>> {
@@ -339,11 +338,11 @@ export async function handleReports(
       let mailBody = "";
       if (accept) {
         mailBody = `Your report regarding ${report.type} ${
-          report.contentId
+          (report as Record<string, unknown>)["content_id"]
         } (${report.reason.toLowerCase()}) has been approved. Thank you.`;
       } else {
         mailBody = `Sorry, but your report regarding ${report.type} ${
-          report.contentId
+          (report as Record<string, unknown>)["content_id"]
         } (${report.reason.toLowerCase()}) has been denied. ${
           reason !== undefined ? `\nReason: ${reason}` : ""
         }`;
@@ -400,23 +399,27 @@ export async function getAnalytics(
   }
 
   try {
-    const [userCount, publicStats, activeUsers] = await Promise.all([
-      collection("users").countDocuments(),
-      collection<{
-        testsStarted: number;
-        testsCompleted: number;
-        timeTyping: number;
-      }>("public").findOne({ _id: "stats" as unknown as ObjectId }),
-      collection("users").countDocuments({
-        lastLoginAt: { $gte: Date.now() - 24 * 60 * 60 * 1000 },
-      }),
+    const [
+      userCountResult,
+      publicStatsResult,
+      activeUsersResult,
+    ] = await Promise.all([
+      db.queryOne<{ count: number }>("SELECT COUNT(*)::int AS count FROM users"),
+      db.queryOne<{ data: unknown }>(
+        "SELECT data FROM public_stats WHERE _id = 'stats'",
+      ),
+      db.queryOne<{ count: number }>(
+        "SELECT COUNT(*)::int AS count FROM users WHERE last_login_at > $1",
+        [Date.now() - 24 * 60 * 60 * 1000],
+      ),
     ]);
 
-    totalUsers = userCount;
-    totalTestsStarted = publicStats?.testsStarted ?? 0;
-    totalTestsCompleted = publicStats?.testsCompleted ?? 0;
-    totalTimeTyping = publicStats?.timeTyping ?? 0;
-    activeUsersLast24h = activeUsers;
+    totalUsers = userCountResult?.count ?? 0;
+    const statsData = publicStatsResult?.data as Record<string, unknown> | undefined;
+    totalTestsStarted = (statsData?.["testsStarted"] as number) ?? 0;
+    totalTestsCompleted = (statsData?.["testsCompleted"] as number) ?? 0;
+    totalTimeTyping = (statsData?.["timeTyping"] as number) ?? 0;
+    activeUsersLast24h = activeUsersResult?.count ?? 0;
   } catch {
     // Return zeros if DB unavailable
   }
@@ -474,15 +477,7 @@ export async function searchUsers(
 
   try {
     const safeQ = escapeRegex(q);
-    const users = await collection<{
-      uid: string;
-      name: string;
-      email: string;
-      banned?: boolean;
-      addedAt?: number;
-      completedTests?: number;
-      timeTyping?: number;
-    }>("users")
+    const users = await db.collection("users")
       .find(
         {
           $or: [
@@ -506,7 +501,11 @@ export async function searchUsers(
       .limit(50)
       .toArray();
 
-    results.push(...users.map((u) => ({ ...u, email: maskEmail(u.email) })));
+    const mappedUsers = users.map((u) => {
+      const r = u;
+      return { uid: r["uid"] as string, name: r["name"] as string, email: maskEmail(r["email"] as string), banned: r["banned"] as boolean | undefined, addedAt: r["addedAt"] as number | undefined, completedTests: r["completedTests"] as number | undefined, timeTyping: r["timeTyping"] as number | undefined };
+    });
+    results.push(...mappedUsers);
   } catch (e) {
     Logger.error(`searchUsers error: ${getErrorMessage(e)}`);
   }
@@ -527,32 +526,27 @@ export async function getActivity(
 
   try {
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    const rawResults = await collection("users")
-      .aggregate<Record<string, unknown>>([
-        {
-          $match: { lastLoginAt: { $gte: sevenDaysAgo } },
-        },
-        {
-          $group: {
-            _id: {
-              $dateToString: {
-                format: "%Y-%m-%d",
-                date: { $toDate: "$lastLoginAt" },
-              },
-            },
-            tests: { $sum: { $ifNull: ["$completedTests", 0] } },
-            users: { $sum: 1 },
-          },
-        },
-        { $sort: { _id: 1 as const } },
-        { $limit: 30 },
-      ])
-      .toArray();
+    const rawResults = await db.queryAll<{
+      login_date: string;
+      tests: number;
+      users: number;
+    }>(
+      `SELECT
+        to_timestamp(last_login_at / 1000)::date::text AS login_date,
+        SUM(COALESCE(completed_tests, 0))::int AS tests,
+        COUNT(*)::int AS users
+      FROM users
+      WHERE last_login_at >= $1
+      GROUP BY login_date
+      ORDER BY login_date ASC
+      LIMIT 30`,
+      [sevenDaysAgo],
+    );
 
     const data = rawResults.map((r) => ({
-      date: r["_id"] as string,
-      tests: r["tests"] as number,
-      users: r["users"] as number,
+      date: r.login_date,
+      tests: r.tests,
+      users: r.users,
     }));
 
     return new TypeUZResponse("Activity retrieved", { data });
@@ -591,7 +585,7 @@ export async function sendNotification(
 
       for (const targetUid of uids) {
         inbox.push({
-          id: new ObjectId().toHexString(),
+          id: crypto.randomUUID(),
           uid: targetUid,
           subject,
           body,
@@ -694,10 +688,10 @@ export async function getAdConfig(_req: TypeUZRequest): Promise<
   }
 
   try {
-    const doc = await collection("configuration").findOne({
-      _id: "ads" as unknown as ObjectId,
-    });
-    if (!doc) {
+    const row = await db.queryOne<{ data: unknown }>(
+      "SELECT data FROM configuration WHERE _id = 'ads'",
+    );
+    if (row?.data === undefined || row.data === null) {
       return new TypeUZResponse("Ad config retrieved", {
         enabled: false,
         masterToggle: false,
@@ -705,7 +699,7 @@ export async function getAdConfig(_req: TypeUZRequest): Promise<
         creatives: [],
       });
     }
-    const ads = doc as unknown as {
+    const ads = row.data as {
       enabled: boolean;
       masterToggle: boolean;
       slots: Array<{
@@ -767,9 +761,9 @@ export async function updateAdConfig(
   }
 
   try {
-    await collection("configuration").replaceOne(
-      { _id: "ads" as unknown as ObjectId },
-      { _id: "ads" as unknown as ObjectId, ...config },
+    await db.collection("configuration").replaceOne(
+      { _id: "ads" },
+      { _id: "ads", ...config },
       { upsert: true },
     );
     safeImportantLog(
@@ -795,7 +789,7 @@ export async function addCreative(
 > {
   const { imageUrl, targetUrl } = req.body;
   const newCreative = {
-    id: new ObjectId().toHexString(),
+    id: crypto.randomUUID(),
     imageUrl,
     targetUrl,
     enabled: true,
@@ -835,10 +829,10 @@ export async function addCreative(
   }
 
   try {
-    await collection("configuration").updateOne(
-      { _id: "ads" as unknown as ObjectId },
+    await db.collection("configuration").updateOne(
+      { _id: "ads" },
       {
-        $push: { creatives: newCreative } as unknown as Record<string, unknown>,
+        $push: { creatives: newCreative },
       },
       { upsert: true },
     );
@@ -889,9 +883,9 @@ export async function deleteCreative(
   }
 
   try {
-    await collection("configuration").updateOne(
-      { _id: "ads" as unknown as ObjectId },
-      { $pull: { creatives: { id } } as unknown as Record<string, unknown> },
+    await db.collection("configuration").updateOne(
+      { _id: "ads" },
+      { $pull: { creatives: { id } } },
     );
     safeImportantLog(
       "admin_creative_deleted",
@@ -933,7 +927,7 @@ export async function sendForgotPasswordEmail(
         `[DEV] Password reset for ${email}: ${getFrontendUrl()}/reset-password?token=${resetToken}`,
       );
     } else {
-      const resetCollection = collection("password-resets") as unknown as {
+      const resetCollection = db.collection("password-resets") as unknown as {
         insertOne: (doc: Record<string, unknown>) => Promise<unknown>;
       };
       await resetCollection.insertOne({
@@ -1260,7 +1254,7 @@ export async function listUsers(
     });
   }
   try {
-    const total = await collection("users").countDocuments();
+    const total = await db.collection("users").countDocuments();
     const projection = {
       uid: 1,
       name: 1,
@@ -1273,11 +1267,11 @@ export async function listUsers(
       streak: 1,
       lastLoginAt: 1,
     };
-    const rawUsers = (await collection("users")
-      .find({}, { projection } as never)
+    const rawUsers = (await db.collection("users")
+      .find({}, { projection })
       .skip(req.query.skip)
       .limit(req.query.limit)
-      .toArray()) as Record<string, unknown>[];
+      .toArray());
     return new TypeUZResponse("Users listed", {
       total,
       users: rawUsers.map((u: Record<string, unknown>) => ({

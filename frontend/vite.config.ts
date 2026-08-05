@@ -17,7 +17,6 @@ import { envConfig } from "./vite-plugins/env-config";
 import { languageHashes } from "./vite-plugins/language-hashes";
 import { minifyJson } from "./vite-plugins/minify-json";
 import { versionFile } from "./vite-plugins/version-file";
-import { oxlintChecker } from "./vite-plugins/oxlint-checker";
 import { injectPreload } from "./vite-plugins/inject-preload";
 import Inspect from "vite-plugin-inspect";
 import { ViteMinifyPlugin } from "vite-plugin-minify";
@@ -109,11 +108,6 @@ function getPlugins({
   ];
 
   const devPlugins: PluginOption[] = [
-    oxlintChecker({
-      debounceDelay: 125,
-      typeAware: true,
-      overlay: isDevelopment,
-    }),
     Inspect(),
   ];
 

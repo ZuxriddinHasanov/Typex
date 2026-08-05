@@ -1,4 +1,5 @@
-import { JSXElement } from "solid-js";
+import { JSXElement, Show } from "solid-js";
+import { isAuthenticated } from "../../../states/core";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import type { ThemeName } from "@typeuz/schemas/configs";
@@ -43,12 +44,28 @@ export function Nav(): JSXElement {
       >
         <Fa icon={getConfig.theme === "typeuz" ? "fa-sun" : "fa-moon"} class="transition-all duration-300" />
       </button>
-      <a
-        href="/login"
-        class="ml-2 rounded-full bg-main px-5 py-2 text-sm font-semibold text-bg transition-all hover:scale-105"
-        router-link
-        data-nav-item="login"
-      >Kirish</a>
+      <Show
+        when={isAuthenticated()}
+        fallback={
+          <a
+            href="/login"
+            class="ml-2 rounded-full bg-main px-5 py-2 text-sm font-semibold text-bg transition-all hover:scale-105"
+            router-link
+            data-nav-item="login"
+          >
+            Kirish
+          </a>
+        }
+      >
+        <a
+          href="/account"
+          class="ml-2 flex items-center gap-2 rounded-full bg-sub-alt/50 px-4 py-2 text-sm font-semibold text-text transition-all hover:bg-sub-alt hover:scale-105"
+          router-link
+        >
+          <Fa icon="fa-user" />
+          Profil
+        </a>
+      </Show>
     </nav>
   );
 }

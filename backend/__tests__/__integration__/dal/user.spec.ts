@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
+import crypto from "crypto";
 
 import { CustomThemeColors } from "@typeuz/schemas/configs";
 import { PersonalBest, PersonalBests } from "@typeuz/schemas/shared";
 import { MonkeyMail, ResultFilters } from "@typeuz/schemas/users";
-import { ObjectId } from "mongodb";
+import * as db from "../../../src/init/db";
 import * as UserDAL from "../../../src/dal/user";
 import { createConnection as createFriend } from "../../__testData__/connections";
 import * as UserTestData from "../../__testData__/users";
@@ -85,12 +86,12 @@ const mockResultFilter: ResultFilters = {
   },
 };
 
-const mockDbResultFilter = { ...mockResultFilter, _id: new ObjectId() };
+const mockDbResultFilter = { ...mockResultFilter, _id: crypto.randomUUID() };
 
 describe("UserDal", () => {
   it("should be able to insert users", async () => {
     // given
-    const uid = new ObjectId().toHexString();
+    const uid = crypto.randomUUID();
     const newUser = {
       name: "Test",
       email: "mockemail@email.com",
@@ -109,7 +110,7 @@ describe("UserDal", () => {
 
   it("should error if the user already exists", async () => {
     // given
-    const uid = new ObjectId().toHexString();
+    const uid = crypto.randomUUID();
     const newUser = {
       name: "Test",
       email: "mockemail@email.com",
@@ -128,8 +129,8 @@ describe("UserDal", () => {
 
   it("isNameAvailable should correctly check if a username is available", async () => {
     // given
-    const name1 = `user${new ObjectId().toHexString()}`;
-    const name2 = `user${new ObjectId().toHexString()}`;
+    const name1 = `user${crypto.randomUUID()}`;
+    const name2 = `user${crypto.randomUUID()}`;
     const { uid: user1 } = await UserTestData.createUser({ name: name1 });
     await UserTestData.createUser({ name: name2 });
 
@@ -160,8 +161,8 @@ describe("UserDal", () => {
 
   it("updatename should not allow unavailable usernames", async () => {
     // given
-    const name1 = `user${new ObjectId().toHexString()}`;
-    const name2 = `user${new ObjectId().toHexString()}`;
+    const name1 = `user${crypto.randomUUID()}`;
+    const name2 = `user${crypto.randomUUID()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
     const _decoy = await UserTestData.createUser();
@@ -173,8 +174,8 @@ describe("UserDal", () => {
   });
 
   it("same usernames (different casing) should be available only for the same user", async () => {
-    const name1 = `user${new ObjectId().toHexString()}`;
-    const name2 = `user${new ObjectId().toHexString()}`;
+    const name1 = `user${crypto.randomUUID()}`;
+    const name2 = `user${crypto.randomUUID()}`;
     const user1 = await UserTestData.createUser({ name: name1 });
     const user2 = await UserTestData.createUser({ name: name2 });
 
@@ -192,8 +193,8 @@ describe("UserDal", () => {
 
   it("UserDAL.updateName should change the name of a user", async () => {
     // given
-    const name = `user${new ObjectId().toHexString()}`;
-    const renamed = `renamed${new ObjectId().toHexString()}`;
+    const name = `user${crypto.randomUUID()}`;
+    const renamed = `renamed${crypto.randomUUID()}`;
     const testUser = await UserTestData.createUser({ name: name });
 
     // when
@@ -207,20 +208,19 @@ describe("UserDal", () => {
   it("clearPb should clear the personalBests of a user", async () => {
     // given
     const testUser = await UserTestData.createUser();
-    await UserDAL.getUsersCollection().updateOne(
-      { uid: testUser.uid },
-      {
-        $set: {
-          personalBests: {
-            time: { 20: [mockPersonalBest] },
-            words: {},
-            quote: {},
-            zen: {},
-            custom: {},
-            ai: {},
-          },
-        },
-      },
+    await db.query(
+      `UPDATE users SET personal_bests = $1::jsonb WHERE uid = $2`,
+      [
+        JSON.stringify({
+          time: { 20: [mockPersonalBest] },
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+          ai: {},
+        }),
+        testUser.uid,
+      ],
     );
 
     const { personalBests } =
@@ -360,7 +360,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.removeResultFilterPreset(
           "non existing uid",
-          new ObjectId().toHexString(),
+          crypto.randomUUID(),
         ),
       ).rejects.toThrow("Custom filter not found\nStack: remove result filter");
     });
@@ -373,20 +373,20 @@ describe("UserDal", () => {
 
       // when, then
       await expect(
-        UserDAL.removeResultFilterPreset(uid, new ObjectId().toHexString()),
+        UserDAL.removeResultFilterPreset(uid, crypto.randomUUID()),
       ).rejects.toThrow("Custom filter not found\nStack: remove result filter");
     });
     it("should remove filter", async () => {
       // given
-      const filterOne = { ...mockDbResultFilter, _id: new ObjectId() };
-      const filterTwo = { ...mockDbResultFilter, _id: new ObjectId() };
-      const filterThree = { ...mockDbResultFilter, _id: new ObjectId() };
+      const filterOne = { ...mockDbResultFilter, _id: crypto.randomUUID() };
+      const filterTwo = { ...mockDbResultFilter, _id: crypto.randomUUID() };
+      const filterThree = { ...mockDbResultFilter, _id: crypto.randomUUID() };
       const { uid } = await UserTestData.createUser({
         resultFilterPresets: [filterOne, filterTwo, filterThree],
       });
 
       // when, then
-      await UserDAL.removeResultFilterPreset(uid, filterTwo._id.toHexString());
+      await UserDAL.removeResultFilterPreset(uid, filterTwo._id);
 
       const read = await UserDAL.getUser(uid, "read");
       expect(read.resultFilterPresets).toStrictEqual([filterOne, filterThree]);
@@ -405,7 +405,7 @@ describe("UserDal", () => {
       // given
       const { uid } = await UserTestData.createUser({
         tags: new Array(15).fill(0).map(() => ({
-          _id: new ObjectId(),
+          _id: crypto.randomUUID(),
           name: "any",
           personalBests: {} as any,
         })),
@@ -430,7 +430,7 @@ describe("UserDal", () => {
       const { uid } = await UserTestData.createUser({
         tags: [
           {
-            _id: new ObjectId(),
+            _id: crypto.randomUUID(),
             name: "first",
             personalBests: emptyPb,
           },
@@ -457,7 +457,7 @@ describe("UserDal", () => {
       await expect(
         UserDAL.editTag(
           "non existing uid",
-          new ObjectId().toHexString(),
+          crypto.randomUUID(),
           "newName",
         ),
       ).rejects.toThrow("Tag not found\nStack: edit tag");
@@ -466,7 +466,7 @@ describe("UserDal", () => {
     it("should fail if tag not found", async () => {
       // given
       const tagOne: UserDAL.DBUserTag = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "one",
         personalBests: {} as any,
       };
@@ -476,14 +476,14 @@ describe("UserDal", () => {
 
       // when, then
       await expect(
-        UserDAL.editTag(uid, new ObjectId().toHexString(), "newName"),
+        UserDAL.editTag(uid, crypto.randomUUID(), "newName"),
       ).rejects.toThrow("Tag not found\nStack: edit tag");
     });
 
     it("editTag success", async () => {
       // given
       const tagOne: UserDAL.DBUserTag = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "one",
         personalBests: {} as any,
       };
@@ -492,7 +492,7 @@ describe("UserDal", () => {
       });
 
       // when
-      await UserDAL.editTag(uid, tagOne._id.toHexString(), "newTagName");
+      await UserDAL.editTag(uid, tagOne._id, "newTagName");
 
       // then
       const read = await UserDAL.getUser(uid, "read");
@@ -506,14 +506,14 @@ describe("UserDal", () => {
     it("should return error if uid not found", async () => {
       // when, then
       await expect(
-        UserDAL.removeTag("non existing uid", new ObjectId().toHexString()),
+        UserDAL.removeTag("non existing uid", crypto.randomUUID()),
       ).rejects.toThrow("Tag not found\nStack: remove tag");
     });
 
     it("should return error if tag is unknown", async () => {
       // given
       const tagOne: UserDAL.DBUserTag = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "one",
         personalBests: {} as any,
       };
@@ -523,23 +523,23 @@ describe("UserDal", () => {
 
       // when, then
       await expect(
-        UserDAL.removeTag(uid, new ObjectId().toHexString()),
+        UserDAL.removeTag(uid, crypto.randomUUID()),
       ).rejects.toThrow("Tag not found\nStack: remove tag");
     });
     it("should remove tag", async () => {
       // given
       const tagOne = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagOne",
         personalBests: {} as any,
       };
       const tagTwo = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagTwo",
         personalBests: {} as any,
       };
       const tagThree = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagThree",
         personalBests: {} as any,
       };
@@ -549,7 +549,7 @@ describe("UserDal", () => {
       });
 
       // when, then
-      await UserDAL.removeTag(uid, tagTwo._id.toHexString());
+      await UserDAL.removeTag(uid, tagTwo._id);
 
       const read = await UserDAL.getUser(uid, "read");
       expect(read.tags).toStrictEqual([tagOne, tagThree]);
@@ -560,14 +560,14 @@ describe("UserDal", () => {
     it("should return error if uid not found", async () => {
       // when, then
       await expect(
-        UserDAL.removeTagPb("non existing uid", new ObjectId().toHexString()),
+        UserDAL.removeTagPb("non existing uid", crypto.randomUUID()),
       ).rejects.toThrow("Tag not found\nStack: remove tag pb");
     });
 
     it("should return error if tag is unknown", async () => {
       // given
       const tagOne: UserDAL.DBUserTag = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "one",
         personalBests: {} as any,
       };
@@ -577,27 +577,27 @@ describe("UserDal", () => {
 
       // when, then
       await expect(
-        UserDAL.removeTagPb(uid, new ObjectId().toHexString()),
+        UserDAL.removeTagPb(uid, crypto.randomUUID()),
       ).rejects.toThrow("Tag not found\nStack: remove tag pb");
     });
     it("should remove tag pb", async () => {
       // given
       const tagOne = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagOne",
         personalBests: {
           custom: { custom: [mockPersonalBest] },
         } as PersonalBests,
       };
       const tagTwo = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagTwo",
         personalBests: {
           custom: { custom: [mockPersonalBest] },
         } as PersonalBests,
       };
       const tagThree = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "tagThree",
         personalBests: {
           custom: { custom: [mockPersonalBest] },
@@ -609,7 +609,7 @@ describe("UserDal", () => {
       });
 
       // when, then
-      await UserDAL.removeTagPb(uid, tagTwo._id.toHexString());
+      await UserDAL.removeTagPb(uid, tagTwo._id);
 
       const read = await UserDAL.getUser(uid, "read");
       expect(read.tags).toStrictEqual([
@@ -632,7 +632,7 @@ describe("UserDal", () => {
 
   describe("updateProfile", () => {
     it("updateProfile should appropriately handle multiple profile updates", async () => {
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       await UserDAL.addUser("test name", "test email", uid);
 
       await UserDAL.updateProfile(
@@ -757,7 +757,7 @@ describe("UserDal", () => {
   });
 
   it("resetUser should reset user", async () => {
-    const uid = new ObjectId().toHexString();
+    const uid = crypto.randomUUID();
     await UserDAL.addUser("test name", "test email", uid);
 
     await UserDAL.updateProfile(
@@ -801,7 +801,7 @@ describe("UserDal", () => {
   });
 
   it("getInbox should return the user's inbox", async () => {
-    const uid = new ObjectId().toHexString();
+    const uid = crypto.randomUUID();
     await UserDAL.addUser("test name", "test email", uid);
 
     const emptyInbox = await UserDAL.getInbox(uid);
@@ -831,7 +831,7 @@ describe("UserDal", () => {
   });
 
   it("addToInbox discards mail if inbox is full", async () => {
-    const uid = new ObjectId().toHexString();
+    const uid = crypto.randomUUID();
     await UserDAL.addUser("test name", "test email", uid);
 
     const config = {
@@ -1203,7 +1203,6 @@ describe("UserDal", () => {
 
       //THEN
       expect(partial).toStrictEqual({
-        _id: user._id,
         streak: {
           hourOffset: 1,
           length: 5,
@@ -1608,13 +1607,13 @@ describe("UserDal", () => {
   });
   describe("isDiscordIdAvailable", () => {
     it("should return true for available discordId", async () => {
-      const discordId = new ObjectId().toHexString();
+      const discordId = crypto.randomUUID();
       await expect(UserDAL.isDiscordIdAvailable(discordId)).resolves.toBe(true);
     });
 
     it("should return false if discordId is taken", async () => {
       // given
-      const discordId = new ObjectId().toHexString();
+      const discordId = crypto.randomUUID();
       await UserTestData.createUser({
         discordId: discordId,
       });
@@ -1706,7 +1705,7 @@ describe("UserDal", () => {
 
     it("increments bananas", async () => {
       //GIVEN
-      const name = `user${new ObjectId().toHexString()}`;
+      const name = `user${crypto.randomUUID()}`;
       const { uid } = await UserTestData.createUser({
         name,
         bananas: 1,
@@ -1815,7 +1814,7 @@ describe("UserDal", () => {
       // given
       const { uid } = await UserTestData.createUser({
         customThemes: new Array(20).fill(0).map(() => ({
-          _id: new ObjectId(),
+          _id: crypto.randomUUID(),
           name: "any",
           colors: [] as any,
         })),
@@ -1832,7 +1831,7 @@ describe("UserDal", () => {
     it("addTheme success", async () => {
       // given
       const themeOne = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "first",
         colors: new Array(10).fill("#123456") as CustomThemeColors,
       };
@@ -1868,7 +1867,7 @@ describe("UserDal", () => {
     it("should return error if uid not found", async () => {
       // when, then
       await expect(
-        UserDAL.editTheme("non existing uid", new ObjectId().toHexString(), {
+        UserDAL.editTheme("non existing uid", crypto.randomUUID(), {
           name: "newName",
           colors: [] as any,
         }),
@@ -1878,7 +1877,7 @@ describe("UserDal", () => {
     it("should fail if theme not found", async () => {
       // given
       const themeOne = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "first",
         colors: ["green", "white", "red"] as any,
       };
@@ -1888,7 +1887,7 @@ describe("UserDal", () => {
 
       // when, then
       await expect(
-        UserDAL.editTheme(uid, new ObjectId().toHexString(), {
+        UserDAL.editTheme(uid, crypto.randomUUID(), {
           name: "newName",
           colors: [] as any,
         }),
@@ -1898,17 +1897,17 @@ describe("UserDal", () => {
     it("editTheme success", async () => {
       // given
       const themeOne = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "first",
-        colors: ["green", "white", "red"] as any,
+        colors: ["green", "white", "red"],
       };
       const { uid } = await UserTestData.createUser({
         customThemes: [themeOne],
       });
       // when
-      await UserDAL.editTheme(uid, themeOne._id.toHexString(), {
+      await UserDAL.editTheme(uid, themeOne._id, {
         name: "newThemeName",
-        colors: ["red", "white", "blue"] as any,
+        colors: ["red", "white", "blue"],
       });
 
       // then
@@ -1923,14 +1922,14 @@ describe("UserDal", () => {
     it("should return error if uid not found", async () => {
       // when, then
       await expect(
-        UserDAL.removeTheme("non existing uid", new ObjectId().toHexString()),
+        UserDAL.removeTheme("non existing uid", crypto.randomUUID()),
       ).rejects.toThrow("Custom theme not found\nStack: remove theme");
     });
 
     it("should return error if theme is unknown", async () => {
       // given
       const themeOne = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "first",
         colors: ["green", "white", "red"] as any,
       };
@@ -1940,24 +1939,24 @@ describe("UserDal", () => {
 
       // when, then
       await expect(
-        UserDAL.removeTheme(uid, new ObjectId().toHexString()),
+        UserDAL.removeTheme(uid, crypto.randomUUID()),
       ).rejects.toThrow("Custom theme not found\nStack: remove theme");
     });
     it("should remove theme", async () => {
       // given
       const themeOne = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "first",
         colors: [] as any,
       };
       const themeTwo = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "second",
         colors: [] as any,
       };
 
       const themeThree = {
-        _id: new ObjectId(),
+        _id: crypto.randomUUID(),
         name: "third",
         colors: [] as any,
       };
@@ -1967,7 +1966,7 @@ describe("UserDal", () => {
       });
 
       // when, then
-      await UserDAL.removeTheme(uid, themeTwo._id.toHexString());
+      await UserDAL.removeTheme(uid, themeTwo._id);
 
       const read = await UserDAL.getUser(uid, "read");
       expect(read.customThemes).toStrictEqual([themeOne, themeThree]);
@@ -2130,10 +2129,10 @@ describe("UserDal", () => {
         premium: { expirationTimestamp: -1 } as any,
       });
       const friendOneRequest = await createFriend({
-        initiatorUid: uid,
-        receiverUid: friendOne.uid,
+        initiator_uid: uid,
+        receiver_uid: friendOne.uid,
         status: "accepted",
-        lastModified: 100,
+        last_modified: 100,
       });
       const friendTwo = await UserTestData.createUser({
         name: "Two",
@@ -2157,23 +2156,23 @@ describe("UserDal", () => {
         } as any,
       });
       const friendTwoRequest = await createFriend({
-        initiatorUid: uid,
-        receiverUid: friendTwo.uid,
+        initiator_uid: uid,
+        receiver_uid: friendTwo.uid,
         status: "accepted",
-        lastModified: 200,
+        last_modified: 200,
       });
 
       const friendThree = await UserTestData.createUser({ name: "Three" });
       const friendThreeRequest = await createFriend({
-        receiverUid: uid,
-        initiatorUid: friendThree.uid,
+        receiver_uid: uid,
+        initiator_uid: friendThree.uid,
         status: "accepted",
-        lastModified: 300,
+        last_modified: 300,
       });
 
       //non accepted
-      await createFriend({ receiverUid: uid, status: "pending" });
-      await createFriend({ initiatorUid: uid, status: "blocked" });
+      await createFriend({ receiver_uid: uid, status: "pending" });
+      await createFriend({ initiator_uid: uid, status: "blocked" });
 
       //WHEN
       const friends = await UserDAL.getFriends(uid);
@@ -2183,7 +2182,7 @@ describe("UserDal", () => {
         {
           uid: friendOne.uid,
           name: "One",
-          lastModified: 100,
+          last_modified: 100,
           connectionId: friendOneRequest._id,
           // oxlint-disable-next-line no-non-null-assertion
           top15: friendOne.personalBests.time["15"]![0] as any,
@@ -2197,7 +2196,7 @@ describe("UserDal", () => {
         {
           uid: friendTwo.uid,
           name: "Two",
-          lastModified: 200,
+          last_modified: 200,
           connectionId: friendTwoRequest._id,
           discordId: friendTwo.discordId,
           discordAvatar: friendTwo.discordAvatar,
@@ -2214,7 +2213,7 @@ describe("UserDal", () => {
         {
           uid: friendThree.uid,
           name: "Three",
-          lastModified: 300,
+          last_modified: 300,
           connectionId: friendThreeRequest._id,
         },
         {

@@ -26,7 +26,6 @@ import {
   MILLISECONDS_IN_DAY,
 } from "@typeuz/util/date-and-time";
 import { TypeUZRequest } from "../types";
-import { omit } from "../../utils/misc";
 
 export async function getLeaderboard(
   req: TypeUZRequest<GetLeaderboardQuery>,
@@ -63,7 +62,7 @@ export async function getLeaderboard(
     friendsOnlyUid,
     numbers,
   );
-  const normalizedLeaderboard = leaderboard.map((it) => omit(it, ["_id"]));
+  const normalizedLeaderboard = leaderboard as never[];
 
   return new TypeUZResponse("Leaderboard retrieved", {
     count,
@@ -98,7 +97,7 @@ export async function getRankFromLeaderboard(
     return new TypeUZResponse("Rank retrieved", null);
   }
 
-  return new TypeUZResponse("Rank retrieved", omit(data, ["_id"]));
+  return new TypeUZResponse("Rank retrieved", data as never);
 }
 
 function getDailyLeaderboardWithError(

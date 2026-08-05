@@ -6,7 +6,6 @@ import * as QuoteRatingsDAL from "../../dal/quote-ratings";
 import TypeUZError from "../../utils/error";
 import { verify } from "../../utils/captcha";
 import { TypeUZResponse } from "../../utils/typeuz-response";
-import { ObjectId } from "mongodb";
 import { addLog } from "../../dal/logs";
 import {
   AddQuoteRatingRequest,
@@ -20,7 +19,6 @@ import {
   RejectQuoteRequest,
   ReportQuoteRequest,
 } from "@typeuz/contracts/quotes";
-import { replaceObjectId, replaceObjectIds } from "../../utils/misc";
 import { TypeUZRequest } from "../types";
 import { Language } from "@typeuz/schemas/languages";
 
@@ -41,7 +39,7 @@ export async function getQuotes(
   const data = await NewQuotesDAL.get(quoteModLanguage);
   return new TypeUZResponse(
     "Quote submissions retrieved",
-    replaceObjectIds(data),
+    data as never,
   );
 }
 
@@ -101,7 +99,7 @@ export async function getRating(
 
   const data = await QuoteRatingsDAL.get(quoteId, language);
 
-  return new TypeUZResponse("Rating retrieved", replaceObjectId(data));
+  return new TypeUZResponse("Rating retrieved", data as never);
 }
 
 export async function submitRating(
@@ -149,12 +147,11 @@ export async function reportQuote(
   await verifyCaptcha(captcha);
 
   const newReport: ReportDAL.DBReport = {
-    _id: new ObjectId(),
     id: uuidv4(),
     type: "quote",
     timestamp: new Date().getTime(),
     uid,
-    contentId: `${quoteLanguage}-${quoteId}`,
+    content_id: `${quoteLanguage}-${quoteId}`,
     reason,
     comment: comment ?? "",
   };

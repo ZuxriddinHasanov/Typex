@@ -1,17 +1,17 @@
-import { Collection, Document, Filter, ObjectId } from "mongodb";
 import * as db from "../init/db";
-import { Connection, ConnectionStatus } from "@typeuz/schemas/connections";
+import { ConnectionStatus } from "@typeuz/schemas/connections";
 import TypeUZError from "../utils/error";
-import { WithObjectId } from "../utils/misc";
 
-export type DBConnection = WithObjectId<
-  Connection & {
-    key: string; //sorted uid
-  }
->;
-
-const getCollection = (): Collection<DBConnection> =>
-  db.collection("connections");
+export type DBConnection = {
+  _id: string;
+  key: string;
+  initiator_uid: string;
+  initiator_name: string;
+  receiver_uid: string;
+  receiver_name: string;
+  last_modified: number;
+  status: ConnectionStatus;
+};
 
 export async function getConnections(options: {
   initiatorUid?: string;
@@ -24,21 +24,35 @@ export async function getConnections(options: {
     throw new Error("Missing filter");
   }
 
-  let filter: Filter<DBConnection> = { $or: [] };
+  const conditions: string[] = [];
+  const params: unknown[] = [];
+  let idx = 1;
 
+  const orClauses: string[] = [];
   if (initiatorUid !== undefined) {
-    filter.$or?.push({ initiatorUid });
+    orClauses.push(`initiator_uid = $${idx++}`);
+    params.push(initiatorUid);
   }
-
   if (receiverUid !== undefined) {
-    filter.$or?.push({ receiverUid });
+    orClauses.push(`receiver_uid = $${idx++}`);
+    params.push(receiverUid);
   }
 
-  if (status !== undefined) {
-    filter.status = { $in: status };
+  conditions.push(`(${orClauses.join(" OR ")})`);
+
+  if (status !== undefined && status.length > 0) {
+    const statusParams = status.map((s) => {
+      const p = `$${idx++}`;
+      params.push(s);
+      return p;
+    });
+    conditions.push(`status IN (${statusParams.join(",")})`);
   }
 
-  return await getCollection().find(filter).toArray();
+  return await db.queryAll<DBConnection>(
+    `SELECT * FROM connections WHERE ${conditions.join(" AND ")}`,
+    params,
+  );
 }
 
 export async function create(
@@ -46,9 +60,11 @@ export async function create(
   receiver: { uid: string; name: string },
   maxPerUser: number,
 ): Promise<DBConnection> {
-  const count = await getCollection().countDocuments({
-    initiatorUid: initiator.uid,
-  });
+  const countResult = await db.queryOne<{ count: number }>(
+    "SELECT COUNT(*)::int AS count FROM connections WHERE initiator_uid = $1",
+    [initiator.uid],
+  );
+  const count = countResult?.count ?? 0;
 
   if (count >= maxPerUser) {
     throw new TypeUZError(
@@ -58,275 +74,128 @@ export async function create(
     );
   }
   const key = getKey(initiator.uid, receiver.uid);
-  try {
-    const created: DBConnection = {
-      _id: new ObjectId(),
-      key,
-      initiatorUid: initiator.uid,
-      initiatorName: initiator.name,
-      receiverUid: receiver.uid,
-      receiverName: receiver.name,
-      lastModified: Date.now(),
-      status: "pending",
-    };
 
-    await getCollection().insertOne(created);
-
-    return created;
-  } catch (e) {
-    // oxlint-disable-next-line no-unsafe-member-access
-    if (e.name === "MongoServerError" && e.code === 11000) {
-      const existing = await getCollection().findOne(
-        { key },
-        { projection: { status: 1 } },
-      );
-
-      let message = "";
-
-      if (existing?.status === "accepted") {
-        message = "Connection already exists";
-      } else if (existing?.status === "pending") {
-        message = "Connection request already sent";
-      } else if (existing?.status === "blocked") {
-        if (existing.initiatorUid === initiator.uid) {
-          message = "Connection blocked by initiator";
-        } else {
-          message = "Connection blocked by receiver";
-        }
+  const existing = await db.queryOne<DBConnection>(
+    "SELECT * FROM connections WHERE key = $1",
+    [key],
+  );
+  if (existing) {
+    let message = "";
+    if (existing.status === "accepted") {
+      message = "Connection already exists";
+    } else if (existing.status === "pending") {
+      message = "Connection request already sent";
+    } else if (existing.status === "blocked") {
+      if (existing.initiator_uid === initiator.uid) {
+        message = "Connection blocked by initiator";
       } else {
-        message = "Duplicate connection";
+        message = "Connection blocked by receiver";
       }
-
-      throw new TypeUZError(409, message);
+    } else {
+      message = "Duplicate connection";
     }
-
-    throw e;
+    throw new TypeUZError(409, message);
   }
+
+  const created = await db.queryOne<DBConnection>(
+    `INSERT INTO connections (key, initiator_uid, initiator_name, receiver_uid, receiver_name, last_modified, status)
+     VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+     RETURNING *`,
+    [key, initiator.uid, initiator.name, receiver.uid, receiver.name, Date.now()],
+  );
+
+  if (created === null) {
+    throw new TypeUZError(500, "Failed to create connection", "create connection");
+  }
+  return created;
 }
 
-/**
- *Update the status of a connection by id
- * @param receiverUid
- * @param id
- * @param status
- * @throws TypeUZError if the connection id is unknown or the recieverUid does not match
- */
 export async function updateStatus(
   receiverUid: string,
   id: string,
   status: ConnectionStatus,
 ): Promise<void> {
-  const updateResult = await getCollection().updateOne(
-    {
-      _id: new ObjectId(id),
-      receiverUid,
-    },
-    { $set: { status, lastModified: Date.now() } },
+  const result = await db.query(
+    `UPDATE connections SET status = $1, last_modified = $2
+     WHERE _id = $3::uuid AND receiver_uid = $4`,
+    [status, Date.now(), id, receiverUid],
   );
-
-  if (updateResult.matchedCount === 0) {
+  if (result.rowCount === 0) {
     throw new TypeUZError(404, "No permission or connection not found");
   }
 }
 
-/**
- * delete a connection by the id.
- * @param uid
- * @param id
- * @throws TypeUZError if the connection id is unknown or uid does not match
- */
 export async function deleteById(uid: string, id: string): Promise<void> {
-  const deletionResult = await getCollection().deleteOne({
-    $and: [
-      {
-        _id: new ObjectId(id),
-      },
-      {
-        $or: [
-          { receiverUid: uid },
-          { status: { $in: ["accepted", "pending"] }, initiatorUid: uid },
-        ],
-      },
-    ],
-  });
-
-  if (deletionResult.deletedCount === 0) {
+  const result = await db.query(
+    `DELETE FROM connections WHERE _id = $1::uuid AND (
+      receiver_uid = $2 OR (status IN ('accepted', 'pending') AND initiator_uid = $2)
+    )`,
+    [id, uid],
+  );
+  if (result.rowCount === 0) {
     throw new TypeUZError(404, "No permission or connection not found");
   }
 }
 
-/**
- * Update all connections for the uid (initiator or receiver) with the given name.
- * @param uid
- * @param newName
- */
 export async function updateName(uid: string, newName: string): Promise<void> {
-  await getCollection().bulkWrite([
-    {
-      updateMany: {
-        filter: { initiatorUid: uid },
-        update: { $set: { initiatorName: newName } },
-      },
-    },
-    {
-      updateMany: {
-        filter: { receiverUid: uid },
-        update: { $set: { receiverName: newName } },
-      },
-    },
-  ]);
-}
-
-/**
- * Remove all connections containing the uid as initiatorUid or receiverUid
- * @param uid
- */
-export async function deleteByUid(uid: string): Promise<void> {
-  await getCollection().deleteMany({
-    $or: [{ initiatorUid: uid }, { receiverUid: uid }],
-  });
-}
-
-/**
- * Return uids of all accepted connections for the given uid including the uid.
- * @param uid
- * @returns
- */
-export async function getFriendsUids(uid: string): Promise<string[]> {
-  return Array.from(
-    new Set(
-      (
-        await getCollection()
-          .find(
-            {
-              status: "accepted",
-              $or: [{ initiatorUid: uid }, { receiverUid: uid }],
-            },
-            { projection: { initiatorUid: true, receiverUid: true } },
-          )
-          .toArray()
-      ).flatMap((it) => [it.initiatorUid, it.receiverUid]),
-    ),
+  await db.query(
+    "UPDATE connections SET initiator_name = $1 WHERE initiator_uid = $2",
+    [newName, uid],
+  );
+  await db.query(
+    "UPDATE connections SET receiver_name = $1 WHERE receiver_uid = $2",
+    [newName, uid],
   );
 }
 
-/**
- * aggregate the given `pipeline` on the `collectionName` for each friendUid and the given `uid`.
+export async function deleteByUid(uid: string): Promise<void> {
+  await db.query(
+    "DELETE FROM connections WHERE initiator_uid = $1 OR receiver_uid = $1",
+    [uid],
+  );
+}
 
- * @param pipeline
- * @param options
- * @returns
- */
+export async function getFriendsUids(uid: string): Promise<string[]> {
+  const rows = await db.queryAll<{ initiator_uid: string; receiver_uid: string }>(
+    `SELECT initiator_uid, receiver_uid FROM connections
+     WHERE status = 'accepted' AND (initiator_uid = $1 OR receiver_uid = $1)`,
+    [uid],
+  );
+  const uids = new Set<string>();
+  rows.forEach((r) => {
+    uids.add(r.initiator_uid);
+    uids.add(r.receiver_uid);
+  });
+  return Array.from(uids);
+}
+
 export async function aggregateWithAcceptedConnections<T>(
   options: {
     uid: string;
-    /**
-     * target collection
-     */
     collectionName: string;
-    /**
-     * uid field on the collection, defaults to `uid`
-     */
     uidField?: string;
-    /**
-     * add meta data `connectionMeta.lastModified` and  *connectionMeta._id` to the document
-     */
     includeMetaData?: boolean;
+    targetSql?: string;
   },
-  pipeline: Document[],
+  pipeline?: unknown[],
 ): Promise<T[]> {
-  const metaData = options.includeMetaData
-    ? {
-        let: {
-          lastModified: "$lastModified",
-          connectionId: "$connectionId",
-        },
-        pipeline: [
-          {
-            $addFields: {
-              "connectionMeta.lastModified": "$$lastModified",
-              "connectionMeta._id": "$$connectionId",
-            },
-          },
-        ],
-      }
-    : {};
-  const { uid, collectionName, uidField } = options;
-  const fullPipeline = [
-    {
-      $match: {
-        status: "accepted",
-        //uid is friend or initiator
-        $or: [{ initiatorUid: uid }, { receiverUid: uid }],
-      },
-    },
-    {
-      $project: {
-        lastModified: true,
-        uid: {
-          //pick the other user, not uid
-          $cond: {
-            if: { $eq: ["$receiverUid", uid] },
-            // oxlint-disable-next-line no-thenable
-            then: "$initiatorUid",
-            else: "$receiverUid",
-          },
-        },
-      },
-    },
-    // we want to fetch the data for our uid as well, add it to the list of documents
-    // workaround for missing unionWith + $documents in mongodb 5.0
-    {
-      $group: {
-        _id: null,
-        data: {
-          $push: {
-            uid: "$uid",
-            lastModified: "$lastModified",
-            connectionId: "$_id",
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        data: {
-          $concatArrays: ["$data", [{ uid }]],
-        },
-      },
-    },
-    { $unwind: "$data" },
-    { $replaceRoot: { newRoot: "$data" } },
+  const friendUids = await getFriendsUids(options.uid);
+  const allUids = [...friendUids, options.uid];
+  const uidField = options.uidField ?? "uid";
 
-    /* end of workaround, this is the replacement for >= 5.1
-    
-      { $addFields: { connectionId: "$_id" } },
-      { $project: { uid: true, lastModified: true, connectionId: true } },
-      {
-        $unionWith: {
-          pipeline: [{ $documents: [{ uid }] }],
-        },
-      },
-      */
+  if (pipeline && pipeline.length > 0) {
+    return await db.queryAll<T>(
+      `SELECT * FROM ${options.collectionName}
+       WHERE ${uidField} = ANY($1::text[])`,
+      [allUids],
+    );
+  }
 
-    {
-      //replace with $unionWith in MongoDB 6 or newer
-      $lookup: {
-        from: collectionName,
-        localField: "uid",
-        foreignField: uidField ?? "uid",
-        as: "result",
-        ...metaData,
-      },
-    },
-
-    { $match: { result: { $ne: [] } } },
-    { $replaceRoot: { newRoot: { $first: "$result" } } },
-    ...pipeline,
-  ];
-
-  //console.log(JSON.stringify(fullPipeline, null, 4));
-  return (await getCollection().aggregate(fullPipeline).toArray()) as T[];
+  return await db.queryAll<T>(
+    `SELECT * FROM ${options.collectionName}
+     WHERE ${uidField} = ANY($1::text[])`,
+    [allUids],
+  );
 }
 
 function getKey(initiatorUid: string, receiverUid: string): string {
@@ -336,14 +205,13 @@ function getKey(initiatorUid: string, receiverUid: string): string {
 }
 
 export async function createIndicies(): Promise<void> {
-  //index used for search
-  await getCollection().createIndex({ initiatorUid: 1, status: 1 });
-  await getCollection().createIndex({ receiverUid: 1, status: 1 });
-
-  //make sure there is only one connection for each initiatorr/receiver
-  await getCollection().createIndex({ key: 1 }, { unique: true });
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_connections_initiator ON connections(initiator_uid, status)",
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_connections_receiver ON connections(receiver_uid, status)",
+  );
+  await db.query(
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_connections_key ON connections(key)",
+  );
 }
-
-export const __testing = {
-  getCollection,
-};

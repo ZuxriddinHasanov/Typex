@@ -1,6 +1,6 @@
 import request from "supertest";
+import crypto from "crypto";
 import app from "../../src/app";
-import { ObjectId } from "mongodb";
 import { BearerAuthenticationMock, mockBearerAuthentication } from "./auth";
 import { beforeEach } from "vitest";
 import TestAgent from "supertest/lib/agent";
@@ -11,7 +11,7 @@ export function setup(): {
   mockAuth: BearerAuthenticationMock;
 } {
   const mockApp = request(app);
-  const uid = new ObjectId().toHexString();
+  const uid = crypto.randomUUID();
   const mockAuth = mockBearerAuthentication(uid);
 
   beforeEach(() => {

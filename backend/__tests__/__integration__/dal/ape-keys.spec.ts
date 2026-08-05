@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ObjectId } from "mongodb";
+import crypto from "crypto";
 import {
   addApeKey,
   DBApeKey,
@@ -19,7 +19,7 @@ describe("ApeKeysDal", () => {
 
       const apeKeyId = await addApeKey(apeKey);
 
-      expect(apeKeyId).toBe(apeKey._id.toHexString());
+      expect(apeKeyId).toBe(apeKey._id);
 
       const read = await getApeKey(apeKeyId);
       expect(read).toEqual({
@@ -31,7 +31,7 @@ describe("ApeKeysDal", () => {
   describe("editApeKey", () => {
     it("should edit name of an existing ape key", async () => {
       //GIVEN
-      const apeKey = buildApeKey({ useCount: 5, enabled: true });
+      const apeKey = buildApeKey({ use_count: 5, enabled: true });
       const apeKeyId = await addApeKey(apeKey);
 
       //WHEN
@@ -43,13 +43,13 @@ describe("ApeKeysDal", () => {
       expect(readAfterEdit).toEqual({
         ...apeKey,
         name: newName,
-        modifiedOn: Date.now(),
+        modified_on: Date.now(),
       });
     });
 
     it("should edit enabled of an existing ape key", async () => {
       //GIVEN
-      const apeKey = buildApeKey({ useCount: 5, enabled: true });
+      const apeKey = buildApeKey({ use_count: 5, enabled: true });
       const apeKeyId = await addApeKey(apeKey);
 
       //WHEN
@@ -61,17 +61,17 @@ describe("ApeKeysDal", () => {
       expect(readAfterEdit).toEqual({
         ...apeKey,
         enabled: false,
-        modifiedOn: Date.now(),
+        modified_on: Date.now(),
       });
     });
   });
 
   describe("updateLastUsedOn", () => {
-    it("should update lastUsedOn and increment useCount when editing with lastUsedOn", async () => {
+    it("should update last_used_on and increment use_count when editing with last_used_on", async () => {
       //GIVEN
       const apeKey = buildApeKey({
-        useCount: 5,
-        lastUsedOn: 42,
+        use_count: 5,
+        last_used_on: 42,
       });
       const apeKeyId = await addApeKey(apeKey);
 
@@ -83,9 +83,9 @@ describe("ApeKeysDal", () => {
       const readAfterEdit = (await getApeKey(apeKeyId)) as DBApeKey;
       expect(readAfterEdit).toEqual({
         ...apeKey,
-        modifiedOn: readAfterEdit.modifiedOn,
-        lastUsedOn: Date.now(),
-        useCount: 5 + 2,
+        modified_on: readAfterEdit.modified_on,
+        last_used_on: Date.now(),
+        use_count: 5 + 2,
       });
     });
   });
@@ -93,14 +93,14 @@ describe("ApeKeysDal", () => {
 
 function buildApeKey(overrides: Partial<DBApeKey> = {}): DBApeKey {
   return {
-    _id: new ObjectId(),
+    _id: crypto.randomUUID(),
     uid: "123",
     name: "test",
     hash: "12345",
-    createdOn: Date.now(),
-    modifiedOn: Date.now(),
-    lastUsedOn: Date.now(),
-    useCount: 0,
+    created_on: Date.now(),
+    modified_on: Date.now(),
+    last_used_on: Date.now(),
+    use_count: 0,
     enabled: true,
     ...overrides,
   };

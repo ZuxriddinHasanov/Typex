@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterEach } from "vitest";
+import crypto from "crypto";
 import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboard";
 import { Configuration } from "@typeuz/schemas/configuration";
-import { ObjectId } from "mongodb";
 import { RedisXpLeaderboardEntry } from "@typeuz/schemas/leaderboards";
 import { cleanupKeys, redisSetup } from "../redis";
 
@@ -138,7 +138,7 @@ describe("Weekly XP Leaderboards", () => {
         const results = await lb.getResults(0, 5, leaderboardsConfig, true, [
           user2.uid,
           user4.uid,
-          new ObjectId().toHexString(),
+          crypto.randomUUID(),
         ]);
 
         //THEN
@@ -164,7 +164,7 @@ describe("Weekly XP Leaderboards", () => {
           user1.uid,
           user2.uid,
           user4.uid,
-          new ObjectId().toHexString(),
+          crypto.randomUUID(),
         ]);
 
         //THEN
@@ -251,7 +251,7 @@ describe("Weekly XP Leaderboards", () => {
       xpGained: number,
       entry?: Partial<RedisXpLeaderboardEntry>,
     ): Promise<RedisXpLeaderboardEntry> {
-      const uid = new ObjectId().toHexString();
+      const uid = crypto.randomUUID();
       const result: RedisXpLeaderboardEntry = {
         uid,
         name: `User ${uid}`,

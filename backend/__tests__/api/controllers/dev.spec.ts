@@ -12,7 +12,7 @@ describe("DevController", () => {
       isDevEnvironmentMock.mockReturnValue(true);
     });
 
-    it("should fail on prod", async () => {
+    it("should return disabled response on prod", async () => {
       //GIVEN
       isDevEnvironmentMock.mockReturnValue(false);
       //WHEN
@@ -20,11 +20,9 @@ describe("DevController", () => {
         .post("/dev/generateData")
         .set("Authorization", "Bearer 123456789")
         .send({ username: "test" })
-        .expect(503);
+        .expect(200);
       //THEN
-      expect(body.message).toEqual(
-        "Development endpoints are only available in DEV mode.",
-      );
+      expect(body.message).toEqual("Dev routes disabled");
     });
     it("should fail without mandatory properties", async () => {
       //WHEN

@@ -1,4 +1,3 @@
-// oxlint-disable react/no-unescaped-entities, solid/prefer-show, typescript/no-explicit-any, typescript/strict-boolean-expressions, curly, dot-notation, no-unnecessary-type-assertion, typescript/no-unsafe-assignment, typescript/no-unsafe-member-access, typescript/no-unsafe-call, typescript/no-unsafe-return, typescript/no-unsafe-argument
 import { createForm } from "@tanstack/solid-form";
 import { createMutation, createQuery } from "@tanstack/solid-query";
 import { JSXElement, Show, For } from "solid-js";
@@ -11,12 +10,14 @@ import {
 import { Fa } from "../../common/Fa";
 import { AdminLayout } from "./AdminLayout";
 
+
+type AdSlot = { slotId: string; enabled: boolean; creativeId?: string; imageUrl?: string; targetUrl?: string };
 export function AdminAdsPage(): JSXElement {
   const adQuery = createQuery(() => ({
     queryKey: ["admin", "adConfig"],
     queryFn: async () => {
       const r = await Ape.admin.getAdConfig();
-      return r.status === 200 ? (r.body.data as any) : null;
+      return r.status === 200 ? r.body.data : null;
     },
   }));
 
@@ -24,7 +25,7 @@ export function AdminAdsPage(): JSXElement {
     const c = adQuery.data;
     if (!c) return;
     void Ape.admin
-      .updateAdConfig({ body: { ...c, enabled: !c.enabled } as any })
+      .updateAdConfig({ body: { ...c, enabled: !c.enabled } })
       .then(() => {
         showSuccessNotification("Reklama holati o'zgartirildi");
         void adQuery.refetch();
@@ -36,7 +37,7 @@ export function AdminAdsPage(): JSXElement {
     defaultValues: { imageUrl: "", targetUrl: "" },
     onSubmit: async ({ value }) => {
       try {
-        await Ape.admin.addCreative({ body: value as any });
+        await Ape.admin.addCreative({ body: value });
         showSuccessNotification("Kreativ qo'shildi");
         void adQuery.refetch();
       } catch {
@@ -55,40 +56,71 @@ export function AdminAdsPage(): JSXElement {
     onError: () => showErrorNotification("Xatolik"),
   }));
 
+  const updateSlot = (slotId: string, updates: Partial<AdSlot>) => {
+    const c = adQuery.data;
+    if (!c) return;
+
+    if (updates.creativeId !== undefined && updates.creativeId !== "") {
+        const cr = c.creatives.find((x) => x.id === updates.creativeId);
+        if (cr) {
+            updates.imageUrl = cr.imageUrl;
+            updates.targetUrl = cr.targetUrl;
+        } else {
+            updates.imageUrl = "";
+            updates.targetUrl = "";
+        }
+    }
+
+    const newSlots = c.slots.map((s) => 
+      s.slotId === slotId ? { ...s, ...updates } : s
+    );
+    // if slot doesn't exist yet, add it
+    if (!newSlots.find((s) => s.slotId === slotId)) {
+        newSlots.push({ slotId, enabled: false, ...updates });
+    }
+    void Ape.admin
+      .updateAdConfig({ body: { ...c, slots: newSlots } })
+      .then(() => {
+        showSuccessNotification("Slot saqlandi");
+        void adQuery.refetch();
+      })
+      .catch(() => showErrorNotification("Xatolik"));
+  }
+
+  const PREDEFINED_SLOTS = [
+    { id: "ad-result", label: "Test natijasi (Tegida)" },
+    { id: "ad-about-1", label: "Biz haqimizda (Tepa)" },
+    { id: "ad-about-2", label: "Biz haqimizda (Past)" },
+    { id: "ad-account-1", label: "Profil sahifasi (Tepa)" },
+    { id: "ad-account-2", label: "Profil sahifasi (Past)" },
+    { id: "ad-landing-hero", label: "Asosiy sahifa (Hero)" },
+    { id: "ad-leaderboard", label: "Reyting sahifasi" },
+  ];
+
   return (
     <AdminLayout active="ads" title="Reklama boshqaruvi">
       <div class="grid gap-6 lg:grid-cols-2">
         {/* Status */}
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
-          <h2 class="mb-4 text-sm font-bold text-text">Holat</h2>
+          <h2 class="mb-4 text-sm font-bold text-text">Umumiy Sozlamalar</h2>
           <Show
             when={adQuery.data}
             fallback={<p class="text-xs text-sub">Yuklanmoqda...</p>}
           >
             <div class="space-y-4 text-sm">
               <div class="flex items-center justify-between">
-                <span class="text-text">Reklama</span>
+                <span class="text-text">Barcha reklamalar (Global)</span>
                 <button
                   type="button"
                   onClick={toggleAd}
-                  class={`rounded-lg px-4 py-1.5 text-xs font-medium transition-colors ${(adQuery.data as any)?.enabled ? "bg-green-600 text-white" : "bg-sub-alt text-sub"}`}
+                  class={`rounded-lg px-4 py-1.5 text-xs font-medium transition-colors ${adQuery.data?.enabled === true ? "bg-green-600 text-white" : "bg-sub-alt text-sub"}`}
                 >
-                  {(adQuery.data as any)?.enabled ? "Yoqilgan" : "O'chirilgan"}
+                  {adQuery.data?.enabled === true ? "Yoqilgan" : "O&apos;chirilgan"}
                 </button>
               </div>
-              <div class="flex items-center justify-between">
-                <span class="text-text">Master kalit</span>
-                <span
-                  class={`rounded-lg px-3 py-1 text-xs font-medium ${(adQuery.data as any)?.masterToggle ? "bg-green-600 text-white" : "bg-sub-alt text-sub"}`}
-                >
-                  {(adQuery.data as any)?.masterToggle
-                    ? "Yoqilgan"
-                    : "O'chirilgan"}
-                </span>
-              </div>
               <div class="text-xs text-sub">
-                Slotlar: {(adQuery.data as any)?.slots?.length ?? 0} |
-                Kreativlar: {(adQuery.data as any)?.creatives?.length ?? 0}
+                Slotlar: {adQuery.data?.slots?.length ?? 0} |
+                Kreativlar: {adQuery.data?.creatives?.length ?? 0}
               </div>
             </div>
           </Show>
@@ -96,7 +128,7 @@ export function AdminAdsPage(): JSXElement {
 
         {/* Add creative */}
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
-          <h2 class="mb-4 text-sm font-bold text-text">Kreativ qo'shish</h2>
+          <h2 class="mb-4 text-sm font-bold text-text">Yangi Reklama Qushish (Kreativ)</h2>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -109,7 +141,7 @@ export function AdminAdsPage(): JSXElement {
                 <input
                   value={f().state.value}
                   onInput={(e) => f().handleChange(e.currentTarget.value)}
-                  placeholder="Rasm URL"
+                  placeholder="Rasm URL (https://...)"
                   class="w-full rounded-xl bg-sub-alt p-3 text-sm text-text ring-1 ring-sub/20 outline-none focus:ring-main"
                 />
               )}
@@ -119,7 +151,7 @@ export function AdminAdsPage(): JSXElement {
                 <input
                   value={f().state.value}
                   onInput={(e) => f().handleChange(e.currentTarget.value)}
-                  placeholder="Havola URL"
+                  placeholder="Havola URL (https://...)"
                   class="w-full rounded-xl bg-sub-alt p-3 text-sm text-text ring-1 ring-sub/20 outline-none focus:ring-main"
                 />
               )}
@@ -128,41 +160,95 @@ export function AdminAdsPage(): JSXElement {
               type="submit"
               class="rounded-xl bg-main px-4 py-2.5 text-sm font-medium text-bg hover:opacity-90"
             >
-              Qo'shish
+              Qo&apos;shish
             </button>
           </form>
         </div>
       </div>
 
-      {/* Existing creatives */}
-      <div class="mt-6 rounded-2xl border border-sub/10 bg-bg/60 p-5">
-        <h2 class="mb-4 text-sm font-bold text-text">Mavjud kreativlar</h2>
-        <Show
-          when={(adQuery.data as any)?.creatives?.length > 0}
-          fallback={<p class="text-xs text-sub">Kreativlar yo'q</p>}
-        >
-          <div class="space-y-2">
-            <For each={(adQuery.data as any)?.creatives ?? []}>
-              {(cr: any) => (
-                <div class="flex items-center justify-between rounded-lg bg-sub-alt/30 px-4 py-2 text-xs">
-                  <div class="flex items-center gap-3">
-                    <span class="text-sub">ID: {cr.id.slice(0, 8)}...</span>
-                    <span class="max-w-[200px] truncate text-text">
-                      {(cr.imageUrl ?? "").slice(0, 40)}...
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => deleteCreative.mutate(cr.id)}
-                    class="rounded-lg bg-error/20 px-2.5 py-1.5 text-error hover:bg-error hover:text-bg"
-                  >
-                    <Fa icon="fa-trash" />
-                  </button>
-                </div>
-              )}
-            </For>
+      <div class="grid gap-6 lg:grid-cols-2 mt-6">
+          {/* Slots Mapping */}
+          <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
+            <h2 class="mb-4 text-sm font-bold text-text">Reklama Joylari (Slotlar)</h2>
+            <Show
+              when={adQuery.data}
+              fallback={<p class="text-xs text-sub">Yuklanmoqda...</p>}
+            >
+              <div class="space-y-4">
+                <For each={PREDEFINED_SLOTS}>
+                  {(slotInfo) => {
+                    const slotData = () => adQuery.data?.slots?.find((s) => s.slotId === slotInfo.id);
+                    return (
+                      <div class="flex flex-col gap-2 rounded-lg bg-sub-alt/30 p-4">
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm font-bold text-text">{slotInfo.label}</span>
+                          <button
+                            type="button"
+                            onClick={() => updateSlot(slotInfo.id, { enabled: !(slotData()?.enabled ?? false) })}
+                            class={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${slotData()?.enabled ? "bg-green-600 text-white" : "bg-sub-alt text-sub"}`}
+                          >
+                            {slotData()?.enabled ? "Yoqilgan" : "O&apos;chirilgan"}
+                          </button>
+                        </div>
+                        <span class="text-xs text-sub opacity-50">ID: {slotInfo.id}</span>
+                        <div class="mt-2 flex items-center gap-2">
+                            <select
+                                class="w-full rounded-xl bg-bg p-2 text-xs text-text ring-1 ring-sub/20 outline-none focus:ring-main"
+                                value={slotData()?.creativeId ?? ""}
+                                onChange={(e) => updateSlot(slotInfo.id, { creativeId: e.currentTarget.value })}
+                            >
+                                <option value="">(Reklama tanlanmagan)</option>
+                                <For each={adQuery.data?.creatives ?? []}>
+                                    {(cr) => (
+                                        <option value={cr.id}>
+                                            {cr.imageUrl.slice(0, 30)}...
+                                        </option>
+                                    )}
+                                </For>
+                            </select>
+                        </div>
+                      </div>
+                    );
+                  }}
+                </For>
+              </div>
+            </Show>
           </div>
-        </Show>
+          
+          {/* Existing creatives */}
+          <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
+            <h2 class="mb-4 text-sm font-bold text-text">Mavjud kreativlar (Ro&apos;yxat)</h2>
+            <Show
+              when={(adQuery.data?.creatives?.length ?? 0) > 0}
+              fallback={<p class="text-xs text-sub">Kreativlar yo&apos;q</p>}
+            >
+              <div class="space-y-3">
+                <For each={adQuery.data?.creatives ?? []}>
+                  {(cr) => (
+                    <div class="flex flex-col gap-2 rounded-lg bg-sub-alt/30 px-4 py-3 text-xs">
+                      <div class="flex items-center justify-between">
+                        <span class="font-mono text-[10px] text-sub opacity-50">ID: {cr.id}</span>
+                        <button
+                          type="button"
+                          onClick={() => deleteCreative.mutate(cr.id)}
+                          class="rounded-lg bg-error/20 px-2.5 py-1.5 text-error hover:bg-error hover:text-bg"
+                        >
+                          <Fa icon="fa-trash" />
+                        </button>
+                      </div>
+                      <div class="flex items-start gap-3">
+                        <img src={cr.imageUrl} class="h-12 w-12 rounded object-cover" />
+                        <div class="flex flex-col gap-1 overflow-hidden">
+                            <span class="truncate text-text">Rasm: {cr.imageUrl}</span>
+                            <span class="truncate text-main">Havola: {cr.targetUrl}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </Show>
+          </div>
       </div>
     </AdminLayout>
   );

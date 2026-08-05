@@ -3,7 +3,6 @@ import { roundTo2 } from "@typeuz/util/numbers";
 export { sanitizeString } from "@typeuz/util/strings";
 import uaparser from "ua-parser-js";
 import { TypeUZRequest } from "../api/types";
-import { ObjectId } from "mongodb";
 
 //todo split this file into smaller util files (grouped by functionality)
 
@@ -185,45 +184,13 @@ export function getFrontendUrl(): string {
   return process.env["FRONTEND_URL"] ?? "https://typeuz.uz";
 }
 
-/**
- * convert database object into api object
- * @param data  database object with `_id: ObjectId`
- * @returns api object with `id: string`
- */
-
-export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T,
-): T & { _id: string };
-export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null,
-): (T & { _id: string }) | null;
-export function replaceObjectId<T extends { _id: ObjectId }>(
-  data: T | null,
-): (T & { _id: string }) | null {
-  if (data === null) {
-    return null;
-  }
-  const result = {
-    ...data,
-    _id: data._id.toString(),
-  } as T & { _id: string };
-  return result;
+export function replaceObjectId<T extends { _id: string }>(data: T): T {
+  return data;
 }
-
-/**
- * convert database objects into api objects
- * @param data  database objects with `_id: ObjectId`
- * @returns api objects with `id: string`
- */
-export function replaceObjectIds<T extends { _id: ObjectId }>(
-  data: T[],
-): (T & { _id: string })[] {
-  if (data === undefined) return data;
-  return data.map((it) => replaceObjectId(it));
+export function replaceObjectIds<T extends { _id: string }>(data: T[]): T[] {
+  return data;
 }
-export type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
-  _id: ObjectId;
-};
+export type WithObjectId<T extends { _id: string }> = T;
 
 export function omit<T extends object, K extends keyof T>(
   obj: T,

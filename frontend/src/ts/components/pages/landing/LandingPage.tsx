@@ -1,12 +1,13 @@
 // oxlint-disable react/no-unknown-property
 // oxlint-disable react/no-unescaped-entities
-import { JSXElement, onMount, createSignal, createResource, createEffect, For } from "solid-js";
+import { JSXElement, onMount, createSignal, createResource, createEffect, For, Show } from "solid-js";
 import type { FaSolidIcon } from "../../../types/font-awesome";
 
 import { Fa } from "../../common/Fa";
 import { AnimatedSection } from "../../common/AnimatedSection";
 import { cn } from "../../../utils/cn";
 import { envConfig } from "virtual:env-config";
+import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
 
 function FeatureCard(props: {
   icon: FaSolidIcon;
@@ -102,6 +103,93 @@ function StepCard(props: {
   );
 }
 
+function TypingHeroAnimation() {
+  const words = "Kelajakni oldindan ko'rishning eng yaxshi yo'li uni yaratishdir...".split(" ");
+  const [typedIndex, setTypedIndex] = createSignal(0);
+  const [currentWordCharIndex, setCurrentWordCharIndex] = createSignal(0);
+  const [wpm, setWpm] = createSignal(0);
+  
+  createEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    
+    const typeNext = () => {
+      if (typedIndex() < words.length) {
+        const word = words[typedIndex()];
+        if (word !== undefined && currentWordCharIndex() < word.length) {
+          setCurrentWordCharIndex(c => c + 1);
+          setWpm(w => Math.min(124, w + Math.floor(Math.random() * 5) + 2));
+          timeout = setTimeout(typeNext, 40 + Math.random() * 80);
+        } else {
+          setTypedIndex(i => i + 1);
+          setCurrentWordCharIndex(0);
+          timeout = setTimeout(typeNext, 100 + Math.random() * 100);
+        }
+      } else {
+        timeout = setTimeout(() => {
+          setTypedIndex(0);
+          setCurrentWordCharIndex(0);
+          setWpm(0);
+          typeNext();
+        }, 3000);
+      }
+    };
+    
+    timeout = setTimeout(typeNext, 1000);
+    return () => clearTimeout(timeout);
+  });
+
+  return (
+    <div class="relative flex w-full flex-col overflow-hidden bg-bg/95 font-mono text-sm sm:text-lg shadow-inner">
+      {/* Code Editor Line Numbers & Content */}
+      <div class="flex p-6 min-h-[16rem]">
+        {/* Line Numbers */}
+        <div class="flex flex-col text-right pr-4 border-r border-sub/10 text-sub-alt/40 select-none hidden sm:flex">
+          <span>1</span>
+          <span>2</span>
+          <span>3</span>
+          <span>4</span>
+          <span>5</span>
+        </div>
+        
+        {/* Typing Content */}
+        <div class="flex-1 pl-0 sm:pl-4">
+          <div class="flex flex-wrap gap-[0.2em] font-medium leading-relaxed tracking-wide">
+            <For each={words}>
+              {(word, i) => (
+                <span class={cn("relative transition-colors duration-200", i() < typedIndex() ? "text-main" : "text-sub/40")}>
+                  <Show when={i() === typedIndex()} fallback={word}>
+                    <span class="text-text">{word.substring(0, currentWordCharIndex())}</span>
+                    <span class="text-sub/40">{word.substring(currentWordCharIndex())}</span>
+                    <span class="absolute top-[10%] h-[80%] w-[2px] animate-pulse bg-main" style={{ left: `calc(${currentWordCharIndex()} * 0.55em)` }}></span>
+                  </Show>
+                </span>
+              )}
+            </For>
+          </div>
+        </div>
+      </div>
+      
+      {/* Status Bar */}
+      <div class="flex items-center justify-between border-t border-sub/10 bg-sub-alt/20 px-4 py-3">
+        <div class="flex gap-6">
+          <div class="flex flex-col">
+            <div class="text-[10px] uppercase tracking-widest text-sub/70">WPM</div>
+            <div class="text-xl font-bold text-main tabular-nums">{wpm()}</div>
+          </div>
+          <div class="flex flex-col">
+            <div class="text-[10px] uppercase tracking-widest text-sub/70">ACC</div>
+            <div class="text-xl font-bold text-text">98%</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 rounded-full border border-main/20 bg-main/10 px-3 py-1 text-xs font-semibold text-main">
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-main"></span>
+          Live typing
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LandingPage(): JSXElement {
   const [heroVisible, setHeroVisible] = createSignal(false);
 
@@ -132,67 +220,83 @@ export function LandingPage(): JSXElement {
   return (
     <main class="flex flex-col items-center">
       {/* Hero */}
-      <section class="relative flex min-h-[85vh] w-full flex-col items-center justify-center overflow-hidden px-6">
+      <section class="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden px-6 pb-48 pt-20">
         <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-main/5 to-transparent"></div>
-<div class="flex max-w-6xl flex-col items-center gap-12 text-center">
-            <div class="mb-2 flex items-center justify-center">
-              <div class="relative">
-                <div class="absolute -inset-3 rounded-2xl bg-gradient-to-b from-main/15 via-main/5 to-transparent blur-xl"></div>
-                <svg class={cn("relative h-auto w-full max-w-[420px] transition-all duration-1000 ease-out", heroVisible() ? "opacity-100 scale-100" : "opacity-0 scale-75")} viewBox="0 0 420 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"><title>TypeUZ logotipi</title>
-                  <rect x="20" y="16" width="380" height="128" rx="12" stroke="url(#l-grad)" stroke-width="1.5" fill="none" opacity="0.4"></rect>
-                  <defs>
-                    <linearGradient id="l-grad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stop-color="#ff5a1f"></stop>
-                      <stop offset="100%" stop-color="#ff5a1f" stop-opacity="0.3"></stop>
-                    </linearGradient>
-                  </defs>
-                  <text x="210" y="106" text-anchor="middle" fill="#ff5a1f" font-size="52" font-weight="900" font-family="system-ui,sans-serif" letter-spacing="2">TypeUZ</text>
-                  <rect x="158" y="12" width="104" height="4" rx="2" fill="#ff5a1f" opacity="0.3"></rect>
-                  <rect x="158" y="144" width="104" height="4" rx="2" fill="#ff5a1f" opacity="0.3"></rect>
-                  <text x="210" y="140" text-anchor="middle" fill="#ff5a1f" font-size="10" font-weight="500" font-family="system-ui,sans-serif" opacity="0.5" letter-spacing="4">TEZ YOZ</text>
-                </svg>
-              </div>
+        
+        <div class="z-10 flex w-full max-w-7xl flex-col items-center gap-24 lg:flex-row lg:justify-between lg:gap-8 mt-12 lg:mt-0">
+          
+          {/* Left Column - Text & CTA */}
+          <div class="flex max-w-2xl flex-col items-center text-center lg:items-start lg:text-left">
+            <div class={cn("mb-6 inline-flex items-center gap-2 rounded-full border border-main/20 bg-main/5 px-4 py-1.5 text-xs font-semibold tracking-wide text-main transition-all duration-700 ease-out", heroVisible() ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4")}>
+              <Fa icon="fa-bolt" class="mr-1" /> O'zbekistonning birinchi typing platformasi
             </div>
-            <div class={cn("inline-flex items-center gap-2 rounded-full border border-main/20 bg-transparent px-4 py-1.5 text-xs font-medium tracking-wide text-main/80 transition-all duration-700 ease-out", heroVisible() ? "opacity-100" : "opacity-0")}>
-              Yozuv tezligi testi
-            </div>
-            <h1 class={cn("text-7xl font-extrabold tracking-tight text-text sm:text-8xl lg:text-9xl transition-all duration-1000 ease-out", heroVisible() ? "opacity-100" : "opacity-0")}>
+            
+            <h1 class={cn("text-6xl font-extrabold tracking-tight text-text sm:text-7xl lg:text-8xl transition-all duration-1000 ease-out", heroVisible() ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")}>
               {hero()?.title?.split(" ")[0] ?? "Tez yozishni"}
               <br />
-              <span class="text-main">{hero()?.subtitle ?? "o'rganing"}</span>
+              <span class="bg-gradient-to-r from-main to-main/70 bg-clip-text text-transparent">{hero()?.subtitle ?? "o'rganing"}</span>
             </h1>
-            <p class={cn("max-w-2xl text-lg leading-relaxed text-sub transition-all duration-1000 ease-out delay-200", heroVisible() ? "opacity-100" : "opacity-0")}>
-              {hero()?.description ?? "O'z yozuv tezligingizni sinab ko'ring, reytingda yuksaling va do'stlaringiz bilan bellashing."}
+            
+            <p class={cn("mt-6 max-w-xl text-lg leading-relaxed text-sub transition-all duration-1000 ease-out delay-200", heroVisible() ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")}>
+              {hero()?.description ?? "O'z yozuv tezligingizni sinab ko'ring, reytingda yuksaling va do'stlaringiz bilan bellashing. Bugunoq boshlang!"}
             </p>
-            <div class={cn("flex flex-wrap justify-center gap-4 transition-all duration-1000 ease-out delay-400", heroVisible() ? "opacity-100" : "opacity-0")}>
+            
+            <div class={cn("mt-10 flex flex-wrap justify-center gap-4 lg:justify-start transition-all duration-1000 ease-out delay-400", heroVisible() ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8")}>
               <a
                 href="/test"
-                class="inline-flex items-center gap-2 rounded-full bg-main px-10 py-4 text-base font-semibold text-bg transition-all hover:scale-105 hover:shadow-lg hover:shadow-main/25"
+                class="inline-flex items-center gap-2 rounded-full bg-main px-8 py-4 text-base font-bold text-bg transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-main/30"
                 router-link
               >
                 Testni boshlash
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
-                </svg>
+                <Fa icon="fa-keyboard" />
               </a>
               <a
                 href="/leaderboards"
-                class="inline-flex items-center gap-2 rounded-full border border-sub/20 bg-transparent px-10 py-4 text-base font-semibold text-sub transition-all hover:border-main/50 hover:text-main"
+                class="inline-flex items-center gap-2 rounded-full border-2 border-sub/20 bg-transparent px-8 py-4 text-base font-bold text-sub transition-all hover:border-main/50 hover:text-main"
                 router-link
               >
-                Reytingni ko&apos;rish
+                Reytingni ko'rish
               </a>
+          </div>
+          </div>
+
+          {/* Right Column - Animation / Graphic */}
+          <div class={cn("relative w-full max-w-lg lg:w-1/2 transition-all duration-1200 ease-out delay-300", heroVisible() ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12")}>
+            <div class="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-main/30 to-transparent blur-2xl"></div>
+            <div class="relative overflow-hidden rounded-2xl border border-sub/10 bg-bg/80 p-1 shadow-2xl backdrop-blur-md">
+              {/* Window Header */}
+              <div class="flex items-center gap-2 border-b border-sub/10 bg-sub-alt/50 px-4 py-3">
+                <div class="flex h-3 w-3 items-center justify-center rounded-full bg-[#ff5f56]"></div>
+                <div class="flex h-3 w-3 items-center justify-center rounded-full bg-[#ffbd2e]"></div>
+                <div class="flex h-3 w-3 items-center justify-center rounded-full bg-[#27c93f]"></div>
+                <div class="ml-auto mr-auto flex items-center gap-2 text-xs font-semibold text-sub/70">
+                  <Fa icon="fa-lock" class="text-[10px]" />
+                  typeuz.uz
+                </div>
+              </div>
+              {/* Window Content */}
+              <TypingHeroAnimation />
             </div>
           </div>
+          
+        </div>
+        <div class="mt-40 w-full max-w-4xl z-10 flex flex-col items-center">
+          <TypeUZAdSlot slotId="ad-landing-hero" class="mx-auto w-full" />
+        </div>
       </section>
 
       {/* How it works */}
-      <AnimatedSection animationClass="scroll-fade" class="flex w-full max-w-6xl flex-col items-center gap-12 px-6 pb-24">
-        <div class="flex flex-col items-center gap-2 text-center">
-          <h2 class="text-3xl font-bold text-text">Qanday ishlaydi?</h2>
-          <p class="max-w-md text-base text-sub">Uch qadamda boshlang</p>
+      <AnimatedSection animationClass="scroll-fade" class="mt-48 flex w-full max-w-6xl flex-col items-center gap-20 px-6 pb-48">
+        <div class="flex flex-col items-center gap-6 text-center">
+          <div class="rounded-full bg-main/10 px-6 py-2 text-sm font-black tracking-widest text-main uppercase shadow-inner border border-main/20">
+            Qanday ishlaydi
+          </div>
+          <h2 class="text-4xl font-extrabold text-text sm:text-5xl lg:text-6xl tracking-tight">Uch qadamda boshlang</h2>
         </div>
-        <div class="grid w-full grid-cols-1 gap-10 sm:grid-cols-3 mt-8">
+        <div class="grid w-full grid-cols-1 gap-16 sm:grid-cols-3 mt-8 relative">
+          {/* Connecting line */}
+          <div class="hidden sm:block absolute top-12 left-[16%] right-[16%] h-[2px] bg-gradient-to-r from-main/0 via-main/20 to-main/0"></div>
+          
           <StepCard
             step="1"
             icon="fa-cog"
