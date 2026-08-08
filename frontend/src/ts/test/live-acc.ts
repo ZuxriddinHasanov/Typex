@@ -34,13 +34,11 @@ export function show(): void {
   if (state) return;
   requestDebouncedAnimationFrame("live-acc.show", () => {
     if (Config.liveAccStyle === "mini") {
-      miniEl?.show();
       miniEl?.animate({
         opacity: [0, 1],
         duration: applyReducedMotion(125),
       });
     } else {
-      textEl?.show();
       textEl?.animate({
         opacity: [0, 1],
         duration: applyReducedMotion(125),
@@ -56,16 +54,10 @@ export function hide(): void {
     textEl?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
-      onComplete: () => {
-        textEl?.hide();
-      },
     });
     miniEl?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
-      onComplete: () => {
-        miniEl?.hide();
-      },
     });
     state = false;
   });
@@ -74,9 +66,7 @@ export function hide(): void {
 export function instantHide(): void {
   if (!state) return;
 
-  textEl?.hide();
   textEl?.setStyle({ opacity: "0" });
-  miniEl?.hide();
   miniEl?.setStyle({ opacity: "0" });
 
   state = false;

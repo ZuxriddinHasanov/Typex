@@ -11,6 +11,9 @@ export default s.router(adminContract, {
   toggleBan: {
     handler: async (r) => callController(AdminController.toggleBan)(r),
   },
+  deleteUser: {
+    handler: async (r) => callController(AdminController.deleteUser)(r),
+  },
   clearStreakHourOffset: {
     handler: async (r) =>
       callController(AdminController.clearStreakHourOffset)(r),

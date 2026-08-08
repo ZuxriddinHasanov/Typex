@@ -48,9 +48,7 @@ async function savePwDoc(doc: PwDoc): Promise<void> {
   if (isDevEnvironment()) {
     devSet(`pw_${doc.uid}`, doc);
   } else {
-    await collection("user-passwords").insertOne(
-      doc,
-    );
+    await collection("user-passwords").insertOne(doc);
   }
 }
 
@@ -82,6 +80,10 @@ async function saveUserMeta(meta: UserMeta): Promise<void> {
     const allByName = devGet<Record<string, UserMeta>>("users_by_name") ?? {};
     allByName[meta.name.toLowerCase()] = meta;
     devSet("users_by_name", allByName);
+    // uid → user mapping for getUser(uid) calls
+    const allByUid = devGet<Record<string, UserMeta>>("users_by_uid") ?? {};
+    allByUid[meta.uid] = meta;
+    devSet("users_by_uid", allByUid);
   }
 }
 
@@ -149,18 +151,16 @@ router.post("/email/register", async (req: Request, res: Response) => {
     const uid = crypto.randomUUID();
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!isDevEnvironment()) {
-      await UserDAL.addUser(
-        name,
-        email,
-        uid,
-        gender as Gender,
-        age,
-        avatar,
-        firstName,
-        lastName,
-      );
-    }
+    await UserDAL.addUser(
+      name,
+      email,
+      uid,
+      gender as Gender,
+      age,
+      avatar,
+      firstName,
+      lastName,
+    );
     await saveUserMeta({ uid, email, name });
     await savePwDoc({
       uid,
@@ -556,9 +556,13 @@ async function getAdminCredDoc(username: string): Promise<AdminCredDoc | null> {
     const creds = devGet<Record<string, AdminCredDoc>>(ADMIN_CRED_KEY) ?? {};
     return creds[username.toLowerCase()] ?? null;
   }
-  const doc = await (db.collection("admin-credentials") as unknown as {
-    findOne: (filter: Record<string, unknown>) => Promise<AdminCredDoc | null>;
-  }).findOne({ username: username.toLowerCase() });
+  const doc = await (
+    db.collection("admin-credentials") as unknown as {
+      findOne: (
+        filter: Record<string, unknown>,
+      ) => Promise<AdminCredDoc | null>;
+    }
+  ).findOne({ username: username.toLowerCase() });
   return doc;
 }
 

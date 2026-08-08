@@ -58,16 +58,10 @@ export function hide(): void {
     miniElement?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
-      onComplete: () => {
-        miniElement?.hide();
-      },
     });
     textElement?.animate({
       opacity: [1, 0],
       duration: applyReducedMotion(125),
-      onComplete: () => {
-        textElement?.hide();
-      },
     });
     state = false;
   });
@@ -75,9 +69,7 @@ export function hide(): void {
 
 export function instantHide(): void {
   if (!state) return;
-  miniElement?.hide();
   miniElement?.setStyle({ opacity: "0" });
-  textElement?.hide();
   textElement?.setStyle({ opacity: "0" });
   state = false;
 }

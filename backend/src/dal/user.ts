@@ -2,7 +2,7 @@ import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
 import * as db from "../init/db";
 import TypeUZError from "../utils/error";
 import { isDevEnvironment } from "../utils/misc";
-import { devGet as devGetUser } from "../utils/dev-store";
+import { devGet as devGetUser, devSet } from "../utils/dev-store";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
 import { UTCDate } from "@date-fns/utc";
@@ -72,14 +72,24 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
   };
 
   const tags = parseJson(row["tags"]) as DBUserTag[] | undefined;
-  const customThemes = parseJson(row["custom_themes"]) as { _id: string; name: string; colors: string[] }[] | undefined;
-  const resultFilterPresets = parseJson(row["result_filter_presets"]) as ResultFilters[] | undefined;
-  const testActivity = parseJson(row["test_activity"]) as Record<string, (number | null)[]> | undefined;
+  const customThemes = parseJson(row["custom_themes"]) as
+    | { _id: string; name: string; colors: string[] }[]
+    | undefined;
+  const resultFilterPresets = parseJson(row["result_filter_presets"]) as
+    | ResultFilters[]
+    | undefined;
+  const testActivity = parseJson(row["test_activity"]) as
+    | Record<string, (number | null)[]>
+    | undefined;
   const inbox = parseJson(row["inbox"]) as MonkeyMail[] | undefined;
   const ips = parseJson(row["ips"]) as string[] | undefined;
   const nameHistory = parseJson(row["name_history"]) as string[] | undefined;
-  const autoBanTimestamps = parseJson(row["auto_ban_timestamps"]) as number[] | undefined;
-  const favoriteQuotes = parseJson(row["favorite_quotes"]) as Record<string, string[]> | undefined;
+  const autoBanTimestamps = parseJson(row["auto_ban_timestamps"]) as
+    | number[]
+    | undefined;
+  const favoriteQuotes = parseJson(row["favorite_quotes"]) as
+    | Record<string, string[]>
+    | undefined;
 
   const r = row;
   return {
@@ -92,24 +102,44 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
     gender: r["gender"] as Gender | undefined,
     age: r["age"] as number | undefined,
     avatar: r["avatar"] as string | undefined,
-    personalBests:
-      (parseJson(r["personal_bests"]) as PersonalBests | undefined) ??
-      { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} },
-    lbPersonalBests:
-      (parseJson(r["lb_personal_bests"]) as LbPersonalBests | undefined) ??
-      { time: {} },
-    lastResultHashes: parseJson(r["last_result_hashes"]) as string[] | undefined,
+    personalBests: (parseJson(r["personal_bests"]) as
+      | PersonalBests
+      | undefined) ?? {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+      ai: {},
+    },
+    lbPersonalBests: (parseJson(r["lb_personal_bests"]) as
+      | LbPersonalBests
+      | undefined) ?? { time: {} },
+    lastResultHashes: parseJson(r["last_result_hashes"]) as
+      | string[]
+      | undefined,
     completedTests: (r["completed_tests"] as number) ?? 0,
     startedTests: (r["started_tests"] as number) ?? 0,
     timeTyping: (r["time_typing"] as number) ?? 0,
-    streak: parseJson(r["streak"]) as { lastResultTimestamp: number; length: number; maxLength: number; hourOffset?: number } | undefined,
+    streak: parseJson(r["streak"]) as
+      | {
+          lastResultTimestamp: number;
+          length: number;
+          maxLength: number;
+          hourOffset?: number;
+        }
+      | undefined,
     xp: (r["xp"] as number) ?? 0,
     discordId: r["discord_id"] as string | undefined,
     discordAvatar: r["discord_avatar"] as string | undefined,
     tags,
-    profileDetails: parseJson(r["profile_details"]) as UserProfileDetails | undefined,
+    profileDetails: parseJson(r["profile_details"]) as
+      | UserProfileDetails
+      | undefined,
     customThemes,
-    premium: parseJson(r["premium"]) as { startTimestamp: number; expirationTimestamp: number } | undefined,
+    premium: parseJson(r["premium"]) as
+      | { startTimestamp: number; expirationTimestamp: number }
+      | undefined,
     quoteRatings: parseJson(r["quote_ratings"]) as UserQuoteRatings | undefined,
     favoriteQuotes,
     lbMemory: parseJson(r["lb_memory"]) as Record<string, unknown> | undefined,
@@ -146,7 +176,12 @@ export async function addUser(
   lastName?: string,
 ): Promise<void> {
   const personalBests = {
-    time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {},
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+    ai: {},
   };
 
   try {
@@ -156,8 +191,15 @@ export async function addUser(
         gender, age, avatar, personal_bests, test_activity, last_login_at
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12)`,
       [
-        uid, name, firstName ?? null, lastName ?? null, email, Date.now(),
-        gender ?? null, age ?? null, avatar ?? null,
+        uid,
+        name,
+        firstName ?? null,
+        lastName ?? null,
+        email,
+        Date.now(),
+        gender ?? null,
+        age ?? null,
+        avatar ?? null,
         JSON.stringify(personalBests),
         JSON.stringify({}),
         Date.now(),
@@ -199,7 +241,14 @@ export async function resetUser(uid: string): Promise<void> {
       inbox = NULL
     WHERE uid = $5`,
     [
-      JSON.stringify({ time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} }),
+      JSON.stringify({
+        time: {},
+        words: {},
+        quote: {},
+        zen: {},
+        custom: {},
+        ai: {},
+      }),
       JSON.stringify({ time: {} }),
       JSON.stringify({ bio: "", keyboard: "", socialProfiles: {} }),
       JSON.stringify({ length: 0, lastResultTimestamp: 0, maxLength: 0 }),
@@ -252,7 +301,14 @@ export async function clearPb(uid: string): Promise<void> {
   await db.query(
     "UPDATE users SET personal_bests = $1::jsonb, lb_personal_bests = $2::jsonb WHERE uid = $3",
     [
-      JSON.stringify({ time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} }),
+      JSON.stringify({
+        time: {},
+        words: {},
+        quote: {},
+        zen: {},
+        custom: {},
+        ai: {},
+      }),
       JSON.stringify({ time: {} }),
       uid,
     ],
@@ -270,10 +326,10 @@ export async function updateQuoteRatings(
   uid: string,
   quoteRatings: UserQuoteRatings,
 ): Promise<boolean> {
-  await db.query(
-    "UPDATE users SET quote_ratings = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(quoteRatings), uid],
-  );
+  await db.query("UPDATE users SET quote_ratings = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(quoteRatings),
+    uid,
+  ]);
   return true;
 }
 
@@ -287,28 +343,66 @@ export async function updateEmail(
 
 export async function getUser(uid: string, stack: string): Promise<DBUser> {
   if (isDevEnvironment()) {
-    const allUsers =
+    // Try users_by_uid first (fast path)
+    const byUid =
       devGetUser<Record<string, { uid: string; email: string; name: string }>>(
-        "users_by_email",
+        "users_by_uid",
       ) ?? {};
-    const userMeta = Object.values(allUsers).find((u) => u.uid === uid);
+    let userMeta = byUid[uid];
+    // Fallback: scan users_by_email
+    if (userMeta === undefined) {
+      const allUsers =
+        devGetUser<
+          Record<string, { uid: string; email: string; name: string }>
+        >("users_by_email") ?? {};
+      userMeta = Object.values(allUsers).find((u) => u.uid === uid);
+    }
     if (userMeta !== undefined) {
+      const profile =
+        devGetUser<Record<string, unknown>>(`user_profile_${uid}`) ?? {};
       return {
         name: userMeta.name,
         email: userMeta.email ?? "",
         uid: userMeta.uid,
-        addedAt: Date.now(),
-        personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} },
-        testActivity: {},
-        lastLoginAt: Date.now(),
+        addedAt: (profile["addedAt"] as number) ?? Date.now(),
+        personalBests: (profile["personalBests"] as PersonalBests) ?? {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+          ai: {},
+        },
+        testActivity:
+          (profile["testActivity"] as Record<string, (number | null)[]>) ?? {},
+        lastLoginAt: (profile["lastLoginAt"] as number) ?? Date.now(),
+        firstName: profile["firstName"] as string | undefined,
+        lastName: profile["lastName"] as string | undefined,
+        gender: profile["gender"] as Gender | undefined,
+        age: profile["age"] as number | undefined,
+        avatar: profile["avatar"] as string | undefined,
+        profileDetails: profile["profileDetails"] as
+          | UserProfileDetails
+          | undefined,
+        completedTests: (profile["completedTests"] as number) ?? 0,
+        startedTests: (profile["startedTests"] as number) ?? 0,
+        timeTyping: (profile["timeTyping"] as number) ?? 0,
+        xp: (profile["xp"] as number) ?? 0,
+        banned: false,
+        lbOptOut: false,
+        verified: true,
+        needsToChangeName: false,
+        canReport: true,
+        canManageApeKeys: false,
+        bananas: 0,
+        suspicious: false,
+        inventory: { badges: [] },
       };
     }
+    throw new TypeUZError(404, "User not found", stack);
   }
 
-  const row = await db.queryOne(
-    "SELECT * FROM users WHERE uid = $1",
-    [uid],
-  );
+  const row = await db.queryOne("SELECT * FROM users WHERE uid = $1", [uid]);
   if (!row) throw new TypeUZError(404, "User not found", stack);
   return migrateUser(userRowToDBUser(row));
 }
@@ -318,6 +412,15 @@ export async function getPartialUser<K extends keyof DBUser>(
   stack: string,
   fields: K[],
 ): Promise<Pick<DBUser, K>> {
+  if (isDevEnvironment()) {
+    const full = await getUser(uid, stack);
+    const partial: Record<string, unknown> = {};
+    fields.forEach((f) => {
+      partial[f] = (full as Record<string, unknown>)[f];
+    });
+    return partial as Pick<DBUser, K>;
+  }
+
   const colMap: Record<string, string> = {
     uid: "uid",
     name: "name",
@@ -377,11 +480,30 @@ export async function getPartialUser<K extends keyof DBUser>(
   fields.forEach((f) => {
     const col = colMap[f] ?? f;
     const val = row[col];
-    if (typeof val === "string" && ["personal_bests", "tags", "custom_themes", "streak",
-      "premium", "profile_details", "lb_memory", "inventory", "inbox", "ips",
-      "name_history", "favorite_quotes", "lb_personal_bests", "result_filter_presets",
-      "test_activity", "auto_ban_timestamps", "quote_ratings", "quote_mod",
-      "last_result_hashes"].includes(col)) {
+    if (
+      typeof val === "string" &&
+      [
+        "personal_bests",
+        "tags",
+        "custom_themes",
+        "streak",
+        "premium",
+        "profile_details",
+        "lb_memory",
+        "inventory",
+        "inbox",
+        "ips",
+        "name_history",
+        "favorite_quotes",
+        "lb_personal_bests",
+        "result_filter_presets",
+        "test_activity",
+        "auto_ban_timestamps",
+        "quote_ratings",
+        "quote_mod",
+        "last_result_hashes",
+      ].includes(col)
+    ) {
       try {
         result[f] = val ? JSON.parse(val) : undefined;
       } catch {
@@ -408,10 +530,20 @@ export async function findByName(name: string): Promise<DBUser | undefined> {
     const meta = usersByName[name.toLowerCase()];
     if (meta !== undefined) {
       return {
-        name: meta.name, email: meta.email ?? "", uid: meta.uid,
+        name: meta.name,
+        email: meta.email ?? "",
+        uid: meta.uid,
         addedAt: Date.now(),
-        personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} },
-        testActivity: {}, lastLoginAt: Date.now(),
+        personalBests: {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+          ai: {},
+        },
+        testActivity: {},
+        lastLoginAt: Date.now(),
       };
     }
     return undefined;
@@ -433,38 +565,58 @@ export async function findByEmail(email: string): Promise<DBUser | undefined> {
     const meta = usersByEmail[email.toLowerCase()];
     if (meta !== undefined) {
       return {
-        name: meta.name, email: meta.email ?? "", uid: meta.uid,
+        name: meta.name,
+        email: meta.email ?? "",
+        uid: meta.uid,
         addedAt: Date.now(),
-        personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} },
-        testActivity: {}, lastLoginAt: Date.now(),
+        personalBests: {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+          ai: {},
+        },
+        testActivity: {},
+        lastLoginAt: Date.now(),
       };
     }
     return undefined;
   }
 
-  const row = await db.queryOne(
-    "SELECT * FROM users WHERE email = $1",
-    [email],
-  );
+  const row = await db.queryOne("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
   return row ? userRowToDBUser(row) : undefined;
 }
 
 export async function updateLastLoginAt(uid: string): Promise<void> {
-  await db.query("UPDATE users SET last_login_at = $1 WHERE uid = $2", [Date.now(), uid]);
+  await db.query("UPDATE users SET last_login_at = $1 WHERE uid = $2", [
+    Date.now(),
+    uid,
+  ]);
 }
 
-export async function isNameAvailable(name: string, uid: string): Promise<boolean> {
+export async function isNameAvailable(
+  name: string,
+  uid: string,
+): Promise<boolean> {
   const user = await findByName(name);
   return user === undefined || user.uid === uid;
 }
 
-export async function getUserByName(name: string, stack: string): Promise<DBUser> {
+export async function getUserByName(
+  name: string,
+  stack: string,
+): Promise<DBUser> {
   const user = await findByName(name);
   if (!user) throw new TypeUZError(404, "User not found", stack);
   return migrateUser(user);
 }
 
-export async function isDiscordIdAvailable(discordId: string): Promise<boolean> {
+export async function isDiscordIdAvailable(
+  discordId: string,
+): Promise<boolean> {
   const row = await db.queryOne<{ uid: string }>(
     "SELECT uid FROM users WHERE discord_id = $1",
     [discordId],
@@ -478,7 +630,11 @@ export async function addResultFilterPreset(
   maxFiltersPerUser: number,
 ): Promise<string> {
   if (maxFiltersPerUser === 0) {
-    throw new TypeUZError(409, "Maximum number of custom filters reached", "add result filter preset");
+    throw new TypeUZError(
+      409,
+      "Maximum number of custom filters reached",
+      "add result filter preset",
+    );
   }
 
   const user = await db.queryOne<{ result_filter_presets: unknown }>(
@@ -491,7 +647,11 @@ export async function addResultFilterPreset(
 
   const presets = (user.result_filter_presets as ResultFilters[]) ?? [];
   if (presets.length >= maxFiltersPerUser) {
-    throw new TypeUZError(409, "Maximum number of custom filters reached", "add result filter preset");
+    throw new TypeUZError(
+      409,
+      "Maximum number of custom filters reached",
+      "add result filter preset",
+    );
   }
 
   const _id = crypto.randomUUID();
@@ -519,7 +679,11 @@ export async function removeResultFilterPreset(
   const presets = (user.result_filter_presets as ResultFilters[]) ?? [];
   const filtered = presets.filter((p) => p._id !== _id);
   if (filtered.length === presets.length) {
-    throw new TypeUZError(404, "Custom filter not found", "remove result filter preset");
+    throw new TypeUZError(
+      404,
+      "Custom filter not found",
+      "remove result filter preset",
+    );
   }
 
   await db.query(
@@ -543,14 +707,21 @@ export async function addTag(uid: string, name: string): Promise<DBUserTag> {
   const newTag: DBUserTag = {
     _id: crypto.randomUUID(),
     name,
-    personalBests: { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} },
+    personalBests: {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+      ai: {},
+    },
   };
   tags.push(newTag);
 
-  await db.query(
-    "UPDATE users SET tags = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(tags), uid],
-  );
+  await db.query("UPDATE users SET tags = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(tags),
+    uid,
+  ]);
   return newTag;
 }
 
@@ -559,7 +730,11 @@ export async function getTags(uid: string): Promise<DBUserTag[]> {
   return user.tags ?? [];
 }
 
-export async function editTag(uid: string, _id: string, name: string): Promise<void> {
+export async function editTag(
+  uid: string,
+  _id: string,
+  name: string,
+): Promise<void> {
   const user = await db.queryOne<{ tags: unknown }>(
     "SELECT tags FROM users WHERE uid = $1",
     [uid],
@@ -571,10 +746,10 @@ export async function editTag(uid: string, _id: string, name: string): Promise<v
   if (!tag) throw new TypeUZError(404, "Tag not found", "edit tag");
 
   tag.name = name;
-  await db.query(
-    "UPDATE users SET tags = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(tags), uid],
-  );
+  await db.query("UPDATE users SET tags = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(tags),
+    uid,
+  ]);
 }
 
 export async function removeTag(uid: string, _id: string): Promise<void> {
@@ -590,10 +765,10 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
     throw new TypeUZError(404, "Tag not found", "remove tag");
   }
 
-  await db.query(
-    "UPDATE users SET tags = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(filtered), uid],
-  );
+  await db.query("UPDATE users SET tags = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(filtered),
+    uid,
+  ]);
 }
 
 export async function removeTagPb(uid: string, _id: string): Promise<void> {
@@ -607,11 +782,18 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
   const tag = tags.find((t) => t._id === _id);
   if (!tag) throw new TypeUZError(404, "Tag not found", "remove tag pb");
 
-  tag.personalBests = { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} };
-  await db.query(
-    "UPDATE users SET tags = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(tags), uid],
-  );
+  tag.personalBests = {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+    ai: {},
+  };
+  await db.query("UPDATE users SET tags = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(tags),
+    uid,
+  ]);
 }
 
 export async function updateLbMemory(
@@ -627,18 +809,20 @@ export async function updateLbMemory(
   );
   if (!user) throw new TypeUZError(404, "User not found", "update lb memory");
 
-  const lbMemory: Record<string, Record<string, Record<string, number>>> =
-    typeof user.lb_memory === "object" && user.lb_memory !== null
-      ? (user.lb_memory as Record<string, Record<string, Record<string, number>>>)
-      : {};
+  const lbMemory: Record<
+    string,
+    Record<string, Record<string, number>>
+  > = typeof user.lb_memory === "object" && user.lb_memory !== null
+    ? (user.lb_memory as Record<string, Record<string, Record<string, number>>>)
+    : {};
   lbMemory[mode] ??= {};
   lbMemory[mode][mode2] ??= {};
   lbMemory[mode][mode2][language] = rank;
 
-  await db.query(
-    "UPDATE users SET lb_memory = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(lbMemory), uid],
-  );
+  await db.query("UPDATE users SET lb_memory = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(lbMemory),
+    uid,
+  ]);
 }
 
 export async function checkIfPb(
@@ -648,17 +832,32 @@ export async function checkIfPb(
 ): Promise<boolean> {
   const { mode } = result;
   if (!canFunboxGetPb(result)) return false;
-  if ("stopOnLetter" in result && result.stopOnLetter === true && result.acc < 100) return false;
+  if (
+    "stopOnLetter" in result &&
+    result.stopOnLetter === true &&
+    result.acc < 100
+  ) {
+    return false;
+  }
   if (mode === "quote") return false;
 
-  user.personalBests ??= { time: {}, custom: {}, ai: {}, quote: {}, words: {}, zen: {} };
+  user.personalBests ??= {
+    time: {},
+    custom: {},
+    ai: {},
+    quote: {},
+    words: {},
+    zen: {},
+  };
   user.lbPersonalBests ??= { time: {} };
 
   const pb = checkAndUpdatePb(user.personalBests, user.lbPersonalBests, result);
   if (!pb.isPb) return false;
 
   const personalBestsJson = JSON.stringify(pb.personalBests);
-  const lbPersonalBestsJson = pb.lbPersonalBests ? JSON.stringify(pb.lbPersonalBests) : null;
+  const lbPersonalBestsJson = pb.lbPersonalBests
+    ? JSON.stringify(pb.lbPersonalBests)
+    : null;
 
   if (lbPersonalBestsJson !== null) {
     await db.query(
@@ -682,7 +881,13 @@ export async function checkIfTagPb(
   if (!user.tags || user.tags.length === 0) return [];
   const { mode, tags: resultTags } = result;
   if (!canFunboxGetPb(result)) return [];
-  if ("stopOnLetter" in result && result.stopOnLetter === true && result.acc < 100) return [];
+  if (
+    "stopOnLetter" in result &&
+    result.stopOnLetter === true &&
+    result.acc < 100
+  ) {
+    return [];
+  }
   if (mode === "quote") return [];
 
   const tagsToCheck = user.tags.filter((userTag) =>
@@ -691,24 +896,38 @@ export async function checkIfTagPb(
   const ret: string[] = [];
 
   for (const tag of tagsToCheck) {
-    tag.personalBests ??= { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} };
+    tag.personalBests ??= {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+      ai: {},
+    };
     const tagpb = checkAndUpdatePb(tag.personalBests, undefined, result);
     if (tagpb.isPb) {
       ret.push(tag._id);
-      await db.query(
-        "UPDATE users SET tags = $1::jsonb WHERE uid = $2",
-        [JSON.stringify(user.tags), uid],
-      );
+      await db.query("UPDATE users SET tags = $1::jsonb WHERE uid = $2", [
+        JSON.stringify(user.tags),
+        uid,
+      ]);
     }
   }
   return ret;
 }
 
 export async function resetPb(uid: string): Promise<void> {
-  await db.query(
-    "UPDATE users SET personal_bests = $1::jsonb WHERE uid = $2",
-    [JSON.stringify({ time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} }), uid],
-  );
+  await db.query("UPDATE users SET personal_bests = $1::jsonb WHERE uid = $2", [
+    JSON.stringify({
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+      ai: {},
+    }),
+    uid,
+  ]);
 }
 
 export async function updateLastHashes(
@@ -747,10 +966,10 @@ export async function linkDiscord(
       [discordId, discordAvatar, uid],
     );
   } else {
-    await db.query(
-      "UPDATE users SET discord_id = $1 WHERE uid = $2",
-      [discordId, uid],
-    );
+    await db.query("UPDATE users SET discord_id = $1 WHERE uid = $2", [
+      discordId,
+      uid,
+    ]);
   }
 }
 
@@ -777,10 +996,9 @@ export async function incrementBananas(
 
   const maxWpm = Math.max(...time60.map((pb) => pb.wpm));
   if (wpm >= maxWpm * 0.75) {
-    await db.query(
-      "UPDATE users SET bananas = bananas + 1 WHERE uid = $1",
-      [uid],
-    );
+    await db.query("UPDATE users SET bananas = bananas + 1 WHERE uid = $1", [
+      uid,
+    ]);
   }
 }
 
@@ -805,15 +1023,18 @@ export async function incrementTestActivity(
   arr[dayOfYear - 1] = (arr[dayOfYear - 1] ?? 0) + 1;
   activity[year] = arr;
 
-  await db.query(
-    "UPDATE users SET test_activity = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(activity), user.uid],
-  );
+  await db.query("UPDATE users SET test_activity = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(activity),
+    user.uid,
+  ]);
 }
 
 export async function addTheme(
   uid: string,
-  { name, colors }: Omit<{ _id: string; name: string; colors: string[] }, "_id">,
+  {
+    name,
+    colors,
+  }: Omit<{ _id: string; name: string; colors: string[] }, "_id">,
 ): Promise<{ _id: string; name: string }> {
   const user = await db.queryOne<{ custom_themes: unknown }>(
     "SELECT custom_themes FROM users WHERE uid = $1",
@@ -821,18 +1042,24 @@ export async function addTheme(
   );
   if (!user) throw new TypeUZError(404, "User not found", "add theme");
 
-  const themes = (user.custom_themes as { _id: string; name: string; colors: string[] }[]) ?? [];
+  const themes =
+    (user.custom_themes as { _id: string; name: string; colors: string[] }[]) ??
+    [];
   if (themes.length >= 20) {
-    throw new TypeUZError(409, "Maximum number of custom themes reached", "add theme");
+    throw new TypeUZError(
+      409,
+      "Maximum number of custom themes reached",
+      "add theme",
+    );
   }
 
   const _id = crypto.randomUUID();
   themes.push({ _id, name, colors });
 
-  await db.query(
-    "UPDATE users SET custom_themes = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(themes), uid],
-  );
+  await db.query("UPDATE users SET custom_themes = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(themes),
+    uid,
+  ]);
   return { _id, name };
 }
 
@@ -843,22 +1070,27 @@ export async function removeTheme(uid: string, id: string): Promise<void> {
   );
   if (!user) throw new TypeUZError(404, "User not found", "remove theme");
 
-  const themes = (user.custom_themes as { _id: string; name: string; colors: string[] }[]) ?? [];
+  const themes =
+    (user.custom_themes as { _id: string; name: string; colors: string[] }[]) ??
+    [];
   const filtered = themes.filter((t) => t._id !== id);
   if (filtered.length === themes.length) {
     throw new TypeUZError(404, "Custom theme not found", "remove theme");
   }
 
-  await db.query(
-    "UPDATE users SET custom_themes = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(filtered), uid],
-  );
+  await db.query("UPDATE users SET custom_themes = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(filtered),
+    uid,
+  ]);
 }
 
 export async function editTheme(
   uid: string,
   id: string,
-  { name, colors }: Omit<{ _id: string; name: string; colors: string[] }, "_id">,
+  {
+    name,
+    colors,
+  }: Omit<{ _id: string; name: string; colors: string[] }, "_id">,
 ): Promise<void> {
   const user = await db.queryOne<{ custom_themes: unknown }>(
     "SELECT custom_themes FROM users WHERE uid = $1",
@@ -866,7 +1098,9 @@ export async function editTheme(
   );
   if (!user) throw new TypeUZError(404, "User not found", "edit theme");
 
-  const themes = (user.custom_themes as { _id: string; name: string; colors: string[] }[]) ?? [];
+  const themes =
+    (user.custom_themes as { _id: string; name: string; colors: string[] }[]) ??
+    [];
   const theme = themes.find((t) => t._id === id);
   if (!theme) {
     throw new TypeUZError(404, "Custom theme not found", "edit theme");
@@ -875,10 +1109,10 @@ export async function editTheme(
   theme.name = name;
   theme.colors = colors;
 
-  await db.query(
-    "UPDATE users SET custom_themes = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(themes), uid],
-  );
+  await db.query("UPDATE users SET custom_themes = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(themes),
+    uid,
+  ]);
 }
 
 export type DBCustomTheme = { _id: string; name: string; colors: string[] };
@@ -893,7 +1127,9 @@ export async function getPersonalBests(
   mode: string,
   mode2?: string,
 ): Promise<unknown> {
-  const user = await getPartialUser(uid, "get personal bests", ["personalBests"]);
+  const user = await getPartialUser(uid, "get personal bests", [
+    "personalBests",
+  ]);
   if (mode2 !== undefined) {
     return user.personalBests?.[mode as keyof PersonalBests]?.[mode2];
   }
@@ -913,7 +1149,9 @@ export async function getStats(
 export async function getFavoriteQuotes(
   uid: string,
 ): Promise<Record<string, string[]>> {
-  const user = await getPartialUser(uid, "get favorite quotes", ["favoriteQuotes"]);
+  const user = await getPartialUser(uid, "get favorite quotes", [
+    "favoriteQuotes",
+  ]);
   return user.favoriteQuotes ?? {};
 }
 
@@ -930,9 +1168,16 @@ export async function addFavoriteQuote(
   if (!user) throw new TypeUZError(404, "User not found", "add favorite quote");
 
   const fq = (user.favorite_quotes as Record<string, string[]>) ?? {};
-  const totalQuotes = Object.values(fq).reduce((sum, arr) => sum + arr.length, 0);
+  const totalQuotes = Object.values(fq).reduce(
+    (sum, arr) => sum + arr.length,
+    0,
+  );
   if (totalQuotes >= maxQuotes) {
-    throw new TypeUZError(409, "Maximum number of favorite quotes reached", "add favorite quote");
+    throw new TypeUZError(
+      409,
+      "Maximum number of favorite quotes reached",
+      "add favorite quote",
+    );
   }
 
   fq[language] ??= [];
@@ -976,7 +1221,9 @@ export async function recordAutoBanEvent(
   maxHours: number,
 ): Promise<boolean> {
   const user = await getPartialUser(uid, "record auto ban event", [
-    "banned", "autoBanTimestamps", "discordId",
+    "banned",
+    "autoBanTimestamps",
+    "discordId",
   ]);
 
   let ret = false;
@@ -1005,7 +1252,11 @@ export async function recordAutoBanEvent(
     [JSON.stringify(recentAutoBanTimestamps), banningUser, uid],
   );
 
-  void addImportantLog("user_auto_banned", { autoBanTimestamps, banningUser }, uid);
+  void addImportantLog(
+    "user_auto_banned",
+    { autoBanTimestamps, banningUser },
+    uid,
+  );
   return ret;
 }
 
@@ -1014,6 +1265,15 @@ export async function updateProfile(
   profileDetailUpdates: Partial<UserProfileDetails>,
   inventory?: UserInventory,
 ): Promise<void> {
+  if (isDevEnvironment()) {
+    const profile =
+      devGetUser<Record<string, unknown>>(`user_profile_${uid}`) ?? {};
+    Object.assign(profile, { profileDetails: profileDetailUpdates });
+    if (inventory !== undefined) Object.assign(profile, { inventory });
+    devSet(`user_profile_${uid}`, profile);
+    return;
+  }
+
   const profileDetails = profileDetailUpdates as Record<string, unknown>;
 
   if (inventory !== undefined) {
@@ -1033,6 +1293,14 @@ export async function updateProfileDetails(
   uid: string,
   updates: Record<string, unknown>,
 ): Promise<void> {
+  if (isDevEnvironment()) {
+    const profile =
+      devGetUser<Record<string, unknown>>(`user_profile_${uid}`) ?? {};
+    Object.assign(profile, updates);
+    devSet(`user_profile_${uid}`, profile);
+    return;
+  }
+
   const user = await db.queryOne<{ profile_details: unknown }>(
     "SELECT profile_details FROM users WHERE uid = $1",
     [uid],
@@ -1077,10 +1345,10 @@ export async function addToInboxBulk(
     const inbox = (user.inbox as MonkeyMail[]) ?? [];
     const updated = [...entry.mail, ...inbox].slice(0, maxMail);
 
-    await db.query(
-      "UPDATE users SET inbox = $1::jsonb WHERE uid = $2",
-      [JSON.stringify(updated), entry.uid],
-    );
+    await db.query("UPDATE users SET inbox = $1::jsonb WHERE uid = $2", [
+      JSON.stringify(updated),
+      entry.uid,
+    ]);
   }
 }
 
@@ -1101,10 +1369,10 @@ export async function addToInbox(
   const inbox = (user.inbox as MonkeyMail[]) ?? [];
   const updated = [...mail, ...inbox].slice(0, maxMail);
 
-  await db.query(
-    "UPDATE users SET inbox = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(updated), uid],
-  );
+  await db.query("UPDATE users SET inbox = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(updated),
+    uid,
+  ]);
 }
 
 export async function updateInbox(
@@ -1112,10 +1380,11 @@ export async function updateInbox(
   mailToRead: string[],
   mailToDelete: string[],
 ): Promise<void> {
-  const user = await db.queryOne<{ inbox: unknown; xp: number; inventory: unknown }>(
-    "SELECT inbox, xp, inventory FROM users WHERE uid = $1",
-    [uid],
-  );
+  const user = await db.queryOne<{
+    inbox: unknown;
+    xp: number;
+    inventory: unknown;
+  }>("SELECT inbox, xp, inventory FROM users WHERE uid = $1", [uid]);
   if (!user) throw new TypeUZError(404, "User not found", "update inbox");
 
   const inbox = (user.inbox as MonkeyMail[]) ?? [];
@@ -1123,14 +1392,19 @@ export async function updateInbox(
   let inventory = (user.inventory as UserInventory) ?? { badges: [] };
 
   const deleteSet = [...new Set(mailToDelete)];
-  const readSet = [...new Set(mailToRead)].filter((id) => !deleteSet.includes(id));
+  const readSet = [...new Set(mailToRead)].filter(
+    (id) => !deleteSet.includes(id),
+  );
 
   const toBeDeleted = inbox.filter((m) => deleteSet.includes(m.id));
   const toBeRead = inbox.filter((m) => readSet.includes(m.id) && !m.read);
 
   const rewards: AllRewards[] = [...toBeRead, ...toBeDeleted]
     .filter((m) => !m.read)
-    .reduce((arr: AllRewards[], current) => arr.concat(current.rewards ?? []), []);
+    .reduce(
+      (arr: AllRewards[], current) => arr.concat(current.rewards ?? []),
+      [],
+    );
 
   const xpGain = rewards
     .filter((r) => r.type === "xp")
@@ -1171,7 +1445,12 @@ export async function updateStreak(
 ): Promise<number> {
   const user = await getPartialUser(uid, "calculate streak", ["streak"]);
 
-  const streak: { lastResultTimestamp: number; length: number; maxLength: number; hourOffset?: number } = {
+  const streak: {
+    lastResultTimestamp: number;
+    length: number;
+    maxLength: number;
+    hourOffset?: number;
+  } = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
     maxLength: user.streak?.maxLength ?? 0,
@@ -1194,10 +1473,10 @@ export async function updateStreak(
     delete streak.hourOffset;
   }
 
-  await db.query(
-    "UPDATE users SET streak = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(streak), uid],
-  );
+  await db.query("UPDATE users SET streak = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(streak),
+    uid,
+  ]);
   return streak.length;
 }
 
@@ -1234,10 +1513,13 @@ export async function checkIfUserIsPremium(
   uid: string,
   userInfoOverride?: Pick<DBUser, "premium">,
 ): Promise<boolean> {
-  const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users.premium.enabled;
+  const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
+    .premium.enabled;
   if (!premiumFeaturesEnabled) return false;
 
-  const user = userInfoOverride ?? (await getPartialUser(uid, "checkIfUserIsPremium", ["premium"]));
+  const user =
+    userInfoOverride ??
+    (await getPartialUser(uid, "checkIfUserIsPremium", ["premium"]));
   const expirationDate = user.premium?.expirationTimestamp;
   if (expirationDate === undefined) return false;
   if (expirationDate === -1) return true;
@@ -1249,17 +1531,18 @@ export async function logIpAddress(
   ip: string,
   userInfoOverride?: Pick<DBUser, "ips">,
 ): Promise<void> {
-  const user = userInfoOverride ?? (await getPartialUser(uid, "logIpAddress", ["ips"]));
+  const user =
+    userInfoOverride ?? (await getPartialUser(uid, "logIpAddress", ["ips"]));
   const currentIps = user.ips ?? [];
   const ipIndex = currentIps.indexOf(ip);
   if (ipIndex !== -1) currentIps.splice(ipIndex, 1);
   currentIps.unshift(ip);
   if (currentIps.length > 10) currentIps.pop();
 
-  await db.query(
-    "UPDATE users SET ips = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(currentIps), uid],
-  );
+  await db.query("UPDATE users SET ips = $1::jsonb WHERE uid = $2", [
+    JSON.stringify(currentIps),
+    uid,
+  ]);
 }
 
 export async function getFriends(uid: string): Promise<Friend[]> {
@@ -1275,7 +1558,7 @@ export async function getFriends(uid: string): Promise<Friend[]> {
   );
 
   return rows.map((r) => {
-    const parseJson = <T,>(val: unknown): T | undefined => {
+    const parseJson = <T>(val: unknown): T | undefined => {
       if (typeof val === "string") return JSON.parse(val) as T;
       if (val !== null && typeof val === "object") return val as T;
       return undefined;
@@ -1283,7 +1566,9 @@ export async function getFriends(uid: string): Promise<Friend[]> {
     const pbs = parseJson<PersonalBests>(r["personal_bests"]);
     const inv = parseJson<UserInventory>(r["inventory"]);
     const premium = parseJson<{ expirationTimestamp: number }>(r["premium"]);
-    const streak = parseJson<{ length: number; maxLength: number }>(r["streak"]);
+    const streak = parseJson<{ length: number; maxLength: number }>(
+      r["streak"],
+    );
 
     const time15 = pbs?.time?.["15"];
     const time60 = pbs?.time?.["60"];
@@ -1298,7 +1583,8 @@ export async function getFriends(uid: string): Promise<Friend[]> {
 
     const selectedBadge = inv?.badges?.find((b) => b.selected);
     const now = Date.now();
-    const isPrem = premium?.expirationTimestamp === -1 ||
+    const isPrem =
+      premium?.expirationTimestamp === -1 ||
       (premium?.expirationTimestamp ?? 0) > now;
 
     const friend: Friend = {
@@ -1316,13 +1602,22 @@ export async function getFriends(uid: string): Promise<Friend[]> {
       top60,
       badgeId: selectedBadge?.id,
       isPremium: isPrem,
-      streak: streak ? { length: streak.length, maxLength: streak.maxLength } : undefined,
+      streak: streak
+        ? { length: streak.length, maxLength: streak.maxLength }
+        : undefined,
     };
     return friend;
   });
 }
 
 function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
-  user.personalBests ??= { time: {}, words: {}, quote: {}, zen: {}, custom: {}, ai: {} };
+  user.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+    ai: {},
+  };
   return user;
 }

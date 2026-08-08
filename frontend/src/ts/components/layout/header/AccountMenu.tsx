@@ -25,18 +25,19 @@ export function AccountMenu(props: Props): JSXElement {
         data-ui-element="accountMenu"
       >
         <Button
-          text="User stats"
+          text="Mening profilim"
           class={buttonClass}
           fa={{
-            icon: "fa-chart-line",
+            icon: "fa-user",
             fixedWidth: true,
           }}
-          href="/account"
+          href={`/profile/${getSnapshot()?.name ?? ""}`}
           router-link
         />
+
         <Show when={getServerConfiguration()?.connections.enabled}>
           <Button
-            text="Friends"
+            text="Do'stlar"
             class={`${buttonClass} relative`}
             fa={{
               icon: "fa-user-friends",
@@ -52,28 +53,9 @@ export function AccountMenu(props: Props): JSXElement {
             />
           </Button>
         </Show>
+
         <Button
-          text="Public profile"
-          class={buttonClass}
-          fa={{
-            icon: "fa-globe-americas",
-            fixedWidth: true,
-          }}
-          href={`/profile/${getSnapshot()?.name ?? ""}`}
-          router-link
-        />
-        <Button
-          text="Account settings"
-          class={buttonClass}
-          fa={{
-            icon: "fa-cog",
-            fixedWidth: true,
-          }}
-          href="/account-settings"
-          router-link
-        />
-        <Button
-          text="Sign out"
+          text="Chiqish"
           class={buttonClass}
           fa={{
             icon: "fa-sign-out-alt",

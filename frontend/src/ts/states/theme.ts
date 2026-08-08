@@ -6,8 +6,8 @@ export type ThemeIdentifier = ThemeName | "custom";
 const defaultTheme: Theme & { name: ThemeIdentifier } = {
   name: "typeuz_light",
   bg: "#ffffff",
-  main: "#ff5a1f",
-  caret: "#ff5a1f",
+  main: "#f97316",
+  caret: "#f97316",
   sub: "#6b7280",
   subAlt: "#f5f5f6",
   text: "#1a1a1a",

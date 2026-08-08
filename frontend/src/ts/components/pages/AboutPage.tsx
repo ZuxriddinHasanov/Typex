@@ -1,4 +1,5 @@
 import { For, JSXElement } from "solid-js";
+
 import { Fa } from "../common/Fa";
 import { TypeUZAdSlot } from "../common/TypeUZAdSlot";
 
@@ -7,23 +8,21 @@ export function AboutPage(): JSXElement {
     <main class="mx-auto mt-16 flex max-w-6xl flex-col gap-16 px-6 pb-24">
       {/* Hero */}
       <section id="hero" class="text-center" aria-label="Loyiha haqida">
-        <h1 class="mb-6 text-6xl font-extrabold tracking-tight text-text">
-          Type<span class="text-main">UZ</span>
+        <h1 class="text-4xl font-extrabold tracking-tight text-text sm:text-5xl">
+          TypeX<span class="text-main">.uz</span>
         </h1>
         <p class="mx-auto max-w-2xl text-lg leading-relaxed text-sub">
-          <span class="font-semibold text-text">TypeUZ</span> &mdash;
-          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. IT o&apos;quv
-          markazi tomonidan ishlab chiqilgan ushbu platformada O&apos;zbek, Ingliz
-          va Rus tillarida yozish tezligingizni sinab ko&apos;ring, natijalaringizni
-          AI yordamida tahlil qiling va reytingda yuksaling.
+          <span class="font-semibold text-text">TypeX.uz</span> &mdash;
+          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. IT
+          o&apos;quv markazi tomonidan ishlab chiqilgan ushbu platformada
+          O&apos;zbek, Ingliz va Rus tillarida yozish tezligingizni sinab
+          ko&apos;ring, natijalaringizni AI yordamida tahlil qiling va reytingda
+          yuksaling.
         </p>
       </section>
 
       {/* Stats */}
-      <section
-        id="statistika"
-        class="grid grid-cols-2 gap-4 sm:grid-cols-4"
-      >
+      <section id="statistika" class="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <For
           each={[
             { value: "50,000+", label: "test", icon: "fa-keyboard" },
@@ -34,9 +33,7 @@ export function AboutPage(): JSXElement {
         >
           {(item) => (
             <div class="group rounded-2xl border border-sub/10 bg-bg/50 p-6 text-center backdrop-blur-sm transition-all hover:border-main/20 hover:shadow-lg hover:shadow-main/5">
-              <div class="text-3xl font-extrabold text-main">
-                {item.value}
-              </div>
+              <div class="text-3xl font-extrabold text-main">{item.value}</div>
               <div class="mt-2 flex items-center justify-center gap-2 text-base text-sub">
                 <Fa icon={item.icon as never} class="text-main/60" />
                 {item.label}
@@ -49,7 +46,10 @@ export function AboutPage(): JSXElement {
       <TypeUZAdSlot slotId="ad-about-1" class="mx-auto w-full max-w-3xl" />
 
       {/* How it works */}
-      <section id="qanday-ishlaydi" class="rounded-2xl border border-sub/10 bg-bg/50 backdrop-blur-sm p-8">
+      <section
+        id="qanday-ishlaydi"
+        class="rounded-2xl border border-sub/10 bg-bg/50 p-8 backdrop-blur-sm"
+      >
         <h2 class="mb-6 text-2xl font-bold text-text">Qanday ishlaydi?</h2>
         <div class="grid gap-5 sm:grid-cols-2">
           <For
@@ -93,7 +93,10 @@ export function AboutPage(): JSXElement {
       </section>
 
       {/* History */}
-      <section id="tariximiz" class="rounded-2xl border border-sub/10 bg-bg/50 backdrop-blur-sm p-8">
+      <section
+        id="tariximiz"
+        class="rounded-2xl border border-sub/10 bg-bg/50 p-8 backdrop-blur-sm"
+      >
         <div class="flex items-center gap-3">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-main/10 text-lg text-main">
             <Fa icon="fa-history" />
@@ -102,30 +105,34 @@ export function AboutPage(): JSXElement {
         </div>
         <div class="mt-6 space-y-4 text-base leading-relaxed text-sub">
           <p>
-            <span class="font-semibold text-text">TypeUZ</span> 2024-yilda
+            <span class="font-semibold text-text">TypeX.uz</span> 2024-yilda
             <span class="font-semibold text-text"> IT o&apos;quv markazi </span>
             tomonidan tashkil etilgan. Maqsad — O&apos;zbekiston yoshlariga
-            klaviaturada tez va to&apos;g&apos;ri yozish ko&apos;nikmasini shakllantirishda
-            yordam berish.
+            klaviaturada tez va to&apos;g&apos;ri yozish ko&apos;nikmasini
+            shakllantirishda yordam berish.
           </p>
           <p>
-            Birgina o&apos;quv markazi ichidagi loyiha sifatida boshlangan TypeUZ,
-            bugungi kunda <span class="font-semibold text-text">12 000+</span>{" "}
-            foydalanuvchiga ega platformaga aylandi. O&apos;zbek, Ingliz va Rus
-            tillaridagi testlar, AI yordamida haftalik tahlil va interaktiv
-            reyting tizimi orqali foydalanuvchilarimiz o&apos;z ko&apos;nikmalarini
-            muntazam oshirib borishmoqda.
+            Birgina o&apos;quv markazi ichidagi loyiha sifatida boshlangan
+            TypeX.uz, bugungi kunda{" "}
+            <span class="font-semibold text-text">12 000+</span> foydalanuvchiga
+            ega platformaga aylandi. O&apos;zbek, Ingliz va Rus tillaridagi
+            testlar, AI yordamida haftalik tahlil va interaktiv reyting tizimi
+            orqali foydalanuvchilarimiz o&apos;z ko&apos;nikmalarini muntazam
+            oshirib borishmoqda.
           </p>
           <p>
-            Bizning vazifamiz — O&apos;zbekistonda raqamli savodxonlikni oshirish
-            va yosh avlodga zamonaviy texnologiyalar bilan ishlash ko&apos;nikmasini
-            singdirish.
+            Bizning vazifamiz — O&apos;zbekistonda raqamli savodxonlikni
+            oshirish va yosh avlodga zamonaviy texnologiyalar bilan ishlash
+            ko&apos;nikmasini singdirish.
           </p>
         </div>
       </section>
 
       {/* Features */}
-      <section id="xususiyatlar" class="rounded-2xl border border-sub/10 bg-bg/50 backdrop-blur-sm p-8">
+      <section
+        id="xususiyatlar"
+        class="rounded-2xl border border-sub/10 bg-bg/50 p-8 backdrop-blur-sm"
+      >
         <div class="flex items-center gap-3">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-main/10 text-lg text-main">
             <Fa icon="fa-star" />
@@ -202,7 +209,10 @@ export function AboutPage(): JSXElement {
       <TypeUZAdSlot slotId="ad-about-2" class="mx-auto w-full max-w-3xl" />
 
       {/* AI Weekly Analysis */}
-      <section id="ai-tahlil" class="rounded-2xl border border-main/10 bg-bg/50 backdrop-blur-sm p-8">
+      <section
+        id="ai-tahlil"
+        class="rounded-2xl border border-main/10 bg-bg/50 p-8 backdrop-blur-sm"
+      >
         <div class="flex flex-col items-center text-center sm:flex-row sm:gap-6 sm:text-left">
           <div class="mb-4 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-main text-2xl text-bg sm:mb-0">
             <Fa icon="fa-brain" />
@@ -236,14 +246,12 @@ export function AboutPage(): JSXElement {
             ]}
           >
             {(item) => (
-              <div class="rounded-xl border border-sub/10 bg-bg/30 p-6 backdrop-blur-sm text-center transition-all hover:border-main/20 hover:shadow-sm hover:shadow-main/5 sm:text-left">
+              <div class="rounded-xl border border-sub/10 bg-bg/30 p-6 text-center backdrop-blur-sm transition-all hover:border-main/20 hover:shadow-sm hover:shadow-main/5 sm:text-left">
                 <div class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-main/10 text-base text-main sm:mx-0">
                   <Fa icon={item.icon as never} />
                 </div>
                 <h3 class="font-semibold text-text">{item.title}</h3>
-                <p class="mt-1 text-sm leading-relaxed text-sub">
-                  {item.text}
-                </p>
+                <p class="mt-1 text-sm leading-relaxed text-sub">{item.text}</p>
               </div>
             )}
           </For>
@@ -258,23 +266,28 @@ export function AboutPage(): JSXElement {
       </section>
 
       {/* FAQ */}
-      <section id="faq" class="rounded-2xl border border-sub/10 bg-bg/50 backdrop-blur-sm p-8">
+      <section
+        id="faq"
+        class="rounded-2xl border border-sub/10 bg-bg/50 p-8 backdrop-blur-sm"
+      >
         <div class="flex items-center gap-3">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-main/10 text-lg text-main">
             <Fa icon="fa-question-circle" />
           </div>
-          <h2 class="text-2xl font-bold text-text">Ko&apos;p beriladigan savollar</h2>
+          <h2 class="text-2xl font-bold text-text">
+            Ko&apos;p beriladigan savollar
+          </h2>
         </div>
         <div class="mt-6 space-y-5">
           <For
             each={[
               {
-                q: "TypeUZ nima?",
-                a: "TypeUZ — IT o'quv markazi tomonidan ishlab chiqilgan bepul yozuv tezligi testi. O'zbek, Ingliz va Rus tillarida yozish tezligi va aniqligini o'lchash imkonini beradi.",
+                q: "TypeX.uz nima?",
+                a: "TypeX.uz — IT o'quv markazi tomonidan ishlab chiqilgan bepul yozuv tezligi testi. O'zbek, Ingliz va Rus tillarida yozish tezligi va aniqligini o'lchash imkonini beradi.",
               },
               {
-                q: "TypeUZ bepulmi?",
-                a: "Ha, TypeUZ to'liq bepul. Barcha asosiy funksiyalar, jumladan AI tahlil va reyting tizimi hech qanday to'lov talab qilmaydi.",
+                q: "TypeX.uz bepulmi?",
+                a: "Ha, TypeX.uz to'liq bepul. Barcha asosiy funksiyalar, jumladan AI tahlil va reyting tizimi hech qanday to'lov talab qilmaydi.",
               },
               {
                 q: "Qanday tillar mavjud?",
@@ -290,7 +303,7 @@ export function AboutPage(): JSXElement {
               },
               {
                 q: "Mobile qurilmalarda ishlaydimi?",
-                a: "Ha, TypeUZ barcha zamonaviy brauzerlar va mobil qurilmalar bilan to'liq mos keladi. Telefon, planshet va kompyuterlardan bemalol foydalanishingiz mumkin.",
+                a: "Ha, TypeX.uz barcha zamonaviy brauzerlar va mobil qurilmalar bilan to'liq mos keladi. Telefon, planshet va kompyuterlardan bemalol foydalanishingiz mumkin.",
               },
             ]}
           >
@@ -303,9 +316,7 @@ export function AboutPage(): JSXElement {
                     class="text-xs text-sub transition-transform group-open:rotate-180"
                   />
                 </summary>
-                <p class="mt-3 text-base leading-relaxed text-sub">
-                  {item.a}
-                </p>
+                <p class="mt-3 text-base leading-relaxed text-sub">{item.a}</p>
               </details>
             )}
           </For>
@@ -319,8 +330,9 @@ export function AboutPage(): JSXElement {
       >
         <h2 class="text-3xl font-bold">Tezlikni sinab ko&apos;ring</h2>
         <p class="mx-auto mt-3 max-w-lg text-base leading-relaxed text-bg/80">
-          Ro&apos;yxatdan o&apos;tmasdan ham testni boshlashingiz mumkin. Natijalaringizni
-          saqlash va AI tahlil olish uchun esa bir daqiqada profilingizni yarating.
+          Ro&apos;yxatdan o&apos;tmasdan ham testni boshlashingiz mumkin.
+          Natijalaringizni saqlash va AI tahlil olish uchun esa bir daqiqada
+          profilingizni yarating.
         </p>
         <a
           href="/"

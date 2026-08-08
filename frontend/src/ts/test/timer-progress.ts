@@ -20,12 +20,10 @@ const textEl = document.querySelector(
 const miniEl = document.querySelector("#liveStatsMini .time") as HTMLElement;
 
 function showElement(el: HTMLElement): void {
+  el.classList.remove("hidden"); // JIC there is any legacy hidden
   animate(el, {
     opacity: [0, 1],
     duration: applyReducedMotion(125),
-    onBegin: () => {
-      el.classList.remove("hidden");
-    },
   });
 }
 
@@ -67,40 +65,25 @@ export function reset(): void {
   });
 }
 
-function hideElement(el: HTMLElement, hideOnComplete: boolean): void {
-  const args = {
+function hideElement(el: HTMLElement): void {
+  animate(el, {
     opacity: 0,
     duration: applyReducedMotion(125),
-  };
-
-  animate(
-    el,
-    hideOnComplete
-      ? {
-          ...args,
-          onComplete: () => {
-            el.classList.add("hidden");
-          },
-        }
-      : args,
-  );
+  });
 }
 
 export function hide(): void {
   requestDebouncedAnimationFrame("timer-progress.hide", () => {
-    hideElement(barOpacityEl, false);
-    hideElement(miniEl, true);
-    hideElement(textEl, true);
+    hideElement(barOpacityEl);
+    hideElement(miniEl);
+    hideElement(textEl);
   });
 }
 
 export function instantHide(): void {
   barOpacityEl.style.opacity = "0";
 
-  miniEl.classList.add("hidden");
   miniEl.style.opacity = "0";
-
-  textEl.classList.add("hidden");
   textEl.style.opacity = "0";
 }
 

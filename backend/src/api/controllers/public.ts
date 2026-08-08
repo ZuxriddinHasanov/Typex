@@ -27,10 +27,16 @@ export async function getTypingStats(
 
 export async function getPublicAdConfig(
   _req: TypeUZRequest,
-): Promise<TypeUZResponse<{ enabled: boolean; slots: Array<{ slotId: string; imageUrl?: string; targetUrl?: string }> }>> {
+): Promise<
+  TypeUZResponse<{
+    enabled: boolean;
+    slots: Array<{ slotId: string; imageUrl?: string; targetUrl?: string }>;
+  }>
+> {
   if (isDevEnvironment()) {
     const ads = devGet<{
-      enabled: boolean; masterToggle: boolean;
+      enabled: boolean;
+      masterToggle: boolean;
       creatives: Array<{ id: string; imageUrl: string; targetUrl: string }>;
       slots: Array<{ slotId: string; creativeId?: string; enabled: boolean }>;
     }>("ad_config");
@@ -41,10 +47,7 @@ export async function getPublicAdConfig(
       enabled: true,
       slots: ads.slots
         .filter(
-          (s) =>
-            s.enabled &&
-            s.creativeId !== undefined &&
-            s.creativeId !== "",
+          (s) => s.enabled && s.creativeId !== undefined && s.creativeId !== "",
         )
         .map((s) => {
           const cr = ads.creatives.find((c) => c.id === s.creativeId);
@@ -69,7 +72,8 @@ export async function getPublicAdConfig(
     if (!doc) return new TypeUZResponse("OK", { enabled: false, slots: [] });
 
     const ads = doc as unknown as {
-      enabled: boolean; masterToggle: boolean;
+      enabled: boolean;
+      masterToggle: boolean;
       creatives: Array<{ id: string; imageUrl: string; targetUrl: string }>;
       slots: Array<{ slotId: string; creativeId?: string; enabled: boolean }>;
     };
@@ -82,10 +86,7 @@ export async function getPublicAdConfig(
       enabled: true,
       slots: ads.slots
         .filter(
-          (s) =>
-            s.enabled &&
-            s.creativeId !== undefined &&
-            s.creativeId !== "",
+          (s) => s.enabled && s.creativeId !== undefined && s.creativeId !== "",
         )
         .map((s) => {
           const cr = ads.creatives.find((c) => c.id === s.creativeId);
@@ -121,25 +122,70 @@ type SiteContentData = {
 
 const defaultSiteContent: SiteContentData = {
   hero: {
-    title: "TypeUZ",
+    title: "TypeX.uz",
     subtitle: "Tez yozishni o'rganing",
     description:
-      "O'zbekistonning birinchi yozuv tezligini o'lchash platformasi. Klaviaturada tez va aniq yozishni o'rganing.",
+      "O'zbekistonning birinchi yozuv tezligini o'lchash platformasi. Klaviaturada tez va aniq yozishni o'rganing, do'stlar bilan bellashing va reytingda ko'tariling.",
   },
   features: [
-    { icon: "fa-tachometer-alt", title: "Tezlik", description: "Yozuv tezligingizni WPM da o'lchang" },
-    { icon: "fa-chart-line", title: "Statistika", description: "Batafsil statistika va tahlillar" },
-    { icon: "fa-trophy", title: "Reyting", description: "Boshqa foydalanuvchilar bilan raqobatlashing" },
+    {
+      icon: "fa-robot",
+      title: "AI Tahlil",
+      description:
+        "Sun'iy intellekt orqali xatolaringizni tahlil qiling va haftalik hisobotlar oling",
+    },
+    {
+      icon: "fa-tachometer-alt",
+      title: "Tezlikni o'lchash",
+      description:
+        "WPM, aniqlik va vaqtni real vaqtda yuqori aniqlikda kuzating",
+    },
+    {
+      icon: "fa-chart-bar",
+      title: "Chuqur Statistika",
+      description:
+        "Barcha natijalaringizni bulutda saqlang va professional grafiklarda tahlil qiling",
+    },
+    {
+      icon: "fa-trophy",
+      title: "Global Reyting",
+      description:
+        "Jahon miqyosidagi yetakchilar bilan bellashing va Top 100 likka kiring",
+    },
+    {
+      icon: "fa-palette",
+      title: "O'zingizga moslash",
+      description:
+        "Yuzlab mavzular va shriftlar yordamida interfeysni to'liq shaxsiylashtiring",
+    },
+    {
+      icon: "fa-user-friends",
+      title: "Do'stlar bilan",
+      description:
+        "Do'stlaringizni qo'shing va birgalikda yozish tezligida musobaqalashing",
+    },
   ],
   aboutCards: [
-    { icon: "fa-language", title: "Ko'p tilli", description: "O'zbek, Rus va Ingliz tillarida yozing" },
-    { icon: "fa-bolt", title: "Real vaqt", description: "Real vaqt rejimida natijalarni kuzating" },
-    { icon: "fa-mobile-alt", title: "Moslashuvchan", description: "Barcha qurilmalarda ishlaydi" },
+    {
+      icon: "fa-language",
+      title: "Ko'p tilli",
+      description: "O'zbek, Rus va Ingliz tillarida yozing",
+    },
+    {
+      icon: "fa-bolt",
+      title: "Real vaqt",
+      description: "Real vaqt rejimida natijalarni kuzating",
+    },
+    {
+      icon: "fa-mobile-alt",
+      title: "Moslashuvchan",
+      description: "Barcha qurilmalarda ishlaydi",
+    },
   ],
   footer: {
-    brandName: "TypeUZ",
-    tagline: "O'zbekistonning yozuv tezligi platformasi",
-    telegram: "https://t.me/typeuz",
+    brandName: "TypeX.uz",
+    tagline: "O'zbekistonning birinchi yozuv tezligi platformasi",
+    telegram: "https://t.me/root_v7be",
   },
 };
 

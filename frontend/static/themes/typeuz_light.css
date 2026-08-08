@@ -24,14 +24,14 @@ kbd {
 }
 
 .pageAbout .typeuz-gradient {
-  background: linear-gradient(135deg, #ff5a1f, #ffb088);
+  background: linear-gradient(135deg, #f97316, #fdba74);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .typeuz-btn-primary {
-  background: linear-gradient(135deg, #ff5a1f, #ffb088) !important;
+  background: linear-gradient(135deg, #f97316, #fdba74) !important;
   color: white !important;
   border: none !important;
 }

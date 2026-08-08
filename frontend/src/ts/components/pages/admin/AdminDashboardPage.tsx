@@ -14,19 +14,31 @@ function StatCard(props: {
   color: string;
 }): JSXElement {
   return (
-    <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5 transition-all hover:border-main/30">
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="text-2xl font-bold text-text">{props.value}</div>
-          <div class="mt-1 text-xs text-sub">{props.label}</div>
+    <div class="group from-bg-alt/90 relative overflow-hidden rounded-3xl border border-sub/5 bg-gradient-to-br to-bg/50 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-main/30 hover:shadow-2xl hover:shadow-main/10">
+      <div
+        class={cn(
+          "absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-20 blur-3xl transition-opacity group-hover:opacity-40",
+          props.color.replace("bg-", "bg-"),
+        )}
+      ></div>
+      <div class="relative z-10 flex items-center justify-between">
+        <div class="flex flex-col">
+          <div class="text-sm font-semibold tracking-wider text-sub uppercase">
+            {props.label}
+          </div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <div class="text-4xl font-black tracking-tight text-text">
+              {props.value}
+            </div>
+          </div>
         </div>
         <div
           class={cn(
-            "grid h-12 w-12 place-items-center rounded-xl",
+            "grid h-14 w-14 place-items-center rounded-2xl shadow-inner transition-transform group-hover:scale-110",
             props.color,
           )}
         >
-          <Fa icon={props.icon as any} class="text-lg text-bg" />
+          <Fa icon={props.icon as any} class="text-xl text-bg opacity-90" />
         </div>
       </div>
     </div>
@@ -112,8 +124,22 @@ export function AdminDashboardPage(): JSXElement {
 
   return (
     <AdminLayout active="dashboard" title="Dashboard">
+      {/* Overview Banner */}
+      <div class="relative mb-8 overflow-hidden rounded-3xl border border-sub/5 bg-gradient-to-r from-main/10 via-bg to-bg p-8">
+        <div class="absolute top-0 -right-20 opacity-10 blur-2xl">
+          <Fa icon={"fa-chart-network" as any} class="text-[200px] text-main" />
+        </div>
+        <div class="relative z-10">
+          <h2 class="mb-2 text-3xl font-black text-text">Umumiy statistika</h2>
+          <p class="max-w-2xl text-sm leading-relaxed text-sub">
+            Tizimning umumiy holati, foydalanuvchilar o'sishi va testlar
+            o'zgarishi haqida to'liq va aniq real vaqt (real-time) tahlili.
+          </p>
+        </div>
+      </div>
+
       {/* Stats grid */}
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div class="mb-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard
           label="Foydalanuvchilar"
           value={(analyticsQuery.data as any)?.totalUsers ?? "..."}

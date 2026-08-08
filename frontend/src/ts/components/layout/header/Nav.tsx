@@ -1,38 +1,56 @@
-import { JSXElement, Show } from "solid-js";
-import { isAuthenticated } from "../../../states/core";
-import { setConfig } from "../../../config/setters";
-import { getConfig } from "../../../config/store";
 import type { ThemeName } from "@typeuz/schemas/configs";
 
+import { JSXElement, Show } from "solid-js";
+
+import { setConfig } from "../../../config/setters";
+import { getConfig } from "../../../config/store";
+import { isAuthenticated, getActivePage } from "../../../states/core";
+import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
+
+const navItemClass = (page: string) =>
+  cn(
+    "rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
+    getActivePage() === page
+      ? "bg-main/15 text-main"
+      : "text-sub hover:scale-[1.02] hover:bg-sub-alt/50 hover:text-text",
+  );
 
 export function Nav(): JSXElement {
   return (
     <nav class="flex items-center gap-1">
       <a
         href="/"
-        class="rounded-lg px-3 py-2 text-sm font-medium transition-colors text-sub hover:text-text"
+        class={navItemClass("index")}
         router-link
         data-nav-item="home"
-      >Bosh</a>
+      >
+        Bosh sahifa
+      </a>
       <a
         href="/test"
-        class="rounded-lg px-3 py-2 text-sm font-medium transition-colors text-sub hover:text-text"
+        class={navItemClass("test")}
         router-link
         data-nav-item="test"
-      >Test</a>
+      >
+        Test
+      </a>
       <a
         href="/leaderboards"
-        class="rounded-lg px-3 py-2 text-sm font-medium transition-colors text-sub hover:text-text"
+        class={navItemClass("leaderboards")}
         router-link
         data-nav-item="leaderboards"
-      >Reyting</a>
+      >
+        Reyting
+      </a>
       <a
         href="/about"
-        class="rounded-lg px-3 py-2 text-sm font-medium transition-colors text-sub hover:text-text"
+        class={navItemClass("about")}
         router-link
         data-nav-item="about"
-      >Haqida</a>
+      >
+        Loyiha haqida
+      </a>
       <button
         type="button"
         onClick={() => {
@@ -42,7 +60,10 @@ export function Nav(): JSXElement {
         class="ml-2 flex h-9 w-9 items-center justify-center rounded-full text-sub transition-all duration-300 hover:bg-sub-alt hover:text-text"
         aria-label="Toggle theme"
       >
-        <Fa icon={getConfig.theme === "typeuz" ? "fa-sun" : "fa-moon"} class="transition-all duration-300" />
+        <Fa
+          icon={getConfig.theme === "typeuz" ? "fa-sun" : "fa-moon"}
+          class="transition-all duration-300"
+        />
       </button>
       <Show
         when={isAuthenticated()}
@@ -59,11 +80,16 @@ export function Nav(): JSXElement {
       >
         <a
           href="/account"
-          class="ml-2 flex items-center gap-2 rounded-full bg-sub-alt/50 px-4 py-2 text-sm font-semibold text-text transition-all hover:bg-sub-alt hover:scale-105"
+          class={cn(
+            "ml-2 flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all hover:scale-105",
+            getActivePage() === "account"
+              ? "bg-main text-bg"
+              : "bg-sub-alt/50 text-text hover:bg-sub-alt",
+          )}
           router-link
         >
           <Fa icon="fa-user" />
-          Profil
+          Mening profilim
         </a>
       </Show>
     </nav>

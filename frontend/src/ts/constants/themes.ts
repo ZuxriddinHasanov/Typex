@@ -2324,8 +2324,8 @@ export const themes: Record<ThemeName, Theme> = {
   },
   typeuz: {
     bg: "#0d0d0d",
-    caret: "#ff5a1f",
-    main: "#ff5a1f",
+    caret: "#f97316",
+    main: "#f97316",
     sub: "#9ca3af",
     subAlt: "#1a1a1a",
     text: "#ffffff",
@@ -2336,8 +2336,8 @@ export const themes: Record<ThemeName, Theme> = {
   },
   typeuz_light: {
     bg: "#ffffff",
-    caret: "#ff5a1f",
-    main: "#ff5a1f",
+    caret: "#f97316",
+    main: "#f97316",
     sub: "#6b7280",
     subAlt: "#f5f5f6",
     text: "#1a1a1a",

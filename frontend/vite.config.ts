@@ -107,9 +107,7 @@ function getPlugins({
     }),
   ];
 
-  const devPlugins: PluginOption[] = [
-    Inspect(),
-  ];
+  const devPlugins: PluginOption[] = [Inspect()];
 
   const prodPlugins: PluginOption[] = [
     fontPreview(),
@@ -140,7 +138,7 @@ function getPlugins({
         ],
         background_color: "#ffffff",
         display: "standalone",
-        theme_color: "#ff5a1f",
+        theme_color: "#f97316",
       },
       manifestFilename: "manifest.json",
       workbox: {

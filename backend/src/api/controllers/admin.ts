@@ -21,6 +21,7 @@ import {
   ToggleBanRequest,
   ToggleBanResponse,
   UpdateAdConfigRequest,
+  DeleteUserRequest,
 } from "@typeuz/contracts/admin";
 import TypeUZError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@typeuz/schemas/configuration";
@@ -124,9 +125,7 @@ export async function getWpmDistribution(
   return new TypeUZResponse("WPM distribution", data);
 }
 
-export async function getTopUsers(
-  _req: TypeUZRequest,
-): Promise<
+export async function getTopUsers(_req: TypeUZRequest): Promise<
   TypeUZResponse<
     Array<{
       uid: string;
@@ -248,7 +247,34 @@ export async function toggleBan(
       banned: !user.banned,
     });
   } catch (e) {
-    throw new TypeUZError(500, `Failed to toggle ban: ${getErrorMessage(e)}`);
+    if (e instanceof TypeUZError) throw e;
+    throw new TypeUZError(500, "Failed to toggle ban");
+  }
+}
+
+export async function deleteUser(
+  req: TypeUZRequest<undefined, DeleteUserRequest>,
+): Promise<TypeUZResponse> {
+  const { uid } = req.body;
+
+  try {
+    if (isDevEnvironment()) {
+      let users = devGet<Array<Record<string, unknown>>>("users") ?? [];
+      const userExists = users.some((u) => u["uid"] === uid);
+      if (!userExists) throw new TypeUZError(404, "Foydalanuvchi topilmadi");
+
+      users = users.filter((u) => u["uid"] !== uid);
+      devSet("users", users);
+      safeImportantLog("admin_user_deleted", {}, uid);
+      return new TypeUZResponse(`User deleted`, null);
+    }
+
+    await UserDAL.deleteUser(uid);
+    safeImportantLog("admin_user_deleted", {}, uid);
+    return new TypeUZResponse(`User deleted`, null);
+  } catch (e) {
+    if (e instanceof TypeUZError) throw e;
+    throw new TypeUZError(500, "Failed to delete user");
   }
 }
 
@@ -399,23 +425,24 @@ export async function getAnalytics(
   }
 
   try {
-    const [
-      userCountResult,
-      publicStatsResult,
-      activeUsersResult,
-    ] = await Promise.all([
-      db.queryOne<{ count: number }>("SELECT COUNT(*)::int AS count FROM users"),
-      db.queryOne<{ data: unknown }>(
-        "SELECT data FROM public_stats WHERE _id = 'stats'",
-      ),
-      db.queryOne<{ count: number }>(
-        "SELECT COUNT(*)::int AS count FROM users WHERE last_login_at > $1",
-        [Date.now() - 24 * 60 * 60 * 1000],
-      ),
-    ]);
+    const [userCountResult, publicStatsResult, activeUsersResult] =
+      await Promise.all([
+        db.queryOne<{ count: number }>(
+          "SELECT COUNT(*)::int AS count FROM users",
+        ),
+        db.queryOne<{ data: unknown }>(
+          "SELECT data FROM public_stats WHERE _id = 'stats'",
+        ),
+        db.queryOne<{ count: number }>(
+          "SELECT COUNT(*)::int AS count FROM users WHERE last_login_at > $1",
+          [Date.now() - 24 * 60 * 60 * 1000],
+        ),
+      ]);
 
     totalUsers = userCountResult?.count ?? 0;
-    const statsData = publicStatsResult?.data as Record<string, unknown> | undefined;
+    const statsData = publicStatsResult?.data as
+      | Record<string, unknown>
+      | undefined;
     totalTestsStarted = (statsData?.["testsStarted"] as number) ?? 0;
     totalTestsCompleted = (statsData?.["testsCompleted"] as number) ?? 0;
     totalTimeTyping = (statsData?.["timeTyping"] as number) ?? 0;
@@ -477,7 +504,8 @@ export async function searchUsers(
 
   try {
     const safeQ = escapeRegex(q);
-    const users = await db.collection("users")
+    const users = await db
+      .collection("users")
       .find(
         {
           $or: [
@@ -503,7 +531,15 @@ export async function searchUsers(
 
     const mappedUsers = users.map((u) => {
       const r = u;
-      return { uid: r["uid"] as string, name: r["name"] as string, email: maskEmail(r["email"] as string), banned: r["banned"] as boolean | undefined, addedAt: r["addedAt"] as number | undefined, completedTests: r["completedTests"] as number | undefined, timeTyping: r["timeTyping"] as number | undefined };
+      return {
+        uid: r["uid"] as string,
+        name: r["name"] as string,
+        email: maskEmail(r["email"] as string),
+        banned: r["banned"] as boolean | undefined,
+        addedAt: r["addedAt"] as number | undefined,
+        completedTests: r["completedTests"] as number | undefined,
+        timeTyping: r["timeTyping"] as number | undefined,
+      };
     });
     results.push(...mappedUsers);
   } catch (e) {
@@ -761,11 +797,9 @@ export async function updateAdConfig(
   }
 
   try {
-    await db.collection("configuration").replaceOne(
-      { _id: "ads" },
-      { _id: "ads", ...config },
-      { upsert: true },
-    );
+    await db
+      .collection("configuration")
+      .replaceOne({ _id: "ads" }, { _id: "ads", ...config }, { upsert: true });
     safeImportantLog(
       "admin_ad_config_updated",
       {},
@@ -883,10 +917,9 @@ export async function deleteCreative(
   }
 
   try {
-    await db.collection("configuration").updateOne(
-      { _id: "ads" },
-      { $pull: { creatives: { id } } },
-    );
+    await db
+      .collection("configuration")
+      .updateOne({ _id: "ads" }, { $pull: { creatives: { id } } });
     safeImportantLog(
       "admin_creative_deleted",
       { id },
@@ -1267,11 +1300,12 @@ export async function listUsers(
       streak: 1,
       lastLoginAt: 1,
     };
-    const rawUsers = (await db.collection("users")
+    const rawUsers = await db
+      .collection("users")
       .find({}, { projection })
       .skip(req.query.skip)
       .limit(req.query.limit)
-      .toArray());
+      .toArray();
     return new TypeUZResponse("Users listed", {
       total,
       users: rawUsers.map((u: Record<string, unknown>) => ({

@@ -5,6 +5,21 @@
     class="full-width flex justify-center pb-2"
   ></mount>
 
+  <!-- REKLAMA JOYI (Admin panel orqali yoqiladi/o'chiriladi) -->
+  <div
+    id="ad-placeholder-top"
+    class="full-width content-grid hidden transition-all duration-300"
+  >
+    <div
+      class="ad-container bg-sub-alt/20 rounded-xl flex items-center justify-center p-4 border border-sub/10 min-h-[90px] mb-4"
+    >
+      <span class="text-sub/50 text-sm font-medium">
+        <i class="fas fa-ad mr-2"></i>
+        Reklama joyi
+      </span>
+    </div>
+  </div>
+
   <div id="testInitFailed" class="content-grid hidden">
     <div class="message">
       <div class="text">
@@ -25,14 +40,27 @@
     </div>
     <div id="liveStatsTextTop" class="timerMain">
       <div class="wrapper">
-        <div class="timerProgress hidden">1:00</div>
+        <div
+          class="timerProgress transition-opacity duration-125"
+          style="opacity: 0"
+        >
+          1:00
+        </div>
       </div>
     </div>
     <div id="liveStatsMini" class="full-width timerMain">
-      <div class="time hidden">1:00</div>
-      <div class="speed hidden">60</div>
-      <div class="acc hidden">100%</div>
-      <div class="burst hidden">1</div>
+      <div class="time transition-opacity duration-125" style="opacity: 0">
+        1:00
+      </div>
+      <div class="speed transition-opacity duration-125" style="opacity: 0">
+        60
+      </div>
+      <div class="acc transition-opacity duration-125" style="opacity: 0">
+        100%
+      </div>
+      <div class="burst transition-opacity duration-125" style="opacity: 0">
+        1
+      </div>
     </div>
     <div id="wordsWrapper" class="content-grid full-width" translate="no">
       <textarea
@@ -74,9 +102,21 @@
     </button>
     <div id="liveStatsTextBottom" class="timerMain">
       <div class="wrapper">
-        <div class="liveSpeed hidden">123</div>
-        <div class="liveAcc hidden">100%%</div>
-        <div class="liveBurst hidden">1</div>
+        <div
+          class="liveSpeed transition-opacity duration-125"
+          style="opacity: 0"
+        >
+          123
+        </div>
+        <div class="liveAcc transition-opacity duration-125" style="opacity: 0">
+          100%%
+        </div>
+        <div
+          class="liveBurst transition-opacity duration-125"
+          style="opacity: 0"
+        >
+          1
+        </div>
       </div>
     </div>
   </div>

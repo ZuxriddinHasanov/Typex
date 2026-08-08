@@ -3,6 +3,7 @@ import { createForm } from "@tanstack/solid-form";
 import { For, JSXElement, Show, createSignal } from "solid-js";
 
 import Ape from "../../../ape";
+import { navigate } from "../../../controllers/route-controller";
 import {
   showErrorNotification,
   showNoticeNotification,
@@ -12,7 +13,6 @@ import { Page } from "../../common/Page";
 import { InputField } from "../../ui/form/InputField";
 import { SelectField } from "../../ui/form/SelectField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
-import { navigate } from "../../../controllers/route-controller";
 
 const AVATARS = [
   "fa-user-astronaut",
@@ -82,7 +82,7 @@ export function OnboardingPage(): JSXElement {
         <div class="flex h-20 w-20 items-center justify-center rounded-full bg-main/10 text-5xl text-main">
           <Fa icon="fa-keyboard" />
         </div>
-        <h1 class="text-4xl font-bold text-text">TypeUZga xush kelibsiz!</h1>
+        <h1 class="text-4xl font-bold text-text">TypeX.uz ga xush kelibsiz!</h1>
         <p class="max-w-lg text-center text-base leading-relaxed text-sub">
           Yozuv tezligingizni oshirish, natijalaringizni saqlash va boshqa
           foydalanuvchilar bilan bellashish uchun tayyormisiz?
@@ -96,7 +96,8 @@ export function OnboardingPage(): JSXElement {
             <div>
               <h3 class="font-semibold text-text">Tezlikni o'lchash</h3>
               <p class="mt-1 text-sm text-sub">
-                WPM, aniqlik, vaqt va boshqa ko'rsatkichlarni real vaqtda kuzating
+                WPM, aniqlik, vaqt va boshqa ko'rsatkichlarni real vaqtda
+                kuzating
               </p>
             </div>
           </div>
@@ -107,7 +108,8 @@ export function OnboardingPage(): JSXElement {
             <div>
               <h3 class="font-semibold text-text">Statistika va reyting</h3>
               <p class="mt-1 text-sm text-sub">
-                Barcha natijalaringiz profilingizda saqlanadi va reytingda o'rningizni ko'rasiz
+                Barcha natijalaringiz profilingizda saqlanadi va reytingda
+                o'rningizni ko'rasiz
               </p>
             </div>
           </div>
@@ -118,7 +120,8 @@ export function OnboardingPage(): JSXElement {
             <div>
               <h3 class="font-semibold text-text">3 tilda test</h3>
               <p class="mt-1 text-sm text-sub">
-                O'zbek, ingliz va rus tillarida yozuv tezligi testini topshirishingiz mumkin
+                O'zbek, ingliz va rus tillarida yozuv tezligi testini
+                topshirishingiz mumkin
               </p>
             </div>
           </div>
@@ -128,7 +131,9 @@ export function OnboardingPage(): JSXElement {
           <div class="w-full max-w-lg">
             <div class="mb-4 flex items-center gap-2">
               <Fa icon="fa-pen-square" class="text-main" />
-              <h2 class="text-lg font-semibold text-text">Profilingizni to'ldiring</h2>
+              <h2 class="text-lg font-semibold text-text">
+                Profilingizni to'ldiring
+              </h2>
               <span class="text-xs text-sub/60">(ixtiyoriy)</span>
             </div>
             <form
@@ -190,7 +195,9 @@ export function OnboardingPage(): JSXElement {
                 />
               </div>
               <div>
-                <label class="mb-1.5 block text-sm font-medium text-sub">avatar</label>
+                <label class="mb-1.5 block text-sm font-medium text-sub">
+                  avatar
+                </label>
                 <div class="grid grid-cols-6 gap-1.5">
                   <For each={AVATARS}>
                     {(icon) => (
@@ -244,8 +251,20 @@ export function OnboardingPage(): JSXElement {
           class="inline-flex items-center gap-2 rounded-full bg-main px-10 py-4 text-base font-semibold text-bg transition-all hover:scale-105 hover:shadow-lg hover:shadow-main/25"
         >
           Boshlaymiz!
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path style={{ "stroke-linecap": "round", "stroke-linejoin": "round", "stroke-width": "2.5" }} d="M9 5l7 7-7 7"></path>
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              style={{
+                "stroke-linecap": "round",
+                "stroke-linejoin": "round",
+                "stroke-width": "2.5",
+              }}
+              d="M9 5l7 7-7 7"
+            ></path>
           </svg>
         </button>
       </div>
