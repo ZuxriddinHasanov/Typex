@@ -154,6 +154,13 @@ async function authenticateWithAuthHeader(
       return await authenticateWithApeKey(token, configuration, options);
     case "Uid":
       return await authenticateWithUid(token);
+    case "Guest":
+      // Mehmon profillari uchun maxsus "Guest Mehmon-1234" tokenini qabul qilish
+      return {
+        type: "None",
+        uid: "guest_" + token,
+        email: "guest@typex.uz"
+      };
   }
 
   throw new TypeUZError(

@@ -4,47 +4,47 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://typeuz.uz/</loc>
+    <loc>https://typex.uz/</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.00</priority>
-    <xhtml:link rel="alternate" hreflang="uz" href="https://typeuz.uz/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://en.typeuz.uz/" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://ru.typeuz.uz/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://typeuz.uz/" />
+    <xhtml:link rel="alternate" hreflang="uz" href="https://typex.uz/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://en.typex.uz/" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://ru.typex.uz/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://typex.uz/" />
   </url>
   <url>
-    <loc>https://typeuz.uz/test</loc>
+    <loc>https://typex.uz/test</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://typeuz.uz/about</loc>
+    <loc>https://typex.uz/about</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://typeuz.uz/leaderboards</loc>
+    <loc>https://typex.uz/leaderboards</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://typeuz.uz/privacy-policy</loc>
+    <loc>https://typex.uz/privacy-policy</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
   <url>
-    <loc>https://typeuz.uz/terms-of-service</loc>
+    <loc>https://typex.uz/terms-of-service</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
   <url>
-    <loc>https://typeuz.uz/security-policy</loc>
+    <loc>https://typex.uz/security-policy</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>

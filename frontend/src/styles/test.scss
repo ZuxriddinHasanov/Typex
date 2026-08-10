@@ -98,6 +98,7 @@
     position: relative;
     width: 100%;
     margin: 0 auto;
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
   }
 
   .ssWatermark {
@@ -1472,6 +1473,9 @@
 }
 
 main.focus .pageTest {
+  #typingTest {
+    transform: translateY(-5rem);
+  }
   #restartTestButton {
     opacity: 0 !important;
     &:focus-visible {

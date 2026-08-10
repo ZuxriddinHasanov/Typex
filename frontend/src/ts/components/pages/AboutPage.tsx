@@ -13,8 +13,8 @@ export function AboutPage(): JSXElement {
         </h1>
         <p class="mx-auto max-w-2xl text-lg leading-relaxed text-sub">
           <span class="font-semibold text-text">TypeX.uz</span> &mdash;
-          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. IT
-          o&apos;quv markazi tomonidan ishlab chiqilgan ushbu platformada
+          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. Asoschi
+          Zuxriddin Hasanov tomonidan ishlab chiqilgan ushbu platformada
           O&apos;zbek, Ingliz va Rus tillarida yozish tezligingizni sinab
           ko&apos;ring, natijalaringizni AI yordamida tahlil qiling va reytingda
           yuksaling.
@@ -106,14 +106,13 @@ export function AboutPage(): JSXElement {
         <div class="mt-6 space-y-4 text-base leading-relaxed text-sub">
           <p>
             <span class="font-semibold text-text">TypeX.uz</span> 2024-yilda
-            <span class="font-semibold text-text"> IT o&apos;quv markazi </span>
+            <span class="font-semibold text-text"> Zuxriddin Hasanov </span>
             tomonidan tashkil etilgan. Maqsad — O&apos;zbekiston yoshlariga
             klaviaturada tez va to&apos;g&apos;ri yozish ko&apos;nikmasini
             shakllantirishda yordam berish.
           </p>
           <p>
-            Birgina o&apos;quv markazi ichidagi loyiha sifatida boshlangan
-            TypeX.uz, bugungi kunda{" "}
+            Birgina shaxsiy loyiha sifatida boshlangan TypeX.uz, bugungi kunda{" "}
             <span class="font-semibold text-text">12 000+</span> foydalanuvchiga
             ega platformaga aylandi. O&apos;zbek, Ingliz va Rus tillaridagi
             testlar, AI yordamida haftalik tahlil va interaktiv reyting tizimi
@@ -282,8 +281,12 @@ export function AboutPage(): JSXElement {
           <For
             each={[
               {
+                q: "TypeX.uz kimniki va uning asoschisi kim?",
+                a: "TypeX.uz platformasi o'zbek dasturchisi Zuxriddin Hasanov tomonidan asos solingan. Sayt butunlay mustaqil va notijorat loyiha hisoblanadi.",
+              },
+              {
                 q: "TypeX.uz nima?",
-                a: "TypeX.uz — IT o'quv markazi tomonidan ishlab chiqilgan bepul yozuv tezligi testi. O'zbek, Ingliz va Rus tillarida yozish tezligi va aniqligini o'lchash imkonini beradi.",
+                a: "TypeX.uz — Zuxriddin Hasanov tomonidan yaratilgan bepul yozuv tezligi testi. O'zbek, Ingliz va Rus tillarida yozish tezligi va aniqligini o'lchash imkonini beradi.",
               },
               {
                 q: "TypeX.uz bepulmi?",

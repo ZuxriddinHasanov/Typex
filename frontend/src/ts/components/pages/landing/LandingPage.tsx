@@ -289,16 +289,16 @@ export function LandingPage(): JSXElement {
 
             <h1
               class={cn(
-                "mb-2 bg-gradient-to-br from-text to-sub bg-clip-text text-6xl font-black tracking-tighter text-transparent transition-all duration-1000 ease-out sm:text-7xl lg:text-8xl",
+                "mb-4 text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-text transition-all duration-1000 ease-out",
                 heroVisible()
                   ? "translate-y-0 opacity-100"
                   : "translate-y-8 opacity-0",
               )}
-              style={{ "line-height": "1.1" }}
+              style={{ "line-height": "1.15" }}
             >
               {hero()?.title?.split(" ")[0] ?? "Tez yozishni"}
               <br />
-              <span class="relative bg-gradient-to-r from-main to-main/60 bg-clip-text text-transparent drop-shadow-sm">
+              <span class="text-main drop-shadow-sm">
                 {hero()?.subtitle ?? "o'rganing"}
               </span>
             </h1>

@@ -42,6 +42,13 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           const dev = getDevAuth();
           if (dev !== null) {
             request.headers["Authorization"] = `Uid ${dev.uid}|${dev.email}`;
+          } else {
+            let guestToken = localStorage.getItem("guest_token");
+            if (!guestToken) {
+              guestToken = "Mehmon-" + Math.floor(1000 + Math.random() * 9000);
+              localStorage.setItem("guest_token", guestToken);
+            }
+            request.headers["Authorization"] = `Guest ${guestToken}`;
           }
         }
       }

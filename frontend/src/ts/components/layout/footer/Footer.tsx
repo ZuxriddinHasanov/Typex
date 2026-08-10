@@ -125,21 +125,39 @@ export function Footer(): JSXElement {
                 </h4>
                 <div class="flex flex-col gap-3">
                   <a
-                    href="https://t.me/root_v7be"
+                    href="https://t.me/typex_uz"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="group flex w-fit items-center gap-2 text-sm font-medium text-sub transition-all hover:text-main"
                   >
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sub-alt/50 transition-colors group-hover:bg-main/10">
-                      <svg
-                        class="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.127.087.496.122.629.156.61.443 2.165.556 3.303.11 1.194.057 2.235-.444 2.663a1.266 1.266 0 01-.49.243c-.477.116-1.11-.152-1.724-.476-.484-.256-1.801-1.184-2.39-1.445-.174-.078-.25-.223-.006-.397.423-.356 1.025-.985 1.39-1.322.423-.39.125-.594-.222-.39l-1.755 1.12c-.643.402-1.426.584-1.859.4-.43-.182-.914-.436-1.34-.663-.519-.312-.968-.627-.919-1.026.03-.233.3-.472.844-.717.878-.396 1.992-.79 3.042-1.19 1.183-.452 2.484-.858 3.486-1.14 1.915-.538 2.328-.6 2.615-.598zm.002.001z"></path>
-                      </svg>
+                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sub-alt/50 transition-colors group-hover:bg-[#229ED9]/10 group-hover:text-[#229ED9]">
+                      <Fa icon="fa-telegram-plane" variant="brand" />
                     </span>
-                    Telegram
+                    Telegram Kanal
+                  </a>
+                  
+                  <a
+                    href="https://www.instagram.com/typexuz/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group flex w-fit items-center gap-2 text-sm font-medium text-sub transition-all hover:text-main"
+                  >
+                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sub-alt/50 transition-colors group-hover:bg-[#E1306C]/10 group-hover:text-[#E1306C]">
+                      <Fa icon="fa-instagram" variant="brand" />
+                    </span>
+                    Instagram
+                  </a>
+
+                  <a
+                    href="https://t.me/ZuxriddinNeo"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group flex w-fit items-center gap-2 text-sm font-medium text-sub transition-all hover:text-main"
+                  >
+                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sub-alt/50 transition-colors group-hover:bg-main/10 group-hover:text-main">
+                      <Fa icon="fa-user-circle" />
+                    </span>
+                    Asoschi bilan bog'lanish
                   </a>
                 </div>
               </div>

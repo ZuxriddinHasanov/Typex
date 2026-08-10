@@ -195,13 +195,28 @@ export async function addResult(
 ): Promise<AddResultResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  const user = await UserDAL.getUser(uid, "add result");
+  let user;
+  if (uid.startsWith("guest_")) {
+    const guestName = uid.replace("guest_", "");
+    user = {
+      uid,
+      name: guestName,
+      email: "guest@typex.uz",
+      banned: false,
+      lbOptOut: false,
+      verified: false,
+      timeTyping: 9999999, // Allow on leaderboard immediately
+      needsToChangeName: false
+    } as any;
+  } else {
+    user = await UserDAL.getUser(uid, "add result");
 
-  if (user.needsToChangeName) {
-    throw new TypeUZError(
-      403,
-      "Please change your name before submitting a result",
-    );
+    if (user.needsToChangeName) {
+      throw new TypeUZError(
+        403,
+        "Please change your name before submitting a result",
+      );
+    }
   }
 
   const completedEvent = req.body.result;
@@ -451,14 +466,16 @@ export async function addResult(
   }
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
-    void UserDAL.incrementBananas(uid, completedEvent.wpm);
-    if (
-      isPb &&
-      user.discordId !== undefined &&
-      user.discordId !== "" &&
-      user.lbOptOut !== true
-    ) {
-      void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
+    if (!uid.startsWith("guest_")) {
+      void UserDAL.incrementBananas(uid, completedEvent.wpm);
+      if (
+        isPb &&
+        user.discordId !== undefined &&
+        user.discordId !== "" &&
+        user.lbOptOut !== true
+      ) {
+        void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
+      }
     }
   }
 
@@ -477,11 +494,13 @@ export async function addResult(
   const afk = completedEvent.afkDuration ?? 0;
   const totalDurationTypedSeconds =
     completedEvent.testDuration + completedEvent.incompleteTestSeconds - afk;
-  void UserDAL.updateTypingStats(
-    uid,
-    completedEvent.restartCount,
-    totalDurationTypedSeconds,
-  );
+  if (!uid.startsWith("guest_")) {
+    void UserDAL.updateTypingStats(
+      uid,
+      completedEvent.restartCount,
+      totalDurationTypedSeconds,
+    );
+  }
   void PublicDAL.updateStats(
     completedEvent.restartCount,
     totalDurationTypedSeconds,
@@ -554,7 +573,7 @@ export async function addResult(
     }
   }
 
-  const streak = await UserDAL.updateStreak(uid, completedEvent.timestamp);
+  const streak = uid.startsWith("guest_") ? 0 : await UserDAL.updateStreak(uid, completedEvent.timestamp);
   const badgeWaitingInInbox = (
     user.inbox?.flatMap((i) =>
       (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null)),
@@ -647,10 +666,12 @@ export async function addResult(
     dbresult.keyDurationStats = keyDurationStats;
   }
 
-  const addedResult = await ResultDAL.addResult(uid, dbresult);
-
-  await UserDAL.incrementXp(uid, xpGained.xp);
-  await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
+  let addedResult: any = { insertedId: "guest_result" };
+  if (!uid.startsWith("guest_")) {
+    addedResult = await ResultDAL.addResult(uid, dbresult);
+    await UserDAL.incrementXp(uid, xpGained.xp);
+    await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
+  }
 
   if (isPb) {
     void addLog(
