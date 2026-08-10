@@ -61,7 +61,6 @@ import { getTheme } from "../states/theme";
 import { skipBreakdownEvent } from "../states/header";
 import {
   getCurrentQuote,
-  isTestActive,
   resetCurrentLiveStats,
   wordsHaveNewline,
 } from "../states/test";
@@ -92,33 +91,10 @@ export function focusWords(force = false): void {
     blurInputElement();
   }
   focusInputElement(true);
-  if (isTestActive()) {
-    keepWordsInputInTheCenter(true);
-  } else {
-    const typingTest = document.querySelector<HTMLElement>("#typingTest");
-    Misc.scrollToCenterOrTop(typingTest);
-  }
 }
 
-export function keepWordsInputInTheCenter(force = false): void {
-  const wordsInput = getInputElement();
-  if (wordsInput === null || wordsWrapperEl === null) return;
-
-  const wordsWrapperHeight = wordsWrapperEl.getOffsetHeight();
-  const windowHeight = window.innerHeight;
-
-  // dont do anything if the wrapper can fit on screen
-  if (wordsWrapperHeight < windowHeight) return;
-
-  const wordsInputRect = wordsInput.getBoundingClientRect();
-  const wordsInputBelowCenter = wordsInputRect.top > windowHeight / 2;
-
-  // dont do anything if its above or at the center unless forced
-  if (!wordsInputBelowCenter && !force) return;
-
-  wordsInput.scrollIntoView({
-    block: "center",
-  });
+export function keepWordsInputInTheCenter(_force = false): void {
+  return;
 }
 
 export function getWordElement(index: number): ElementWithUtils | null {

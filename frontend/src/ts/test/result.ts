@@ -1093,7 +1093,9 @@ export async function update(
 
   await Misc.promiseAnimate("#result", {
     opacity: [0, 1],
-    duration: Misc.applyReducedMotion(125),
+    translateY: [30, 0],
+    easing: "easeOutCubic",
+    duration: Misc.applyReducedMotion(500),
   });
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
