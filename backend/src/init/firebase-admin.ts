@@ -19,10 +19,8 @@ export function init(): void {
     } else if (process.env["BYPASS_FIREBASE"] === "true") {
       Logger.warning("BYPASS_FIREBASE is enabled! Running without firebase.");
     } else {
-      throw new TypeUZError(
-        500,
-        "Firebase service account key not found! Make sure generate a service account key and place it in credentials/serviceAccountKey.json.",
-        "init() firebase-admin.ts",
+      Logger.warning(
+        "Firebase service account key not found! Make sure generate a service account key and place it in credentials/serviceAccountKey.json. Server will continue without Firebase.",
       );
     }
   } else {

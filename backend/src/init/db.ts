@@ -9,9 +9,7 @@ export async function connect(): Promise<void> {
   const databaseUrl = process.env["DATABASE_URL"];
   if (databaseUrl === undefined || databaseUrl === "") {
     if (isDevEnvironment()) {
-      Logger.warning(
-        "No DATABASE_URL provided. Running without database.",
-      );
+      Logger.warning("No DATABASE_URL provided. Running without database.");
       return;
     }
     throw new Error("No DATABASE_URL provided");
@@ -19,7 +17,8 @@ export async function connect(): Promise<void> {
 
   const hostname = (() => {
     try {
-      return new URL(databaseUrl.replace("postgres://", "postgresql://")).hostname;
+      return new URL(databaseUrl.replace("postgres://", "postgresql://"))
+        .hostname;
     } catch {
       return "";
     }
@@ -56,9 +55,10 @@ export async function connect(): Promise<void> {
       return;
     }
     Logger.error(
-      "Failed to connect to database. Exiting with exit status code 1.",
+      "Failed to connect to database. Server will start but DB queries will fail.",
     );
-    process.exit(1);
+    // process.exit(1); // Removed to prevent Render port scan timeout
+    pool = undefined;
   }
 }
 
@@ -67,9 +67,15 @@ export const getPool = (): pg.Pool | undefined => pool;
 export const getDb = (): pg.Pool | undefined => pool;
 
 function createMockClient(): pg.Pool {
-  const mockPool = new Pool({ connectionString: "postgresql://mock:mock@localhost:5432/mock", max: 1 });
+  const mockPool = new Pool({
+    connectionString: "postgresql://mock:mock@localhost:5432/mock",
+    max: 1,
+  });
   mockPool.query = async (...args: unknown[]) => {
-    const text = typeof args[0] === "string" ? args[0] : (args[0] as { text: string }).text;
+    const text =
+      typeof args[0] === "string"
+        ? args[0]
+        : (args[0] as { text: string }).text;
     if (text?.toLowerCase().includes("select")) {
       return { rows: [], rowCount: 0 } as unknown as pg.QueryResult;
     }
@@ -128,24 +134,50 @@ export async function close(): Promise<void> {
 }
 
 type MockCollection = {
-  findOne: (filter?: Record<string, unknown>) => Promise<Record<string, unknown> | null>;
-  replaceOne: (filter: Record<string, unknown>, replacement: Record<string, unknown>, options?: { upsert?: boolean }) => Promise<void>;
+  findOne: (
+    filter?: Record<string, unknown>,
+  ) => Promise<Record<string, unknown> | null>;
+  replaceOne: (
+    filter: Record<string, unknown>,
+    replacement: Record<string, unknown>,
+    options?: { upsert?: boolean },
+  ) => Promise<void>;
   countDocuments: (filter?: Record<string, unknown>) => Promise<number>;
   estimatedDocumentCount: () => Promise<number>;
-  updateOne: (filter: Record<string, unknown>, update: Record<string, unknown>, options?: { upsert?: boolean }) => Promise<void>;
+  updateOne: (
+    filter: Record<string, unknown>,
+    update: Record<string, unknown>,
+    options?: { upsert?: boolean },
+  ) => Promise<void>;
   insertOne: (doc: Record<string, unknown>) => Promise<{ insertedId: string }>;
-  deleteMany: (filter?: Record<string, unknown>) => Promise<{ deletedCount: number }>;
-  aggregate: (pipeline: Record<string, unknown>[]) => { toArray: () => Promise<Record<string, unknown>[]> };
-  find: (filter?: Record<string, unknown>, options?: { projection?: Record<string, number> }) => {
+  deleteMany: (
+    filter?: Record<string, unknown>,
+  ) => Promise<{ deletedCount: number }>;
+  aggregate: (pipeline: Record<string, unknown>[]) => {
     toArray: () => Promise<Record<string, unknown>[]>;
-    project: (fields: Record<string, number>) => { toArray: () => Promise<Record<string, unknown>[]> };
+  };
+  find: (
+    filter?: Record<string, unknown>,
+    options?: { projection?: Record<string, number> },
+  ) => {
+    toArray: () => Promise<Record<string, unknown>[]>;
+    project: (fields: Record<string, number>) => {
+      toArray: () => Promise<Record<string, unknown>[]>;
+    };
     limit: (n: number) => { toArray: () => Promise<Record<string, unknown>[]> };
     skip: (n: number) => {
-      limit: (m: number) => { toArray: () => Promise<Record<string, unknown>[]> };
+      limit: (m: number) => {
+        toArray: () => Promise<Record<string, unknown>[]>;
+      };
       toArray: () => Promise<Record<string, unknown>[]>;
     };
     sort: (sortObj: Record<string, number>) => {
-      limit: (n: number) => { skip: (n: number) => { toArray: () => Promise<Record<string, unknown>[]> }; toArray: () => Promise<Record<string, unknown>[]> };
+      limit: (n: number) => {
+        skip: (n: number) => {
+          toArray: () => Promise<Record<string, unknown>[]>;
+        };
+        toArray: () => Promise<Record<string, unknown>[]>;
+      };
       toArray: () => Promise<Record<string, unknown>[]>;
     };
   };
@@ -176,9 +208,10 @@ const USERS_PROJECTION_COLUMNS: Record<string, string> = {
   lastLoginAt: "last_login_at",
 };
 
-function buildUsersWhere(
-  filter: Record<string, unknown> | undefined,
-): { where: string; params: unknown[] } {
+function buildUsersWhere(filter: Record<string, unknown> | undefined): {
+  where: string;
+  params: unknown[];
+} {
   const params: unknown[] = [];
   const conditions: string[] = [];
   const ors = filter?.["$or"];
@@ -233,14 +266,21 @@ function findUsersCursor(
   options: { projection?: Record<string, number> } | undefined,
 ): {
   toArray: () => Promise<Record<string, unknown>[]>;
-  project: (fields: Record<string, number>) => { toArray: () => Promise<Record<string, unknown>[]> };
+  project: (fields: Record<string, number>) => {
+    toArray: () => Promise<Record<string, unknown>[]>;
+  };
   limit: (n: number) => { toArray: () => Promise<Record<string, unknown>[]> };
   skip: (n: number) => {
     limit: (m: number) => { toArray: () => Promise<Record<string, unknown>[]> };
     toArray: () => Promise<Record<string, unknown>[]>;
   };
   sort: (sortObj: Record<string, number>) => {
-    limit: (n: number) => { skip: (n: number) => { toArray: () => Promise<Record<string, unknown>[]> }; toArray: () => Promise<Record<string, unknown>[]> };
+    limit: (n: number) => {
+      skip: (n: number) => {
+        toArray: () => Promise<Record<string, unknown>[]>;
+      };
+      toArray: () => Promise<Record<string, unknown>[]>;
+    };
     toArray: () => Promise<Record<string, unknown>[]>;
   };
 } {
@@ -269,19 +309,25 @@ function findUsersCursor(
     },
     skip: (n) => {
       skip = n;
-      return { limit: (m) => {
-        limit = m;
-        return { toArray: run };
-      }, toArray: run };
+      return {
+        limit: (m) => {
+          limit = m;
+          return { toArray: run };
+        },
+        toArray: run,
+      };
     },
     sort: () => {
       return {
         limit: (n) => {
           limit = n;
-          return { skip: (m) => {
-            skip = m;
-            return { toArray: run };
-          }, toArray: run };
+          return {
+            skip: (m) => {
+              skip = m;
+              return { toArray: run };
+            },
+            toArray: run,
+          };
         },
         toArray: run,
       };
@@ -340,7 +386,9 @@ export function collection(name: string): MockCollection {
           if (typeof v === "object" && v !== null) {
             const obj = v as Record<string, unknown>;
             if (obj["$gte"] !== undefined) {
-              parts.push(`${k.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`)} >= $${idx++}`);
+              parts.push(
+                `${k.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`)} >= $${idx++}`,
+              );
               vals.push(obj["$gte"]);
             }
           }
@@ -375,7 +423,10 @@ export function collection(name: string): MockCollection {
             [id, JSON.stringify(merged)],
           );
         } else {
-          await query("UPDATE configuration SET data = $1::jsonb WHERE _id = $2", [JSON.stringify(merged), id]);
+          await query(
+            "UPDATE configuration SET data = $1::jsonb WHERE _id = $2",
+            [JSON.stringify(merged), id],
+          );
         }
       }
       if (name === "admin-credentials") {
@@ -423,9 +474,15 @@ export function collection(name: string): MockCollection {
         toArray: async () => [],
         project: () => ({ toArray: async () => [] }),
         limit: () => ({ toArray: async () => [] }),
-        skip: () => ({ limit: () => ({ toArray: async () => [] }), toArray: async () => [] }),
+        skip: () => ({
+          limit: () => ({ toArray: async () => [] }),
+          toArray: async () => [],
+        }),
         sort: () => ({
-          limit: () => ({ skip: () => ({ toArray: async () => [] }), toArray: async () => [] }),
+          limit: () => ({
+            skip: () => ({ toArray: async () => [] }),
+            toArray: async () => [],
+          }),
           toArray: async () => [],
         }),
       };
