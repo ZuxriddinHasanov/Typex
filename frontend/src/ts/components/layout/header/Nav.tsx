@@ -19,6 +19,15 @@ const navItemClass = (page: string) =>
 export function Nav(): JSXElement {
   return (
     <nav class="flex items-center gap-1">
+      <a
+        href="/landing"
+        class={navItemClass("landing")}
+        router-link
+        data-nav-item="landing"
+      >
+        <Fa icon="fa-home" class="mr-2" />
+        Bosh sahifa
+      </a>
       <a href="/" class={navItemClass("test")} router-link data-nav-item="test">
         <Fa icon="fa-keyboard" class="mr-2" />
         Test
