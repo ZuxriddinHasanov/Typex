@@ -10,7 +10,6 @@ import * as db from "../../init/db";
 import { collection } from "../../init/db";
 import { isDevEnvironment } from "../../utils/misc";
 import { devGet, devSet } from "../../utils/dev-store";
-import { REQUEST_MULTIPLIER } from "../../middlewares/rate-limit";
 import type { Gender } from "@typeuz/schemas/users";
 
 const LOGIN_LOG_KEY = "login_log";
@@ -258,25 +257,42 @@ router.post("/email/login", async (req: Request, res: Response) => {
 });
 
 async function verifyGoogleToken(
-  idToken: string,
+  token: string,
 ): Promise<{ email: string; name: string } | null> {
   try {
-    const resp = await fetch(
-      `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`,
+    let resp = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`,
     );
-    if (!resp.ok) return null;
-    const payload = (await resp.json()) as {
-      email?: string;
-      name?: string;
-      email_verified?: string;
-      sub?: string;
-    };
-    if (String(payload.email_verified) !== "true") {
+    let payload: Record<string, unknown> = {};
+
+    if (resp.ok) {
+      payload = (await resp.json()) as Record<string, unknown>;
+    } else {
+      resp = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!resp.ok) return null;
+      payload = (await resp.json()) as Record<string, unknown>;
+    }
+
+    const email = payload["email"] as string | undefined;
+    const name = payload["name"] as string | undefined;
+    const emailVerified = payload["email_verified"] as
+      | string
+      | boolean
+      | undefined;
+
+    if (
+      email === undefined ||
+      email === "" ||
+      String(emailVerified) !== "true"
+    ) {
       return null;
     }
+
     return {
-      email: payload.email ?? "",
-      name: payload.name ?? payload.email?.split("@")[0] ?? "google_user",
+      email,
+      name: name ?? email.split("@")[0] ?? "google_user",
     };
   } catch {
     return null;
