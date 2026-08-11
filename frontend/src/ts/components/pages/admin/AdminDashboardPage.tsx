@@ -127,7 +127,7 @@ export function AdminDashboardPage(): JSXElement {
       {/* Overview Banner */}
       <div class="relative mb-8 overflow-hidden rounded-3xl border border-sub/5 bg-gradient-to-r from-main/10 via-bg to-bg p-8">
         <div class="absolute top-0 -right-20 opacity-10 blur-2xl">
-          <Fa icon={"fa-chart-network" as any} class="text-[200px] text-main" />
+          <Fa icon={"fa-chart-line" as any} class="text-[200px] text-main" />
         </div>
         <div class="relative z-10">
           <h2 class="mb-2 text-3xl font-black text-text">Umumiy statistika</h2>
@@ -174,7 +174,6 @@ export function AdminDashboardPage(): JSXElement {
           icon="fa-bolt"
           color="bg-rose-600"
         />
-        
       </div>
 
       {/* Retention */}
