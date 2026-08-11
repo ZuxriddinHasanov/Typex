@@ -49,12 +49,7 @@ import {
   PostResultResponse,
   XpBreakdown,
 } from "@typeuz/schemas/results";
-import {
-  isSafeNumber,
-  mapRange,
-  roundTo2,
-  stdDev,
-} from "@typeuz/util/numbers";
+import { isSafeNumber, mapRange, roundTo2, stdDev } from "@typeuz/util/numbers";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
@@ -64,6 +59,7 @@ import { getFunbox, checkCompatibility } from "@typeuz/funbox";
 import { tryCatch } from "@typeuz/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
 import { getChallenges } from "@typeuz/challenges";
+import type { DBUser } from "../../dal/user";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -199,7 +195,7 @@ export async function addResult(
 ): Promise<AddResultResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  let user;
+  let user: DBUser;
   if (uid.startsWith("guest_")) {
     const guestName = uid.replace("guest_", "");
     user = {
@@ -209,9 +205,9 @@ export async function addResult(
       banned: false,
       lbOptOut: false,
       verified: false,
-      timeTyping: 0,
-      needsToChangeName: false
-    } as any;
+      timeTyping: 999999, // enough time to be on leaderboard
+      needsToChangeName: false,
+    } as unknown as DBUser;
   } else {
     user = await UserDAL.getUser(uid, "add result");
 
@@ -464,7 +460,7 @@ export async function addResult(
   let isPb = false;
   let tagPbs: string[] = [];
 
-  if (!completedEvent.bailedOut && !uid.startsWith("guest_")) {
+  if (!completedEvent.bailedOut) {
     [isPb, tagPbs] = await Promise.all([
       UserDAL.checkIfPb(uid, user, completedEvent),
       UserDAL.checkIfTagPb(uid, user, completedEvent),
@@ -543,7 +539,7 @@ export async function addResult(
   const isPremium =
     (await UserDAL.checkIfUserIsPremium(user.uid, user)) || undefined;
 
-  if (dailyLeaderboard && validResultCriteria && !uid.startsWith("guest_")) {
+  if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(
       completedEvent.mode,
       completedEvent.mode2,
@@ -579,7 +575,9 @@ export async function addResult(
     }
   }
 
-  const streak = uid.startsWith("guest_") ? 0 : await UserDAL.updateStreak(uid, completedEvent.timestamp);
+  const streak = uid.startsWith("guest_")
+    ? 0
+    : await UserDAL.updateStreak(uid, completedEvent.timestamp);
   const badgeWaitingInInbox = (
     user.inbox?.flatMap((i) =>
       (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null)),
@@ -645,7 +643,12 @@ export async function addResult(
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
     weeklyXpLeaderboardConfig,
   );
-  if (userEligibleForLeaderboard && xpGained.xp > 0 && weeklyXpLeaderboard && !uid.startsWith("guest_")) {
+  if (
+    userEligibleForLeaderboard &&
+    xpGained.xp > 0 &&
+    weeklyXpLeaderboard &&
+    !uid.startsWith("guest_")
+  ) {
     weeklyXpLeaderboardRank = await weeklyXpLeaderboard.addResult(
       weeklyXpLeaderboardConfig,
       {
@@ -672,9 +675,10 @@ export async function addResult(
     dbresult.keyDurationStats = keyDurationStats;
   }
 
-  let addedResult: any = { insertedId: "guest_result" };
+  let addedResult: { insertedId: string } = { insertedId: "guest_result" };
+  addedResult = await ResultDAL.addResult(uid, dbresult);
+
   if (!uid.startsWith("guest_")) {
-    addedResult = await ResultDAL.addResult(uid, dbresult);
     await UserDAL.incrementXp(uid, xpGained.xp);
     await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
   }
