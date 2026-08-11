@@ -503,42 +503,24 @@ export async function searchUsers(
   }
 
   try {
-    const safeQ = escapeRegex(q);
-    const users = await db
-      .collection("users")
-      .find(
-        {
-          $or: [
-            { uid: { $regex: safeQ, $options: "i" } },
-            { name: { $regex: safeQ, $options: "i" } },
-            { email: { $regex: safeQ, $options: "i" } },
-          ],
-        },
-        {
-          projection: {
-            uid: 1,
-            name: 1,
-            email: 1,
-            banned: 1,
-            addedAt: 1,
-            completedTests: 1,
-            timeTyping: 1,
-          },
-        },
-      )
-      .limit(50)
-      .toArray();
+    const safeQ = `%${q}%`;
+    const users = await db.queryAll<Record<string, unknown>>(
+      "SELECT uid, name, email, banned, added_at, completed_tests, time_typing, last_login_at, streak, pbs FROM users WHERE uid ILIKE $1 OR name ILIKE $1 OR email ILIKE $1 LIMIT 50",
+      [safeQ]
+    );
 
     const mappedUsers = users.map((u) => {
-      const r = u;
       return {
-        uid: r["uid"] as string,
-        name: r["name"] as string,
-        email: maskEmail(r["email"] as string),
-        banned: r["banned"] as boolean | undefined,
-        addedAt: r["addedAt"] as number | undefined,
-        completedTests: r["completedTests"] as number | undefined,
-        timeTyping: r["timeTyping"] as number | undefined,
+        uid: (u["uid"] as string) ?? "",
+        name: (u["name"] as string) ?? "",
+        email: maskEmail((u["email"] as string) ?? ""),
+        banned: (u["banned"] as boolean) ?? false,
+        addedAt: u["added_at"] ? Number(u["added_at"]) : undefined,
+        completedTests: u["completed_tests"] as number | undefined,
+        timeTyping: u["time_typing"] as number | undefined,
+        lastLoginAt: u["last_login_at"] ? Number(u["last_login_at"]) : undefined,
+        streak: u["streak"] as number | undefined,
+        pbs: u["pbs"] as Record<string, number> | undefined,
       };
     });
     results.push(...mappedUsers);
@@ -1283,39 +1265,32 @@ export async function listUsers(
         banned: (u["banned"] as boolean) ?? false,
         addedAt: u["addedAt"] as number | undefined,
         completedTests: u["completedTests"] as number | undefined,
+        timeTyping: u["timeTyping"] as number | undefined,
+        lastLoginAt: (u["lastLoginAt"] as number) ?? (u["last_login_at"] as number) ?? undefined,
+        streak: u["streak"] as number | undefined,
+        pbs: u["pbs"] as Record<string, number> | undefined,
       })),
     });
   }
   try {
-    const total = await db.collection("users").countDocuments();
-    const projection = {
-      uid: 1,
-      name: 1,
-      email: 1,
-      banned: 1,
-      addedAt: 1,
-      pbs: 1,
-      completedTests: 1,
-      timeTyping: 1,
-      streak: 1,
-      lastLoginAt: 1,
-    };
-    const rawUsers = await db
-      .collection("users")
-      .find({}, { projection })
-      .skip(req.query.skip)
-      .limit(req.query.limit)
-      .toArray();
+    const total = (await db.queryOne<{ count: number }>("SELECT COUNT(*)::int AS count FROM users"))?.count ?? 0;
+    const rawUsers = await db.queryAll<Record<string, unknown>>(
+      "SELECT uid, name, email, banned, added_at, completed_tests, time_typing, last_login_at, streak, pbs FROM users ORDER BY added_at DESC OFFSET $1 LIMIT $2",
+      [req.query.skip, req.query.limit]
+    );
     return new TypeUZResponse("Users listed", {
       total,
-      users: rawUsers.map((u: Record<string, unknown>) => ({
+      users: rawUsers.map((u) => ({
         uid: (u["uid"] as string) ?? "",
         name: (u["name"] as string) ?? "",
         email: (u["email"] as string) ?? "",
         banned: (u["banned"] as boolean) ?? false,
-        addedAt: u["addedAt"] as number | undefined,
-        completedTests: u["completedTests"] as number | undefined,
-        timeTyping: u["timeTyping"] as number | undefined,
+        addedAt: u["added_at"] ? Number(u["added_at"]) : undefined,
+        completedTests: u["completed_tests"] as number | undefined,
+        timeTyping: u["time_typing"] as number | undefined,
+        lastLoginAt: u["last_login_at"] ? Number(u["last_login_at"]) : undefined,
+        streak: u["streak"] as number | undefined,
+        pbs: u["pbs"] as Record<string, number> | undefined,
       })),
     });
   } catch {

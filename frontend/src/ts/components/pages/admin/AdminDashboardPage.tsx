@@ -174,6 +174,7 @@ export function AdminDashboardPage(): JSXElement {
           icon="fa-bolt"
           color="bg-rose-600"
         />
+        
       </div>
 
       {/* Retention */}

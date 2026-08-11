@@ -53,6 +53,7 @@ export type DBUser = Omit<
   canManageApeKeys?: boolean;
   bananas?: number;
   testActivity?: Record<string, (number | null)[]>;
+  aiUses?: { date: string; count: number };
   suspicious?: boolean;
   note?: string;
   lastLoginAt?: number;
@@ -151,6 +152,7 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
     quoteMod: parseJson(r["quote_mod"]) as User["quoteMod"],
     resultFilterPresets,
     testActivity,
+    aiUses: parseJson(r["ai_uses"]) as { date: string; count: number } | undefined,
     autoBanTimestamps,
     inbox,
     ips,
@@ -456,6 +458,7 @@ export async function getPartialUser<K extends keyof DBUser>(
     quoteMod: "quote_mod",
     resultFilterPresets: "result_filter_presets",
     testActivity: "test_activity",
+    aiUses: "ai_uses",
     autoBanTimestamps: "auto_ban_timestamps",
     inbox: "inbox",
     ips: "ips",
@@ -502,6 +505,7 @@ export async function getPartialUser<K extends keyof DBUser>(
         "quote_ratings",
         "quote_mod",
         "last_result_hashes",
+        "ai_uses",
       ].includes(col)
     ) {
       try {
@@ -1620,4 +1624,22 @@ function migrateUser<T extends { personalBests: PersonalBests }>(user: T): T {
     ai: {},
   };
   return user;
+}
+
+export async function updateAiUses(
+  uid: string,
+  aiUses: { date: string; count: number },
+): Promise<void> {
+  if (isDevEnvironment()) {
+    const profile =
+      devGetUser<Record<string, unknown>>(`user_profile_${uid}`) ?? {};
+    profile["aiUses"] = aiUses;
+    devSet(`user_profile_${uid}`, profile);
+    return;
+  }
+
+  await db.query(
+    `UPDATE users SET ai_uses = $1::jsonb WHERE uid = $2`,
+    [JSON.stringify(aiUses), uid],
+  );
 }

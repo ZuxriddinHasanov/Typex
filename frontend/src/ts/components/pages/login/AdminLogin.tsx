@@ -44,7 +44,7 @@ export function AdminLogin(): JSXElement {
       if (json.data) {
         clearStoredToken();
         setStoredToken(json.data.token);
-        window.location.href = "/admin/dashboard";
+        window.location.href = "/typeuz-hq/dashboard";
       }
     } catch {
       showErrorNotification("Admin serveriga ulanishda xatolik");

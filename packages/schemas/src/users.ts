@@ -292,6 +292,10 @@ export const UserSchema = z.object({
   quoteMod: QuoteModSchema.optional(),
   resultFilterPresets: z.array(ResultFiltersSchema).optional(),
   testActivity: TestActivitySchema.optional(),
+  aiUses: z.object({
+    date: z.string(),
+    count: z.number().int().nonnegative(),
+  }).optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 

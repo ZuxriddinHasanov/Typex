@@ -25,7 +25,6 @@ export type PageName =
   | "profile"
   | "profileSearch"
   | "404"
-  | "accountSettings"
   | "leaderboards"
   | "friends"
   | "privacy"

@@ -13,7 +13,11 @@ export async function getConfiguration(
   _req: TypeUZRequest,
 ): Promise<GetConfigurationResponse> {
   const currentConfiguration = await Configuration.getCachedConfiguration(true);
-  return new TypeUZResponse("Configuration retrieved", currentConfiguration);
+  const sanitized = structuredClone(currentConfiguration);
+  if (sanitized.users?.ai) {
+    sanitized.users.ai.apiKey = "***";
+  }
+  return new TypeUZResponse("Configuration retrieved", sanitized);
 }
 
 export async function getSchema(

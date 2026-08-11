@@ -269,9 +269,9 @@ export async function applyCustomBackground(): Promise<void> {
   }
 
   // hide the filter section initially and always
-  qs(
-    ".pageSettings .section[data-config-name='customBackgroundFilter']",
-  )?.hide();
+  // qs(
+  //   ".pageSettings .section[data-config-name='customBackgroundFilter']",
+  // )?.hide();
 
   if (backgroundUrl === "") {
     qs("#words")?.removeClass("noErrorBorder");
@@ -292,9 +292,9 @@ export async function applyCustomBackground(): Promise<void> {
     );
     img.onload = () => {
       // show the filter section only if the image loads successfully
-      qs(
-        ".pageSettings .section[data-config-name='customBackgroundFilter']",
-      )?.show();
+      // qs(
+      //   ".pageSettings .section[data-config-name='customBackgroundFilter']",
+      // )?.show();
     };
 
     container?.replaceChildren(img);

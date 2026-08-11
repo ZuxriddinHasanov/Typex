@@ -103,55 +103,55 @@ const routes: Route[] = [
     },
   },
   {
-    path: "/admin",
+    path: "/typeuz-hq",
     load: async (_params, options) => {
       await PageController.change("adminLogin", options);
     },
   },
   {
-    path: "/admin/dashboard",
+    path: "/typeuz-hq/dashboard",
     load: async (_params, options) => {
       await PageController.change("adminDashboard", options);
     },
   },
   {
-    path: "/admin/users",
+    path: "/typeuz-hq/users",
     load: async (_params, options) => {
       await PageController.change("adminUsers", options);
     },
   },
   {
-    path: "/admin/content",
+    path: "/typeuz-hq/content",
     load: async (_params, options) => {
       await PageController.change("adminContent", options);
     },
   },
   {
-    path: "/admin/analytics",
+    path: "/typeuz-hq/analytics",
     load: async (_params, options) => {
       await PageController.change("adminAnalytics", options);
     },
   },
   {
-    path: "/admin/ai",
+    path: "/typeuz-hq/ai",
     load: async (_params, options) => {
       await PageController.change("adminAi", options);
     },
   },
   {
-    path: "/admin/notifications",
+    path: "/typeuz-hq/notifications",
     load: async (_params, options) => {
       await PageController.change("adminNotifications", options);
     },
   },
   {
-    path: "/admin/ads",
+    path: "/typeuz-hq/ads",
     load: async (_params, options) => {
       await PageController.change("adminAds", options);
     },
   },
   {
-    path: "/admin/settings",
+    path: "/typeuz-hq/settings",
     load: async (_params, options) => {
       await PageController.change("adminSettings", options);
     },
@@ -267,10 +267,10 @@ window.addEventListener("popstate", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("click", (e) => {
-    const target = e?.target as HTMLLinkElement;
-    if (target.matches("[router-link]") && target?.href) {
+    const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("[router-link]");
+    if (link) {
       e.preventDefault();
-      void navigate(target.href);
+      void navigate(link.getAttribute("href") ?? link.pathname);
     }
   });
 });

@@ -43,10 +43,16 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
           if (dev !== null) {
             request.headers["Authorization"] = `Uid ${dev.uid}|${dev.email}`;
           } else {
-            let guestToken = localStorage.getItem("guest_token");
-            if (!guestToken) {
-              guestToken = "Mehmon-" + Math.floor(1000 + Math.random() * 9000);
-              localStorage.setItem("guest_token", guestToken);
+            let guestToken: string | null = null;
+            request.headers = request.headers ?? {};
+            try {
+              guestToken = localStorage.getItem("guest_token");
+              if (!guestToken) {
+                guestToken = crypto.randomUUID();
+                localStorage.setItem("guest_token", guestToken);
+              }
+            } catch {
+              guestToken = "fallback-" + Date.now().toString(36);
             }
             request.headers["Authorization"] = `Guest ${guestToken}`;
           }

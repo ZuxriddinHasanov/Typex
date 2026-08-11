@@ -28,7 +28,7 @@ const templates: Record<EmailType, EmailMetadata> = {
 
 let transportInitialized = false;
 let transporter: nodemailer.Transporter;
-let emailFrom = "TypeUZ <noreply@typeuz.uz>";
+let emailFrom = "TypeUZ <TypexUz@gmail.com>";
 
 export function isInitialized(): boolean {
   return transportInitialized;

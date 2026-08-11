@@ -87,7 +87,6 @@ const pages = {
   }),
   profileSearch: solidPage("profileSearch"),
   friends: solidPage("friends"),
-  accountSettings: solidPage("accountSettings"),
   404: solidPage("404"),
   privacy: solidPage("privacy"),
   terms: solidPage("terms"),
@@ -319,10 +318,8 @@ export async function change(
   updateSeoForPage(nextPage, options.params);
   Focus.set(false);
 
-  //next page
   await nextPage?.beforeShow({
     params: options.params,
-    // @ts-expect-error for the future (i think)
     data: options.data,
   });
 

@@ -173,6 +173,10 @@ export async function updateTags(
   const { uid } = req.ctx.decodedToken;
   const { tagIds, resultId } = req.body;
 
+  if (uid.startsWith("guest_")) {
+    throw new TypeUZError(403, "Guests cannot update tags");
+  }
+
   await ResultDAL.updateTags(uid, resultId, tagIds);
   const result = await ResultDAL.getResult(uid, resultId);
 
@@ -205,7 +209,7 @@ export async function addResult(
       banned: false,
       lbOptOut: false,
       verified: false,
-      timeTyping: 9999999, // Allow on leaderboard immediately
+      timeTyping: 0,
       needsToChangeName: false
     } as any;
   } else {
@@ -442,7 +446,9 @@ export async function addResult(
       if (lastHashes.length > maxHashes) {
         lastHashes = lastHashes.slice(0, maxHashes);
       }
-      await UserDAL.updateLastHashes(uid, lastHashes);
+      if (!uid.startsWith("guest_")) {
+        await UserDAL.updateLastHashes(uid, lastHashes);
+      }
     }
   }
 
@@ -458,7 +464,7 @@ export async function addResult(
   let isPb = false;
   let tagPbs: string[] = [];
 
-  if (!completedEvent.bailedOut) {
+  if (!completedEvent.bailedOut && !uid.startsWith("guest_")) {
     [isPb, tagPbs] = await Promise.all([
       UserDAL.checkIfPb(uid, user, completedEvent),
       UserDAL.checkIfTagPb(uid, user, completedEvent),
@@ -537,7 +543,7 @@ export async function addResult(
   const isPremium =
     (await UserDAL.checkIfUserIsPremium(user.uid, user)) || undefined;
 
-  if (dailyLeaderboard && validResultCriteria) {
+  if (dailyLeaderboard && validResultCriteria && !uid.startsWith("guest_")) {
     incrementDailyLeaderboard(
       completedEvent.mode,
       completedEvent.mode2,
@@ -639,7 +645,7 @@ export async function addResult(
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
     weeklyXpLeaderboardConfig,
   );
-  if (userEligibleForLeaderboard && xpGained.xp > 0 && weeklyXpLeaderboard) {
+  if (userEligibleForLeaderboard && xpGained.xp > 0 && weeklyXpLeaderboard && !uid.startsWith("guest_")) {
     weeklyXpLeaderboardRank = await weeklyXpLeaderboard.addResult(
       weeklyXpLeaderboardConfig,
       {

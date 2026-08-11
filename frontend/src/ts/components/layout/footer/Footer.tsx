@@ -7,8 +7,7 @@ import { Fa } from "../../common/Fa";
 
 export function Footer(): JSXElement {
   const showFooter = () =>
-    getActivePage() !== "adminLogin" &&
-    getActivePage() !== "adminDashboard" &&
+    !getActivePage().startsWith("admin") &&
     getActivePage() !== "login" &&
     getActivePage() !== "onboarding";
 

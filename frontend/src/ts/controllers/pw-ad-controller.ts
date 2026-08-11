@@ -77,30 +77,7 @@ const selloutUnits = [
     type: "med_rect_btf",
     selectorId: "ad-about-2-small-wrapper",
   },
-  {
-    type: "leaderboard_btf",
-    selectorId: "ad-settings-1-wrapper",
-  },
-  {
-    type: "med_rect_btf",
-    selectorId: "ad-settings-1-small-wrapper",
-  },
-  {
-    type: "leaderboard_btf",
-    selectorId: "ad-settings-2-wrapper",
-  },
-  {
-    type: "med_rect_btf",
-    selectorId: "ad-settings-2-small-wrapper",
-  },
-  {
-    type: "leaderboard_btf",
-    selectorId: "ad-settings-3-wrapper",
-  },
-  {
-    type: "med_rect_btf",
-    selectorId: "ad-settings-3-small-wrapper",
-  },
+
   {
     type: "leaderboard_btf",
     selectorId: "ad-account-1-wrapper",

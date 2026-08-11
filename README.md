@@ -45,7 +45,7 @@ On the [TypeUZ Discord server](https://www.discord.gg/typeuz), we added a Discor
 
 # Bug report or Feature request
 
-If you encounter a bug or have a feature request, [send us an email](mailto:contact@typeuz.uz), [create an issue](https://github.com/typeuz/typeuz/issues), [create a discussion thread](https://github.com/typeuz/typeuz/discussions), or [join the Discord server](https://www.discord.gg/typeuz).
+If you encounter a bug or have a feature request, [send us an email](mailto:TypexUz@gmail.com), [create an issue](https://github.com/typeuz/typeuz/issues), [create a discussion thread](https://github.com/typeuz/typeuz/discussions), or [join the Discord server](https://www.discord.gg/typeuz).
 
 # Want to Contribute?
 

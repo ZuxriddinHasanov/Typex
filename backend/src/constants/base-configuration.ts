@@ -64,6 +64,11 @@ export const BASE_CONFIGURATION: Configuration = {
     profiles: {
       enabled: false,
     },
+    ai: {
+      enabled: true,
+      maxDailyUses: 3,
+      apiKey: "",
+    },
     xp: {
       enabled: false,
       funboxBonus: 0,
@@ -445,6 +450,25 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
             enabled: {
               type: "boolean",
               label: "Enabled",
+            },
+          },
+        },
+        ai: {
+          type: "object",
+          label: "AI Analysis",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxDailyUses: {
+              type: "number",
+              label: "Max Daily Uses",
+              min: 0,
+            },
+            apiKey: {
+              type: "string",
+              label: "API Key (Gemini vs OpenAI)",
             },
           },
         },

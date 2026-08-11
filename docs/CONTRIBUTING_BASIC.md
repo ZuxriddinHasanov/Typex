@@ -89,4 +89,4 @@ Once your PR is approved, all that is left to do is merge it!
 
 ## Questions
 
-If you have any questions, comments, concerns, or problems, don't hesitate to let us know via [email](mailto:jack@typeuz.uz)(to Miodec), on [GitHub](https://github.com/typeuz/typeuz/discussions) or on [Discord](https://discord.gg/typeuz) in the [`#development`](https://discord.com/channels/713194177403420752/713196019206324306) channel and a contributor will be happy to assist you.
+If you have any questions, comments, concerns, or problems, don't hesitate to let us know via [email](mailto:TypexUz@gmail.com)(to Miodec), on [GitHub](https://github.com/typeuz/typeuz/discussions) or on [Discord](https://discord.gg/typeuz) in the [`#development`](https://discord.com/channels/713194177403420752/713196019206324306) channel and a contributor will be happy to assist you.

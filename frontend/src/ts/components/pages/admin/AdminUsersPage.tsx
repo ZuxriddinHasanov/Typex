@@ -152,9 +152,9 @@ export function AdminUsersPage(): JSXElement {
                 <th class="p-4 pl-6 font-semibold">Foydalanuvchi</th>
                 <th class="p-4 font-semibold">Email</th>
                 <th class="p-4 font-semibold">Holat</th>
-                <th class="p-4 font-semibold">Testlar</th>
-                <th class="p-4 font-semibold">WPM</th>
-                <th class="p-4 font-semibold">Ro'yxatdan o'tgan</th>
+                <th class="p-4 font-semibold">Testlar & Vaqt</th>
+                <th class="p-4 font-semibold">WPM & Streak</th>
+                <th class="p-4 font-semibold">So'nggi kirish</th>
                 <th class="p-4 pr-6 text-right font-semibold">Amallar</th>
               </tr>
             </thead>
@@ -196,24 +196,49 @@ export function AdminUsersPage(): JSXElement {
                         {u.banned ? "BLOKLANGAN" : "FAOL"}
                       </span>
                     </td>
-                    <td class="p-4 font-bold text-text">
-                      {u.completedTests ?? 0}
+                    <td class="p-4">
+                      <div class="flex flex-col">
+                        <span class="font-bold text-text">
+                          {u.completedTests ?? 0}
+                        </span>
+                        <span class="text-xs text-sub">
+                          {Math.round((u.timeTyping ?? 0) / 60)} min
+                        </span>
+                      </div>
                     </td>
-                    <td class="p-4 font-bold text-main">
-                      {(u as any).pbs
-                        ? (Object.values(
-                            (u as any).pbs as Record<string, any>,
-                          )?.[0]?.wpm ?? "—")
-                        : "—"}
+                    <td class="p-4">
+                      <div class="flex flex-col">
+                        <span class="font-bold text-main">
+                          {(u as any).pbs
+                            ? (Object.values(
+                                (u as any).pbs as Record<string, any>,
+                              )?.[0]?.wpm ?? "—")
+                            : "—"}
+                        </span>
+                        <span class="text-xs text-sub">
+                          <i class="fas fa-fire text-orange-500"></i> {u.streak ?? 0} k
+                        </span>
+                      </div>
                     </td>
-                    <td class="p-4 font-medium text-sub">
-                      {u.addedAt
-                        ? new Date(u.addedAt).toLocaleDateString("uz-UZ", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })
-                        : "—"}
+                    <td class="p-4">
+                      <div class="flex flex-col">
+                        <span class="font-medium text-text">
+                          {u.lastLoginAt
+                            ? new Date(u.lastLoginAt).toLocaleDateString("uz-UZ", {
+                                month: "short",
+                                day: "numeric",
+                              })
+                            : "—"}
+                        </span>
+                        <span class="text-[10px] text-sub">
+                          {u.lastLoginAt
+                            ? new Date(u.lastLoginAt).toLocaleTimeString("uz-UZ", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "—"}
+                        </span>
+                      </div>
                     </td>
                     <td class="p-4 pr-6">
                       <div class="flex justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
@@ -431,20 +456,20 @@ export function AdminUsersPage(): JSXElement {
             </div>
 
             <div class="p-8">
-              <div class="grid grid-cols-2 gap-6 text-sm">
-                <div class="bg-bg-alt/50 rounded-2xl border border-sub/5 p-4">
-                  <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
-                    Foydalanuvchi ID
+              <div class="grid grid-cols-2 gap-6 text-sm md:grid-cols-3">
+                <div class="rounded-2xl border border-sub/10 bg-bg-alt/50 p-5 transition-colors hover:border-main/30 hover:bg-main/5">
+                  <span class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-sub uppercase">
+                    <Fa icon="fa-id-card" /> UID
                   </span>
-                  <p class="mt-1 font-mono font-semibold text-text">
+                  <p class="mt-2 text-xs font-mono font-semibold text-text truncate" title={selectedUser()?.uid ?? ""}>
                     {selectedUser()?.uid ?? "—"}
                   </p>
                 </div>
-                <div class="bg-bg-alt/50 rounded-2xl border border-sub/5 p-4">
-                  <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
-                    Ro'yxatdan o'tgan sana
+                <div class="rounded-2xl border border-sub/10 bg-bg-alt/50 p-5 transition-colors hover:border-main/30 hover:bg-main/5">
+                  <span class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-sub uppercase">
+                    <Fa icon="fa-calendar-alt" /> Ro'yxatdan o'tgan
                   </span>
-                  <p class="mt-1 font-medium font-semibold text-text">
+                  <p class="mt-2 text-sm font-semibold text-text">
                     {selectedUser()?.addedAt
                       ? new Date(selectedUser().addedAt).toLocaleDateString(
                           "uz-UZ",
@@ -453,20 +478,41 @@ export function AdminUsersPage(): JSXElement {
                       : "—"}
                   </p>
                 </div>
-                <div class="bg-bg-alt/50 rounded-2xl border border-sub/5 p-4">
-                  <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
-                    Yakunlangan testlar
+                <div class="rounded-2xl border border-sub/10 bg-bg-alt/50 p-5 transition-colors hover:border-main/30 hover:bg-main/5">
+                  <span class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-sub uppercase">
+                    <Fa icon="fa-sign-in-alt" /> So'nggi faollik
                   </span>
-                  <p class="mt-1 text-xl font-black font-medium text-text">
+                  <p class="mt-2 text-sm font-semibold text-text">
+                    {selectedUser()?.lastLoginAt
+                      ? new Date(selectedUser().lastLoginAt).toLocaleString(
+                          "uz-UZ",
+                          { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" },
+                        )
+                      : "—"}
+                  </p>
+                </div>
+                <div class="rounded-2xl border border-sub/10 bg-bg-alt/50 p-5 transition-colors hover:border-main/30 hover:bg-main/5">
+                  <span class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-sub uppercase">
+                    <Fa icon="fa-keyboard" /> Yakunlangan testlar
+                  </span>
+                  <p class="mt-2 text-3xl font-black text-text">
                     {selectedUser()?.completedTests ?? 0}
                   </p>
                 </div>
-                <div class="bg-bg-alt/50 rounded-2xl border border-sub/5 p-4">
-                  <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
-                    Vaqt (yozishda)
+                <div class="rounded-2xl border border-sub/10 bg-bg-alt/50 p-5 transition-colors hover:border-main/30 hover:bg-main/5">
+                  <span class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-sub uppercase">
+                    <Fa icon="fa-clock" /> Vaqt (yozishda)
                   </span>
-                  <p class="mt-1 text-xl font-black font-medium text-text">
-                    {Math.round((selectedUser()?.timeTyping ?? 0) / 60)} min
+                  <p class="mt-2 text-3xl font-black text-text">
+                    {Math.round((selectedUser()?.timeTyping ?? 0) / 60)} <span class="text-lg text-sub">min</span>
+                  </p>
+                </div>
+                <div class="rounded-2xl border border-sub/10 bg-bg-alt/50 p-5 transition-colors hover:border-main/30 hover:bg-main/5">
+                  <span class="flex items-center gap-2 text-[10px] font-bold tracking-widest text-sub uppercase">
+                    <Fa icon="fa-fire" class="text-orange-500" /> Streak (Davomiylik)
+                  </span>
+                  <p class="mt-2 text-3xl font-black text-text">
+                    {selectedUser()?.streak ?? 0} <span class="text-lg text-sub">kun</span>
                   </p>
                 </div>
               </div>

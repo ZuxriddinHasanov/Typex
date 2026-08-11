@@ -14,21 +14,21 @@ export function ContactModal(): JSXElement {
           <p>
             Telegram:{" "}
             <a
-              href="https://t.me/root_v7be"
+              href="https://t.me/typex_uz"
               target="_blank"
               rel="noopener noreferrer"
               class="text-main hover:underline"
             >
-              @root_v7be
+              @typex_uz
             </a>
           </p>
           <p>
             Email:{" "}
             <a
-              href="mailto:zuhriddin.h.011@gmail.com"
+              href="mailto:TypexUz@gmail.com"
               class="text-main hover:underline"
             >
-              zuhriddin.h.011@gmail.com
+              TypexUz@gmail.com
             </a>
           </p>
         </div>

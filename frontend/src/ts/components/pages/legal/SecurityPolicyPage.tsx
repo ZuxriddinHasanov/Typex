@@ -18,10 +18,10 @@ const sections = [
         <p>Zaiflikni xabar qilish uchun quyidagi manzilga yozing:</p>
         <p>
           <a
-            href="mailto:zuhriddin.h.011@gmail.com"
+            href="mailto:TypexUz@gmail.com"
             class="text-main underline hover:no-underline"
           >
-            zuhriddin.h.011@gmail.com
+            TypexUz@gmail.com
           </a>
         </p>
         <p class="mt-4 font-semibold text-text">

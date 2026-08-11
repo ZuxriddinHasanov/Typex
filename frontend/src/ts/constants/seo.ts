@@ -161,14 +161,14 @@ export const seoConfig: Record<string, SeoConfig> = {
   adminLogin: {
     title: "TypeUZ | Admin panel — Kirish",
     description: "Admin panelga kirish.",
-    canonical: u("/admin"),
+    canonical: u("/typeuz-hq"),
     robots: "noindex, nofollow",
   },
 
   adminDashboard: {
     title: "TypeUZ | Admin panel",
     description: "Admin panel boshqaruvi.",
-    canonical: u("/admin/dashboard"),
+    canonical: u("/typeuz-hq/dashboard"),
     robots: "noindex, nofollow",
   },
 

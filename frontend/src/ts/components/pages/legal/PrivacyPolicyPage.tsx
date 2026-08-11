@@ -157,7 +157,7 @@ const sections = [
           </li>
         </ul>
         <p class="mt-4">
-          Huquqlaringizni amalga oshirish uchun zuhriddin.h.011@gmail.com ga
+          Huquqlaringizni amalga oshirish uchun TypexUz@gmail.com ga
           murojaat qiling. So'rovlar 30 kun ichida ko'rib chiqiladi.
         </p>
       </div>
@@ -314,19 +314,19 @@ export function PrivacyPolicyPage(): JSXElement {
           <p>
             Email:{" "}
             <a
-              href="mailto:zuhriddin.h.011@gmail.com"
+              href="mailto:TypexUz@gmail.com"
               class="text-main underline hover:no-underline"
             >
-              zuhriddin.h.011@gmail.com
+              TypexUz@gmail.com
             </a>
           </p>
           <p>
             Telegram:{" "}
             <a
-              href="https://t.me/root_v7be"
+              href="https://t.me/typex_uz"
               class="text-main underline hover:no-underline"
             >
-              @root_v7be
+              @typex_uz
             </a>
           </p>
           <p>

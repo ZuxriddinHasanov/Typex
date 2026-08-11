@@ -580,10 +580,10 @@ async function saveAdminCredDoc(doc: AdminCredDoc): Promise<void> {
   }
 }
 
-const adminLoginLimiter = rateLimit({
+const adminLoginLimiter1 = rateLimit({
   windowMs: 60 * 1000,
-  max: 5 * REQUEST_MULTIPLIER,
-  message: { message: "Ko'p urinishlar, keyinroq urinib ko'ring" },
+  max: 5,
+  message: { message: "Ketma-ket xatoliklar: 1 daqiqa kuting" },
   standardHeaders: true,
   legacyHeaders: false,
   validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
@@ -593,13 +593,31 @@ const adminLoginLimiter = rateLimit({
       (req.headers["x-forwarded-for"] as string) ??
       req.ip ??
       "255.255.255.255";
-    return `admin-login:${ip}`;
+    return `admin-login-1m:${ip}`;
+  },
+});
+
+const adminLoginLimiter2 = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 10,
+  message: { message: "Juda ko'p urinish: 10 daqiqa bloklandi!" },
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
+  keyGenerator: (req) => {
+    const ip =
+      (req.headers["cf-connecting-ip"] as string) ??
+      (req.headers["x-forwarded-for"] as string) ??
+      req.ip ??
+      "255.255.255.255";
+    return `admin-login-10m:${ip}`;
   },
 });
 
 router.post(
   "/admin/login",
-  adminLoginLimiter,
+  adminLoginLimiter2,
+  adminLoginLimiter1,
   async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body as {

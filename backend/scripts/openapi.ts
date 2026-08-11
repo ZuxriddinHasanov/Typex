@@ -28,7 +28,7 @@ export function getOpenApi(): OpenAPIObject {
         termsOfService: "https://typeuz.uz/terms-of-service",
         contact: {
           name: "Support",
-          email: "support@typeuz.uz",
+          email: "TypexUz@gmail.com",
         },
         "x-logo": {
           url: "https://typeuz.uz/images/owtypellogo.png",

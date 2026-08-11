@@ -66,9 +66,13 @@ function WeeklyAnalysis(): JSXElement {
   const [analysis] = createResource(
     () => (isAuthenticated() ? "fetch" : null),
     async () => {
-      const res = await Ape.users.getWeeklyAnalysis();
-      if (res.status !== 200) return null;
-      return res.body.data;
+      try {
+        const res = await Ape.users.getWeeklyAnalysis();
+        if (res.status !== 200) throw new Error("Failed to fetch analysis");
+        return res.body.data;
+      } catch (e) {
+        throw e;
+      }
     },
   );
 
@@ -76,7 +80,15 @@ function WeeklyAnalysis(): JSXElement {
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sub-alt/80 to-sub-alt/30 p-8 shadow-sm border border-sub/10">
       <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-main/5 blur-3xl"></div>
       
-      <Show when={!analysis.loading && analysis() === null}>
+      <Show when={analysis.error}>
+        <div class="rounded-xl bg-red-500/10 border border-red-500/20 p-4 text-center mb-4">
+          <span class="text-sm font-medium text-red-400">
+            Tahlilni yuklashda xatolik yuz berdi.
+          </span>
+        </div>
+      </Show>
+      
+      <Show when={!analysis.loading && !analysis.error && analysis() === null}>
         <span class="text-sm font-medium text-sub">
           Tahlil uchun profilingizga kiring yoki ko&apos;proq test topshiring.
         </span>
@@ -103,13 +115,13 @@ function WeeklyAnalysis(): JSXElement {
             <div class="flex flex-col gap-1 border-l-2 border-main/30 pl-3">
               <span class="text-xs font-bold tracking-wider text-sub uppercase">O&apos;rtacha WPM</span>
               <div class="text-3xl font-black text-text">
-                {analysis()?.avgWpm.toFixed(1)}
+                {(analysis()?.avgWpm ?? 0).toFixed(1)}
               </div>
             </div>
             <div class="flex flex-col gap-1 border-l-2 border-main/30 pl-3">
               <span class="text-xs font-bold tracking-wider text-sub uppercase">O&apos;rtacha aniqlik</span>
               <div class="text-3xl font-black text-text">
-                {analysis()?.avgAccuracy.toFixed(1)}%
+                {(analysis()?.avgAccuracy ?? 0).toFixed(1)}%
               </div>
             </div>
             <div class="flex flex-col gap-1 border-l-2 border-main/30 pl-3">
@@ -175,7 +187,7 @@ function WeeklyAnalysis(): JSXElement {
             </div>
           </Show>
           
-          <Show when={analysis()?.recommendation}>
+          <Show when={analysis()?.recommendation && analysis()?.recommendation !== ""}>
             <div class="mt-2 flex items-start gap-3 rounded-xl bg-main/5 p-4 border border-main/10">
               <Fa icon="fa-lightbulb" class="mt-1 text-main" />
               <p class="text-sm leading-relaxed text-text">

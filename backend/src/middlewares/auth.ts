@@ -155,7 +155,9 @@ async function authenticateWithAuthHeader(
     case "Uid":
       return await authenticateWithUid(token);
     case "Guest":
-      // Mehmon profillari uchun maxsus "Guest Mehmon-1234" tokenini qabul qilish
+      if (!/^[a-zA-Z0-9-]{8,64}$/.test(token)) {
+        throw new TypeUZError(401, "Invalid guest token");
+      }
       return {
         type: "None",
         uid: "guest_" + token,

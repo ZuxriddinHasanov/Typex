@@ -20,6 +20,7 @@ const defaultConfig: Configuration = {
     lastHashesCheck: { enabled: true, maxHashes: 5 },
     autoBan: { enabled: false, maxCount: 0, maxHours: 0 },
     profiles: { enabled: true },
+    ai: { enabled: false, maxDailyUses: 3, apiKey: "" },
     discordIntegration: { enabled: false },
     xp: {
       enabled: true,

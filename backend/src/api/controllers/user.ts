@@ -1466,33 +1466,68 @@ export async function getWeeklyAnalysis(
   }
 
   let recommendation = "";
-  if (avgWpm < 30) {
-    recommendation =
-      "Tezlikni oshirish uchun har kuni 5-10 daqiqa mashq qiling. Klaviaturada barmoqlarning to'g'ri joylashishiga e'tibor bering.";
-  } else if (avgAccuracy < 90) {
-    recommendation =
-      "Aniqlikni oshirishga e'tibor qarating. Sekinroq yozing, lekin xatolarni kamaytiring. To'g'ri barmoq joylashuvi muhim.";
-  } else if (dailyBreakdown.length < 3) {
-    recommendation =
-      "Haftada kamida 3-4 kun test topshirishni maqsad qiling. Muntazamlik tezlikni oshirishning kalitidir.";
-  } else if (trend === "improving") {
-    recommendation =
-      "Yaxshi natija! Tezligingiz oshib bormoqda. Shu tartibda davom eting va yangi maqsadlar qo'ying.";
-  } else if (trend === "declining") {
-    recommendation =
-      "Oxirgi kunlarda tezlik pasaygan. Dam olish va diqqatni jamlash uchun tanaffus qiling.";
+  const user = await UserDAL.getUser(uid, "getWeeklyAnalysis");
+  let aiUses = user?.aiUses ?? { date: "", count: 0 };
+  const today = new Date().toISOString().slice(0, 10);
+  if (aiUses.date !== today) {
+    aiUses = { date: today, count: 0 };
+  }
+
+  const aiConfig = req.ctx.configuration.users.ai;
+  if (aiConfig?.enabled && aiConfig.apiKey && aiUses.count < aiConfig.maxDailyUses) {
+    try {
+      const prompt = `Men "TypeUZ (typeuz.uz)" foydalanuvchisiman. Mening haftalik yozish o'rtacha tezligim ${avgWpm} WPM, aniqligim ${avgAccuracy}%. Men 7 kun ichida jami ${results.length} ta test topshirdim va ${Math.round(totalTimeSeconds)} soniya sarfladim. Trendim: ${trend}. Eng zo'r tezligim: ${bestWpm} WPM bo'ldi. Menga shu natijalarim asosida o'zbek tilida motivatsion va foydali maslahat ber. Matn ichida natija raqamlarim ham ishtirok etsin va u juda ham qisqa bo'lsin.`;
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiConfig.apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Gemini API error: ${response.status}`);
+      }
+      const data = await response.json() as any;
+      if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+        recommendation = data.candidates[0].content.parts[0].text.trim();
+        aiUses.count++;
+        await UserDAL.updateAiUses(uid, aiUses);
+      } else {
+        throw new Error("Invalid AI response");
+      }
+    } catch (e) {
+      recommendation = "AI tahlil vaqtinchalik ishlamayapti. O'z ustingizda ishlashda davom eting!";
+    }
+  } else if (aiConfig?.enabled && aiUses.count >= aiConfig.maxDailyUses) {
+    recommendation = `Siz bugungi AI tahlil limitiga (${aiConfig.maxDailyUses} marta) yetib keldingiz. Yaxshi natijalar! Erta yana ko'rishguncha.`;
   } else {
-    recommendation =
-      "Barqaror natijalar ko'rsatyapsiz. Tezlikni oshirish uchun turli xil matnlar bilan mashq qilib ko'ring.";
+    if (avgWpm < 30) {
+      recommendation = "Tezlikni oshirish uchun har kuni 5-10 daqiqa mashq qiling. Klaviaturada barmoqlarning to'g'ri joylashishiga e'tibor bering.";
+    } else if (avgAccuracy < 90) {
+      recommendation = "Aniqlikni oshirishga e'tibor qarating. Sekinroq yozing, lekin xatolarni kamaytiring. To'g'ri barmoq joylashuvi muhim.";
+    } else if (dailyBreakdown.length < 3) {
+      recommendation = "Haftada kamida 3-4 kun test topshirishni maqsad qiling. Muntazamlik tezlikni oshirishning kalitidir.";
+    } else if (trend === "improving") {
+      recommendation = "Yaxshi natija! Tezligingiz oshib bormoqda. Shu tartibda davom eting va yangi maqsadlar qo'ying.";
+    } else if (trend === "declining") {
+      recommendation = "Oxirgi kunlarda tezlik pasaygan. Dam olish va diqqatni jamlash uchun tanaffus qiling.";
+    } else {
+      recommendation = "Barqaror natijalar ko'rsatyapsiz. Tezlikni oshirish uchun turli xil matnlar bilan mashq qilib ko'ring.";
+    }
   }
 
   return new TypeUZResponse("Haftalik tahlil", {
     avgWpm,
     avgAccuracy,
     totalTests: results.length,
-    totalTimeSeconds: Math.round(totalTimeSeconds),
+    totalTimeSeconds,
     bestWpm,
-    bestWpmDate: new Date(bestWpmTimestamp).toISOString(),
+    bestWpmDate: bestWpmTimestamp > 0 ? new Date(bestWpmTimestamp).toISOString() : "",
     trend,
     bestDay,
     dailyBreakdown,

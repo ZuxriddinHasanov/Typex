@@ -9,9 +9,7 @@ import { Nav } from "./Nav";
 export function Header(): JSXElement {
   return (
     <Show
-      when={
-        getActivePage() !== "adminLogin" && getActivePage() !== "adminDashboard"
-      }
+      when={!getActivePage().startsWith("admin")}
     >
       <div
         class={cn(
