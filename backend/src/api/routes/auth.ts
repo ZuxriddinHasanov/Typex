@@ -365,7 +365,12 @@ router.post("/google", async (req: Request, res: Response) => {
     Logger.error(`Google auth error: ${(e as Error).message}`);
     res
       .status(500)
-      .json(new TypeUZResponse("Google orqali kirishda xatolik", null));
+      .json(
+        new TypeUZResponse(
+          `Google orqali kirishda xatolik: ${(e as Error).message}`,
+          null,
+        ),
+      );
   }
 });
 
