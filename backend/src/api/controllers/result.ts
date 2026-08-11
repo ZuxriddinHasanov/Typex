@@ -196,10 +196,12 @@ export async function addResult(
   const { uid } = req.ctx.decodedToken;
 
   let user: DBUser;
-  if (uid.startsWith("guest_")) {
-    const guestName = uid.replace("guest_", "");
+  if (uid === "" || uid.startsWith("guest_")) {
+    const guestName = uid.startsWith("guest_")
+      ? uid.replace("guest_", "")
+      : "guest";
     user = {
-      uid,
+      uid: uid === "" ? "guest_user" : uid,
       name: guestName,
       email: "guest@typex.uz",
       banned: false,
@@ -220,7 +222,7 @@ export async function addResult(
   }
 
   const completedEvent = req.body.result;
-  completedEvent.uid = uid;
+  completedEvent.uid = user.uid;
 
   if (isTestTooShort(completedEvent)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
