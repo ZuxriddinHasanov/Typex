@@ -27,8 +27,19 @@ function timeoutSignal(ms: number): AbortSignal {
 function getOrCreateGuestToken(): string {
   try {
     let token = localStorage.getItem("guest_token");
-    if (token === null || token === "") {
-      token = crypto.randomUUID();
+    const name = localStorage.getItem("guest_name");
+
+    // If token exists but name doesn't match the token prefix, or token is missing
+    if (
+      token === null ||
+      token === "" ||
+      (name !== null && name !== "" && !token.startsWith(`${name}_`))
+    ) {
+      const prefix =
+        name !== null && name !== ""
+          ? `${name.replace(/[^a-zA-Z0-9-]/g, "")}_`
+          : "";
+      token = `${prefix}${crypto.randomUUID()}`;
       localStorage.setItem("guest_token", token);
     }
     return token;

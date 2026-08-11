@@ -198,7 +198,7 @@ export async function addResult(
   let user: DBUser;
   if (uid === "" || uid.startsWith("guest_")) {
     const guestName = uid.startsWith("guest_")
-      ? uid.replace("guest_", "")
+      ? uid.replace("guest_", "").split("_")[0]
       : "guest";
     user = {
       uid: uid === "" ? "guest_user" : uid,
@@ -209,6 +209,7 @@ export async function addResult(
       verified: false,
       timeTyping: 999999, // enough time to be on leaderboard
       needsToChangeName: false,
+      discordAvatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${guestName}`,
     } as unknown as DBUser;
   } else {
     user = await UserDAL.getUser(uid, "add result");

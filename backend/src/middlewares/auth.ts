@@ -155,7 +155,7 @@ async function authenticateWithAuthHeader(
     case "Uid":
       return await authenticateWithUid(token);
     case "Guest":
-      if (!/^[a-zA-Z0-9-]{8,64}$/.test(token)) {
+      if (!/^[a-zA-Z0-9-_]{3,128}$/.test(token)) {
         throw new TypeUZError(401, "Invalid guest token");
       }
       return {

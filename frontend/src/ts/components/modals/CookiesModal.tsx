@@ -18,6 +18,9 @@ export function CookiesModal(): JSXElement {
       sentry: false,
     },
   );
+  const [guestName, setGuestName] = createSignal(
+    localStorage.getItem("guest_name") ?? "",
+  );
 
   createEffect(() => {
     if (!isModalOpen("Cookies")) {
@@ -65,6 +68,25 @@ export function CookiesModal(): JSXElement {
             <div>
               Cookies enhance your experience and help us improve our website.
             </div>
+
+            <div class="mb-4">
+              <label class="mb-1 block text-sm font-medium text-text">
+                Leaderboard uchun ism (Ixtiyoriy)
+              </label>
+              <input
+                type="text"
+                value={guestName()}
+                onInput={(e) => setGuestName(e.currentTarget.value)}
+                placeholder="Ismingizni kiriting"
+                class="w-full rounded-xl bg-sub-alt p-3 text-sm text-text ring-1 ring-sub/20 outline-none focus:ring-main"
+                maxLength={20}
+              />
+              <p class="mt-1 text-xs text-sub">
+                Ro&apos;yxatdan o&apos;tmagan bo&apos;lsangiz ham natijangiz
+                reytingda shu ism bilan ko&apos;rinadi.
+              </p>
+            </div>
+
             <div class="grid gap-2">
               <Button
                 text="accept all"
@@ -76,6 +98,9 @@ export function CookiesModal(): JSXElement {
                     sentry: true,
                   });
                   setAcceptedCookies(accepted());
+                  if (guestName().trim() !== "") {
+                    localStorage.setItem("guest_name", guestName().trim());
+                  }
                   hideModal("Cookies");
                 }}
               />
@@ -88,6 +113,9 @@ export function CookiesModal(): JSXElement {
                     sentry: false,
                   });
                   setAcceptedCookies(accepted());
+                  if (guestName().trim() !== "") {
+                    localStorage.setItem("guest_name", guestName().trim());
+                  }
                   hideModal("Cookies");
                 }}
               />
@@ -136,6 +164,9 @@ export function CookiesModal(): JSXElement {
               text="accept selected"
               onClick={() => {
                 setAcceptedCookies(accepted());
+                if (guestName().trim() !== "") {
+                  localStorage.setItem("guest_name", guestName().trim());
+                }
                 hideModal("Cookies");
               }}
             />
