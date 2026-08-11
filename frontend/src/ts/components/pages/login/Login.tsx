@@ -7,6 +7,7 @@ import {
   signIn,
   signInWithProvider,
 } from "../../../auth";
+import { navigate } from "../../../controllers/route-controller";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
@@ -38,6 +39,8 @@ export function Login(): JSXElement {
         showErrorNotification(
           `Kirish muvaffaqiyatsiz${label !== undefined ? ` (${label})` : ""}: ${data.message}`,
         );
+      } else {
+        void navigate("/account");
       }
     } finally {
       enableLoginPageInputs();
@@ -66,11 +69,7 @@ export function Login(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-4 sm:w-96">
-      <H3
-        text="tizimga kirish"
-        fa={{ icon: "fa-sign-in-alt" }}
-        class="p-0"
-      />
+      <H3 text="tizimga kirish" fa={{ icon: "fa-sign-in-alt" }} class="p-0" />
       <div class="grid grid-cols-2 gap-4">
         <Button
           fa={{ icon: "fa-google", variant: "brand" }}
@@ -112,7 +111,7 @@ export function Login(): JSXElement {
           name="email"
           children={(field) => (
             <div class="relative">
-              <div class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sub">
+              <div class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sub">
                 <Fa icon="fa-envelope" size={1.1} />
               </div>
               <InputField
@@ -129,7 +128,7 @@ export function Login(): JSXElement {
           name="password"
           children={(field) => (
             <div class="relative">
-              <div class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sub">
+              <div class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sub">
                 <Fa icon="fa-lock" size={1.1} />
               </div>
               <InputField
@@ -169,7 +168,6 @@ export function Login(): JSXElement {
         onClick={() => showModal("ForgotPassword")}
         disabled={!getLoginPageInputsEnabled()}
       />
-
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { envConfig } from "virtual:env-config";
 import Ape from "../../../ape";
 import { getPasswordSchema, signUp } from "../../../auth";
 import TypoList from "../../../constants/typo-list";
+import { navigate } from "../../../controllers/route-controller";
 import {
   disableLoginPageInputs,
   enableLoginPageInputs,
@@ -134,6 +135,8 @@ export function Register(): JSXElement {
         );
         if (!data.success) {
           showErrorNotification(data.message);
+        } else {
+          void navigate("/account");
         }
       } finally {
         enableLoginPageInputs();
@@ -266,11 +269,15 @@ export function Register(): JSXElement {
           name="emailVerify"
           validators={{
             onChangeListenTo: ["email"],
-            onChange: (field) =>
-              field.value === "" ||
-              field.value === field.fieldApi.form.getFieldValue("email")
-                ? undefined
-                : "email tasdiqlash mos kelmadi",
+            onChange: (field) => {
+              if (field.value === "") {
+                return "email ni tasdiqlang";
+              }
+              if (field.value !== field.fieldApi.form.getFieldValue("email")) {
+                return "email tasdiqlash mos kelmadi";
+              }
+              return undefined;
+            },
           }}
           children={(field) => (
             <InputField
@@ -300,11 +307,17 @@ export function Register(): JSXElement {
           name="passwordVerify"
           validators={{
             onChangeListenTo: ["password"],
-            onChange: (field) =>
-              field.value === "" ||
-              field.value === field.fieldApi.form.getFieldValue("password")
-                ? undefined
-                : "parol tasdiqlash mos kelmadi",
+            onChange: (field) => {
+              if (field.value === "") {
+                return "parolni tasdiqlang";
+              }
+              if (
+                field.value !== field.fieldApi.form.getFieldValue("password")
+              ) {
+                return "parol tasdiqlash mos kelmadi";
+              }
+              return undefined;
+            },
           }}
           children={(field) => (
             <InputField
@@ -373,7 +386,6 @@ export function Register(): JSXElement {
           text="ro'yxatdan o'tish"
           disabled={!getLoginPageInputsEnabled()}
         />
-
       </form>
     </div>
   );
