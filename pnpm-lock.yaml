@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      pg:
+        specifier: 8.22.0
+        version: 8.22.0
     devDependencies:
       '@commitlint/cli':
         specifier: 20.5.2
@@ -9656,17 +9660,11 @@ packages:
   perfect-scrollbar@1.5.5:
     resolution: {integrity: sha512-dzalfutyP3e/FOpdlhVryN4AJ5XDVauVWxybSkLZmakFE2sS3y3pc4JnSprw8tGmHvkaG5Edr5T7LBTZ+WWU2g==}
 
-  pg-cloudflare@1.1.1:
-    resolution: {integrity: sha512-xWPagP/4B6BgFO+EKz3JONXv3YDgvkbVrGw2mTo3D6tVDQRh1e7cqVGvyR3BE+eQgAvx1XhW/iEASj4/jCWl3Q==}
-
   pg-cloudflare@1.4.0:
     resolution: {integrity: sha512-Vo7z/6rrQYxpNRylp4Tlob2elzbh+N/MOQbxFVWCxS7oEx6jF53GTJFxK2WWpKuBRkmiin4Mt+xofFDjx09R0A==}
 
   pg-connection-string@2.14.0:
     resolution: {integrity: sha512-XwWDGcLRGCXAR8F/AM5bG7Q+A3Wm2s6QeEjlOKZLlH3UYcguiqCWKyWXVag5TLTIjR7oOJUY8kcADaZgWPyLeg==}
-
-  pg-connection-string@2.6.4:
-    resolution: {integrity: sha512-v+Z7W/0EO707aNMaAEfiGnGL9sxxumwLl2fJvCQtMn9Fxsg+lPpPkdcyBSv/KFgpGdYkMfn+EI1Or2EHjpgLCA==}
 
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
@@ -9677,29 +9675,12 @@ packages:
     peerDependencies:
       pg: '>=8.0'
 
-  pg-pool@3.6.2:
-    resolution: {integrity: sha512-Htjbg8BlwXqSBQ9V8Vjtc+vzf/6fVUuak/3/XXKA9oxZprwW3IMDQTGHP+KDmVL7rtd+R1QjbnCFPuTHm3G4hg==}
-    peerDependencies:
-      pg: '>=8.0'
-
   pg-protocol@1.15.0:
     resolution: {integrity: sha512-cq9sECI5s0+uPUXjbz8ioyPJni6RzsRib0US67i5IoTZKw8fNeYlVE7u8F4dG7vEJJtc5wdD1K189lCCUwqWTQ==}
-
-  pg-protocol@1.6.1:
-    resolution: {integrity: sha512-jPIlvgoD63hrEuihvIg+tJhoGjUsLPn6poJY9N5CnlPd91c2T18T/9zBtLxZSb1EhYxBRoZJtzScCaWlYLtktg==}
 
   pg-types@2.2.0:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
     engines: {node: '>=4'}
-
-  pg@8.12.0:
-    resolution: {integrity: sha512-A+LHUSnwnxrnL/tZ+OLfqR1SxLN3c/pgDztZ47Rpbsd4jUytsTtwQo/TLPRzPJMp/1pbhYVhH9cuSZLAajNfjQ==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      pg-native: '>=3.0.1'
-    peerDependenciesMeta:
-      pg-native:
-        optional: true
 
   pg@8.22.0:
     resolution: {integrity: sha512-8wih1vVIBMxoUM2oB4soJsD9tDnDpLv4OXBJ+EJzFsvycD+lfyIreC2gGHq78f8jbLLt+bvlPTFdFZfJkOuzAA==}
@@ -19068,7 +19049,7 @@ snapshots:
       open: 6.4.0
       ora: 5.4.1
       p-limit: 3.1.0
-      pg: 8.12.0
+      pg: 8.22.0
       portfinder: 1.0.32
       progress: 2.0.3
       proxy-agent: 6.4.0
@@ -21844,15 +21825,10 @@ snapshots:
 
   perfect-scrollbar@1.5.5: {}
 
-  pg-cloudflare@1.1.1:
-    optional: true
-
   pg-cloudflare@1.4.0:
     optional: true
 
   pg-connection-string@2.14.0: {}
-
-  pg-connection-string@2.6.4: {}
 
   pg-int8@1.0.1: {}
 
@@ -21860,13 +21836,7 @@ snapshots:
     dependencies:
       pg: 8.22.0
 
-  pg-pool@3.6.2(pg@8.12.0):
-    dependencies:
-      pg: 8.12.0
-
   pg-protocol@1.15.0: {}
-
-  pg-protocol@1.6.1: {}
 
   pg-types@2.2.0:
     dependencies:
@@ -21875,16 +21845,6 @@ snapshots:
       postgres-bytea: 1.0.0
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
-
-  pg@8.12.0:
-    dependencies:
-      pg-connection-string: 2.6.4
-      pg-pool: 3.6.2(pg@8.12.0)
-      pg-protocol: 1.6.1
-      pg-types: 2.2.0
-      pgpass: 1.0.5
-    optionalDependencies:
-      pg-cloudflare: 1.1.1
 
   pg@8.22.0:
     dependencies:

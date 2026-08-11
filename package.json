@@ -59,10 +59,14 @@
     "knip": "knip",
     "update-oxc": "pnpm up -D -r oxlint@latest oxfmt@latest oxlint-tsgolint@latest"
   },
+  "dependencies": {
+    "pg": "8.22.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "20.5.2",
     "@commitlint/config-conventional": "19.2.2",
     "@types/node": "24.9.1",
+    "@typeuz/release": "workspace:*",
     "@vitest/coverage-v8": "4.1.5",
     "caniuse-lite": "1.0.30001778",
     "conventional-changelog": "6.0.0",
@@ -79,8 +83,7 @@
     "stylelint-config-standard-scss": "17.0.0",
     "turbo": "2.9.14",
     "vitest": "4.1.0",
-    "yaml": "2.8.3",
-    "@typeuz/release": "workspace:*"
+    "yaml": "2.8.3"
   },
   "lint-staged": {
     "*": [

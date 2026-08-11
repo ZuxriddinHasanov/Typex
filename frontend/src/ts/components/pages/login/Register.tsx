@@ -1,6 +1,6 @@
 import { createForm } from "@tanstack/solid-form";
-import { Gender, UserEmailSchema, UserNameSchema } from "@typeuz/schemas/users";
-import { For, JSXElement, createSignal } from "solid-js";
+import { UserEmailSchema, UserNameSchema } from "@typeuz/schemas/users";
+import { JSXElement } from "solid-js";
 import { envConfig } from "virtual:env-config";
 
 import Ape from "../../../ape";
@@ -17,11 +17,9 @@ import {
   showNoticeNotification,
 } from "../../../states/notifications";
 import { remoteValidationForm } from "../../../utils/remote-validation";
-import { Fa } from "../../common/Fa";
 import { H3 } from "../../common/Headers";
 import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
 import { InputField } from "../../ui/form/InputField";
-import { SelectField } from "../../ui/form/SelectField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
 import {
   fromSchema,
@@ -29,27 +27,12 @@ import {
   ValidationResult,
 } from "../../ui/form/utils";
 
-const AVATARS = [
-  "fa-user-astronaut",
-  "fa-user-ninja",
-  "fa-user-tie",
-  "fa-user-graduate",
-  "fa-user-secret",
-  "fa-user-alt",
-  "fa-user-nurse",
-  "fa-user-shield",
-  "fa-crown",
-  "fa-dragon",
-  "fa-paw",
-  "fa-rocket",
-];
-
 let disposableEmailModule: typeof import("disposable-email-domains-js") | null =
   null;
 let moduleLoadAttempted = false;
 
 export function Register(): JSXElement {
-  const [selectedAvatar, setSelectedAvatar] = createSignal("");
+  let usernameManuallyEdited = false;
 
   const emailIsValid = async (
     email: string,
@@ -102,11 +85,7 @@ export function Register(): JSXElement {
       lastName: "",
       username: "",
       email: "",
-      emailVerify: "",
       password: "",
-      passwordVerify: "",
-      gender: "",
-      age: "" as string | number,
     },
     onSubmit: async ({ value }) => {
       disableLoginPageInputs();
@@ -125,11 +104,9 @@ export function Register(): JSXElement {
           value.email,
           value.password,
           captchaToken ?? "",
-          (value.gender || undefined) as Gender,
-          value.age !== undefined && value.age !== ""
-            ? Number(value.age)
-            : undefined,
-          selectedAvatar() || undefined,
+          undefined,
+          undefined,
+          undefined,
           value.firstName,
           value.lastName,
         );
@@ -147,6 +124,18 @@ export function Register(): JSXElement {
     },
     validators: {},
   }));
+
+  const updateUsername = (firstName: string, lastName: string) => {
+    if (!usernameManuallyEdited) {
+      const generated = (firstName + lastName)
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, "")
+        .substring(0, 14);
+      if (generated) {
+        form.setFieldValue("username", generated);
+      }
+    }
+  };
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-4 sm:w-96">
@@ -178,6 +167,7 @@ export function Register(): JSXElement {
           name="firstName"
           validators={{
             onChange: (field) => {
+              updateUsername(field.value, form.getFieldValue("lastName"));
               if (field.value.length === 0) {
                 return "Ism kiritish majburiy";
               }
@@ -200,6 +190,7 @@ export function Register(): JSXElement {
           name="lastName"
           validators={{
             onChange: (field) => {
+              updateUsername(form.getFieldValue("firstName"), field.value);
               if (field.value.length === 0) {
                 return "Familiya kiritish majburiy";
               }
@@ -235,6 +226,9 @@ export function Register(): JSXElement {
               placeholder="foydalanuvchi nomi"
               autocomplete="new-username"
               disabled={!getLoginPageInputsEnabled()}
+              onFocus={() => {
+                usernameManuallyEdited = true;
+              }}
             />
           )}
         />
@@ -266,29 +260,6 @@ export function Register(): JSXElement {
           )}
         />
         <form.Field
-          name="emailVerify"
-          validators={{
-            onChangeListenTo: ["email"],
-            onChange: (field) => {
-              if (field.value === "") {
-                return "email ni tasdiqlang";
-              }
-              if (field.value !== field.fieldApi.form.getFieldValue("email")) {
-                return "email tasdiqlash mos kelmadi";
-              }
-              return undefined;
-            },
-          }}
-          children={(field) => (
-            <InputField
-              field={field}
-              autocomplete="verify-email"
-              placeholder="email ni tasdiqlang"
-              disabled={!getLoginPageInputsEnabled()}
-            />
-          )}
-        />
-        <form.Field
           name="password"
           validators={{
             onChange: fromSchema(getPasswordSchema({ isNew: true })),
@@ -303,83 +274,6 @@ export function Register(): JSXElement {
             />
           )}
         />
-        <form.Field
-          name="passwordVerify"
-          validators={{
-            onChangeListenTo: ["password"],
-            onChange: (field) => {
-              if (field.value === "") {
-                return "parolni tasdiqlang";
-              }
-              if (
-                field.value !== field.fieldApi.form.getFieldValue("password")
-              ) {
-                return "parol tasdiqlash mos kelmadi";
-              }
-              return undefined;
-            },
-          }}
-          children={(field) => (
-            <InputField
-              field={field}
-              placeholder="parolni tasdiqlang"
-              autocomplete="verify-password"
-              type="password"
-              disabled={!getLoginPageInputsEnabled()}
-            />
-          )}
-        />
-        <form.Field
-          name="gender"
-          children={(field) => (
-            <SelectField
-              field={field}
-              label="jinsi"
-              disabled={!getLoginPageInputsEnabled()}
-              placeholder="tanlang"
-              options={[
-                { value: "male", label: "erkak" },
-                { value: "female", label: "ayol" },
-                { value: "other", label: "boshqa" },
-              ]}
-            />
-          )}
-        />
-        <form.Field
-          name="age"
-          children={(field) => (
-            <InputField
-              field={field}
-              placeholder="yosh"
-              type="number"
-              autocomplete="off"
-              disabled={!getLoginPageInputsEnabled()}
-            />
-          )}
-        />
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-sub">avatar</label>
-          <div class="grid grid-cols-6 gap-1.5">
-            <For each={AVATARS}>
-              {(icon) => (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSelectedAvatar(selectedAvatar() === icon ? "" : icon)
-                  }
-                  disabled={!getLoginPageInputsEnabled()}
-                  class={`flex items-center justify-center rounded-xl p-2 text-lg transition-all ${
-                    selectedAvatar() === icon
-                      ? "bg-main text-bg shadow-md"
-                      : "bg-sub-alt text-text hover:bg-sub"
-                  }`}
-                >
-                  <Fa icon={icon as never} />
-                </button>
-              )}
-            </For>
-          </div>
-        </div>
         <SubmitButton
           form={form}
           fa={{ icon: "fa-user-plus" }}
