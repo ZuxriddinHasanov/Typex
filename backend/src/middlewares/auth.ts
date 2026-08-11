@@ -160,8 +160,8 @@ async function authenticateWithAuthHeader(
       }
       return {
         type: "None",
-        uid: "guest_" + token,
-        email: "guest@typex.uz"
+        uid: `guest_${token}`,
+        email: "guest@typex.uz",
       };
   }
 

@@ -1,7 +1,7 @@
 import type { Language } from "@typeuz/schemas/languages";
 
 import { useQuery } from "@tanstack/solid-query";
-import { For, JSXElement, Show, createSignal } from "solid-js";
+import { For, JSXElement, Show, createSignal, createEffect } from "solid-js";
 
 import {
   getLeaderboardQueryOptions,
@@ -13,12 +13,13 @@ import {
   getSelection,
   setPage,
   setSelection,
+  updateGetParameters,
 } from "../../../states/leaderboard-selection";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Page } from "../../common/Page";
 import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
-import { SelectField } from "../../ui/form/SelectField";
+import { User } from "../../common/User";
 
 const pageName = "leaderboards";
 
@@ -93,6 +94,13 @@ export function LeaderboardPage(): JSXElement {
     setPage(next);
   };
 
+  createEffect(() => {
+    updateGetParameters(
+      sel() as unknown as Parameters<typeof updateGetParameters>[0],
+      page(),
+    );
+  });
+
   return (
     <Page id={pageName}>
       <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8">
@@ -121,42 +129,71 @@ export function LeaderboardPage(): JSXElement {
 
           <div class="flex flex-wrap items-center gap-3">
             <Show when={lbType() !== "weekly"}>
-              <SelectField
-                value={sel().mode2}
-                onChange={(v) => setSelection({ ...sel(), mode2: v } as never)}
-                options={durationOptions.map((d) => ({
-                  value: d,
-                  label: d === "custom" ? "Maxsus" : `${d} sek`,
-                }))}
-                class="bg-sub-alt px-3 py-1.5"
-              />
+              <div class="flex items-center gap-1 rounded-xl border border-sub-alt bg-sub-alt p-1">
+                <For each={durationOptions}>
+                  {(d) => (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelection({ ...sel(), mode2: d } as never)
+                      }
+                      class={cn(
+                        "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                        sel().mode2 === d
+                          ? "bg-main text-bg shadow-sm"
+                          : "text-sub hover:bg-sub-alt/80 hover:text-text",
+                      )}
+                    >
+                      {d === "custom" ? "Maxsus" : `${d}s`}
+                    </button>
+                  )}
+                </For>
+              </div>
 
-              <SelectField
-                value={sel().language}
-                onChange={(v) =>
-                  setSelection({ ...sel(), language: v as Language } as never)
-                }
-                options={languageOptions}
-                class="bg-sub-alt px-3 py-1.5"
-              />
+              <div class="flex items-center gap-1 rounded-xl border border-sub-alt bg-sub-alt p-1">
+                <For each={languageOptions}>
+                  {(lang) => (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelection({
+                          ...sel(),
+                          language: lang.value,
+                        } as never)
+                      }
+                      class={cn(
+                        "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                        sel().language === lang.value
+                          ? "bg-main text-bg shadow-sm"
+                          : "text-sub hover:bg-sub-alt/80 hover:text-text",
+                      )}
+                    >
+                      {lang.label}
+                    </button>
+                  )}
+                </For>
+              </div>
 
-              <div class="flex items-center gap-1 rounded-xl border border-sub-alt bg-sub-alt px-3 py-1.5">
+              <div class="flex items-center gap-1 rounded-xl border border-sub-alt bg-sub-alt p-1">
                 <For each={contentTypeOptions}>
                   {(ct) => {
-                    const active =
+                    const active = () =>
                       ct.value === ""
-                        ? sel().numbers === undefined
+                        ? (sel() as unknown as { numbers?: boolean })
+                            .numbers === undefined
                         : ct.value === "words"
-                          ? sel().numbers === false
-                          : sel().numbers === true;
+                          ? (sel() as unknown as { numbers?: boolean })
+                              .numbers === false
+                          : (sel() as unknown as { numbers?: boolean })
+                              .numbers === true;
                     return (
                       <button
                         type="button"
                         class={cn(
-                          "rounded-lg px-2 py-0.5 text-sm transition-colors",
-                          active
-                            ? "bg-main text-bg"
-                            : "text-sub hover:text-text",
+                          "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                          active()
+                            ? "bg-main text-bg shadow-sm"
+                            : "text-sub hover:bg-sub-alt/80 hover:text-text",
                         )}
                         onClick={() => {
                           if (ct.value === "") {
@@ -206,55 +243,112 @@ export function LeaderboardPage(): JSXElement {
         <AsyncContent queries={{ lbQuery }} errorMessage="Reyting yuklanmadi">
           {({ lbQueryData }) => {
             const entries = () => lbQueryData()?.entries ?? [];
+            const podium = () => (page() === 0 ? entries().slice(0, 3) : []);
+            const rest = () => (page() === 0 ? entries().slice(3) : entries());
+
             return (
-              <div class="flex flex-col gap-2">
-                <For each={entries()}>
-                  {(entry, i) => {
-                    const e = entry as {
-                      name: string;
-                      firstName?: string;
-                      lastName?: string;
-                      wpm?: number;
-                      totalXp?: number;
-                      acc?: number;
-                    };
-                    const idx = () => page() * 50 + i();
-                    return (
-                      <div
-                        class={cn(
-                          "flex items-center gap-4 rounded-2xl px-5 py-3 transition-colors",
-                          idx() <= 2
-                            ? "bg-sub-alt"
-                            : "bg-sub-alt/50 hover:bg-sub-alt",
-                        )}
-                      >
-                        <span class="w-8 text-center text-lg font-bold text-sub">
-                          {idx() === 0
-                            ? "🥇"
-                            : idx() === 1
-                              ? "🥈"
-                              : idx() === 2
-                                ? "🥉"
-                                : `#${idx() + 1}`}
-                        </span>
-                        <span class="flex flex-1 flex-col">
-                          <span class="font-medium text-text">{e.name}</span>
-                          <Show when={e.acc}>
-                            <span class="text-xs text-sub/60">
-                              {e.acc}% aniqlik
-                            </span>
+              <>
+                <Show when={podium().length > 0}>
+                  <div class="mt-8 mb-12 flex flex-row items-end justify-center gap-4 px-4 sm:gap-8">
+                    <For each={[1, 0, 2]}>
+                      {(pos) => {
+                        const entry = () => podium()[pos];
+                        return (
+                          <Show when={entry()}>
+                            <div
+                              class="animate-in fade-in slide-in-from-bottom-8 fill-mode-both flex flex-col items-center justify-end gap-3 duration-500"
+                              style={{
+                                "animation-delay": `${pos === 0 ? 0 : pos === 1 ? 150 : 300}ms`,
+                              }}
+                            >
+                              <User
+                                user={
+                                  entry() as unknown as Parameters<
+                                    typeof User
+                                  >[0]["user"]
+                                }
+                                avatarFallback="user-circle"
+                                avatarColor="sub"
+                                flagsColor="sub"
+                                class="text-xl sm:text-2xl"
+                                linkToProfile={true}
+                                showAvatar={true}
+                              />
+                              <div
+                                class={cn(
+                                  "flex w-24 flex-col items-center justify-center rounded-t-2xl sm:w-32",
+                                  pos === 0
+                                    ? "h-32 border-x border-t border-main/30 bg-main/20 text-main"
+                                    : pos === 1
+                                      ? "h-24 bg-sub-alt text-text"
+                                      : "h-20 bg-sub-alt/60 text-sub",
+                                )}
+                              >
+                                <span class="text-2xl font-black sm:text-3xl">
+                                  {pos === 0 ? "🥇" : pos === 1 ? "🥈" : "🥉"}
+                                </span>
+                                <span class="mt-2 text-sm font-bold sm:text-base">
+                                  {"totalXp" in (entry() as object)
+                                    ? `${(entry() as { totalXp: number }).totalXp} XP`
+                                    : `${(entry() as { wpm: number }).wpm} WPM`}
+                                </span>
+                              </div>
+                            </div>
                           </Show>
-                        </span>
-                        <span class="text-sm font-medium text-text">
-                          {"totalXp" in entry
-                            ? `${(entry as { totalXp: number }).totalXp} XP`
-                            : `${(entry as { wpm: number }).wpm} WPM`}
-                        </span>
-                      </div>
-                    );
-                  }}
-                </For>
-              </div>
+                        );
+                      }}
+                    </For>
+                  </div>
+                </Show>
+
+                <div class="flex flex-col gap-2">
+                  <For each={rest()}>
+                    {(entry, i) => {
+                      const e = entry as {
+                        name: string;
+                        uid: string;
+                        wpm?: number;
+                        totalXp?: number;
+                        acc?: number;
+                      };
+                      const idx = () =>
+                        page() === 0 ? i() + 3 : page() * 50 + i();
+                      return (
+                        <div
+                          class={cn(
+                            "animate-in fade-in slide-in-from-bottom-4 fill-mode-both flex items-center gap-4 rounded-2xl bg-sub-alt/40 px-5 py-3 transition-colors duration-300 hover:bg-sub-alt",
+                          )}
+                          style={{ "animation-delay": `${(i() % 10) * 50}ms` }}
+                        >
+                          <span class="w-8 text-center text-lg font-bold text-sub">
+                            #{idx() + 1}
+                          </span>
+                          <div class="flex flex-1 items-center gap-3">
+                            <User
+                              user={e}
+                              avatarFallback="user-circle"
+                              avatarColor="sub"
+                              flagsColor="sub"
+                              class="text-base"
+                              linkToProfile={true}
+                            />
+                            <Show when={e.acc}>
+                              <span class="text-xs text-sub/60">
+                                {e.acc}% aniqlik
+                              </span>
+                            </Show>
+                          </div>
+                          <span class="text-sm font-medium text-text">
+                            {"totalXp" in entry
+                              ? `${(entry as { totalXp: number }).totalXp} XP`
+                              : `${(entry as { wpm: number }).wpm} WPM`}
+                          </span>
+                        </div>
+                      );
+                    }}
+                  </For>
+                </div>
+              </>
             );
           }}
         </AsyncContent>
@@ -263,7 +357,7 @@ export function LeaderboardPage(): JSXElement {
           <button
             onClick={() => goToPage(-1)}
             type="button"
-            disabled={page() === 0}
+            disabled={page() === 0 || lbQuery.isFetching}
             class="rounded-xl bg-sub-alt px-4 py-2 text-sm text-text transition-colors hover:bg-sub disabled:opacity-30"
           >
             Oldingi
@@ -272,7 +366,10 @@ export function LeaderboardPage(): JSXElement {
           <button
             type="button"
             onClick={() => goToPage(1)}
-            class="rounded-xl bg-sub-alt px-4 py-2 text-sm text-text transition-colors hover:bg-sub"
+            disabled={
+              (lbQuery.data?.entries?.length ?? 0) < 50 || lbQuery.isFetching
+            }
+            class="rounded-xl bg-sub-alt px-4 py-2 text-sm text-text transition-colors hover:bg-sub disabled:opacity-30"
           >
             Keyingi
           </button>

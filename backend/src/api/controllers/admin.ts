@@ -460,10 +460,6 @@ export async function getAnalytics(
   });
 }
 
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 function maskEmail(email: string): string {
   const parts = email.split("@");
   const local = parts[0];
@@ -504,9 +500,9 @@ export async function searchUsers(
 
   try {
     const safeQ = `%${q}%`;
-    const users = await db.queryAll<Record<string, unknown>>(
+    const users = await db.queryAll(
       "SELECT uid, name, email, banned, added_at, completed_tests, time_typing, last_login_at, streak, pbs FROM users WHERE uid ILIKE $1 OR name ILIKE $1 OR email ILIKE $1 LIMIT 50",
-      [safeQ]
+      [safeQ],
     );
 
     const mappedUsers = users.map((u) => {
@@ -515,10 +511,16 @@ export async function searchUsers(
         name: (u["name"] as string) ?? "",
         email: maskEmail((u["email"] as string) ?? ""),
         banned: (u["banned"] as boolean) ?? false,
-        addedAt: u["added_at"] ? Number(u["added_at"]) : undefined,
+        addedAt:
+          u["added_at"] !== null && u["added_at"] !== undefined
+            ? Number(u["added_at"])
+            : undefined,
         completedTests: u["completed_tests"] as number | undefined,
         timeTyping: u["time_typing"] as number | undefined,
-        lastLoginAt: u["last_login_at"] ? Number(u["last_login_at"]) : undefined,
+        lastLoginAt:
+          u["last_login_at"] !== null && u["last_login_at"] !== undefined
+            ? Number(u["last_login_at"])
+            : undefined,
         streak: u["streak"] as number | undefined,
         pbs: u["pbs"] as Record<string, number> | undefined,
       };
@@ -1266,17 +1268,25 @@ export async function listUsers(
         addedAt: u["addedAt"] as number | undefined,
         completedTests: u["completedTests"] as number | undefined,
         timeTyping: u["timeTyping"] as number | undefined,
-        lastLoginAt: (u["lastLoginAt"] as number) ?? (u["last_login_at"] as number) ?? undefined,
+        lastLoginAt:
+          (u["lastLoginAt"] as number) ??
+          (u["last_login_at"] as number) ??
+          undefined,
         streak: u["streak"] as number | undefined,
         pbs: u["pbs"] as Record<string, number> | undefined,
       })),
     });
   }
   try {
-    const total = (await db.queryOne<{ count: number }>("SELECT COUNT(*)::int AS count FROM users"))?.count ?? 0;
-    const rawUsers = await db.queryAll<Record<string, unknown>>(
+    const total =
+      (
+        await db.queryOne<{ count: number }>(
+          "SELECT COUNT(*)::int AS count FROM users",
+        )
+      )?.count ?? 0;
+    const rawUsers = await db.queryAll(
       "SELECT uid, name, email, banned, added_at, completed_tests, time_typing, last_login_at, streak, pbs FROM users ORDER BY added_at DESC OFFSET $1 LIMIT $2",
-      [req.query.skip, req.query.limit]
+      [req.query.skip, req.query.limit],
     );
     return new TypeUZResponse("Users listed", {
       total,
@@ -1285,10 +1295,16 @@ export async function listUsers(
         name: (u["name"] as string) ?? "",
         email: (u["email"] as string) ?? "",
         banned: (u["banned"] as boolean) ?? false,
-        addedAt: u["added_at"] ? Number(u["added_at"]) : undefined,
+        addedAt:
+          u["added_at"] !== null && u["added_at"] !== undefined
+            ? Number(u["added_at"])
+            : undefined,
         completedTests: u["completed_tests"] as number | undefined,
         timeTyping: u["time_typing"] as number | undefined,
-        lastLoginAt: u["last_login_at"] ? Number(u["last_login_at"]) : undefined,
+        lastLoginAt:
+          u["last_login_at"] !== null && u["last_login_at"] !== undefined
+            ? Number(u["last_login_at"])
+            : undefined,
         streak: u["streak"] as number | undefined,
         pbs: u["pbs"] as Record<string, number> | undefined,
       })),

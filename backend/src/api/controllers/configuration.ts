@@ -14,7 +14,7 @@ export async function getConfiguration(
 ): Promise<GetConfigurationResponse> {
   const currentConfiguration = await Configuration.getCachedConfiguration(true);
   const sanitized = structuredClone(currentConfiguration);
-  if (sanitized.users?.ai) {
+  if (sanitized.users?.ai !== undefined) {
     sanitized.users.ai.apiKey = "***";
   }
   return new TypeUZResponse("Configuration retrieved", sanitized);

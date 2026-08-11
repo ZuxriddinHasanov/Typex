@@ -24,6 +24,38 @@ function timeoutSignal(ms: number): AbortSignal {
   return ctrl.signal;
 }
 
+function getOrCreateGuestToken(): string {
+  try {
+    let token = localStorage.getItem("guest_token");
+    if (token === null || token === "") {
+      token = crypto.randomUUID();
+      localStorage.setItem("guest_token", token);
+    }
+    return token;
+  } catch {
+    return `fallback-${Date.now().toString(36)}`;
+  }
+}
+
+async function getAuthHeader(): Promise<Record<string, string>> {
+  const jwt = getStoredToken();
+  if (jwt !== null) {
+    return { Authorization: `Bearer ${jwt}` };
+  }
+
+  const token = await getIdToken();
+  if (token !== null) {
+    return { Authorization: `Bearer ${token}` };
+  }
+
+  const dev = getDevAuth();
+  if (dev !== null) {
+    return { Authorization: `Uid ${dev.uid}|${dev.email}` };
+  }
+
+  return { Authorization: `Guest ${getOrCreateGuestToken()}` };
+}
+
 function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
   status: number;
   body: unknown;
@@ -31,33 +63,10 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 }> {
   return async (request: ApiFetcherArgs) => {
     try {
-      const jwt = getStoredToken();
-      if (jwt !== null) {
-        request.headers["Authorization"] = `Bearer ${jwt}`;
-      } else {
-        const token = await getIdToken();
-        if (token !== null) {
-          request.headers["Authorization"] = `Bearer ${token}`;
-        } else {
-          const dev = getDevAuth();
-          if (dev !== null) {
-            request.headers["Authorization"] = `Uid ${dev.uid}|${dev.email}`;
-          } else {
-            let guestToken: string | null = null;
-            request.headers = request.headers ?? {};
-            try {
-              guestToken = localStorage.getItem("guest_token");
-              if (!guestToken) {
-                guestToken = crypto.randomUUID();
-                localStorage.setItem("guest_token", guestToken);
-              }
-            } catch {
-              guestToken = "fallback-" + Date.now().toString(36);
-            }
-            request.headers["Authorization"] = `Guest ${guestToken}`;
-          }
-        }
-      }
+      request.headers = {
+        ...request.headers,
+        ...(await getAuthHeader()),
+      };
 
       const usePolyfill = AbortSignal?.timeout === undefined;
 

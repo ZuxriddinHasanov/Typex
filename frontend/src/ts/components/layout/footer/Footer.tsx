@@ -134,7 +134,7 @@ export function Footer(): JSXElement {
                     </span>
                     Telegram Kanal
                   </a>
-                  
+
                   <a
                     href="https://www.instagram.com/typexuz/"
                     target="_blank"
@@ -156,7 +156,7 @@ export function Footer(): JSXElement {
                     <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sub-alt/50 transition-colors group-hover:bg-main/10 group-hover:text-main">
                       <Fa icon="fa-user-circle" />
                     </span>
-                    Asoschi bilan bog'lanish
+                    Asoschi bilan bog&apos;lanish
                   </a>
                 </div>
               </div>
