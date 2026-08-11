@@ -125,12 +125,12 @@ router.post("/email/register", async (req: Request, res: Response) => {
       return;
     }
 
-    if (password.length < 8) {
+    if (password.length < 6) {
       res
         .status(400)
         .json(
           new TypeUZResponse(
-            "Parol kamida 8 belgidan iborat bo'lishi kerak",
+            "Parol kamida 6 belgidan iborat bo'lishi kerak",
             null,
           ),
         );
@@ -181,7 +181,12 @@ router.post("/email/register", async (req: Request, res: Response) => {
     Logger.error(`Register error: ${(e as Error).message}`);
     res
       .status(500)
-      .json(new TypeUZResponse("Ro'yxatdan o'tishda xatolik", null));
+      .json(
+        new TypeUZResponse(
+          `Ro'yxatdan o'tishda xatolik: ${(e as Error).message}`,
+          null,
+        ),
+      );
   }
 });
 
