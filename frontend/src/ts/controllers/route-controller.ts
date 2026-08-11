@@ -47,6 +47,12 @@ const routes: Route[] = [
   {
     path: "/",
     load: async (_params, options) => {
+      await PageController.change("test", options);
+    },
+  },
+  {
+    path: "/landing",
+    load: async (_params, options) => {
       await PageController.change("landing", options);
     },
   },
@@ -267,7 +273,9 @@ window.addEventListener("popstate", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("click", (e) => {
-    const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("[router-link]");
+    const link = (e.target as HTMLElement).closest<HTMLAnchorElement>(
+      "[router-link]",
+    );
     if (link) {
       e.preventDefault();
       void navigate(link.getAttribute("href") ?? link.pathname);

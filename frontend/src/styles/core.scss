@@ -56,7 +56,7 @@
 // from an amazing guide by Kevin Powell https://www.youtube.com/watch?v=c13gpBrnGEw
 .content-grid {
   --padding-inline: 2rem;
-  --content-max-width: 1250px;
+  --content-max-width: 1400px;
 
   --breakout-size: calc(
     (calc(var(--content-max-width) + 12rem) - var(--content-max-width)) / 2

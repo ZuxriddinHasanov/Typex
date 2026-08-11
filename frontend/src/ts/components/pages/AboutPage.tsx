@@ -5,7 +5,7 @@ import { TypeUZAdSlot } from "../common/TypeUZAdSlot";
 
 export function AboutPage(): JSXElement {
   return (
-    <main class="mx-auto mt-16 flex max-w-6xl flex-col gap-16 px-6 pb-24">
+    <main class="mx-auto mt-16 flex max-w-7xl flex-col gap-16 px-6 pb-24">
       {/* Hero */}
       <section id="hero" class="text-center" aria-label="Loyiha haqida">
         <h1 class="text-4xl font-extrabold tracking-tight text-text sm:text-5xl">

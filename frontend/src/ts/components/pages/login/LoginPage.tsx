@@ -42,7 +42,7 @@ export function LoginPage(): JSXElement {
       <Show
         when={isSignUpDisabled()}
         fallback={
-          <div class="flex h-full w-full max-w-5xl flex-col items-center justify-center gap-12 py-10">
+          <div class="flex h-full w-full max-w-7xl flex-col items-center justify-center gap-12 py-10">
             <div class="flex w-full flex-col items-start justify-around gap-16 md:flex-row md:gap-8">
               <Register />
               <div class="hidden h-[500px] w-px bg-sub/10 md:block"></div>

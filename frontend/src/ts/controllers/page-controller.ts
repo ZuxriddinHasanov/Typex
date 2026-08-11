@@ -116,7 +116,7 @@ function updateSeoForPage(
   } else {
     const display = nextPage.display;
     if (display !== undefined && display !== "") {
-      document.title = `${display} | TypeUZ`;
+      document.title = `${display} | TypeX.uz`;
     }
     updateSeo(pageName, params);
   }
@@ -320,7 +320,8 @@ export async function change(
 
   await nextPage?.beforeShow({
     params: options.params,
-    data: options.data,
+    // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-explicit-any
+    data: options.data as any,
   });
 
   if (

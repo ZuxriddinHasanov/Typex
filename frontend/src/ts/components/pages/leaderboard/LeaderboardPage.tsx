@@ -1,13 +1,13 @@
+import type { Language } from "@typeuz/schemas/languages";
+
 import { useQuery } from "@tanstack/solid-query";
 import { For, JSXElement, Show, createSignal } from "solid-js";
-import type { Language } from "@typeuz/schemas/languages";
 
 import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
 } from "../../../queries/leaderboards";
 import { getActivePage, isAuthenticated } from "../../../states/core";
-import { SelectField } from "../../ui/form/SelectField";
 import {
   getPage,
   getSelection,
@@ -17,8 +17,8 @@ import {
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Page } from "../../common/Page";
-
 import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
+import { SelectField } from "../../ui/form/SelectField";
 
 const pageName = "leaderboards";
 
@@ -54,9 +54,22 @@ export function LeaderboardPage(): JSXElement {
   const effectiveSelection = () => {
     const s = selection();
     if (lbType() === "weekly") {
-      return { ...s, type: "weekly" as const, mode: undefined, mode2: undefined, language: undefined, numbers: undefined };
+      return {
+        ...s,
+        type: "weekly" as const,
+        mode: undefined,
+        mode2: undefined,
+        language: undefined,
+        numbers: undefined,
+      };
     }
-    return { ...s, type: "allTime" as const, mode: (s as { mode?: string }).mode ?? "time", mode2: (s as { mode2?: string }).mode2 ?? "15", language: (s as { language?: Language }).language ?? "english" };
+    return {
+      ...s,
+      type: "allTime" as const,
+      mode: (s as { mode?: string }).mode ?? "time",
+      mode2: (s as { mode2?: string }).mode2 ?? "15",
+      language: (s as { language?: Language }).language ?? "english",
+    };
   };
 
   const sel = () => effectiveSelection();
@@ -82,7 +95,7 @@ export function LeaderboardPage(): JSXElement {
 
   return (
     <Page id={pageName}>
-      <div class="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8">
+      <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8">
         <div class="flex flex-col gap-4">
           <h1 class="text-2xl font-bold text-text">Reyting</h1>
 
@@ -120,7 +133,9 @@ export function LeaderboardPage(): JSXElement {
 
               <SelectField
                 value={sel().language}
-                onChange={(v) => setSelection({ ...sel(), language: v as Language } as never)}
+                onChange={(v) =>
+                  setSelection({ ...sel(), language: v as Language } as never)
+                }
                 options={languageOptions}
                 class="bg-sub-alt px-3 py-1.5"
               />
@@ -145,7 +160,10 @@ export function LeaderboardPage(): JSXElement {
                         )}
                         onClick={() => {
                           if (ct.value === "") {
-                            setSelection({ ...sel(), numbers: undefined } as never);
+                            setSelection({
+                              ...sel(),
+                              numbers: undefined,
+                            } as never);
                           } else if (ct.value === "words") {
                             setSelection({ ...sel(), numbers: false } as never);
                           } else {
@@ -171,7 +189,12 @@ export function LeaderboardPage(): JSXElement {
                 <span class="text-sub">Sizning o&apos;rningiz: </span>
                 <span class="font-bold text-text">
                   {d.rank}-o&apos;rin (
-                  {"wpm" in d ? `${d.wpm} WPM` : "totalXp" in d ? `${d.totalXp} XP` : "—"})
+                  {"wpm" in d
+                    ? `${d.wpm} WPM`
+                    : "totalXp" in d
+                      ? `${d.totalXp} XP`
+                      : "—"}
+                  )
                 </span>
               </div>
             );
@@ -180,17 +203,21 @@ export function LeaderboardPage(): JSXElement {
 
         <TypeUZAdSlot slotId="ad-leaderboard" class="w-full" />
 
-        <AsyncContent
-          queries={{ lbQuery }}
-          errorMessage="Reyting yuklanmadi"
-        >
+        <AsyncContent queries={{ lbQuery }} errorMessage="Reyting yuklanmadi">
           {({ lbQueryData }) => {
             const entries = () => lbQueryData()?.entries ?? [];
             return (
               <div class="flex flex-col gap-2">
                 <For each={entries()}>
                   {(entry, i) => {
-                    const e = entry as { name: string; firstName?: string; lastName?: string; wpm?: number; totalXp?: number; acc?: number };
+                    const e = entry as {
+                      name: string;
+                      firstName?: string;
+                      lastName?: string;
+                      wpm?: number;
+                      totalXp?: number;
+                      acc?: number;
+                    };
                     const idx = () => page() * 50 + i();
                     return (
                       <div
@@ -202,12 +229,20 @@ export function LeaderboardPage(): JSXElement {
                         )}
                       >
                         <span class="w-8 text-center text-lg font-bold text-sub">
-                          {idx() === 0 ? "🥇" : idx() === 1 ? "🥈" : idx() === 2 ? "🥉" : `#${idx() + 1}`}
+                          {idx() === 0
+                            ? "🥇"
+                            : idx() === 1
+                              ? "🥈"
+                              : idx() === 2
+                                ? "🥉"
+                                : `#${idx() + 1}`}
                         </span>
                         <span class="flex flex-1 flex-col">
                           <span class="font-medium text-text">{e.name}</span>
                           <Show when={e.acc}>
-                            <span class="text-xs text-sub/60">{e.acc}% aniqlik</span>
+                            <span class="text-xs text-sub/60">
+                              {e.acc}% aniqlik
+                            </span>
                           </Show>
                         </span>
                         <span class="text-sm font-medium text-text">
