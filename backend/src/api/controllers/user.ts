@@ -452,7 +452,7 @@ export async function checkName(
   req: TypeUZRequest<undefined, undefined, CheckNamePathParameters>,
 ): Promise<CheckNameResponse> {
   const { name } = req.params;
-  const { uid } = req.ctx.decodedToken;
+  const uid = req.ctx.decodedToken?.uid;
 
   const available = await UserDAL.isNameAvailable(name, uid);
 
@@ -638,7 +638,18 @@ export async function getUser(req: TypeUZRequest): Promise<GetUserResponse> {
     customThemes: customThemes?.map((t) => ({
       _id: t._id,
       name: t.name,
-      colors: t.colors as [string, string, string, string, string, string, string, string, string, string],
+      colors: t.colors as [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+      ],
     })),
     isPremium,
     allTimeLbs,
@@ -764,10 +775,7 @@ export async function addResultFilterPreset(
     filter,
     maxPresetsPerUser,
   );
-  return new TypeUZResponse(
-    "Result filter preset created",
-    createdId,
-  );
+  return new TypeUZResponse("Result filter preset created", createdId);
 }
 
 export async function removeResultFilterPreset(
@@ -846,7 +854,18 @@ export async function getCustomThemes(
   const mapped = customThemes.map((t) => ({
     _id: t._id,
     name: t.name,
-    colors: t.colors as [string, string, string, string, string, string, string, string, string, string],
+    colors: t.colors as [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+    ],
   }));
   return new TypeUZResponse("Custom themes retrieved", mapped);
 }
@@ -886,7 +905,7 @@ export async function getPersonalBests(
   const { uid } = req.ctx.decodedToken;
   const { mode, mode2 } = req.query;
 
-  const data = await UserDAL.getPersonalBests(uid, mode, mode2) ?? null;
+  const data = (await UserDAL.getPersonalBests(uid, mode, mode2)) ?? null;
   return new TypeUZResponse("Personal bests retrieved", data as never);
 }
 
@@ -1474,7 +1493,11 @@ export async function getWeeklyAnalysis(
   }
 
   const aiConfig = req.ctx.configuration.users.ai;
-  if (aiConfig?.enabled && aiConfig.apiKey && aiUses.count < aiConfig.maxDailyUses) {
+  if (
+    aiConfig?.enabled &&
+    aiConfig.apiKey &&
+    aiUses.count < aiConfig.maxDailyUses
+  ) {
     try {
       const prompt = `Men "TypeUZ (typeuz.uz)" foydalanuvchisiman. Mening haftalik yozish o'rtacha tezligim ${avgWpm} WPM, aniqligim ${avgAccuracy}%. Men 7 kun ichida jami ${results.length} ta test topshirdim va ${Math.round(totalTimeSeconds)} soniya sarfladim. Trendim: ${trend}. Eng zo'r tezligim: ${bestWpm} WPM bo'ldi. Menga shu natijalarim asosida o'zbek tilida motivatsion va foydali maslahat ber. Matn ichida natija raqamlarim ham ishtirok etsin va u juda ham qisqa bo'lsin.`;
 
@@ -1492,8 +1515,13 @@ export async function getWeeklyAnalysis(
       if (!response.ok) {
         throw new Error(`Gemini API error: ${response.status}`);
       }
-      const data = await response.json() as any;
-      if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      const data = (await response.json()) as {
+        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+      };
+      if (
+        data?.candidates?.[0]?.content?.parts?.[0]?.text !== undefined &&
+        data?.candidates?.[0]?.content?.parts?.[0]?.text !== ""
+      ) {
         recommendation = data.candidates[0].content.parts[0].text.trim();
         aiUses.count++;
         await UserDAL.updateAiUses(uid, aiUses);
@@ -1501,23 +1529,30 @@ export async function getWeeklyAnalysis(
         throw new Error("Invalid AI response");
       }
     } catch (e) {
-      recommendation = "AI tahlil vaqtinchalik ishlamayapti. O'z ustingizda ishlashda davom eting!";
+      recommendation =
+        "AI tahlil vaqtinchalik ishlamayapti. O'z ustingizda ishlashda davom eting!";
     }
   } else if (aiConfig?.enabled && aiUses.count >= aiConfig.maxDailyUses) {
     recommendation = `Siz bugungi AI tahlil limitiga (${aiConfig.maxDailyUses} marta) yetib keldingiz. Yaxshi natijalar! Erta yana ko'rishguncha.`;
   } else {
     if (avgWpm < 30) {
-      recommendation = "Tezlikni oshirish uchun har kuni 5-10 daqiqa mashq qiling. Klaviaturada barmoqlarning to'g'ri joylashishiga e'tibor bering.";
+      recommendation =
+        "Tezlikni oshirish uchun har kuni 5-10 daqiqa mashq qiling. Klaviaturada barmoqlarning to'g'ri joylashishiga e'tibor bering.";
     } else if (avgAccuracy < 90) {
-      recommendation = "Aniqlikni oshirishga e'tibor qarating. Sekinroq yozing, lekin xatolarni kamaytiring. To'g'ri barmoq joylashuvi muhim.";
+      recommendation =
+        "Aniqlikni oshirishga e'tibor qarating. Sekinroq yozing, lekin xatolarni kamaytiring. To'g'ri barmoq joylashuvi muhim.";
     } else if (dailyBreakdown.length < 3) {
-      recommendation = "Haftada kamida 3-4 kun test topshirishni maqsad qiling. Muntazamlik tezlikni oshirishning kalitidir.";
+      recommendation =
+        "Haftada kamida 3-4 kun test topshirishni maqsad qiling. Muntazamlik tezlikni oshirishning kalitidir.";
     } else if (trend === "improving") {
-      recommendation = "Yaxshi natija! Tezligingiz oshib bormoqda. Shu tartibda davom eting va yangi maqsadlar qo'ying.";
+      recommendation =
+        "Yaxshi natija! Tezligingiz oshib bormoqda. Shu tartibda davom eting va yangi maqsadlar qo'ying.";
     } else if (trend === "declining") {
-      recommendation = "Oxirgi kunlarda tezlik pasaygan. Dam olish va diqqatni jamlash uchun tanaffus qiling.";
+      recommendation =
+        "Oxirgi kunlarda tezlik pasaygan. Dam olish va diqqatni jamlash uchun tanaffus qiling.";
     } else {
-      recommendation = "Barqaror natijalar ko'rsatyapsiz. Tezlikni oshirish uchun turli xil matnlar bilan mashq qilib ko'ring.";
+      recommendation =
+        "Barqaror natijalar ko'rsatyapsiz. Tezlikni oshirish uchun turli xil matnlar bilan mashq qilib ko'ring.";
     }
   }
 
@@ -1527,7 +1562,8 @@ export async function getWeeklyAnalysis(
     totalTests: results.length,
     totalTimeSeconds,
     bestWpm,
-    bestWpmDate: bestWpmTimestamp > 0 ? new Date(bestWpmTimestamp).toISOString() : "",
+    bestWpmDate:
+      bestWpmTimestamp > 0 ? new Date(bestWpmTimestamp).toISOString() : "",
     trend,
     bestDay,
     dailyBreakdown,

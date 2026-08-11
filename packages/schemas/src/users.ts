@@ -292,10 +292,12 @@ export const UserSchema = z.object({
   quoteMod: QuoteModSchema.optional(),
   resultFilterPresets: z.array(ResultFiltersSchema).optional(),
   testActivity: TestActivitySchema.optional(),
-  aiUses: z.object({
-    date: z.string(),
-    count: z.number().int().nonnegative(),
-  }).optional(),
+  aiUses: z
+    .object({
+      date: z.string(),
+      count: z.number().int().nonnegative(),
+    })
+    .optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -383,13 +385,8 @@ export type ReportUserReason = z.infer<typeof ReportUserReasonSchema>;
 // stricter schema used while password creation
 export const NewPasswordSchema = z
   .string()
-  .min(8, { message: "must be at least 8 characters" })
-  .max(64, { message: "must be at most 64 characters" })
-  .regex(/[A-Z]/, { message: "must contain at least one capital letter" })
-  .regex(/[\d]/, { message: "must contain at least one number" })
-  .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, {
-    message: "must contain at least one special character",
-  });
+  .min(6, { message: "kamida 6 ta belgi bo'lishi kerak" })
+  .max(64, { message: "eng ko'pi bilan 64 ta belgi bo'lishi kerak" });
 export type NewPassword = z.infer<typeof NewPasswordSchema>;
 
 // lenient schema for existing passwords
