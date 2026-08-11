@@ -51,7 +51,10 @@ function rowToDBResult(row: ResultRow): DBResult {
     testDuration: row.test_duration,
     consistency: row.consistency,
     keyConsistency: row.key_consistency ?? undefined,
-    chartData: row.chart_data === "toolong" ? "toolong" : row.chart_data ?? { wpm: [], burst: [], err: [] },
+    chartData:
+      row.chart_data === "toolong"
+        ? "toolong"
+        : (row.chart_data ?? { wpm: [], burst: [], err: [] }),
     restartCount: row.restart_count ?? undefined,
     incompleteTestSeconds: row.incomplete_test_seconds ?? undefined,
     afkDuration: row.afk_duration ?? undefined,
@@ -77,8 +80,10 @@ export async function addResult(
   uid: string,
   result: DBResult,
 ): Promise<{ insertedId: string }> {
-  const { data: user } = await tryCatch(getUser(uid, "add result"));
-  if (!user) throw new TypeUZError(404, "User not found", "add result");
+  if (!uid.startsWith("guest_")) {
+    const { data: user } = await tryCatch(getUser(uid, "add result"));
+    if (!user) throw new TypeUZError(404, "User not found", "add result");
+  }
 
   const r = await db.queryOne<{ _id: string }>(
     `INSERT INTO results (
