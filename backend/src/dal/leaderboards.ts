@@ -334,3 +334,12 @@ export async function createIndicies(): Promise<void> {
     }
   }
 }
+
+export async function getActiveTimeModes(): Promise<string[]> {
+  const res = await db.query(`
+    SELECT DISTINCT jsonb_object_keys(lb_personal_bests->'time') AS mode2
+    FROM users
+    WHERE lb_personal_bests->'time' IS NOT NULL
+  `);
+  return (res.rows as { mode2: string }[]).map((row) => row.mode2);
+}

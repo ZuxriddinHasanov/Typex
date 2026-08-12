@@ -68,13 +68,16 @@ async function updateLeaderboards(): Promise<void> {
     return;
   }
 
+  const activeTimeModes = await LeaderboardsDAL.getActiveTimeModes();
+  const timeModesToUpdate =
+    activeTimeModes.length > 0
+      ? activeTimeModes
+      : ["120", "60", "30", "15", "10", "1"];
+
   for (const language of ["uzbek", "english"]) {
-    await updateLeaderboardAndNotifyChanges("120", language);
-    await updateLeaderboardAndNotifyChanges("60", language);
-    await updateLeaderboardAndNotifyChanges("30", language);
-    await updateLeaderboardAndNotifyChanges("15", language);
-    await updateLeaderboardAndNotifyChanges("10", language);
-    await updateLeaderboardAndNotifyChanges("1", language);
+    for (const timeMode of timeModesToUpdate) {
+      await updateLeaderboardAndNotifyChanges(timeMode, language);
+    }
   }
 }
 

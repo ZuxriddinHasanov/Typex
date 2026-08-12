@@ -204,11 +204,6 @@ export function updateLeaderboardPersonalBests(
 }
 
 function shouldUpdateLeaderboardPersonalBests(result: Result): boolean {
-  const isValidTimeMode =
-    result.mode === "time" &&
-    (result.mode2 === "1" ||
-      result.mode2 === "10" ||
-      result.mode2 === "15" ||
-      result.mode2 === "60");
+  const isValidTimeMode = result.mode === "time";
   return isValidTimeMode && !result.lazyMode;
 }
