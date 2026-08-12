@@ -333,7 +333,21 @@ router.post("/google", async (req: Request, res: Response) => {
 
     if (user === null) {
       const uid = crypto.randomUUID();
-      const username = name ?? email.split("@")[0] ?? `user_${uid.slice(0, 8)}`;
+      let username = name ?? email.split("@")[0] ?? `user_${uid.slice(0, 8)}`;
+      username = username.replace(/[^a-zA-Z0-9_]/g, "");
+      if (username.length < 2) username = `user_${uid.slice(0, 5)}`;
+
+      let isUnique = false;
+      let counter = 0;
+      while (!isUnique) {
+        const existing = await findUserByName(username);
+        if (existing !== null) {
+          counter++;
+          username = `${username.replace(/[0-9]+$/, "")}${counter}`;
+        } else {
+          isUnique = true;
+        }
+      }
 
       if (!isDevEnvironment()) {
         await UserDAL.addUser(username, email, uid);
@@ -436,7 +450,22 @@ router.post("/github", async (req: Request, res: Response) => {
 
     if (user === null) {
       const uid = crypto.randomUUID();
-      const username = ghUser.login ?? `gh_${uid.slice(0, 8)}`;
+      let username = ghUser.login ?? `gh_${uid.slice(0, 8)}`;
+      username = username.replace(/[^a-zA-Z0-9_]/g, "");
+      if (username.length < 2) username = `gh_${uid.slice(0, 5)}`;
+
+      let isUnique = false;
+      let counter = 0;
+      while (!isUnique) {
+        const existing = await findUserByName(username);
+        if (existing !== null) {
+          counter++;
+          username = `${username.replace(/[0-9]+$/, "")}${counter}`;
+        } else {
+          isUnique = true;
+        }
+      }
+
       if (!isDevEnvironment()) {
         await UserDAL.addUser(username, email, uid);
       }
