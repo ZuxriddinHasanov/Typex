@@ -23,7 +23,7 @@ import { User } from "../../common/User";
 
 const pageName = "leaderboards";
 
-const durationOptions = ["15", "30", "60", "120", "custom"] as const;
+const durationOptions = ["10", "15", "30", "60", "120", "custom"] as const;
 
 const languageOptions: { value: Language; label: string }[] = [
   { value: "uzbek", label: "O'zbek" },

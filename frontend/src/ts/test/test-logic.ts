@@ -948,23 +948,23 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   } else if (
     completedEvent.testDuration < 1 ||
-    (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
+    (Config.mode === "time" && mode2Number < 10 && mode2Number > 0) ||
     (Config.mode === "time" &&
       mode2Number === 0 &&
-      completedEvent.testDuration < 15) ||
-    (Config.mode === "ai" && completedEvent.testDuration < 15) ||
+      completedEvent.testDuration < 10) ||
+    (Config.mode === "ai" && completedEvent.testDuration < 10) ||
     (Config.mode === "words" && mode2Number < 10 && mode2Number > 0) ||
     (Config.mode === "words" &&
       mode2Number === 0 &&
-      completedEvent.testDuration < 15) ||
+      completedEvent.testDuration < 10) ||
     (Config.mode === "custom" &&
       (CustomText.getLimitMode() === "word" ||
         CustomText.getLimitMode() === "section") &&
       CustomText.getLimitValue() < 10) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "time" &&
-      CustomText.getLimitValue() < 15) ||
-    (Config.mode === "zen" && completedEvent.testDuration < 15)
+      CustomText.getLimitValue() < 10) ||
+    (Config.mode === "zen" && completedEvent.testDuration < 10)
   ) {
     showNoticeNotification("Test invalid - too short");
     setIsTestInvalid(true);

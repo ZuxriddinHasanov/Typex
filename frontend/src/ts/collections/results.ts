@@ -47,7 +47,7 @@ export type ResultsQueryState = {
   pb: SnapshotResult<Mode>["isPb"][];
   mode: SnapshotResult<Mode>["mode"][];
   words: ("10" | "25" | "50" | "100" | "custom")[];
-  time: ("15" | "30" | "60" | "120" | "custom")[];
+  time: ("10" | "15" | "30" | "60" | "120" | "custom")[];
   punctuation: SnapshotResult<Mode>["punctuation"][];
   numbers: SnapshotResult<Mode>["numbers"][];
   timestamp: SnapshotResult<Mode>["timestamp"];

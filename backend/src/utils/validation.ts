@@ -6,10 +6,10 @@ export function isTestTooShort(result: CompletedEvent): boolean {
   if (mode === "time") {
     const seconds = parseInt(mode2);
 
-    const setTimeTooShort = seconds > 0 && seconds < 15;
-    const infiniteTimeTooShort = seconds === 0 && testDuration < 15;
+    const setTimeTooShort = seconds > 0 && seconds < 10;
+    const infiniteTimeTooShort = seconds === 0 && testDuration < 10;
     const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 15
+      ? bailedOut && testDuration < 10
       : false;
     return setTimeTooShort || infiniteTimeTooShort || bailedOutTooShort;
   }
@@ -18,9 +18,9 @@ export function isTestTooShort(result: CompletedEvent): boolean {
     const wordCount = parseInt(mode2);
 
     const setWordTooShort = wordCount > 0 && wordCount < 10;
-    const infiniteWordTooShort = wordCount === 0 && testDuration < 15;
+    const infiniteWordTooShort = wordCount === 0 && testDuration < 10;
     const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 15
+      ? bailedOut && testDuration < 10
       : false;
     return setWordTooShort || infiniteWordTooShort || bailedOutTooShort;
   }
@@ -32,15 +32,15 @@ export function isTestTooShort(result: CompletedEvent): boolean {
         customText.limit.mode === "section") &&
       customText.limit.value < 10;
     const timeLimitTooShort =
-      customText.limit.mode === "time" && customText.limit.value < 15;
+      customText.limit.mode === "time" && customText.limit.value < 10;
     const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 15
+      ? bailedOut && testDuration < 10
       : false;
     return wordLimitTooShort || timeLimitTooShort || bailedOutTooShort;
   }
 
   if (mode === "zen") {
-    return testDuration < 15;
+    return testDuration < 10;
   }
 
   return false;
