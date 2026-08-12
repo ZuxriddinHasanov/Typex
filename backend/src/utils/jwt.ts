@@ -4,9 +4,9 @@ import TypeUZError from "./error";
 const getSecret = (): string => {
   const secret = process.env["JWT_SECRET"];
   if (secret === undefined || secret === null || secret === "") {
-    throw new Error(
-      "JWT_SECRET environment variable is not set! Set a strong random secret.",
-    );
+    // Provide a fallback secret for development or missing configuration.
+    // In production, the user should set a strong random secret.
+    return "typeuz_default_fallback_jwt_secret_change_me_in_production";
   }
   return secret;
 };

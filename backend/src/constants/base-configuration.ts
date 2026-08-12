@@ -106,7 +106,7 @@ export const BASE_CONFIGURATION: Configuration = {
     xpRewardBrackets: [],
   },
   leaderboards: {
-    minTimeTyping: 2 * 60 * 60,
+    minTimeTyping: 0,
     weeklyXp: {
       enabled: false,
       expirationTimeInDays: 0, // This should atleast be 15
