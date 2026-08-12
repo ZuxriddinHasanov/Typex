@@ -92,6 +92,7 @@ export function LeaderboardPage(): JSXElement {
     const next = page() + dir;
     if (next < 0) return;
     setPage(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   createEffect(() => {
@@ -129,90 +130,65 @@ export function LeaderboardPage(): JSXElement {
 
           <div class="flex flex-wrap items-center gap-3">
             <Show when={lbType() !== "weekly"}>
-              <div class="flex items-center gap-1 rounded-xl border border-sub-alt bg-sub-alt p-1">
-                <For each={durationOptions}>
-                  {(d) => (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSelection({ ...sel(), mode2: d } as never)
-                      }
-                      class={cn(
-                        "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
-                        sel().mode2 === d
-                          ? "bg-main text-bg shadow-sm"
-                          : "text-sub hover:bg-sub-alt/80 hover:text-text",
-                      )}
-                    >
-                      {d === "custom" ? "Maxsus" : `${d}s`}
-                    </button>
-                  )}
-                </For>
-              </div>
+              <div class="flex items-center gap-3">
+                <select
+                  class="rounded-lg border border-sub-alt bg-sub-alt px-3 py-1.5 text-sm text-text outline-none focus:border-main"
+                  value={sel().language}
+                  onChange={(e) =>
+                    setSelection({
+                      ...sel(),
+                      language: e.currentTarget.value as Language,
+                    } as never)
+                  }
+                >
+                  <For each={languageOptions}>
+                    {(lang) => <option value={lang.value}>{lang.label}</option>}
+                  </For>
+                </select>
 
-              <div class="flex items-center gap-1 rounded-xl border border-sub-alt bg-sub-alt p-1">
-                <For each={languageOptions}>
-                  {(lang) => (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSelection({
-                          ...sel(),
-                          language: lang.value,
-                        } as never)
-                      }
-                      class={cn(
-                        "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
-                        sel().language === lang.value
-                          ? "bg-main text-bg shadow-sm"
-                          : "text-sub hover:bg-sub-alt/80 hover:text-text",
-                      )}
-                    >
-                      {lang.label}
-                    </button>
-                  )}
-                </For>
-              </div>
+                <select
+                  class="rounded-lg border border-sub-alt bg-sub-alt px-3 py-1.5 text-sm text-text outline-none focus:border-main"
+                  value={sel().mode2}
+                  onChange={(e) =>
+                    setSelection({
+                      ...sel(),
+                      mode2: e.currentTarget.value,
+                    } as never)
+                  }
+                >
+                  <For each={durationOptions}>
+                    {(d) => (
+                      <option value={d}>
+                        {d === "custom" ? "Maxsus" : `${d}s`}
+                      </option>
+                    )}
+                  </For>
+                </select>
 
-              <div class="flex items-center gap-1 rounded-xl border border-sub-alt bg-sub-alt p-1">
-                <For each={contentTypeOptions}>
-                  {(ct) => {
-                    const active = () =>
-                      ct.value === ""
-                        ? (sel() as unknown as { numbers?: boolean })
-                            .numbers === undefined
-                        : ct.value === "words"
-                          ? (sel() as unknown as { numbers?: boolean })
-                              .numbers === false
-                          : (sel() as unknown as { numbers?: boolean })
-                              .numbers === true;
-                    return (
-                      <button
-                        type="button"
-                        class={cn(
-                          "rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200",
-                          active()
-                            ? "bg-main text-bg shadow-sm"
-                            : "text-sub hover:bg-sub-alt/80 hover:text-text",
-                        )}
-                        onClick={() => {
-                          if (ct.value === "") {
-                            setSelection({
-                              ...sel(),
-                              numbers: undefined,
-                            } as never);
-                          } else if (ct.value === "words") {
-                            setSelection({ ...sel(), numbers: false } as never);
-                          } else {
-                            setSelection({ ...sel(), numbers: true } as never);
-                          }
-                        }}
-                      >
-                        {ct.label}
-                      </button>
-                    );
+                <select
+                  class="rounded-lg border border-sub-alt bg-sub-alt px-3 py-1.5 text-sm text-text outline-none focus:border-main"
+                  value={
+                    sel().numbers === undefined
+                      ? ""
+                      : sel().numbers
+                        ? "mixed"
+                        : "words"
+                  }
+                  onChange={(e) => {
+                    const v = e.currentTarget.value;
+                    if (v === "") {
+                      setSelection({ ...sel(), numbers: undefined } as never);
+                    } else if (v === "words") {
+                      setSelection({ ...sel(), numbers: false } as never);
+                    } else {
+                      setSelection({ ...sel(), numbers: true } as never);
+                    }
                   }}
-                </For>
+                >
+                  <For each={contentTypeOptions}>
+                    {(ct) => <option value={ct.value}>{ct.label}</option>}
+                  </For>
+                </select>
               </div>
             </Show>
           </div>
@@ -312,7 +288,11 @@ export function LeaderboardPage(): JSXElement {
                         acc?: number;
                       };
                       const idx = () =>
-                        page() === 0 ? i() + 3 : page() * 50 + i();
+                        "rank" in e
+                          ? (e as unknown as { rank: number }).rank
+                          : page() === 0
+                            ? i() + 3 + 1
+                            : page() * 50 + i() + 1;
                       return (
                         <div
                           class={cn(
@@ -321,7 +301,7 @@ export function LeaderboardPage(): JSXElement {
                           style={{ "animation-delay": `${(i() % 10) * 50}ms` }}
                         >
                           <span class="w-8 text-center text-lg font-bold text-sub">
-                            #{idx() + 1}
+                            #{idx()}
                           </span>
                           <div class="flex flex-1 items-center gap-3">
                             <User

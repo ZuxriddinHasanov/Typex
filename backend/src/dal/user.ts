@@ -152,7 +152,9 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
     quoteMod: parseJson(r["quote_mod"]) as User["quoteMod"],
     resultFilterPresets,
     testActivity,
-    aiUses: parseJson(r["ai_uses"]) as { date: string; count: number } | undefined,
+    aiUses: parseJson(r["ai_uses"]) as
+      | { date: string; count: number }
+      | undefined,
     autoBanTimestamps,
     inbox,
     ips,
@@ -588,9 +590,10 @@ export async function findByEmail(email: string): Promise<DBUser | undefined> {
     return undefined;
   }
 
-  const row = await db.queryOne("SELECT * FROM users WHERE email = $1", [
-    email,
-  ]);
+  const row = await db.queryOne(
+    "SELECT * FROM users WHERE LOWER(email) = LOWER($1)",
+    [email],
+  );
   return row ? userRowToDBUser(row) : undefined;
 }
 
@@ -1638,8 +1641,8 @@ export async function updateAiUses(
     return;
   }
 
-  await db.query(
-    `UPDATE users SET ai_uses = $1::jsonb WHERE uid = $2`,
-    [JSON.stringify(aiUses), uid],
-  );
+  await db.query(`UPDATE users SET ai_uses = $1::jsonb WHERE uid = $2`, [
+    JSON.stringify(aiUses),
+    uid,
+  ]);
 }

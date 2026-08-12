@@ -80,10 +80,8 @@ export async function addResult(
   uid: string,
   result: DBResult,
 ): Promise<{ insertedId: string }> {
-  if (!uid.startsWith("guest_")) {
-    const { data: user } = await tryCatch(getUser(uid, "add result"));
-    if (!user) throw new TypeUZError(404, "User not found", "add result");
-  }
+  const { data: user } = await tryCatch(getUser(uid, "add result"));
+  if (!user) throw new TypeUZError(404, "User not found", "add result");
 
   const r = await db.queryOne<{ _id: string }>(
     `INSERT INTO results (

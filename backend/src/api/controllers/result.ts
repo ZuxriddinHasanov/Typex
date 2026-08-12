@@ -197,20 +197,26 @@ export async function addResult(
 
   let user: DBUser;
   if (uid === "" || uid.startsWith("guest_")) {
-    const guestName = uid.startsWith("guest_")
+    const guestUid = uid === "" ? "guest_user" : uid;
+    const rawGuestName = uid.startsWith("guest_")
       ? uid.replace("guest_", "").split("_")[0]
-      : "guest";
-    user = {
-      uid: uid === "" ? "guest_user" : uid,
-      name: guestName,
-      email: "guest@typex.uz",
-      banned: false,
-      lbOptOut: false,
-      verified: false,
-      timeTyping: 999999, // enough time to be on leaderboard
-      needsToChangeName: false,
-      discordAvatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${guestName}`,
-    } as unknown as DBUser;
+      : "Mehmon";
+    const guestName = `${rawGuestName} (Mehmon)`;
+
+    try {
+      user = await UserDAL.getUser(guestUid, "add result");
+    } catch (e) {
+      await UserDAL.addUser(
+        guestName,
+        `${guestUid}@typex.uz`,
+        guestUid,
+        undefined,
+        undefined,
+        `https://api.dicebear.com/7.x/bottts/svg?seed=${rawGuestName}`,
+      );
+      user = await UserDAL.getUser(guestUid, "add result");
+    }
+    user.timeTyping = 999999; // enough time to be on leaderboard
   } else {
     user = await UserDAL.getUser(uid, "add result");
 
@@ -445,9 +451,7 @@ export async function addResult(
       if (lastHashes.length > maxHashes) {
         lastHashes = lastHashes.slice(0, maxHashes);
       }
-      if (!uid.startsWith("guest_")) {
-        await UserDAL.updateLastHashes(uid, lastHashes);
-      }
+      await UserDAL.updateLastHashes(uid, lastHashes);
     }
   }
 
@@ -471,16 +475,14 @@ export async function addResult(
   }
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
-    if (!uid.startsWith("guest_")) {
-      void UserDAL.incrementBananas(uid, completedEvent.wpm);
-      if (
-        isPb &&
-        user.discordId !== undefined &&
-        user.discordId !== "" &&
-        user.lbOptOut !== true
-      ) {
-        void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
-      }
+    void UserDAL.incrementBananas(uid, completedEvent.wpm);
+    if (
+      isPb &&
+      user.discordId !== undefined &&
+      user.discordId !== "" &&
+      user.lbOptOut !== true
+    ) {
+      void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
   }
 
@@ -499,13 +501,11 @@ export async function addResult(
   const afk = completedEvent.afkDuration ?? 0;
   const totalDurationTypedSeconds =
     completedEvent.testDuration + completedEvent.incompleteTestSeconds - afk;
-  if (!uid.startsWith("guest_")) {
-    void UserDAL.updateTypingStats(
-      uid,
-      completedEvent.restartCount,
-      totalDurationTypedSeconds,
-    );
-  }
+  void UserDAL.updateTypingStats(
+    uid,
+    completedEvent.restartCount,
+    totalDurationTypedSeconds,
+  );
   void PublicDAL.updateStats(
     completedEvent.restartCount,
     totalDurationTypedSeconds,
@@ -578,9 +578,7 @@ export async function addResult(
     }
   }
 
-  const streak = uid.startsWith("guest_")
-    ? 0
-    : await UserDAL.updateStreak(uid, completedEvent.timestamp);
+  const streak = await UserDAL.updateStreak(uid, completedEvent.timestamp);
   const badgeWaitingInInbox = (
     user.inbox?.flatMap((i) =>
       (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null)),
@@ -646,12 +644,7 @@ export async function addResult(
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
     weeklyXpLeaderboardConfig,
   );
-  if (
-    userEligibleForLeaderboard &&
-    xpGained.xp > 0 &&
-    weeklyXpLeaderboard &&
-    !uid.startsWith("guest_")
-  ) {
+  if (userEligibleForLeaderboard && xpGained.xp > 0 && weeklyXpLeaderboard) {
     weeklyXpLeaderboardRank = await weeklyXpLeaderboard.addResult(
       weeklyXpLeaderboardConfig,
       {
@@ -681,10 +674,8 @@ export async function addResult(
   let addedResult: { insertedId: string } = { insertedId: "guest_result" };
   addedResult = await ResultDAL.addResult(uid, dbresult);
 
-  if (!uid.startsWith("guest_")) {
-    await UserDAL.incrementXp(uid, xpGained.xp);
-    await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
-  }
+  await UserDAL.incrementXp(uid, xpGained.xp);
+  await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
 
   if (isPb) {
     void addLog(

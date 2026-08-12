@@ -1,4 +1,8 @@
-import { Gender, NewPasswordSchema, PasswordSchema } from "@typeuz/schemas/users";
+import {
+  Gender,
+  NewPasswordSchema,
+  PasswordSchema,
+} from "@typeuz/schemas/users";
 import { typedKeys } from "@typeuz/util/objects";
 import { tryCatch } from "@typeuz/util/trycatch";
 import { FirebaseError } from "firebase/app";
@@ -39,8 +43,12 @@ import {
 import { createSignalWithSetters } from "./hooks/createSignalWithSetters";
 import { createEffectOn } from "./hooks/effects";
 import * as Sentry from "./sentry";
-import { getUserId, isAuthenticated, setUserId, setUserVerified } from "./states/core";
-import { setStoredToken, setStoredUser } from "./utils/custom-auth";
+import {
+  getUserId,
+  isAuthenticated,
+  setUserId,
+  setUserVerified,
+} from "./states/core";
 import { hideLoaderBar, showLoaderBar } from "./states/loader-bar";
 import {
   showErrorNotification,
@@ -48,6 +56,7 @@ import {
   showSuccessNotification,
 } from "./states/notifications";
 import { FaObject } from "./types/font-awesome";
+import { setStoredToken, setStoredUser } from "./utils/custom-auth";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
@@ -305,63 +314,129 @@ async function signInWithGooglePopup(): Promise<AuthResult> {
   const GOOGLE_CLIENT_ID = envConfig.googleClientId;
 
   if (!GOOGLE_CLIENT_ID) {
-    return { success: false, message: "Google login ishlab chiqish rejimida mavjud emas. Email orqali kiring yoki frontend/ .env faylida VITE_GOOGLE_CLIENT_ID sozlang." };
+    return {
+      success: false,
+      message:
+        "Google login ishlab chiqish rejimida mavjud emas. Email orqali kiring yoki frontend/ .env faylida VITE_GOOGLE_CLIENT_ID sozlang.",
+    };
   }
 
   return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.onload = () => {
-      const win = window as unknown as { google?: { accounts?: { oauth2?: { initTokenClient: (config: Record<string, unknown>) => { requestAccessToken: () => void } } } } };
+    const loadGoogle = () => {
+      const win = window as unknown as {
+        google?: {
+          accounts?: {
+            oauth2?: {
+              initTokenClient: (config: Record<string, unknown>) => {
+                requestAccessToken: () => void;
+              };
+            };
+          };
+        };
+      };
       const tokenClient = win.google?.accounts?.oauth2?.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
         scope: "openid email profile",
-        callback: async (response: { access_token?: string; id_token?: string; error?: string }) => {
+        callback: async (response: {
+          access_token?: string;
+          id_token?: string;
+          error?: string;
+        }) => {
           if (response.error !== undefined && response.error !== "") {
-            resolve({ success: false, message: `Google login: ${response.error}` });
+            resolve({
+              success: false,
+              message: `Google login: ${response.error}`,
+            });
             return;
           }
           const idToken = response.id_token ?? response.access_token;
           if (idToken === undefined || idToken === "") {
-            resolve({ success: false, message: "Google login: token olinmadi" });
+            resolve({
+              success: false,
+              message: "Google login: token olinmadi",
+            });
             return;
           }
-          const backendUrl = (await import("virtual:env-config")).envConfig.backendUrl;
+          const backendUrl = (await import("virtual:env-config")).envConfig
+            .backendUrl;
           try {
             const res = await fetch(`${backendUrl}/auth/google`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ idToken: idToken }),
             });
-            const json = await res.json() as { data?: { token: string; uid: string; email: string; name: string }; message?: string };
-            if (json.data !== undefined && json.data.token !== undefined && json.data.token !== "") {
+            const json = (await res.json()) as {
+              data?: {
+                token: string;
+                uid: string;
+                email: string;
+                name: string;
+              };
+              message?: string;
+            };
+            if (
+              json.data !== undefined &&
+              json.data.token !== undefined &&
+              json.data.token !== ""
+            ) {
               setStoredToken(json.data.token);
-              setStoredUser({ uid: json.data.uid, email: json.data.email, name: json.data.name });
-              void onAuthStateChanged(true, { uid: json.data.uid } as unknown as User);
+              setStoredUser({
+                uid: json.data.uid,
+                email: json.data.email,
+                name: json.data.name,
+              });
+              void onAuthStateChanged(true, {
+                uid: json.data.uid,
+              } as unknown as User);
               resolve({ success: true });
             } else {
-              resolve({ success: false, message: json.message ?? "Google login failed" });
+              resolve({
+                success: false,
+                message: json.message ?? "Google login failed",
+              });
             }
           } catch {
-            resolve({ success: false, message: "Google login: backend xatosi" });
+            resolve({
+              success: false,
+              message: "Google login: backend xatosi",
+            });
           }
         },
       });
       tokenClient?.requestAccessToken();
     };
-    script.onerror = () => {
-      resolve({ success: false, message: "Google login library yuklanmadi" });
-    };
-    document.head.appendChild(script);
+
+    if (
+      document.querySelector(
+        "script[src='https://accounts.google.com/gsi/client']",
+      )
+    ) {
+      loadGoogle();
+    } else {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.onload = loadGoogle;
+      script.onerror = () => {
+        resolve({ success: false, message: "Google login library yuklanmadi" });
+      };
+      document.head.appendChild(script);
+    }
   });
 }
 
 async function signInWithGitHubPopup(): Promise<AuthResult> {
   const backendUrl = (await import("virtual:env-config")).envConfig.backendUrl;
-  const popup = window.open(`${backendUrl}/auth/github/login`, "github-auth", "width=600,height=700");
+  const popup = window.open(
+    `${backendUrl}/auth/github/login`,
+    "github-auth",
+    "width=600,height=700",
+  );
   if (!popup) {
-    return { success: false, message: "Popup bloklandi. Brauzer sozlamalarini tekshiring." };
+    return {
+      success: false,
+      message: "Popup bloklandi. Brauzer sozlamalarini tekshiring.",
+    };
   }
 
   return new Promise((resolve) => {
@@ -369,13 +444,26 @@ async function signInWithGitHubPopup(): Promise<AuthResult> {
       const d = event.data as Record<string, unknown> | undefined;
       if (d === undefined || d["type"] !== "typeuz_oauth") return;
       window.removeEventListener("message", handler);
-      if (d["success"] === true && typeof d["token"] === "string" && d["token"] !== "") {
+      if (
+        d["success"] === true &&
+        typeof d["token"] === "string" &&
+        d["token"] !== ""
+      ) {
         setStoredToken(d["token"]);
-        setStoredUser({ uid: d["uid"] as string, email: d["email"] as string, name: d["name"] as string });
-        void onAuthStateChanged(true, { uid: d["uid"] as string } as unknown as User);
+        setStoredUser({
+          uid: d["uid"] as string,
+          email: d["email"] as string,
+          name: d["name"] as string,
+        });
+        void onAuthStateChanged(true, {
+          uid: d["uid"] as string,
+        } as unknown as User);
         resolve({ success: true });
       } else {
-        resolve({ success: false, message: (d["error"] as string) ?? "GitHub login failed" });
+        resolve({
+          success: false,
+          message: (d["error"] as string) ?? "GitHub login failed",
+        });
       }
     };
     window.addEventListener("message", handler);
