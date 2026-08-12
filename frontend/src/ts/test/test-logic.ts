@@ -928,6 +928,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   const mode2Number = parseInt(completedEvent.mode2);
 
+  const isGuest = !isAuthenticated();
+  const minLimit = isGuest ? 2 : 1;
+
   let tooShort = false;
   //fail checks
   const dateDur = getDateBasedTestDurationMs(eventLog) / 1000;
@@ -947,24 +950,24 @@ export async function finish(difficultyFailed = false): Promise<void> {
     });
     dontSave = true;
   } else if (
-    completedEvent.testDuration < 1 ||
-    (Config.mode === "time" && mode2Number < 10 && mode2Number > 0) ||
+    completedEvent.testDuration < minLimit ||
+    (Config.mode === "time" && mode2Number < minLimit && mode2Number > 0) ||
     (Config.mode === "time" &&
       mode2Number === 0 &&
-      completedEvent.testDuration < 10) ||
-    (Config.mode === "ai" && completedEvent.testDuration < 10) ||
-    (Config.mode === "words" && mode2Number < 10 && mode2Number > 0) ||
+      completedEvent.testDuration < minLimit) ||
+    (Config.mode === "ai" && completedEvent.testDuration < minLimit) ||
+    (Config.mode === "words" && mode2Number < minLimit && mode2Number > 0) ||
     (Config.mode === "words" &&
       mode2Number === 0 &&
-      completedEvent.testDuration < 10) ||
+      completedEvent.testDuration < minLimit) ||
     (Config.mode === "custom" &&
       (CustomText.getLimitMode() === "word" ||
         CustomText.getLimitMode() === "section") &&
-      CustomText.getLimitValue() < 10) ||
+      CustomText.getLimitValue() < minLimit) ||
     (Config.mode === "custom" &&
       CustomText.getLimitMode() === "time" &&
-      CustomText.getLimitValue() < 10) ||
-    (Config.mode === "zen" && completedEvent.testDuration < 10)
+      CustomText.getLimitValue() < minLimit) ||
+    (Config.mode === "zen" && completedEvent.testDuration < minLimit)
   ) {
     showNoticeNotification("Test invalid - too short");
     setIsTestInvalid(true);

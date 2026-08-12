@@ -386,7 +386,7 @@ function fromCurrentSettings(tags: TagItem[]): ResultFilters {
   filters.difficulty[getConfig.difficulty] = true;
   filters.mode[getConfig.mode] = true;
   if (getConfig.mode === "time") {
-    if ([10, 15, 30, 60, 120].includes(getConfig.time)) {
+    if ([1, 10, 15, 30, 60, 120].includes(getConfig.time)) {
       const configTime = `${getConfig.time}` as keyof typeof filters.time;
       filters.time[configTime] = true;
     } else {

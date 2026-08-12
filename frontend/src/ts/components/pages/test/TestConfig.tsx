@@ -19,7 +19,7 @@ const modes = [
   { value: "ai", label: "AI" },
 ] as const;
 
-const times = [10, 15, 30, 60, 120] as const;
+const times = [1, 10, 15, 30, 60, 120] as const;
 const words = [10, 25, 50, 100] as const;
 
 const languages = [

@@ -129,7 +129,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   time: {
     subgroup: {
-      options: [10, 15, 30, 60, 120],
+      options: [1, 10, 15, 30, 60, 120],
       afterExec: () => {
         TestLogic.restart();
       },

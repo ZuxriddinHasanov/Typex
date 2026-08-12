@@ -231,7 +231,12 @@ export async function addResult(
   const completedEvent = req.body.result;
   completedEvent.uid = user.uid;
 
-  if (isTestTooShort(completedEvent)) {
+  if (
+    isTestTooShort(
+      completedEvent,
+      req.ctx.decodedToken?.uid?.startsWith("guest_") ?? true,
+    )
+  ) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
     throw new TypeUZError(status.code, status.message);
   }

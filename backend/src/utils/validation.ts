@@ -1,15 +1,20 @@
 import { CompletedEvent } from "@typeuz/schemas/results";
 
-export function isTestTooShort(result: CompletedEvent): boolean {
+export function isTestTooShort(
+  result: CompletedEvent,
+  isGuest = false,
+): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
+
+  const minLimit = isGuest ? 2 : 1;
 
   if (mode === "time") {
     const seconds = parseInt(mode2);
 
-    const setTimeTooShort = seconds > 0 && seconds < 10;
-    const infiniteTimeTooShort = seconds === 0 && testDuration < 10;
+    const setTimeTooShort = seconds > 0 && seconds < minLimit;
+    const infiniteTimeTooShort = seconds === 0 && testDuration < minLimit;
     const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 10
+      ? bailedOut && testDuration < minLimit
       : false;
     return setTimeTooShort || infiniteTimeTooShort || bailedOutTooShort;
   }
@@ -17,10 +22,10 @@ export function isTestTooShort(result: CompletedEvent): boolean {
   if (mode === "words") {
     const wordCount = parseInt(mode2);
 
-    const setWordTooShort = wordCount > 0 && wordCount < 10;
-    const infiniteWordTooShort = wordCount === 0 && testDuration < 10;
+    const setWordTooShort = wordCount > 0 && wordCount < minLimit;
+    const infiniteWordTooShort = wordCount === 0 && testDuration < minLimit;
     const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 10
+      ? bailedOut && testDuration < minLimit
       : false;
     return setWordTooShort || infiniteWordTooShort || bailedOutTooShort;
   }
@@ -30,17 +35,17 @@ export function isTestTooShort(result: CompletedEvent): boolean {
     const wordLimitTooShort =
       (customText.limit.mode === "word" ||
         customText.limit.mode === "section") &&
-      customText.limit.value < 10;
+      customText.limit.value < minLimit;
     const timeLimitTooShort =
-      customText.limit.mode === "time" && customText.limit.value < 10;
+      customText.limit.mode === "time" && customText.limit.value < minLimit;
     const bailedOutTooShort = bailedOut
-      ? bailedOut && testDuration < 10
+      ? bailedOut && testDuration < minLimit
       : false;
     return wordLimitTooShort || timeLimitTooShort || bailedOutTooShort;
   }
 
   if (mode === "zen") {
-    return testDuration < 10;
+    return testDuration < minLimit;
   }
 
   return false;
