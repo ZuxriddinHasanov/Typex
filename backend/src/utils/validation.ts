@@ -5,8 +5,7 @@ export function isTestTooShort(
   isGuest = false,
 ): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
-
-  const minLimit = isGuest ? 2 : 1;
+  const minLimit = isGuest ? 2 : 0.5;
 
   if (mode === "time") {
     const seconds = parseInt(mode2);

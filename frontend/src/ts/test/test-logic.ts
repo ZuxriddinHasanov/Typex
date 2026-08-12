@@ -929,7 +929,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const mode2Number = parseInt(completedEvent.mode2);
 
   const isGuest = !isAuthenticated();
-  const minLimit = isGuest ? 2 : 1;
+  const minLimit = isGuest ? 2 : 0.5;
 
   let tooShort = false;
   //fail checks
