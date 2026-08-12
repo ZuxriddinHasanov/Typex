@@ -147,7 +147,7 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
     inventory: parseJson(r["inventory"]) as UserInventory | undefined,
     banned: (r["banned"] as boolean) ?? false,
     lbOptOut: (r["lb_opt_out"] as boolean) ?? false,
-    verified: (r["verified"] as boolean) ?? false,
+    verified: true,
     needsToChangeName: (r["needs_to_change_name"] as boolean) ?? false,
     quoteMod: parseJson(r["quote_mod"]) as User["quoteMod"],
     resultFilterPresets,
@@ -192,8 +192,8 @@ export async function addUser(
     await db.query(
       `INSERT INTO users (
         uid, name, first_name, last_name, email, added_at,
-        gender, age, avatar, personal_bests, test_activity, last_login_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12)`,
+        gender, age, avatar, personal_bests, test_activity, last_login_at, verified
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11::jsonb, $12, true)`,
       [
         uid,
         name,

@@ -272,6 +272,7 @@ export async function signIn(
   const { loginWithEmail } = await import("./utils/custom-auth-api");
   const res = await loginWithEmail(email, password, rememberMe);
   if (!res.success) return { success: false, message: res.message };
+  setUserVerified(true);
   await onAuthStateChanged(true, { uid: res.uid } as unknown as User);
   return { success: true };
 }
@@ -690,6 +691,7 @@ export async function signUp(
     showErrorNotification(res.message);
     return { success: false, message: res.message };
   }
+  setUserVerified(true);
   await onAuthStateChanged(true, { uid: res.uid } as unknown as User);
   showSuccessNotification("Account created");
   return { success: true };
@@ -709,6 +711,13 @@ export async function reauthenticate(
     return {
       status: "error",
       message: "Authentication is not initialized",
+    };
+  }
+  if (Auth === undefined) {
+    return {
+      status: "success",
+      message: "Reauthenticated (custom auth)",
+      user: { uid: getUserId() } as unknown as User,
     };
   }
 

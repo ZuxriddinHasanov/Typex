@@ -3,9 +3,7 @@ import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment, omit } from "../utils/misc";
-import {
-  getCachedConfiguration,
-} from "../init/configuration";
+import { getCachedConfiguration } from "../init/configuration";
 
 import { addLog } from "./logs";
 import { getFriendsUids } from "./connections";
@@ -64,7 +62,9 @@ export async function get(
       );
 
       if (!premiumFeaturesEnabled) {
-        return rows.map((it) => omit(it, ["is_premium"])) as DBLeaderboardEntry[];
+        return rows.map((it) =>
+          omit(it, ["is_premium"]),
+        ) as DBLeaderboardEntry[];
       }
       return rows;
     } else {
@@ -77,7 +77,9 @@ export async function get(
       );
 
       if (!premiumFeaturesEnabled) {
-        return rows.map((it) => omit(it, ["is_premium"])) as DBLeaderboardEntry[];
+        return rows.map((it) =>
+          omit(it, ["is_premium"]),
+        ) as DBLeaderboardEntry[];
       }
       return rows;
     }
@@ -197,15 +199,15 @@ export async function update(
       $2 AS mode,
       $3 AS mode2,
       $4 AS numbers,
-      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm' AS wpm,
-      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'acc' AS acc,
-      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'raw' AS raw,
-      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'consistency' AS consistency,
-      (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'timestamp' AS timestamp,
+      pb->>'wpm' AS wpm,
+      pb->>'acc' AS acc,
+      pb->>'raw' AS raw,
+      pb->>'consistency' AS consistency,
+      pb->>'timestamp' AS timestamp,
       ROW_NUMBER() OVER (
-        ORDER BY (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm' DESC NULLS LAST,
-                 (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'acc' DESC NULLS LAST,
-                 (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'timestamp' DESC NULLS LAST
+        ORDER BY (pb->>'wpm')::numeric DESC NULLS LAST,
+                 (pb->>'acc')::numeric DESC NULLS LAST,
+                 (pb->>'timestamp')::numeric DESC NULLS LAST
       ) AS rank,
       u.name,
       u.first_name,
@@ -221,16 +223,25 @@ export async function update(
         WHEN (u.premium->>'expirationTimestamp')::bigint > EXTRACT(EPOCH FROM NOW())::bigint * 1000 THEN true
         ELSE false
       END AS is_premium
-    FROM users u
+    FROM users u,
+         jsonb_array_elements(u.personal_bests#>'{${mode},${mode2}}') AS pb
     WHERE
       u.personal_bests#>'{${mode},${mode2}}' IS NOT NULL
-      AND (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm' IS NOT NULL
-      AND (u.personal_bests#>'{${mode},${mode2}}'->>0)::jsonb->>'wpm'::text::numeric > 0
+      AND pb->>'language' = $1
+      AND (pb->>'numbers')::boolean = $4
+      AND pb->>'wpm' IS NOT NULL
+      AND (pb->>'wpm')::numeric > 0
       AND (u.banned IS NOT TRUE OR u.banned IS NULL)
       AND (u.lb_opt_out IS NOT TRUE OR u.lb_opt_out IS NULL)
       AND (u.needs_to_change_name IS NOT TRUE OR u.needs_to_change_name IS NULL)
-      AND u.time_typing > $5`,
-    [language, mode, mode2, numbers ?? false, isDevEnvironment() ? 0 : minTimeTyping],
+      AND u.time_typing >= $5`,
+    [
+      language,
+      mode,
+      mode2,
+      numbers ?? false,
+      isDevEnvironment() ? 0 : minTimeTyping,
+    ],
   );
   const end1 = performance.now();
   const timeToRunAggregate = (end1 - start1) / 1000;
@@ -261,7 +272,14 @@ export async function update(
       `SELECT COUNT(*)::int AS count FROM leaderboard_entries
        WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
        AND wpm >= $5 AND wpm < $6`,
-      [language, mode, mode2, numbers ?? false, boundaries[i], boundaries[i + 1]],
+      [
+        language,
+        mode,
+        mode2,
+        numbers ?? false,
+        boundaries[i],
+        boundaries[i + 1],
+      ],
     );
     if (result && result.count > 0) {
       buckets[String(boundaries[i])] = result.count;
@@ -270,9 +288,9 @@ export async function update(
   const end3 = performance.now();
   const timeToSaveHistogram = (end3 - start3) / 1000;
 
-  const existingHistogram = await db.queryOne<{ data: Record<string, unknown> }>(
-    "SELECT data FROM public_stats WHERE _id = 'speedStatsHistogram'",
-  );
+  const existingHistogram = await db.queryOne<{
+    data: Record<string, unknown>;
+  }>("SELECT data FROM public_stats WHERE _id = 'speedStatsHistogram'");
   const histogramData = existingHistogram?.data ?? {};
   histogramData[statsKey] = buckets;
   await db.query(

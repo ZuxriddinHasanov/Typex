@@ -9,11 +9,12 @@ const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function getTop10(
   leaderboardTime: string,
+  language: string,
 ): Promise<LeaderboardsDAL.DBLeaderboardEntry[]> {
   return (await LeaderboardsDAL.get(
     "time",
     leaderboardTime,
-    "english",
+    language,
     0,
     10,
   )) as LeaderboardsDAL.DBLeaderboardEntry[]; //can do that because gettop10 will not be called during an update
@@ -21,8 +22,9 @@ async function getTop10(
 
 async function updateLeaderboardAndNotifyChanges(
   leaderboardTime: string,
+  language: string,
 ): Promise<void> {
-  const top10BeforeUpdate = await getTop10(leaderboardTime);
+  const top10BeforeUpdate = await getTop10(leaderboardTime, language);
 
   const previousRecordsMap = Object.fromEntries(
     top10BeforeUpdate.map((record) => {
@@ -30,9 +32,9 @@ async function updateLeaderboardAndNotifyChanges(
     }),
   );
 
-  await LeaderboardsDAL.update("time", leaderboardTime, "english");
+  await LeaderboardsDAL.update("time", leaderboardTime, language);
 
-  const top10AfterUpdate = await getTop10(leaderboardTime);
+  const top10AfterUpdate = await getTop10(leaderboardTime, language);
 
   const newRecords = top10AfterUpdate.filter((record) => {
     const userId = record.uid;
@@ -50,7 +52,7 @@ async function updateLeaderboardAndNotifyChanges(
   });
 
   if (newRecords.length > 0) {
-    const leaderboardId = `time ${leaderboardTime} english`;
+    const leaderboardId = `time ${leaderboardTime} ${language}`;
 
     const mapped = newRecords.map((r) => ({
       ...r,
@@ -66,12 +68,14 @@ async function updateLeaderboards(): Promise<void> {
     return;
   }
 
-  await updateLeaderboardAndNotifyChanges("120");
-  await updateLeaderboardAndNotifyChanges("60");
-  await updateLeaderboardAndNotifyChanges("30");
-  await updateLeaderboardAndNotifyChanges("15");
-  await updateLeaderboardAndNotifyChanges("10");
-  await updateLeaderboardAndNotifyChanges("1");
+  for (const language of ["uzbek", "english"]) {
+    await updateLeaderboardAndNotifyChanges("120", language);
+    await updateLeaderboardAndNotifyChanges("60", language);
+    await updateLeaderboardAndNotifyChanges("30", language);
+    await updateLeaderboardAndNotifyChanges("15", language);
+    await updateLeaderboardAndNotifyChanges("10", language);
+    await updateLeaderboardAndNotifyChanges("1", language);
+  }
 }
 
 export default new CronJob(CRON_SCHEDULE, updateLeaderboards);

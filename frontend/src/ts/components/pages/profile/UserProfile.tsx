@@ -27,48 +27,36 @@ function StatsOverview(props: { profile: UserProfileType }): JSXElement {
 
   return (
     <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-      <div class="flex flex-col items-center gap-2 rounded-2xl border border-sub/5 bg-sub-alt/40 p-6 shadow-sm transition-colors hover:bg-sub-alt/60">
-        <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-main/10 text-main">
-          <Fa icon="fa-keyboard" class="text-xl" />
-        </div>
-        <span class="text-3xl font-black tracking-tight text-text">
-          {totalTests()}
-        </span>
-        <span class="text-xs font-semibold tracking-wider text-sub uppercase">
+      <div class="flex flex-col items-start gap-1 rounded-md border-2 border-sub-alt/50 bg-bg p-6 shadow-sm transition-colors hover:border-sub-alt">
+        <span class="text-xs font-bold tracking-wider text-sub uppercase">
           Testlar
         </span>
-      </div>
-      <div class="flex flex-col items-center gap-2 rounded-2xl border border-sub/5 bg-sub-alt/40 p-6 shadow-sm transition-colors hover:bg-sub-alt/60">
-        <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-main/10 text-main">
-          <Fa icon="fa-clock" class="text-xl" />
-        </div>
-        <span class="text-3xl font-black tracking-tight text-text">
-          {totalTimeHours()}h
+        <span class="mt-1 text-3xl font-black tracking-tight text-text">
+          {totalTests()}
         </span>
-        <span class="text-xs font-semibold tracking-wider text-sub uppercase">
+      </div>
+      <div class="flex flex-col items-start gap-1 rounded-md border-2 border-sub-alt/50 bg-bg p-6 shadow-sm transition-colors hover:border-sub-alt">
+        <span class="text-xs font-bold tracking-wider text-sub uppercase">
           Vaqt
         </span>
-      </div>
-      <div class="flex flex-col items-center gap-2 rounded-2xl border border-sub/5 bg-sub-alt/40 p-6 shadow-sm transition-colors hover:bg-sub-alt/60">
-        <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-main/10 text-main">
-          <Fa icon="fa-star" class="text-xl" />
-        </div>
-        <span class="text-3xl font-black tracking-tight text-text">
-          {props.profile.xp ?? 0}
+        <span class="mt-1 text-3xl font-black tracking-tight text-text">
+          {totalTimeHours()}h
         </span>
-        <span class="text-xs font-semibold tracking-wider text-sub uppercase">
+      </div>
+      <div class="flex flex-col items-start gap-1 rounded-md border-2 border-sub-alt/50 bg-bg p-6 shadow-sm transition-colors hover:border-sub-alt">
+        <span class="text-xs font-bold tracking-wider text-sub uppercase">
           XP
         </span>
-      </div>
-      <div class="flex flex-col items-center gap-2 rounded-2xl border border-sub/5 bg-sub-alt/40 p-6 shadow-sm transition-colors hover:bg-sub-alt/60">
-        <div class="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-main/10 text-main">
-          <Fa icon="fa-fire" class="text-xl" />
-        </div>
-        <span class="text-3xl font-black tracking-tight text-text">
-          {props.profile.streak ?? 0}
+        <span class="mt-1 text-3xl font-black tracking-tight text-text">
+          {props.profile.xp ?? 0}
         </span>
-        <span class="text-xs font-semibold tracking-wider text-sub uppercase">
+      </div>
+      <div class="flex flex-col items-start gap-1 rounded-md border-2 border-sub-alt/50 bg-bg p-6 shadow-sm transition-colors hover:border-sub-alt">
+        <span class="text-xs font-bold tracking-wider text-sub uppercase">
           Streak
+        </span>
+        <span class="mt-1 text-3xl font-black tracking-tight text-text">
+          {props.profile.streak ?? 0}
         </span>
       </div>
     </div>
@@ -90,9 +78,7 @@ function WeeklyAnalysis(): JSXElement {
   );
 
   return (
-    <div class="relative overflow-hidden rounded-2xl border border-sub/10 bg-gradient-to-br from-sub-alt/80 to-sub-alt/30 p-8 shadow-sm">
-      <div class="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-main/5 blur-3xl"></div>
-
+    <div class="relative overflow-hidden rounded-md border-2 border-sub-alt/50 bg-bg p-8 shadow-sm">
       <Show when={analysis.error !== undefined}>
         <div class="bg-red-500/10 border-red-500/20 mb-4 rounded-xl border p-4 text-center">
           <span class="text-red-400 text-sm font-medium">
@@ -121,44 +107,41 @@ function WeeklyAnalysis(): JSXElement {
       <Show when={analysis() !== undefined && analysis() !== null}>
         <div class="relative z-10 flex flex-col gap-6">
           <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-main/20 text-main shadow-inner">
-              <Fa icon="fa-brain" class="text-lg" />
-            </div>
-            <span class="text-xl font-extrabold tracking-tight text-text">
-              Haftalik AI tahlil
+            <span class="text-xl font-bold tracking-tight text-text">
+              Haftalik AI tahlili
             </span>
           </div>
 
           <div class="grid grid-cols-2 gap-6 sm:grid-cols-4">
-            <div class="flex flex-col gap-1 border-l-2 border-main/30 pl-3">
-              <span class="text-xs font-bold tracking-wider text-sub uppercase">
+            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
+              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
                 O&apos;rtacha WPM
               </span>
-              <div class="text-3xl font-black text-text">
+              <div class="text-2xl font-black text-text">
                 {(analysis()?.avgWpm ?? 0).toFixed(1)}
               </div>
             </div>
-            <div class="flex flex-col gap-1 border-l-2 border-main/30 pl-3">
-              <span class="text-xs font-bold tracking-wider text-sub uppercase">
+            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
+              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
                 O&apos;rtacha aniqlik
               </span>
-              <div class="text-3xl font-black text-text">
+              <div class="text-2xl font-black text-text">
                 {(analysis()?.avgAccuracy ?? 0).toFixed(1)}%
               </div>
             </div>
-            <div class="flex flex-col gap-1 border-l-2 border-main/30 pl-3">
-              <span class="text-xs font-bold tracking-wider text-sub uppercase">
+            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
+              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
                 Jami testlar
               </span>
-              <div class="text-3xl font-black text-text">
+              <div class="text-2xl font-black text-text">
                 {analysis()?.totalTests}
               </div>
             </div>
-            <div class="flex flex-col gap-1 border-l-2 border-main/30 pl-3">
-              <span class="text-xs font-bold tracking-wider text-sub uppercase">
+            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
+              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
                 Eng yaxshi WPM
               </span>
-              <div class="text-3xl font-black text-main">
+              <div class="text-2xl font-black text-text">
                 {analysis()?.bestWpm}
               </div>
             </div>
@@ -189,7 +172,7 @@ function WeeklyAnalysis(): JSXElement {
           </div>
 
           <Show when={(analysis()?.dailyBreakdown.length ?? 0) > 0}>
-            <div class="mt-4 flex h-32 items-end justify-between gap-2 rounded-xl border border-sub/5 bg-bg/30 p-4">
+            <div class="mt-4 flex h-32 items-end justify-between gap-2 rounded-md border-2 border-sub-alt/50 bg-bg p-4">
               <For each={analysis()?.dailyBreakdown ?? []}>
                 {(day) => (
                   <div class="group relative flex h-full flex-1 flex-col items-center justify-end gap-2">
@@ -197,7 +180,7 @@ function WeeklyAnalysis(): JSXElement {
                       {day.wpm} wpm
                     </div>
                     <div
-                      class="w-full max-w-[40px] rounded-t-sm bg-main/80 transition-all group-hover:bg-main"
+                      class="w-full max-w-[40px] rounded-t-sm bg-sub-alt transition-all group-hover:bg-main"
                       style={{
                         height: `${Math.max(
                           4,
@@ -227,10 +210,9 @@ function WeeklyAnalysis(): JSXElement {
               analysis()?.recommendation !== ""
             }
           >
-            <div class="mt-2 flex items-start gap-3 rounded-xl border border-main/10 bg-main/5 p-4">
-              <Fa icon="fa-lightbulb" class="mt-1 text-main" />
-              <p class="text-sm leading-relaxed text-text">
-                <span class="font-bold text-main">Tavsiya: </span>
+            <div class="mt-2 flex items-start gap-3 rounded-md border-l-4 border-main bg-main/5 p-4">
+              <p class="text-sm leading-relaxed font-medium text-text">
+                <span class="mr-2 font-bold text-main">Tavsiya:</span>
                 {analysis()?.recommendation}
               </p>
             </div>
