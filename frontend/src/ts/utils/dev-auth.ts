@@ -1,7 +1,5 @@
 const DEV_AUTH_KEY = "devAuth";
 
-import { envConfig } from "virtual:env-config";
-
 export type DevAuth = { uid: string; email: string; name: string };
 
 export function getDevAuth(): DevAuth | null {
@@ -23,7 +21,7 @@ export function clearDevAuth(): void {
 }
 
 export async function devLogin(username: string): Promise<DevAuth> {
-  const backendUrl = envConfig.backendUrl;
+  const backendUrl = (await import("virtual:env-config")).envConfig.backendUrl;
   const res = await fetch(`${backendUrl}/dev/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
