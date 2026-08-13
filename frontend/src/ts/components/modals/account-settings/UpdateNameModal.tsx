@@ -8,6 +8,7 @@ import {
   reauthenticate,
 } from "../../../auth";
 import { setSnapshot, getSnapshot } from "../../../db";
+import { invalidateMyProfile } from "../../../queries/profile";
 import { isAuthenticated } from "../../../states/core";
 import { showSimpleModal } from "../../../states/simple-modal";
 import { remoteValidation } from "../../../utils/remote-validation";
@@ -71,6 +72,7 @@ export function showUpdateNameModal(): void {
       snapshot.name = newName;
 
       setSnapshot(snapshot);
+      void invalidateMyProfile();
 
       return {
         status: "success",

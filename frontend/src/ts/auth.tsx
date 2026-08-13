@@ -22,6 +22,7 @@ import {
   User as UserType,
 } from "firebase/auth";
 import { createMemo } from "solid-js";
+import { envConfig } from "virtual:env-config";
 import { z, ZodString } from "zod";
 
 import Ape from "./ape";
@@ -311,18 +312,18 @@ export async function signInWithProvider(
 }
 
 async function signInWithGooglePopup(): Promise<AuthResult> {
-  const envConfig = (await import("virtual:env-config")).envConfig;
-  const GOOGLE_CLIENT_ID = envConfig.googleClientId;
-
-  if (!GOOGLE_CLIENT_ID) {
-    return {
-      success: false,
-      message:
-        "Google login ishlab chiqish rejimida mavjud emas. Email orqali kiring yoki frontend/ .env faylida VITE_GOOGLE_CLIENT_ID sozlang.",
-    };
-  }
-
   return new Promise((resolve) => {
+    const GOOGLE_CLIENT_ID = envConfig.googleClientId;
+
+    if (!GOOGLE_CLIENT_ID) {
+      resolve({
+        success: false,
+        message:
+          "Google login ishlab chiqish rejimida mavjud emas. Email orqali kiring yoki frontend/ .env faylida VITE_GOOGLE_CLIENT_ID sozlang.",
+      });
+      return;
+    }
+
     const loadGoogle = () => {
       const win = window as unknown as {
         google?: {
@@ -358,8 +359,7 @@ async function signInWithGooglePopup(): Promise<AuthResult> {
             });
             return;
           }
-          const backendUrl = (await import("virtual:env-config")).envConfig
-            .backendUrl;
+          const backendUrl = envConfig.backendUrl;
           try {
             const res = await fetch(`${backendUrl}/auth/google`, {
               method: "POST",
@@ -404,7 +404,14 @@ async function signInWithGooglePopup(): Promise<AuthResult> {
           }
         },
       });
-      tokenClient?.requestAccessToken();
+      if (tokenClient === undefined) {
+        resolve({
+          success: false,
+          message: "Google login yuklanmadi. Iltimos Adblockerni o'chiring.",
+        });
+        return;
+      }
+      tokenClient.requestAccessToken();
     };
 
     if (
@@ -427,7 +434,7 @@ async function signInWithGooglePopup(): Promise<AuthResult> {
 }
 
 async function signInWithGitHubPopup(): Promise<AuthResult> {
-  const backendUrl = (await import("virtual:env-config")).envConfig.backendUrl;
+  const backendUrl = envConfig.backendUrl;
   const popup = window.open(
     `${backendUrl}/auth/github/login`,
     "github-auth",
