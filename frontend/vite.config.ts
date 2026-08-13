@@ -119,21 +119,15 @@ function getPlugins({
       injectRegister: null,
       registerType: "autoUpdate",
       manifest: {
-        short_name: "TypeUZ",
-        name: "TypeUZ",
+        short_name: "TypeX",
+        name: "TypeX.uz",
         start_url: "/",
         icons: [
           {
-            src: "/images/icons/maskable_icon_x512.png",
+            src: "/images/typex-logo.jpg",
             sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-          {
-            src: "/images/icons/general_icon_x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any",
+            type: "image/jpeg",
+            purpose: "maskable any",
           },
         ],
         background_color: "#ffffff",
