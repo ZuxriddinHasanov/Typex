@@ -1,8 +1,7 @@
 import TypeUZError from "../utils/error";
 import * as db from "../init/db";
-import { getUser, getTags } from "./user";
+import { getTags } from "./user";
 import { DBResult, replaceLegacyValues } from "../utils/result";
-import { tryCatch } from "@typeuz/util/trycatch";
 
 type ResultRow = {
   _id: string;
@@ -80,60 +79,66 @@ export async function addResult(
   uid: string,
   result: DBResult,
 ): Promise<{ insertedId: string }> {
-  const { data: user } = await tryCatch(getUser(uid, "add result"));
-  if (!user) throw new TypeUZError(404, "User not found", "add result");
+  try {
+    const r = await db.queryOne<{ _id: string }>(
+      `INSERT INTO results (
+        uid, wpm, raw_wpm, char_stats, acc, mode, mode2, quote_length,
+        timestamp, test_duration, consistency, key_consistency, chart_data,
+        restart_count, incomplete_test_seconds, afk_duration, tags,
+        bailed_out, blind_mode, lazy_mode, funbox, language, difficulty,
+        numbers, punctuation, name, is_pb, key_spacing_stats, key_duration_stats
+      ) VALUES (
+        $1, $2, $3, $4::jsonb, $5, $6, $7, $8,
+        $9, $10, $11, $12, $13::jsonb,
+        $14, $15, $16, $17::jsonb,
+        $18, $19, $20, $21::jsonb, $22, $23,
+        $24, $25, $26, $27, $28::jsonb, $29::jsonb
+      ) RETURNING _id`,
+      [
+        result.uid ?? uid,
+        result.wpm,
+        result.rawWpm,
+        JSON.stringify(result.charStats),
+        result.acc,
+        result.mode,
+        result.mode2,
+        result.quoteLength ?? null,
+        result.timestamp,
+        result.testDuration,
+        result.consistency,
+        result.keyConsistency ?? null,
+        JSON.stringify(result.chartData),
+        result.restartCount ?? null,
+        result.incompleteTestSeconds ?? null,
+        result.afkDuration ?? null,
+        JSON.stringify(result.tags ?? []),
+        result.bailedOut ?? null,
+        result.blindMode ?? null,
+        result.lazyMode ?? null,
+        JSON.stringify(result.funbox ?? []),
+        result.language ?? null,
+        result.difficulty ?? null,
+        result.numbers ?? null,
+        result.punctuation ?? null,
+        result.name ?? "",
+        result.isPb ?? null,
+        JSON.stringify(result.keySpacingStats ?? null),
+        JSON.stringify(result.keyDurationStats ?? null),
+      ],
+    );
 
-  const r = await db.queryOne<{ _id: string }>(
-    `INSERT INTO results (
-      uid, wpm, raw_wpm, char_stats, acc, mode, mode2, quote_length,
-      timestamp, test_duration, consistency, key_consistency, chart_data,
-      restart_count, incomplete_test_seconds, afk_duration, tags,
-      bailed_out, blind_mode, lazy_mode, funbox, language, difficulty,
-      numbers, punctuation, name, is_pb, key_spacing_stats, key_duration_stats
-    ) VALUES (
-      $1, $2, $3, $4::jsonb, $5, $6, $7, $8,
-      $9, $10, $11, $12, $13::jsonb,
-      $14, $15, $16, $17::jsonb,
-      $18, $19, $20, $21::jsonb, $22, $23,
-      $24, $25, $26, $27, $28::jsonb, $29::jsonb
-    ) RETURNING _id`,
-    [
-      result.uid ?? uid,
-      result.wpm,
-      result.rawWpm,
-      JSON.stringify(result.charStats),
-      result.acc,
-      result.mode,
-      result.mode2,
-      result.quoteLength ?? null,
-      result.timestamp,
-      result.testDuration,
-      result.consistency,
-      result.keyConsistency ?? null,
-      JSON.stringify(result.chartData),
-      result.restartCount ?? null,
-      result.incompleteTestSeconds ?? null,
-      result.afkDuration ?? null,
-      JSON.stringify(result.tags ?? []),
-      result.bailedOut ?? null,
-      result.blindMode ?? null,
-      result.lazyMode ?? null,
-      JSON.stringify(result.funbox ?? []),
-      result.language ?? null,
-      result.difficulty ?? null,
-      result.numbers ?? null,
-      result.punctuation ?? null,
-      result.name ?? "",
-      result.isPb ?? null,
-      JSON.stringify(result.keySpacingStats ?? null),
-      JSON.stringify(result.keyDurationStats ?? null),
-    ],
-  );
-
-  if (r === null) {
-    throw new TypeUZError(500, "Failed to save result", "add result");
+    if (r === null) {
+      throw new TypeUZError(500, "Failed to save result", "add result");
+    }
+    return { insertedId: r._id };
+  } catch (error) {
+    if (error instanceof TypeUZError) throw error;
+    throw new TypeUZError(
+      500,
+      `Failed to save result: ${(error as Error).message ?? "Unknown error"}`,
+      "add result",
+    );
   }
-  return { insertedId: r._id };
 }
 
 export async function deleteAll(uid: string): Promise<void> {
