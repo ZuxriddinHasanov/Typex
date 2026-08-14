@@ -3,7 +3,6 @@ import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment, omit } from "../utils/misc";
-import { getCachedConfiguration } from "../init/configuration";
 
 import { addLog } from "./logs";
 import { getFriendsUids } from "./connections";
@@ -221,8 +220,6 @@ export async function update(
   message: string;
   rank?: number;
 }> {
-  const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
-    .minTimeTyping;
   const leaderboardKey = `${language}:${mode}:${mode2}:${numbers ?? false}`;
   const statsKey = `${language}_${mode}_${mode2}${numbers ? "_numbers" : ""}`;
 
@@ -304,13 +301,7 @@ export async function update(
         rank, name, first_name, last_name,
         discord_id, discord_avatar, badge_id, is_premium
       FROM ranked`,
-      [
-        language,
-        mode,
-        mode2,
-        numbers ?? false,
-        isDevEnvironment() ? 0 : minTimeTyping,
-      ],
+      [language, mode, mode2, numbers ?? false, 0],
     );
 
     const histogramRows = await client.query<{

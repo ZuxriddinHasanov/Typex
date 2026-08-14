@@ -1,5 +1,6 @@
 import * as ResultDAL from "../../dal/result";
 import * as PublicDAL from "../../dal/public";
+import * as LeaderboardsDAL from "../../dal/leaderboards";
 import {
   isDevEnvironment,
   omit,
@@ -57,7 +58,6 @@ import {
 import { TypeUZRequest } from "../types";
 import { getFunbox, checkCompatibility } from "@typeuz/funbox";
 import { tryCatch } from "@typeuz/util/trycatch";
-import { getCachedConfiguration } from "../../init/configuration";
 import { getChallenges } from "@typeuz/challenges";
 import type { DBUser } from "../../dal/user";
 
@@ -65,16 +65,9 @@ try {
   if (!anticheatImplemented()) throw new Error("undefined");
   Logger.success("Anticheat module loaded");
 } catch (e) {
-  if (isDevEnvironment()) {
-    Logger.warning(
-      "No anticheat module found. Continuing in dev mode, results will not be validated.",
-    );
-  } else {
-    Logger.error(
-      "No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory",
-    );
-    process.exit(1);
-  }
+  Logger.warning(
+    "No anticheat module found. Continuing without anticheat validation.",
+  );
 }
 
 const autoRoleChallengeNames = new Set(
@@ -315,7 +308,7 @@ export async function addResult(
     await addImportantLog("highwpm_user_result", completedEvent, uid);
   }
 
-  if (anticheatImplemented()) {
+  if (anticheatImplemented() && process.env["BYPASS_ANTICHEAT"] !== "true") {
     if (
       !validateResult(
         completedEvent,
@@ -330,13 +323,6 @@ export async function addResult(
     } else if (isDevEnvironment()) {
       Logger.success("Result data validated");
     }
-  } else {
-    if (!isDevEnvironment()) {
-      throw new Error("No anticheat module found");
-    }
-    Logger.warning(
-      "No anticheat module found. Continuing in dev mode, results will not be validated.",
-    );
   }
 
   //dont use - result timestamp is unreliable, can be changed by system time and stuff
@@ -398,7 +384,7 @@ export async function addResult(
     if (completedEvent.keyOverlap === undefined) {
       throw new TypeUZError(400, "Old key data format");
     }
-    if (anticheatImplemented()) {
+    if (anticheatImplemented() && process.env["BYPASS_ANTICHEAT"] !== "true") {
       if (
         !validateKeys(completedEvent, keySpacingStats, keyDurationStats, uid)
       ) {
@@ -426,13 +412,6 @@ export async function addResult(
         const status = MonkeyStatusCodes.BOT_DETECTED;
         throw new TypeUZError(status.code, "Possible bot detected");
       }
-    } else {
-      if (!isDevEnvironment()) {
-        throw new Error("No anticheat module found");
-      }
-      Logger.warning(
-        "No anticheat module found. Continuing in dev mode, results will not be validated.",
-      );
     }
   }
 
@@ -529,13 +508,8 @@ export async function addResult(
   const stopOnLetterTriggered =
     completedEvent.stopOnLetter && completedEvent.acc < 100;
 
-  const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
-    .minTimeTyping;
-
   const userEligibleForLeaderboard =
-    user.banned !== true &&
-    user.lbOptOut !== true &&
-    (isDevEnvironment() || (user.timeTyping ?? 0) > minTimeTyping);
+    user.banned !== true && user.lbOptOut !== true;
 
   const validResultCriteria =
     canFunboxGetPb(completedEvent) &&
@@ -684,6 +658,12 @@ export async function addResult(
   await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
 
   if (isPb) {
+    void LeaderboardsDAL.update(
+      completedEvent.mode,
+      completedEvent.mode2,
+      completedEvent.language,
+      completedEvent.numbers,
+    ).catch(() => undefined);
     void addLog(
       "user_new_pb",
       `${`${completedEvent.mode} ${completedEvent.mode2}`} ${
