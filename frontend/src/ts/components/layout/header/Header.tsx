@@ -8,18 +8,16 @@ import { Nav } from "./Nav";
 
 export function Header(): JSXElement {
   return (
-    <Show
-      when={!getActivePage().startsWith("admin")}
-    >
+    <Show when={!getActivePage().startsWith("admin")}>
       <div
         class={cn(
-          "fixed top-6 left-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl -translate-x-1/2 rounded-2xl border border-sub/10 bg-bg/80 shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-all duration-500",
+          "sticky top-0 z-50 w-full border-b border-sub/10 bg-bg/90 backdrop-blur-xl transition-all duration-300",
           getIsTestActive() || getIsScreenshotting()
-            ? "pointer-events-none -translate-y-[150%] opacity-0"
+            ? "pointer-events-none -translate-y-full opacity-0"
             : "opacity-100",
         )}
       >
-        <header class="mx-auto flex w-full items-center justify-between px-6 py-4">
+        <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-3.5">
           <Logo />
           <Nav />
         </header>
