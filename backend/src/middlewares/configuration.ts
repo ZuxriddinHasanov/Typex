@@ -27,6 +27,9 @@ export function verifyRequiredConfiguration<
     }
     try {
       for (const requireConfiguration of requiredConfigurations) {
+        if (requireConfiguration.path === "results.savingEnabled") {
+          continue; // Always allow result saving
+        }
         const value = getValue(
           req.ctx.configuration,
           requireConfiguration.path,
