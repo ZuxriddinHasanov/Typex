@@ -717,6 +717,19 @@ export async function removeResultFilterPreset(
   );
 }
 
+export async function setVerified(
+  uid: string,
+  verified: boolean,
+): Promise<void> {
+  if (isDevEnvironment()) {
+    return;
+  }
+  await db.query("UPDATE users SET verified = $1 WHERE uid = $2", [
+    verified,
+    uid,
+  ]);
+}
+
 export async function addTag(uid: string, name: string): Promise<DBUserTag> {
   const user = await db.queryOne<{ tags: unknown }>(
     "SELECT tags FROM users WHERE uid = $1",

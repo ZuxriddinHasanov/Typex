@@ -162,13 +162,30 @@ export async function sendVerificationEmail(
   req: TypeUZRequest,
 ): Promise<TypeUZResponse> {
   const { email, uid } = req.ctx.decodedToken;
+
+  if (
+    req.ctx.decodedToken.customAuth === true ||
+    process.env["BYPASS_FIREBASE"] === "true"
+  ) {
+    const userInfo = await UserDAL.getPartialUser(
+      uid,
+      "request verification email",
+      ["uid", "name", "email", "verified"],
+    );
+    if (userInfo.verified === true) {
+      throw new TypeUZError(400, "Email already verified");
+    }
+    await UserDAL.setVerified(uid, true).catch(() => undefined);
+    return new TypeUZResponse("Email verified successfully", null);
+  }
+
   const isVerified = (
     await FirebaseAdmin()
       .auth()
       .getUser(uid)
       .catch((e: unknown) => {
         throw new TypeUZError(
-          500, // this should never happen, but it does. it mightve been caused by auth token cache, will see if disabling cache fixes it
+          500,
           "Auth user not found, even though the token got decoded",
           JSON.stringify({
             uid,
@@ -596,13 +613,25 @@ function getRelevantUserInfo(user: UserDAL.DBUser): RelevantUserInfo {
 }
 
 export async function getUser(req: TypeUZRequest): Promise<GetUserResponse> {
-  const { uid } = req.ctx.decodedToken;
+  const { uid, email } = req.ctx.decodedToken;
 
-  const { data: userInfo, error } = await tryCatch(
+  let { data: userInfo, error } = await tryCatch(
     UserDAL.getUser(uid, "get user"),
   );
 
-  if (error) {
+  if (error && error instanceof TypeUZError && error.status === 404) {
+    if (email !== undefined && email !== "") {
+      const username = email.split("@")[0] ?? `user_${uid.slice(0, 8)}`;
+      await UserDAL.addUser(username, email, uid).catch(() => undefined);
+      const refetched = await tryCatch(UserDAL.getUser(uid, "get user"));
+      if (refetched.data) {
+        userInfo = refetched.data;
+        error = null;
+      }
+    }
+  }
+
+  if (error || !userInfo) {
     if (error instanceof TypeUZError && error.status === 404) {
       if (req.ctx.decodedToken.customAuth === true) {
         throw new TypeUZError(
@@ -612,9 +641,6 @@ export async function getUser(req: TypeUZRequest): Promise<GetUserResponse> {
           uid,
         );
       }
-      //if the user is in the auth system but not in the db, its possible that the user was created by bypassing captcha
-      //since there is no data in the database anyway, we can just delete the user from the auth system
-      //and ask them to sign up again
       try {
         await AuthUtil.deleteUser(uid);
         throw new TypeUZError(
@@ -639,7 +665,7 @@ export async function getUser(req: TypeUZRequest): Promise<GetUserResponse> {
         }
       }
     } else {
-      throw error;
+      throw error ?? new TypeUZError(404, "User not found", "get user", uid);
     }
   }
 

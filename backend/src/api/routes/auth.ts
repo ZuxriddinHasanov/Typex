@@ -171,18 +171,16 @@ router.post(
       const uid = crypto.randomUUID();
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      if (!isDevEnvironment()) {
-        await UserDAL.addUser(
-          name,
-          normalizedEmail,
-          uid,
-          gender,
-          age,
-          avatar,
-          firstName,
-          lastName,
-        );
-      }
+      await UserDAL.addUser(
+        name,
+        normalizedEmail,
+        uid,
+        gender,
+        age,
+        avatar,
+        firstName,
+        lastName,
+      );
       await saveUserMeta({ uid, email: normalizedEmail, name });
       try {
         await savePasswordDocument({
@@ -459,9 +457,7 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
         }
       }
 
-      if (!isDevEnvironment()) {
-        await UserDAL.addUser(username, email, uid);
-      }
+      await UserDAL.addUser(username, email, uid);
       await saveUserMeta({ uid, email, name: username });
       user = await findUserByEmail(email);
     }
@@ -475,11 +471,9 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
 
     const token = await signUserToken(user);
 
-    if (!isDevEnvironment()) {
-      await UserDAL.updateLastLoginAt(user.uid).catch(() => {
-        // Silently ignore
-      });
-    }
+    await UserDAL.updateLastLoginAt(user.uid).catch(() => {
+      // Silently ignore
+    });
 
     recordLogin(user.uid);
     res.status(200).json(
