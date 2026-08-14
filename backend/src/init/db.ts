@@ -37,7 +37,7 @@ export async function connect(): Promise<void> {
 
   pool = new Pool({
     connectionString: databaseUrl,
-    connectionTimeoutMillis: isDevEnvironment() ? 2000 : 10000,
+    connectionTimeoutMillis: 15000,
     max: 20,
     ssl:
       process.env["DB_SSL"] === "false" || isLocalHost
@@ -52,7 +52,9 @@ export async function connect(): Promise<void> {
     client.release();
     Logger.success("Connected to PostgreSQL database");
   } catch (error) {
-    Logger.error((error as Error).message ?? "Unknown error");
+    Logger.error(
+      `PostgreSQL Connection Error: ${(error as Error).message ?? "Unknown error"}`,
+    );
     if (isDevEnvironment()) {
       Logger.warning(
         "Failed to connect to database. Running without database in dev mode.",
