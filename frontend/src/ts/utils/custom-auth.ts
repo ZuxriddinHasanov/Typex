@@ -8,20 +8,31 @@ export type CustomAuthUser = {
 };
 
 export function getStoredToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
 }
 
-export function setStoredToken(token: string): void {
-  localStorage.setItem(TOKEN_KEY, token);
+export function isStoredTokenPersistent(): boolean {
+  return localStorage.getItem(TOKEN_KEY) !== null;
+}
+
+export function setStoredToken(token: string, persistent = true): void {
+  const target = persistent ? localStorage : sessionStorage;
+  const other = persistent ? sessionStorage : localStorage;
+  other.removeItem(TOKEN_KEY);
+  other.removeItem(USER_KEY);
+  target.setItem(TOKEN_KEY, token);
 }
 
 export function clearStoredToken(): void {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
 }
 
 export function getStoredUser(): CustomAuthUser | null {
-  const raw = localStorage.getItem(USER_KEY);
+  const raw =
+    localStorage.getItem(USER_KEY) ?? sessionStorage.getItem(USER_KEY);
   if (raw === null) return null;
   try {
     return JSON.parse(raw) as CustomAuthUser;
@@ -31,7 +42,9 @@ export function getStoredUser(): CustomAuthUser | null {
 }
 
 export function setStoredUser(user: CustomAuthUser): void {
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  const target =
+    localStorage.getItem(TOKEN_KEY) === null ? sessionStorage : localStorage;
+  target.setItem(USER_KEY, JSON.stringify(user));
 }
 
 export function isCustomAuthAvailable(): boolean {

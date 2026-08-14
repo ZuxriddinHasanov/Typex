@@ -8,6 +8,7 @@ import * as DiscordUtils from "../../utils/discord";
 import {
   buildAgentLog,
   getFrontendUrl,
+  isDevEnvironment,
   omit,
   replaceObjectId,
   replaceObjectIds,
@@ -95,6 +96,11 @@ import { TypeUZRequest } from "../types";
 import { tryCatch } from "@typeuz/util/trycatch";
 import * as ConnectionsDal from "../../dal/connections";
 import { PersonalBest } from "@typeuz/schemas/shared";
+import bcrypt from "bcrypt";
+import {
+  getPasswordDocument,
+  savePasswordDocument,
+} from "../../utils/custom-auth-store";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   const { data: verified, error } = await tryCatch(verify(captcha));
@@ -300,6 +306,7 @@ export async function deleteUser(req: TypeUZRequest): Promise<TypeUZResponse> {
     deleteAllPresets(uid),
     deleteConfig(uid),
     deleteAllResults(uid),
+    LeaderboardsDAL.purgeUser(uid),
     purgeUserFromDailyLeaderboards(
       uid,
       req.ctx.configuration.dailyLeaderboards,
@@ -317,14 +324,15 @@ export async function deleteUser(req: TypeUZRequest): Promise<TypeUZResponse> {
 
   await Promise.all(tasks);
 
-  try {
-    //delete user from firebase
-    await AuthUtil.deleteUser(uid);
-  } catch (e) {
-    if (isFirebaseError(e) && e.errorInfo.code === "auth/user-not-found") {
-      //user was already deleted, ok to ignore
-    } else {
-      throw e;
+  if (req.ctx.decodedToken.customAuth !== true) {
+    try {
+      await AuthUtil.deleteUser(uid);
+    } catch (e) {
+      if (isFirebaseError(e) && e.errorInfo.code === "auth/user-not-found") {
+        //user was already deleted, ok to ignore
+      } else {
+        throw e;
+      }
     }
   }
 
@@ -356,6 +364,7 @@ export async function resetUser(req: TypeUZRequest): Promise<TypeUZResponse> {
     deleteAllPresets(uid),
     deleteAllResults(uid),
     deleteConfig(uid),
+    LeaderboardsDAL.purgeUser(uid),
     purgeUserFromDailyLeaderboards(
       uid,
       req.ctx.configuration.dailyLeaderboards,
@@ -420,6 +429,7 @@ export async function clearPb(req: TypeUZRequest): Promise<TypeUZResponse> {
   const { uid } = req.ctx.decodedToken;
 
   await UserDAL.clearPb(uid);
+  await LeaderboardsDAL.purgeUser(uid);
   await purgeUserFromDailyLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards,
@@ -435,6 +445,7 @@ export async function optOutOfLeaderboards(
   const { uid } = req.ctx.decodedToken;
 
   await UserDAL.optOutOfLeaderboards(uid);
+  await LeaderboardsDAL.purgeUser(uid);
   await purgeUserFromDailyLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards,
@@ -469,6 +480,26 @@ export async function updateEmail(
 
   newEmail = newEmail.toLowerCase();
   previousEmail = previousEmail.toLowerCase();
+
+  if (req.ctx.decodedToken.customAuth === true) {
+    const existing = await UserDAL.findByEmail(newEmail);
+    if (existing !== undefined && existing.uid !== uid) {
+      throw new TypeUZError(
+        409,
+        "The email address is already in use by another account",
+      );
+    }
+    await UserDAL.updateEmail(uid, newEmail);
+    if (!isDevEnvironment()) {
+      await UserDAL.incrementTokenVersion(uid);
+    }
+    void addImportantLog(
+      "user_email_updated",
+      `changed email from ${previousEmail} to ${newEmail}`,
+      uid,
+    );
+    return new TypeUZResponse("Email updated", null);
+  }
 
   try {
     await AuthUtil.updateUserEmail(uid, newEmail);
@@ -514,6 +545,21 @@ export async function updatePassword(
   const { uid } = req.ctx.decodedToken;
   const { newPassword } = req.body;
 
+  if (req.ctx.decodedToken.customAuth === true) {
+    const existing = await getPasswordDocument(uid);
+    if (existing === null) {
+      throw new TypeUZError(404, "Password authentication not found");
+    }
+    await savePasswordDocument({
+      ...existing,
+      passwordHash: await bcrypt.hash(newPassword, 10),
+    });
+    if (!isDevEnvironment()) {
+      await UserDAL.incrementTokenVersion(uid);
+    }
+    return new TypeUZResponse("Password updated", null);
+  }
+
   await AuthUtil.updateUserPassword(uid, newPassword);
 
   return new TypeUZResponse("Password updated", null);
@@ -558,6 +604,14 @@ export async function getUser(req: TypeUZRequest): Promise<GetUserResponse> {
 
   if (error) {
     if (error instanceof TypeUZError && error.status === 404) {
+      if (req.ctx.decodedToken.customAuth === true) {
+        throw new TypeUZError(
+          404,
+          "User not found in the database. Please sign up again.",
+          "get user",
+          uid,
+        );
+      }
       //if the user is in the auth system but not in the db, its possible that the user was created by bypassing captcha
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
@@ -1210,7 +1264,13 @@ export async function revokeAllTokens(
   req: TypeUZRequest,
 ): Promise<TypeUZResponse> {
   const { uid } = req.ctx.decodedToken;
-  await AuthUtil.revokeTokensByUid(uid);
+  if (req.ctx.decodedToken.customAuth === true) {
+    if (!isDevEnvironment()) {
+      await UserDAL.incrementTokenVersion(uid);
+    }
+  } else {
+    await AuthUtil.revokeTokensByUid(uid);
+  }
   void addImportantLog("user_tokens_revoked", "", uid);
   return new TypeUZResponse("All tokens revoked", null);
 }

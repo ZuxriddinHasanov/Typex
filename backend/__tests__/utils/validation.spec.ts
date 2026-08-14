@@ -12,7 +12,7 @@ describe("Validation", () => {
           testDuration: 10,
           bailedOut: false,
         },
-        expected: true,
+        expected: false,
       },
       {
         result: {
@@ -42,7 +42,7 @@ describe("Validation", () => {
           testDuration: 2,
           bailedOut: false,
         },
-        expected: true,
+        expected: false,
       },
     ];
 

@@ -25,11 +25,18 @@ import {
 } from "@typeuz/contracts/admin";
 import TypeUZError, { getErrorMessage } from "../../utils/error";
 import { Configuration } from "@typeuz/schemas/configuration";
-import { addImportantLog } from "../../dal/logs";
+import { addImportantLog, deleteUserLogs } from "../../dal/logs";
 import * as db from "../../init/db";
 import { TypeUZRequest } from "../types";
 import { isDevEnvironment, getFrontendUrl } from "../../utils/misc";
 import { devGet, devSet } from "../../utils/dev-store";
+import * as LeaderboardsDAL from "../../dal/leaderboards";
+import { deleteAll as deleteAllResults } from "../../dal/result";
+import { deleteAllApeKeys } from "../../dal/ape-keys";
+import { deleteAllPresets } from "../../dal/preset";
+import { deleteConfig } from "../../dal/config";
+import * as ConnectionsDAL from "../../dal/connections";
+import * as AuthUtil from "../../utils/auth";
 
 // --- Analytics Helpers ---
 function getUsersArray(): Array<Record<string, unknown>> {
@@ -202,15 +209,6 @@ function safeImportantLog(
   }
 }
 
-async function safeUserDAL<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
-  try {
-    return await fn();
-  } catch (_e: unknown) {
-    void _e;
-    return fallback;
-  }
-}
-
 export async function test(_req: TypeUZRequest): Promise<TypeUZResponse> {
   return new TypeUZResponse("OK", null);
 }
@@ -232,15 +230,15 @@ export async function toggleBan(
       return new TypeUZResponse(`Ban toggled`, { banned });
     }
 
-    const user = await safeUserDAL(
-      async () =>
-        UserDAL.getPartialUser(uid, "toggle ban", ["banned", "discordId"]),
-      { banned: false, discordId: "" },
-    );
+    const user = await UserDAL.getPartialUser(uid, "toggle ban", [
+      "banned",
+      "discordId",
+    ]);
 
-    await UserDAL.setBanned(uid, !user.banned).catch((_e: unknown) => {
-      void _e;
-    });
+    await UserDAL.setBanned(uid, !user.banned);
+    if (!user.banned) {
+      await LeaderboardsDAL.purgeUser(uid);
+    }
     safeImportantLog("user_ban_toggled", { banned: !user.banned }, uid);
 
     return new TypeUZResponse(`Ban toggled`, {
@@ -269,7 +267,20 @@ export async function deleteUser(
       return new TypeUZResponse(`User deleted`, null);
     }
 
-    await UserDAL.deleteUser(uid);
+    const userExists = await UserDAL.getPartialUser(uid, "admin delete user", [
+      "uid",
+    ]);
+    await Promise.all([
+      UserDAL.deleteUser(userExists.uid),
+      deleteUserLogs(uid),
+      deleteAllApeKeys(uid),
+      deleteAllPresets(uid),
+      deleteConfig(uid),
+      deleteAllResults(uid),
+      ConnectionsDAL.deleteByUid(uid),
+      LeaderboardsDAL.purgeUser(uid),
+    ]);
+    await AuthUtil.deleteUser(uid).catch(() => undefined);
     safeImportantLog("admin_user_deleted", {}, uid);
     return new TypeUZResponse(`User deleted`, null);
   } catch (e) {

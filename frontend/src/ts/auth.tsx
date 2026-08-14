@@ -56,7 +56,12 @@ import {
   showSuccessNotification,
 } from "./states/notifications";
 import { FaObject } from "./types/font-awesome";
-import { setStoredToken, setStoredUser } from "./utils/custom-auth";
+import {
+  getStoredUser,
+  getStoredToken,
+  setStoredToken,
+  setStoredUser,
+} from "./utils/custom-auth";
 import { isDevEnvironment } from "./utils/env";
 import { createErrorMessage } from "./utils/error";
 import { SnapshotInitError } from "./utils/snapshot-init-error";
@@ -300,17 +305,17 @@ export async function signInWithProvider(
   }
 
   if (authMethod === "google") {
-    return signInWithGooglePopup();
+    return signInWithGooglePopup(options.rememberMe);
   }
 
   if (authMethod === "github") {
-    return signInWithGitHubPopup();
+    return signInWithGitHubPopup(options.rememberMe);
   }
 
   return { success: false, message: `Unsupported auth method: ${authMethod}` };
 }
 
-async function signInWithGooglePopup(): Promise<AuthResult> {
+async function signInWithGooglePopup(rememberMe: boolean): Promise<AuthResult> {
   const envConfig = (await import("virtual:env-config")).envConfig;
   const GOOGLE_CLIENT_ID = envConfig.googleClientId;
 
@@ -380,7 +385,7 @@ async function signInWithGooglePopup(): Promise<AuthResult> {
               json.data.token !== undefined &&
               json.data.token !== ""
             ) {
-              setStoredToken(json.data.token);
+              setStoredToken(json.data.token, rememberMe);
               setStoredUser({
                 uid: json.data.uid,
                 email: json.data.email,
@@ -433,7 +438,7 @@ async function signInWithGooglePopup(): Promise<AuthResult> {
   });
 }
 
-async function signInWithGitHubPopup(): Promise<AuthResult> {
+async function signInWithGitHubPopup(rememberMe: boolean): Promise<AuthResult> {
   const backendUrl = (await import("virtual:env-config")).envConfig.backendUrl;
   const popup = window.open(
     `${backendUrl}/auth/github/login`,
@@ -457,7 +462,7 @@ async function signInWithGitHubPopup(): Promise<AuthResult> {
         typeof d["token"] === "string" &&
         d["token"] !== ""
       ) {
-        setStoredToken(d["token"]);
+        setStoredToken(d["token"], rememberMe);
         setStoredUser({
           uid: d["uid"] as string,
           email: d["email"] as string,
@@ -721,10 +726,28 @@ export async function reauthenticate(
     };
   }
   if (Auth === undefined) {
+    if (options.password === undefined) {
+      return {
+        status: "notice",
+        message: "Password missing",
+      };
+    }
+    const { reauthenticateWithEmail } = await import("./utils/custom-auth-api");
+    const result = await reauthenticateWithEmail(options.password);
+    if (!result.success) {
+      return {
+        status: "notice",
+        message: result.message,
+      };
+    }
+    const storedUser = getStoredUser();
     return {
       status: "success",
-      message: "Reauthenticated (custom auth)",
-      user: { uid: getUserId() } as unknown as User,
+      message: "Reauthenticated",
+      user: {
+        uid: storedUser?.uid ?? getUserId(),
+        email: storedUser?.email ?? "",
+      } as unknown as User,
     };
   }
 
@@ -810,6 +833,9 @@ function getPreferredAuthenticationMethod(
 }
 
 export function isUsingAuthentication(authMethod: AuthMethod): boolean {
+  if (Auth === undefined && getStoredToken() !== null) {
+    return authMethod === "password";
+  }
   const providerId = getProviderId(authMethod);
   return (
     getAuthenticatedUser()?.providerData.some(

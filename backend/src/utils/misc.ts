@@ -177,7 +177,10 @@ export function formatSeconds(
 }
 
 export function isDevEnvironment(): boolean {
-  return process.env["MODE"] !== "production";
+  return (
+    process.env["MODE"] !== "production" &&
+    process.env["NODE_ENV"] !== "production"
+  );
 }
 
 export function getFrontendUrl(): string {

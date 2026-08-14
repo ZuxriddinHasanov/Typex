@@ -22,17 +22,35 @@ import { getErrorMessage } from "./utils/error";
 import bcrypt from "bcrypt";
 import { devGet, devSet } from "./utils/dev-store";
 import { isDevEnvironment } from "./utils/misc";
+import { assertJwtConfigured } from "./utils/jwt";
 
 const ADMIN_CRED_KEY = "admin_credentials";
 
 async function seedDefaultAdmin(): Promise<void> {
-  const hash = await bcrypt.hash("admin123", 10);
+  const username = isDevEnvironment()
+    ? (process.env["ADMIN_USERNAME"] ?? "admin")
+    : process.env["ADMIN_USERNAME"];
+  const password = isDevEnvironment()
+    ? (process.env["ADMIN_PASSWORD"] ?? "admin123")
+    : process.env["ADMIN_PASSWORD"];
+
+  if (username === undefined || password === undefined) {
+    Logger.warning(
+      "Admin account not seeded: ADMIN_USERNAME and ADMIN_PASSWORD are not set.",
+    );
+    return;
+  }
+  if (!isDevEnvironment() && password.length < 12) {
+    throw new Error("ADMIN_PASSWORD must contain at least 12 characters");
+  }
+
+  const hash = await bcrypt.hash(password, 10);
   if (isDevEnvironment()) {
     const existing = devGet<Record<string, unknown>>(ADMIN_CRED_KEY);
     if (existing !== null && Object.keys(existing).length > 0) return;
     devSet(ADMIN_CRED_KEY, {
-      admin: {
-        username: "admin",
+      [username.toLowerCase()]: {
+        username,
         passwordHash: hash,
         createdAt: Date.now(),
       },
@@ -40,33 +58,30 @@ async function seedDefaultAdmin(): Promise<void> {
   } else {
     const existing = await db.queryOne<{ username: string }>(
       "SELECT username FROM admin_credentials WHERE username = $1",
-      ["admin"],
+      [username.toLowerCase()],
     );
     if (existing !== null) return;
     await db.query(
       `INSERT INTO admin_credentials (username, data) VALUES ($1, $2::jsonb)
        ON CONFLICT (username) DO NOTHING`,
       [
-        "admin",
+        username.toLowerCase(),
         JSON.stringify({
-          username: "admin",
+          username,
           passwordHash: hash,
           createdAt: Date.now(),
         }),
       ],
     );
   }
-  Logger.success("Default admin created: admin / admin123");
+  Logger.success(`Admin account created: ${username}`);
 }
 
 async function bootServer(port: number): Promise<Server> {
-  const server = app.listen(port, "0.0.0.0", () => {
-    Logger.success(`API server listening on port ${port}`);
-  });
-
   try {
     Logger.info(`Starting server version ${version}`);
     Logger.info(`Starting server in ${process.env["MODE"]} mode`);
+    assertJwtConfigured();
     Logger.info(`Connecting to database...`);
     await db.connect();
     const isDbConnected = db.getDb() !== undefined;
@@ -117,9 +132,11 @@ async function bootServer(port: number): Promise<Server> {
       );
     }
 
-    Logger.info("Starting cron jobs...");
-    jobs.forEach((job) => job.start());
-    Logger.success("Cron jobs started");
+    if (isDbConnected) {
+      Logger.info("Starting cron jobs...");
+      jobs.forEach((job) => job.start());
+      Logger.success("Cron jobs started");
+    }
 
     if (isDbConnected) {
       Logger.info("Setting up leaderboard indicies...");
@@ -132,14 +149,8 @@ async function bootServer(port: number): Promise<Server> {
       await connectionsDbSetup();
     }
 
-    if (isDevEnvironment()) {
+    if (isDbConnected || isDevEnvironment()) {
       await seedDefaultAdmin();
-    } else {
-      try {
-        await seedDefaultAdmin();
-      } catch {
-        Logger.warning("Failed to seed default admin (non-fatal)");
-      }
     }
 
     recordServerVersion(version);
@@ -147,11 +158,20 @@ async function bootServer(port: number): Promise<Server> {
     Logger.error("Failed to initialize server services");
     const message = getErrorMessage(error);
     Logger.error(message ?? "Unknown error");
+    throw error;
   }
 
-  return server;
+  return await new Promise((resolve, reject) => {
+    const server = app.listen(port, "0.0.0.0", () => {
+      Logger.success(`API server listening on port ${port}`);
+      resolve(server);
+    });
+    server.on("error", reject);
+  });
 }
 
 const PORT = parseInt(process.env["PORT"] ?? "5005", 10);
 
-void bootServer(PORT);
+void bootServer(PORT).catch(() => {
+  process.exitCode = 1;
+});

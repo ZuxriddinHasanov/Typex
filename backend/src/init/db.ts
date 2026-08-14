@@ -1,9 +1,15 @@
-import pg, { Pool } from "pg";
+import pg, { Pool, types, type PoolClient } from "pg";
 import TypeUZError from "../utils/error";
 import Logger from "../utils/logger";
 import { isDevEnvironment } from "../utils/misc";
 
 let pool: pg.Pool | undefined;
+
+// PostgreSQL returns NUMERIC and BIGINT as strings by default. All values stored
+// in those columns (timestamps, WPM, XP, counters) are constrained to safe JS
+// number ranges by the API schemas.
+types.setTypeParser(20, Number);
+types.setTypeParser(1700, Number);
 
 export async function connect(): Promise<void> {
   const databaseUrl = process.env["DATABASE_URL"];
@@ -54,11 +60,8 @@ export async function connect(): Promise<void> {
       pool = undefined;
       return;
     }
-    Logger.error(
-      "Failed to connect to database. Server will start but DB queries will fail.",
-    );
-    // process.exit(1); // Removed to prevent Render port scan timeout
     pool = undefined;
+    throw error;
   }
 }
 
@@ -124,6 +127,28 @@ export async function queryAll<T = Record<string, unknown>>(
 ): Promise<T[]> {
   const result = await query(text, params);
   return result.rows as T[];
+}
+
+export async function transaction<T>(
+  callback: (client: PoolClient) => Promise<T>,
+): Promise<T> {
+  const p = pool;
+  if (p === undefined) {
+    throw new TypeUZError(500, "Database is not initialized.");
+  }
+
+  const client = await p.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await callback(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 export async function close(): Promise<void> {

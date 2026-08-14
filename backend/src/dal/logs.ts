@@ -27,8 +27,6 @@ async function insertIntoDb(
   uid = "",
   important = false,
 ): Promise<void> {
-  const msg = typeof message === "string" ? message : JSON.stringify(message);
-
   const stringified = JSON.stringify(message);
   Logger.info(
     `${event}\t${uid}\t${
@@ -39,6 +37,6 @@ async function insertIntoDb(
   await db.query(
     `INSERT INTO logs (timestamp, uid, important, event, message)
      VALUES ($1, $2, $3, $4, $5::jsonb)`,
-    [Date.now(), uid ?? "", important, event, msg],
+    [Date.now(), uid ?? "", important, event, stringified],
   );
 }

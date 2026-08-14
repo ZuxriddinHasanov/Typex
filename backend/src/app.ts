@@ -4,7 +4,6 @@ import { addApiRoutes } from "./api/routes";
 import express, { urlencoded, json } from "express";
 import contextMiddleware from "./middlewares/context";
 import errorHandlingMiddleware from "./middlewares/error";
-import Logger from "./utils/logger";
 import {
   badAuthRateLimiterHandler,
   rootRateLimiter,
@@ -13,7 +12,7 @@ import { compatibilityCheckMiddleware } from "./middlewares/compatibilityCheck";
 import { COMPATIBILITY_CHECK_HEADER } from "@typeuz/contracts";
 import { createETagGenerator } from "./utils/etag";
 import { v4RequestBody } from "./middlewares/utility";
-import { isDevEnvironment } from "./utils/misc";
+import { getFrontendUrl, isDevEnvironment } from "./utils/misc";
 
 const etagFn = createETagGenerator({ weak: true });
 
@@ -38,17 +37,13 @@ function buildApp(): express.Application {
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean)
-      : "*";
-
-  if (!isDevEnvironment() && corsOrigins === "*") {
-    Logger.warning(
-      "ALLOWED_ORIGINS not set — allowing all origins. Set it to a comma-separated list of allowed origins in production.",
-    );
-  }
+      : isDevEnvironment()
+        ? "*"
+        : getFrontendUrl();
   app.use(
     cors({
       origin: corsOrigins,
-      credentials: true,
+      credentials: corsOrigins !== "*",
       exposedHeaders: [COMPATIBILITY_CHECK_HEADER],
     }),
   );

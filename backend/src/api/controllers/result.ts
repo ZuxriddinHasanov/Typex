@@ -669,6 +669,7 @@ export async function addResult(
   }
 
   const dbresult = buildDbResult(completedEvent, user.name, isPb);
+  dbresult.uid = user.uid || uid;
   if (keySpacingStats !== undefined) {
     dbresult.keySpacingStats = keySpacingStats;
   }

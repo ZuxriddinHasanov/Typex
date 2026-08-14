@@ -32,7 +32,6 @@ const languageOptions: { value: Language; label: string }[] = [
 ];
 
 const contentTypeOptions: { value: "" | "words" | "mixed"; label: string }[] = [
-  { value: "", label: "Barcha" },
   { value: "words", label: "So'zlar" },
   { value: "mixed", label: "Aralash" },
 ];
@@ -69,7 +68,7 @@ export function LeaderboardPage(): JSXElement {
       type: "allTime" as const,
       mode: (s as { mode?: string }).mode ?? "time",
       mode2: (s as { mode2?: string }).mode2 ?? "15",
-      language: (s as { language?: Language }).language ?? "english",
+      language: (s as { language?: Language }).language ?? "uzbek",
     };
   };
 
@@ -169,16 +168,14 @@ export function LeaderboardPage(): JSXElement {
                   class="rounded-lg border border-sub-alt bg-sub-alt px-3 py-1.5 text-sm text-text outline-none focus:border-main"
                   value={
                     sel().numbers === undefined
-                      ? ""
+                      ? "words"
                       : sel().numbers
                         ? "mixed"
                         : "words"
                   }
                   onChange={(e) => {
                     const v = e.currentTarget.value;
-                    if (v === "") {
-                      setSelection({ ...sel(), numbers: undefined } as never);
-                    } else if (v === "words") {
+                    if (v === "words") {
                       setSelection({ ...sel(), numbers: false } as never);
                     } else {
                       setSelection({ ...sel(), numbers: true } as never);

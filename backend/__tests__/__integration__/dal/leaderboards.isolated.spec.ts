@@ -1,4 +1,3 @@
-
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../../src/dal/user";
@@ -275,7 +274,7 @@ describe("LeaderboardsDal", () => {
       )) as DBLeaderboardEntry[];
 
       //THEN
-      expect(results[0]?.is_premium).toBeUndefined();
+      expect(results[0]?.isPremium).toBeUndefined();
     });
   });
 
@@ -492,13 +491,56 @@ function expectedLbEntry(
 }
 
 async function createUser(
-  _lbPersonalBests?: LbPersonalBests,
-  _userProperties?: Partial<UserDal.DBUser>,
+  lbPersonalBests?: LbPersonalBests,
+  userProperties?: Partial<UserDal.DBUser>,
 ): Promise<UserDal.DBUser> {
   const uid = new ObjectId().toHexString();
-  await UserDal.addUser(`User ${uid}`, `${uid}@example.com`, uid);
+  await UserDal.addUser(
+    userProperties?.name ?? `User${uid.slice(0, 8)}`,
+    `${uid}@example.com`,
+    uid,
+  );
 
-  await DB.query("UPDATE users SET time_typing = 7200 WHERE uid = $1", [uid]);
+  const personalBests = {
+    time: Object.fromEntries(
+      Object.entries(lbPersonalBests?.time ?? {}).map(([mode2, byLanguage]) => [
+        mode2,
+        Object.values(byLanguage),
+      ]),
+    ),
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+    ai: {},
+  };
+  await DB.query(
+    `UPDATE users SET
+       personal_bests = $1::jsonb,
+       lb_personal_bests = $2::jsonb,
+       time_typing = $3,
+       banned = $4,
+       lb_opt_out = $5,
+       needs_to_change_name = $6,
+       discord_id = $7,
+       discord_avatar = $8,
+       inventory = $9::jsonb,
+       premium = $10::jsonb
+     WHERE uid = $11`,
+    [
+      JSON.stringify(personalBests),
+      JSON.stringify(lbPersonalBests ?? { time: {} }),
+      userProperties?.timeTyping ?? 7200,
+      userProperties?.banned ?? false,
+      userProperties?.lbOptOut ?? false,
+      userProperties?.needsToChangeName ?? false,
+      userProperties?.discordId ?? null,
+      userProperties?.discordAvatar ?? null,
+      JSON.stringify(userProperties?.inventory ?? { badges: [] }),
+      JSON.stringify(userProperties?.premium ?? null),
+      uid,
+    ],
+  );
 
   return await UserDal.getUser(uid, "test");
 }

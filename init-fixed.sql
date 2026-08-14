@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS ape_keys (
 -- Blocklist
 CREATE TABLE IF NOT EXISTS blocklist (
   _id TEXT PRIMARY KEY,
-  username_hash TEXT UNIQUE,
+  username_hash TEXT UNIQUE, 
   email_hash TEXT UNIQUE,
   discord_id_hash TEXT UNIQUE,
   timestamp BIGINT NOT NULL

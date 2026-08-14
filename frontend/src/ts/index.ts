@@ -26,24 +26,28 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
 
-// Lock Math.random
-Object.defineProperty(Math, "random", {
-  value: Math.random,
-  writable: false,
-  configurable: false,
-  enumerable: true,
-});
+try {
+  // Lock Math.random
+  Object.defineProperty(Math, "random", {
+    value: Math.random,
+    writable: false,
+    configurable: false,
+    enumerable: true,
+  });
 
-// Freeze Math object
-Object.freeze(Math);
+  // Freeze Math object
+  Object.freeze(Math);
 
-// Lock Math on window
-Object.defineProperty(window, "Math", {
-  value: Math,
-  writable: false,
-  configurable: false,
-  enumerable: true,
-});
+  // Lock Math on window
+  Object.defineProperty(window, "Math", {
+    value: Math,
+    writable: false,
+    configurable: false,
+    enumerable: true,
+  });
+} catch {
+  // Ignore in environments where window.Math is non-configurable
+}
 
 applyEngineSettings();
 void loadFromLocalStorage();

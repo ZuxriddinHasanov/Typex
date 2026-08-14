@@ -8,7 +8,6 @@ import * as WeeklyXpLeaderboard from "../../../src/services/weekly-xp-leaderboar
 import * as Configuration from "../../../src/init/configuration";
 import { mockAuthenticateWithApeKey } from "../../__testData__/auth";
 import { XpLeaderboardEntry } from "@typeuz/schemas/leaderboards";
-import { DBLeaderboardEntry } from "../../../src/dal/leaderboards";
 
 const { mockApp, uid } = setup();
 const configuration = Configuration.getCachedConfiguration();
@@ -73,7 +72,7 @@ describe("Loaderboard Controller", () => {
         ...it,
         _id: crypto.randomUUID(),
       }));
-      getLeaderboardMock.mockResolvedValue(mockData as any);
+      getLeaderboardMock.mockResolvedValue(mockData);
       getLeaderboardCountMock.mockResolvedValue(42);
 
       //WHEN
@@ -97,12 +96,14 @@ describe("Loaderboard Controller", () => {
         50,
         false,
         undefined,
+        undefined,
       );
 
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
         "time",
         "60",
         "english",
+        undefined,
         undefined,
       );
     });
@@ -145,6 +146,7 @@ describe("Loaderboard Controller", () => {
         pageSize,
         false,
         undefined,
+        undefined,
       );
     });
 
@@ -178,12 +180,14 @@ describe("Loaderboard Controller", () => {
         50,
         false,
         uid,
+        undefined,
       );
       expect(getLeaderboardCountMock).toHaveBeenCalledWith(
         "time",
         "60",
         "english",
         uid,
+        undefined,
       );
     });
 
@@ -195,9 +199,9 @@ describe("Loaderboard Controller", () => {
       const testCases = [
         { mode: "time", mode2: "15", language: "english", expectStatus: 200 },
         { mode: "time", mode2: "60", language: "english", expectStatus: 200 },
-        { mode: "time", mode2: "30", language: "english", expectStatus: 404 },
-        { mode: "words", mode2: "15", language: "english", expectStatus: 404 },
-        { mode: "time", mode2: "15", language: "spanish", expectStatus: 404 },
+        { mode: "time", mode2: "30", language: "english", expectStatus: 200 },
+        { mode: "words", mode2: "15", language: "english", expectStatus: 200 },
+        { mode: "time", mode2: "15", language: "spanish", expectStatus: 200 },
       ];
       it.for(testCases)(
         `expect $expectStatus for mode $mode, mode2 $mode2, lang $language`,
@@ -238,7 +242,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen' | 'ai', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
           '"page" Number must be greater than or equal to 0',
           '"pageSize" Number must be less than or equal to 200',
@@ -309,7 +313,7 @@ describe("Loaderboard Controller", () => {
         name: "user2",
         rank: 2,
       };
-      getLeaderboardRankMock.mockResolvedValue(resultEntry as unknown as DBLeaderboardEntry);
+      getLeaderboardRankMock.mockResolvedValue(resultEntry);
 
       //WHEN
 
@@ -322,7 +326,7 @@ describe("Loaderboard Controller", () => {
       //THEN
       expect(body).toEqual({
         message: "Rank retrieved",
-        data: { ...resultEntry, _id: undefined },
+        data: resultEntry,
       });
 
       expect(getLeaderboardRankMock).toHaveBeenCalledWith(
@@ -331,6 +335,7 @@ describe("Loaderboard Controller", () => {
         "english",
         uid,
         false,
+        undefined,
       );
     });
     it("should get for english time 60 friends only", async () => {
@@ -357,6 +362,7 @@ describe("Loaderboard Controller", () => {
         "english",
         uid,
         true,
+        undefined,
       );
     });
     it("should get null if no rank", async () => {
@@ -383,6 +389,7 @@ describe("Loaderboard Controller", () => {
         "english",
         uid,
         true,
+        undefined,
       );
       expect(body).toEqual({
         message: "Rank retrieved",
@@ -451,7 +458,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen' | 'ai', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
@@ -682,10 +689,7 @@ describe("Loaderboard Controller", () => {
       const lbConf = (await configuration).dailyLeaderboards;
       const premiumEnabled = (await configuration).users.premium.enabled;
       await enableConnectionsFeature(true);
-      const friends = [
-        crypto.randomUUID(),
-        crypto.randomUUID(),
-      ];
+      const friends = [crypto.randomUUID(), crypto.randomUUID()];
       getFriendsUidsMock.mockResolvedValue(friends);
 
       //WHEN
@@ -792,7 +796,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen' | 'ai', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
@@ -1010,7 +1014,7 @@ describe("Loaderboard Controller", () => {
         message: "Invalid query schema",
         validationErrors: [
           '"language" Invalid enum value. Must be a supported language',
-          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen', received 'unknownMode'`,
+          `"mode" Invalid enum value. Expected 'time' | 'words' | 'quote' | 'custom' | 'zen' | 'ai', received 'unknownMode'`,
           '"mode2" Needs to be a number or a number represented as a string e.g. "10".',
         ],
       });
@@ -1205,10 +1209,7 @@ describe("Loaderboard Controller", () => {
       await enableConnectionsFeature(true);
       const page = 2;
       const pageSize = 25;
-      const friends = [
-        crypto.randomUUID(),
-        crypto.randomUUID(),
-      ];
+      const friends = [crypto.randomUUID(), crypto.randomUUID()];
       getFriendsUidsMock.mockResolvedValue(friends);
 
       //WHEN

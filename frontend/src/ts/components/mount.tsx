@@ -91,6 +91,10 @@ function mountToMountpoint(name: string, component: () => JSXElement): void {
 
 export function mountComponents(): void {
   for (const [query, component] of Object.entries(components)) {
-    mountToMountpoint(`mount[data-component=${query}]`, component);
+    try {
+      mountToMountpoint(`mount[data-component=${query}]`, component);
+    } catch (e) {
+      console.error(`Failed to mount ${query}`, e);
+    }
   }
 }

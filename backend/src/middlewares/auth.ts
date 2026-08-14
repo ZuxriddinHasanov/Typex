@@ -21,12 +21,14 @@ import {
 import { Configuration } from "@typeuz/schemas/configuration";
 import { AsyncTsRestRequestHandler, getMetadata } from "./utility";
 import { TsRestRequestWithContext } from "../api/types";
+import * as UserDAL from "../dal/user";
 
 export type DecodedToken = {
   type: "Bearer" | "ApeKey" | "None" | "GithubWebhook";
   uid: string;
   email: string;
   admin?: boolean;
+  customAuth?: boolean;
 };
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
@@ -176,16 +178,40 @@ async function authenticateWithBearerToken(
   token: string,
   options: RequestAuthenticationOptions,
 ): Promise<DecodedToken> {
+  let customToken: ReturnType<typeof verifyToken> | undefined;
   try {
-    const decoded = verifyToken(token);
+    customToken = verifyToken(token);
+  } catch {
+    // Custom JWT failed — try Firebase below.
+  }
+
+  if (customToken !== undefined) {
+    if (customToken.admin !== true && !isDevEnvironment()) {
+      const tokenVersion = await UserDAL.getTokenVersion(customToken.uid);
+      if (
+        tokenVersion === null ||
+        tokenVersion !== (customToken.tokenVersion ?? 0)
+      ) {
+        throw new TypeUZError(401, "Token revoked - please login again");
+      }
+    }
+    if (options.requireFreshToken) {
+      const issuedAt = (customToken.iat ?? 0) * 1000;
+      if (issuedAt === 0 || Date.now() - issuedAt > 60 * 1000) {
+        throw new TypeUZError(
+          401,
+          "Unauthorized",
+          "This endpoint requires a fresh token",
+        );
+      }
+    }
     return {
       type: "Bearer",
-      uid: decoded.uid,
-      email: decoded.email,
-      admin: decoded.admin === true,
+      uid: customToken.uid,
+      email: customToken.email,
+      admin: customToken.admin === true,
+      customAuth: true,
     };
-  } catch {
-    // Custom JWT failed — try Firebase
   }
 
   try {

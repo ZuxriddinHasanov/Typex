@@ -24,6 +24,9 @@ beforeAll(async () => {
     query: (async () => ({ rows: [], rowCount: 0 })) as any,
     queryOne: (async () => null) as any,
     queryAll: (async () => []) as any,
+    transaction: async (
+      callback: (client: { query: () => Promise<unknown> }) => Promise<unknown>,
+    ) => callback({ query: async () => ({ rows: [], rowCount: 0 }) }),
     close: () => {
       //
     },

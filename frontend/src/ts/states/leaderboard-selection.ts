@@ -82,7 +82,7 @@ export function readLeaderboardGetParameters(
   } else {
     newSelection.mode = params.mode ?? "time";
     newSelection.mode2 = params.mode2 ?? "15";
-    newSelection.language = params.language ?? "english";
+    newSelection.language = params.language ?? "uzbek";
     newSelection.numbers = params.numbers;
     newSelection.previous =
       params.type === "daily" && (params.yesterday ?? false);
@@ -136,7 +136,7 @@ function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
       type: "allTime",
       mode: "time",
       mode2: "15",
-      language: "english",
+      language: "uzbek",
       numbers: undefined,
       friendsOnly: false,
       previous: false,

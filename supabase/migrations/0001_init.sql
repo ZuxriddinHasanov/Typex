@@ -240,8 +240,13 @@ CREATE TABLE users (
   bananas INTEGER DEFAULT 0,
   suspicious BOOLEAN DEFAULT false,
   note TEXT,
-  last_login_at BIGINT
+  last_login_at BIGINT,
+  token_version INTEGER NOT NULL DEFAULT 0
 );
+
+ALTER TABLE user_passwords
+  ADD CONSTRAINT user_passwords_uid_fkey
+  FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE;
 
 -- Indexes
 CREATE INDEX idx_results_uid ON results(uid);
@@ -255,3 +260,5 @@ CREATE INDEX idx_new_quotes_language ON new_quotes(language);
 CREATE INDEX idx_new_quotes_approved ON new_quotes(approved);
 CREATE INDEX idx_logs_uid ON logs(uid);
 CREATE INDEX idx_leaderboard_entries_lookup ON leaderboard_entries(language, mode, mode2, numbers, rank);
+CREATE UNIQUE INDEX idx_users_email_unique ON users (LOWER(email));
+CREATE UNIQUE INDEX idx_users_name_unique ON users (LOWER(name));

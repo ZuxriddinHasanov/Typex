@@ -147,7 +147,7 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
     inventory: parseJson(r["inventory"]) as UserInventory | undefined,
     banned: (r["banned"] as boolean) ?? false,
     lbOptOut: (r["lb_opt_out"] as boolean) ?? false,
-    verified: true,
+    verified: (r["verified"] as boolean) ?? false,
     needsToChangeName: (r["needs_to_change_name"] as boolean) ?? false,
     quoteMod: parseJson(r["quote_mod"]) as User["quoteMod"],
     resultFilterPresets,
@@ -602,6 +602,24 @@ export async function updateLastLoginAt(uid: string): Promise<void> {
     Date.now(),
     uid,
   ]);
+}
+
+export async function getTokenVersion(uid: string): Promise<number | null> {
+  const row = await db.queryOne<{ token_version: number }>(
+    "SELECT token_version FROM users WHERE uid = $1",
+    [uid],
+  );
+  return row?.token_version ?? null;
+}
+
+export async function incrementTokenVersion(uid: string): Promise<void> {
+  const result = await db.query(
+    "UPDATE users SET token_version = token_version + 1 WHERE uid = $1",
+    [uid],
+  );
+  if (result.rowCount === 0) {
+    throw new TypeUZError(404, "User not found", "increment token version");
+  }
 }
 
 export async function isNameAvailable(

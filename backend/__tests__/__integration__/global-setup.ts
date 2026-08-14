@@ -1,4 +1,7 @@
 import { GenericContainer, StartedTestContainer, Wait } from "testcontainers";
+import { Pool } from "pg";
+import { readdirSync, readFileSync } from "fs";
+import path from "path";
 
 let startedPostgresContainer: StartedTestContainer | undefined;
 let startedRedisContainer: StartedTestContainer | undefined;
@@ -22,6 +25,20 @@ export async function setup(): Promise<void> {
   const pgUrl = `postgresql://test:test@${startedPostgresContainer.getHost()}:${startedPostgresContainer.getMappedPort(5432)}/test`;
   process.env["TEST_DATABASE_URL"] = pgUrl;
   console.log(`\x1b[32mPostgreSQL is running on ${pgUrl}\x1b[0m`);
+
+  const pool = new Pool({ connectionString: pgUrl });
+  const migrationsDirectory = path.resolve(
+    __dirname,
+    "../../supabase/migrations",
+  );
+  for (const migrationFile of readdirSync(migrationsDirectory)
+    .filter((file) => file.endsWith(".sql"))
+    .sort()) {
+    await pool.query(
+      readFileSync(path.join(migrationsDirectory, migrationFile), "utf8"),
+    );
+  }
+  await pool.end();
 
   //use testcontainer to start redis
   console.log("\x1b[36mRedis starting...\x1b[0m");

@@ -11,10 +11,24 @@ import TypeUZError from "../utils/error";
 
 export type DBLeaderboardEntry = {
   uid: string;
-  language: string;
-  mode: string;
-  mode2: string;
-  numbers: boolean;
+  wpm: number;
+  acc: number;
+  raw: number;
+  consistency?: number;
+  timestamp: number;
+  rank: number;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  discordId?: string;
+  discordAvatar?: string;
+  badgeId?: number;
+  isPremium?: boolean;
+  friendsRank?: number;
+};
+
+type LeaderboardRow = {
+  uid: string;
   wpm: number;
   acc: number;
   raw: number;
@@ -28,7 +42,34 @@ export type DBLeaderboardEntry = {
   discord_avatar: string | null;
   badge_id: number | null;
   is_premium: boolean;
+  friends_rank?: number;
 };
+
+function mapLeaderboardRow(row: LeaderboardRow): DBLeaderboardEntry {
+  return {
+    uid: row.uid,
+    wpm: Number(row.wpm),
+    acc: Number(row.acc),
+    raw: Number(row.raw),
+    timestamp: Number(row.timestamp),
+    rank: Number(row.rank),
+    name: row.name,
+    ...(row.consistency === null
+      ? {}
+      : { consistency: Number(row.consistency) }),
+    ...(row.first_name === null ? {} : { firstName: row.first_name }),
+    ...(row.last_name === null ? {} : { lastName: row.last_name }),
+    ...(row.discord_id === null ? {} : { discordId: row.discord_id }),
+    ...(row.discord_avatar === null
+      ? {}
+      : { discordAvatar: row.discord_avatar }),
+    ...(row.badge_id === null ? {} : { badgeId: row.badge_id }),
+    ...(row.is_premium ? { isPremium: true } : {}),
+    ...(row.friends_rank === undefined
+      ? {}
+      : { friendsRank: Number(row.friends_rank) }),
+  };
+}
 
 export async function get(
   mode: string,
@@ -40,7 +81,7 @@ export async function get(
   uid?: string,
   numbers?: boolean,
 ): Promise<DBLeaderboardEntry[] | false> {
-  if (page < 0 || pageSize < 0) {
+  if (page < 0 || pageSize <= 0) {
     throw new TypeUZError(500, "Invalid page or pageSize");
   }
 
@@ -52,8 +93,9 @@ export async function get(
       const friendUids = await getFriendsUids(uid);
       const allUids = [...friendUids, uid];
 
-      const rows = await db.queryAll<DBLeaderboardEntry>(
-        `SELECT * FROM leaderboard_entries
+      const rows = await db.queryAll<LeaderboardRow>(
+        `SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
+         FROM leaderboard_entries
          WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
          AND uid = ANY($5::text[])
          ORDER BY rank ASC
@@ -61,14 +103,12 @@ export async function get(
         [language, mode, mode2, numbers ?? false, allUids, limit, skip],
       );
 
-      if (!premiumFeaturesEnabled) {
-        return rows.map((it) =>
-          omit(it, ["is_premium"]),
-        ) as DBLeaderboardEntry[];
-      }
-      return rows;
+      const entries = rows.map(mapLeaderboardRow);
+      return premiumFeaturesEnabled
+        ? entries
+        : entries.map((it) => omit(it, ["isPremium"]));
     } else {
-      const rows = await db.queryAll<DBLeaderboardEntry>(
+      const rows = await db.queryAll<LeaderboardRow>(
         `SELECT * FROM leaderboard_entries
          WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
          ORDER BY rank ASC
@@ -76,15 +116,13 @@ export async function get(
         [language, mode, mode2, numbers ?? false, limit, skip],
       );
 
-      if (!premiumFeaturesEnabled) {
-        return rows.map((it) =>
-          omit(it, ["is_premium"]),
-        ) as DBLeaderboardEntry[];
-      }
-      return rows;
+      const entries = rows.map(mapLeaderboardRow);
+      return premiumFeaturesEnabled
+        ? entries
+        : entries.map((it) => omit(it, ["isPremium"]));
     }
   } catch (e) {
-    if ((e as Record<string, unknown>)?.["message"] === "relation not found") {
+    if ((e as { code?: string }).code === "42P01") {
       return false;
     }
     throw e;
@@ -93,6 +131,15 @@ export async function get(
 
 const cachedCounts = new Map<string, number>();
 
+function countCacheKey(
+  language: string,
+  mode: string,
+  mode2: string,
+  numbers?: boolean,
+): string {
+  return `${language}_${mode}_${mode2}_${numbers ?? false}`;
+}
+
 export async function getCount(
   mode: string,
   mode2: string,
@@ -100,7 +147,7 @@ export async function getCount(
   uid?: string,
   numbers?: boolean,
 ): Promise<number> {
-  const key = `${language}_${mode}_${mode2}_${numbers ?? "nowords"}`;
+  const key = countCacheKey(language, mode, mode2, numbers);
   if (uid === undefined && cachedCounts.has(key)) {
     return cachedCounts.get(key) as number;
   } else {
@@ -137,30 +184,28 @@ export async function getRank(
 ): Promise<DBLeaderboardEntry | null | false> {
   try {
     if (!friendsOnly) {
-      const entry = await db.queryOne<DBLeaderboardEntry>(
+      const entry = await db.queryOne<LeaderboardRow>(
         `SELECT * FROM leaderboard_entries
          WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4 AND uid = $5`,
         [language, mode, mode2, numbers ?? false, uid],
       );
-      return entry;
+      return entry === null ? null : mapLeaderboardRow(entry);
     } else {
       const friendUids = await getFriendsUids(uid);
       const allUids = [...friendUids, uid];
-      const rows = await db.queryAll<DBLeaderboardEntry>(
-        `SELECT * FROM leaderboard_entries
+      const rows = await db.queryAll<LeaderboardRow>(
+        `SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
+         FROM leaderboard_entries
          WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
          AND uid = ANY($5::text[])
          ORDER BY rank ASC`,
         [language, mode, mode2, numbers ?? false, allUids],
       );
-      const rankedRows = rows.map((row, idx) => ({
-        ...row,
-        friendsRank: idx + 1,
-      }));
+      const rankedRows = rows.map(mapLeaderboardRow);
       return rankedRows.find((r) => r.uid === uid) ?? null;
     }
   } catch (e) {
-    if ((e as Record<string, unknown>)?.["message"] === "relation not found") {
+    if ((e as { code?: string }).code === "42P01") {
       return false;
     }
     throw e;
@@ -178,130 +223,135 @@ export async function update(
 }> {
   const minTimeTyping = (await getCachedConfiguration(true)).leaderboards
     .minTimeTyping;
+  const leaderboardKey = `${language}:${mode}:${mode2}:${numbers ?? false}`;
+  const statsKey = `${language}_${mode}_${mode2}${numbers ? "_numbers" : ""}`;
 
   const start1 = performance.now();
-  await db.query(
-    `DELETE FROM leaderboard_entries
-     WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
-    [language, mode, mode2, numbers ?? false],
-  );
+  const buckets = await db.transaction(async (client) => {
+    await client.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+      leaderboardKey,
+    ]);
+    await client.query(
+      `DELETE FROM leaderboard_entries
+       WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
+      [language, mode, mode2, numbers ?? false],
+    );
 
-  await db.query(
-    `INSERT INTO leaderboard_entries (
-      uid, language, mode, mode2, numbers,
-      wpm, acc, raw, consistency, timestamp,
-      rank, name, first_name, last_name,
-      discord_id, discord_avatar, badge_id, is_premium
-    )
-    SELECT
-      u.uid,
-      $1 AS language,
-      $2 AS mode,
-      $3 AS mode2,
-      $4 AS numbers,
-      pb->>'wpm' AS wpm,
-      pb->>'acc' AS acc,
-      pb->>'raw' AS raw,
-      pb->>'consistency' AS consistency,
-      pb->>'timestamp' AS timestamp,
-      ROW_NUMBER() OVER (
-        ORDER BY (pb->>'wpm')::numeric DESC NULLS LAST,
-                 (pb->>'acc')::numeric DESC NULLS LAST,
-                 (pb->>'timestamp')::numeric DESC NULLS LAST
-      ) AS rank,
-      u.name,
-      u.first_name,
-      u.last_name,
-      u.discord_id,
-      u.discord_avatar,
-      (SELECT (jsonb_array_elements(COALESCE(u.inventory->'badges', '[]'::jsonb))->>'id')::int
-       WHERE (jsonb_array_elements(COALESCE(u.inventory->'badges', '[]'::jsonb))->>'selected')::bool = true
-       LIMIT 1) AS badge_id,
-      CASE
-        WHEN u.premium->>'expirationTimestamp' IS NULL THEN false
-        WHEN (u.premium->>'expirationTimestamp')::bigint = -1 THEN true
-        WHEN (u.premium->>'expirationTimestamp')::bigint > EXTRACT(EPOCH FROM NOW())::bigint * 1000 THEN true
-        ELSE false
-      END AS is_premium
-    FROM users u,
-         jsonb_array_elements(u.personal_bests#>'{${mode},${mode2}}') AS pb
-    WHERE
-      u.personal_bests#>'{${mode},${mode2}}' IS NOT NULL
-      AND pb->>'language' = $1
-      AND (pb->>'numbers')::boolean = $4
-      AND pb->>'wpm' IS NOT NULL
-      AND (pb->>'wpm')::numeric > 0
-      AND (u.banned IS NOT TRUE OR u.banned IS NULL)
-      AND (u.lb_opt_out IS NOT TRUE OR u.lb_opt_out IS NULL)
-      AND (u.needs_to_change_name IS NOT TRUE OR u.needs_to_change_name IS NULL)
-      AND u.time_typing >= $5`,
-    [
-      language,
-      mode,
-      mode2,
-      numbers ?? false,
-      isDevEnvironment() ? 0 : minTimeTyping,
-    ],
-  );
-  const end1 = performance.now();
-  const timeToRunAggregate = (end1 - start1) / 1000;
-
-  const start2 = performance.now();
-  await db.query(
-    `CREATE INDEX IF NOT EXISTS idx_lb_${language}_${mode}_${mode2}_${numbers ? "nums" : "words"}_uid
-     ON leaderboard_entries(uid) WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
-    [language, mode, mode2, numbers ?? false],
-  );
-  await db.query(
-    `CREATE INDEX IF NOT EXISTS idx_lb_${language}_${mode}_${mode2}_${numbers ? "nums" : "words"}_rank
-     ON leaderboard_entries(rank) WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
-    [language, mode, mode2, numbers ?? false],
-  );
-  const end2 = performance.now();
-  const timeToRunIndex = (end2 - start2) / 1000;
-
-  cachedCounts.delete(`${language}_${mode}_${mode2}_${numbers ?? "nowords"}`);
-
-  const boundaries = [...Array(32).keys()].map((it) => it * 10);
-  const statsKey = `${language}_${mode}_${mode2}_${numbers ?? "nowords"}`;
-
-  const start3 = performance.now();
-  const buckets: Record<string, number> = {};
-  for (let i = 0; i < boundaries.length - 1; i++) {
-    const result = await db.queryOne<{ count: number }>(
-      `SELECT COUNT(*)::int AS count FROM leaderboard_entries
-       WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
-       AND wpm >= $5 AND wpm < $6`,
+    await client.query(
+      `WITH candidates AS (
+        SELECT
+          u.uid,
+          (pb->>'wpm')::numeric AS wpm,
+          (pb->>'acc')::numeric AS acc,
+          (pb->>'raw')::numeric AS raw,
+          (pb->>'consistency')::numeric AS consistency,
+          (pb->>'timestamp')::bigint AS timestamp,
+          u.name,
+          u.first_name,
+          u.last_name,
+          u.discord_id,
+          u.discord_avatar,
+          selected_badge.badge_id,
+          CASE
+            WHEN u.premium->>'expirationTimestamp' IS NULL THEN false
+            WHEN (u.premium->>'expirationTimestamp')::bigint = -1 THEN true
+            WHEN (u.premium->>'expirationTimestamp')::bigint > EXTRACT(EPOCH FROM NOW())::bigint * 1000 THEN true
+            ELSE false
+          END AS is_premium
+        FROM users u
+        CROSS JOIN LATERAL jsonb_array_elements(
+          COALESCE(u.personal_bests #> ARRAY[$2, $3]::text[], '[]'::jsonb)
+        ) AS pb
+        LEFT JOIN LATERAL (
+          SELECT (badge->>'id')::int AS badge_id
+          FROM jsonb_array_elements(
+            COALESCE(u.inventory->'badges', '[]'::jsonb)
+          ) AS badge
+          WHERE COALESCE((badge->>'selected')::boolean, false)
+          LIMIT 1
+        ) AS selected_badge ON true
+        WHERE pb->>'language' = $1
+          AND COALESCE((pb->>'numbers')::boolean, false) = $4
+          AND pb->>'wpm' IS NOT NULL
+          AND pb->>'acc' IS NOT NULL
+          AND pb->>'raw' IS NOT NULL
+          AND pb->>'timestamp' IS NOT NULL
+          AND (pb->>'wpm')::numeric > 0
+          AND COALESCE((pb->>'lazyMode')::boolean, false) = false
+          AND COALESCE(u.banned, false) = false
+          AND COALESCE(u.lb_opt_out, false) = false
+          AND COALESCE(u.needs_to_change_name, false) = false
+          AND u.time_typing >= $5
+      ), best_per_user AS (
+        SELECT DISTINCT ON (uid) *
+        FROM candidates
+        ORDER BY uid, wpm DESC, acc DESC, timestamp DESC
+      ), ranked AS (
+        SELECT *, ROW_NUMBER() OVER (
+          ORDER BY wpm DESC, acc DESC, timestamp DESC
+        ) AS rank
+        FROM best_per_user
+      )
+      INSERT INTO leaderboard_entries (
+        uid, language, mode, mode2, numbers,
+        wpm, acc, raw, consistency, timestamp,
+        rank, name, first_name, last_name,
+        discord_id, discord_avatar, badge_id, is_premium
+      )
+      SELECT
+        uid, $1, $2, $3, $4,
+        wpm, acc, raw, consistency, timestamp,
+        rank, name, first_name, last_name,
+        discord_id, discord_avatar, badge_id, is_premium
+      FROM ranked`,
       [
         language,
         mode,
         mode2,
         numbers ?? false,
-        boundaries[i],
-        boundaries[i + 1],
+        isDevEnvironment() ? 0 : minTimeTyping,
       ],
     );
-    if (result && result.count > 0) {
-      buckets[String(boundaries[i])] = result.count;
-    }
-  }
-  const end3 = performance.now();
-  const timeToSaveHistogram = (end3 - start3) / 1000;
 
-  const existingHistogram = await db.queryOne<{
-    data: Record<string, unknown>;
-  }>("SELECT data FROM public_stats WHERE _id = 'speedStatsHistogram'");
-  const histogramData = existingHistogram?.data ?? {};
-  histogramData[statsKey] = buckets;
-  await db.query(
-    `INSERT INTO public_stats (_id, data) VALUES ('speedStatsHistogram', $1::jsonb)
-     ON CONFLICT (_id) DO UPDATE SET data = $1::jsonb`,
-    [JSON.stringify(histogramData)],
-  );
+    const histogramRows = await client.query<{
+      boundary: number;
+      count: number;
+    }>(
+      `SELECT (FLOOR(wpm / 10) * 10)::int AS boundary,
+              COUNT(*)::int AS count
+       FROM leaderboard_entries
+       WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
+         AND wpm >= 0 AND wpm < 310
+       GROUP BY boundary`,
+      [language, mode, mode2, numbers ?? false],
+    );
+    const nextBuckets = Object.fromEntries(
+      histogramRows.rows.map((row) => [String(row.boundary), row.count]),
+    );
+
+    await client.query(
+      `INSERT INTO public_stats (_id, data)
+       VALUES ('speedStatsHistogram', jsonb_build_object($2::text, $1::jsonb))
+       ON CONFLICT (_id) DO UPDATE SET data = jsonb_set(
+         COALESCE(public_stats.data, '{}'::jsonb),
+         ARRAY[$2]::text[],
+         $1::jsonb,
+         true
+       )`,
+      [JSON.stringify(nextBuckets), statsKey],
+    );
+    return nextBuckets;
+  });
+  const end1 = performance.now();
+  const timeToRunAggregate = (end1 - start1) / 1000;
+  const timeToRunIndex = 0;
+
+  cachedCounts.delete(countCacheKey(language, mode, mode2, numbers));
+  const timeToSaveHistogram = 0;
 
   void addLog(
     `system_lb_update_${language}_${mode}_${mode2}_${numbers ?? "nowords"}`,
-    `Aggregate ${timeToRunAggregate}s, loop 0s, insert 0s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`,
+    `Aggregate ${timeToRunAggregate}s, entries ${Object.values(buckets).reduce((sum, count) => sum + count, 0)}, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`,
   );
 
   setLeaderboard(language, mode, mode2, [
@@ -337,9 +387,39 @@ export async function createIndicies(): Promise<void> {
 
 export async function getActiveTimeModes(): Promise<string[]> {
   const res = await db.query(`
-    SELECT DISTINCT jsonb_object_keys(lb_personal_bests->'time') AS mode2
+    SELECT DISTINCT jsonb_object_keys(personal_bests->'time') AS mode2
     FROM users
-    WHERE lb_personal_bests->'time' IS NOT NULL
+    WHERE personal_bests->'time' IS NOT NULL
   `);
   return (res.rows as { mode2: string }[]).map((row) => row.mode2);
+}
+
+export async function purgeUser(uid: string): Promise<void> {
+  await db.query("DELETE FROM leaderboard_entries WHERE uid = $1", [uid]);
+  cachedCounts.clear();
+}
+
+export async function getActiveTimeLeaderboards(): Promise<
+  { mode2: string; language: string; numbers: boolean }[]
+> {
+  return await db.queryAll(
+    `SELECT DISTINCT mode2, language, numbers FROM (
+       SELECT
+         time_mode.mode2,
+         pb->>'language' AS language,
+         COALESCE((pb->>'numbers')::boolean, false) AS numbers
+       FROM users u
+       CROSS JOIN LATERAL jsonb_object_keys(
+         COALESCE(u.personal_bests->'time', '{}'::jsonb)
+       ) AS time_mode(mode2)
+       CROSS JOIN LATERAL jsonb_array_elements(
+         COALESCE(u.personal_bests #> ARRAY['time', time_mode.mode2]::text[], '[]'::jsonb)
+       ) AS pb
+       WHERE pb->>'language' IS NOT NULL
+       UNION
+       SELECT mode2, language, numbers
+       FROM leaderboard_entries
+       WHERE mode = 'time'
+     ) AS active`,
+  );
 }

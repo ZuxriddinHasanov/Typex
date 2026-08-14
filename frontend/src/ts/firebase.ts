@@ -60,8 +60,8 @@ export async function init(callback: ReadyCallback): Promise<void> {
       }
     ).firebaseConfig;
 
-    // Dev mode: if Firebase config is fake, skip Firebase entirely
-    if (isDevEnvironment() && !firebaseConfig.apiKey?.startsWith("AIzaSy")) {
+    // Custom auth is the supported fallback whenever Firebase is not configured.
+    if (!firebaseConfig.apiKey?.startsWith("AIzaSy")) {
       if (isDevEnvironment()) {
         console.info("Dev: Firebase not configured — auth disabled");
       }
@@ -72,7 +72,10 @@ export async function init(callback: ReadyCallback): Promise<void> {
       const storedUser = getStoredUser();
       if (storedToken !== null && storedUser !== null) {
         setUserState({ uid: storedUser.uid, emailVerified: true });
-        await callback(true, { uid: storedUser.uid, email: storedUser.email } as unknown as User);
+        await callback(true, {
+          uid: storedUser.uid,
+          email: storedUser.email,
+        } as unknown as User);
       } else {
         const devAuth = getDevAuth();
         if (devAuth !== null) {

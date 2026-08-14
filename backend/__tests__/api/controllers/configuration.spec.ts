@@ -35,7 +35,13 @@ describe("Configuration Controller", () => {
       //THEN
       expect(body).toEqual({
         message: "Configuration retrieved",
-        data: BASE_CONFIGURATION,
+        data: {
+          ...BASE_CONFIGURATION,
+          users: {
+            ...BASE_CONFIGURATION.users,
+            ai: { ...BASE_CONFIGURATION.users.ai, apiKey: "***" },
+          },
+        },
       });
     });
   });

@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, afterEach, vi } from "vitest";
-import pg, { Pool } from "pg";
+import pg, { Pool, type PoolClient } from "pg";
 import { setupCommonMocks } from "../setup-common-mocks";
 import { getConnection } from "../../src/init/redis";
 
@@ -14,22 +14,17 @@ beforeAll(async () => {
   });
   await pool.query("SELECT 1");
 
-  // Run migrations
-  const fs = await import("fs");
-  const path = await import("path");
-  const migrationSql = fs.readFileSync(
-    path.resolve(__dirname, "../../supabase/migrations/0001_init.sql"),
-    "utf8",
-  );
-  await pool.query(migrationSql);
-
   vi.mock("../../src/init/db", async () => {
-    const actual = await vi.importActual<typeof import("../../src/init/db")>("../../src/init/db");
+    const actual =
+      await vi.importActual<typeof import("../../src/init/db")>(
+        "../../src/init/db",
+      );
     const mockPool: Pool = pool as unknown as Pool;
     return {
       ...actual,
       getPool: () => mockPool,
-      query: async (text: string, params?: unknown[]) => mockPool.query(text, params),
+      query: async (text: string, params?: unknown[]) =>
+        mockPool.query(text, params),
       queryOne: async <T>(text: string, params?: unknown[]) => {
         const result = await mockPool.query(text, params);
         return (result.rows[0] ?? null) as T;
@@ -37,6 +32,20 @@ beforeAll(async () => {
       queryAll: async <T>(text: string, params?: unknown[]) => {
         const result = await mockPool.query(text, params);
         return result.rows as T[];
+      },
+      transaction: async <T>(callback: (client: PoolClient) => Promise<T>) => {
+        const client = await mockPool.connect();
+        try {
+          await client.query("BEGIN");
+          const result = await callback(client);
+          await client.query("COMMIT");
+          return result;
+        } catch (error) {
+          await client.query("ROLLBACK");
+          throw error;
+        } finally {
+          client.release();
+        }
       },
     };
   });
@@ -51,9 +60,23 @@ afterEach(async () => {
   // Clean all tables between tests
   if (pool) {
     const tables = [
-      "results", "users", "presets", "ape_keys", "connections",
-      "configs", "leaderboard_entries", "new_quotes", "quote_ratings",
-      "logs", "reports", "blocklist", "psa", "admin_uids",
+      "results",
+      "users",
+      "presets",
+      "ape_keys",
+      "connections",
+      "configs",
+      "leaderboard_entries",
+      "new_quotes",
+      "quote_ratings",
+      "logs",
+      "reports",
+      "blocklist",
+      "psa",
+      "admin_uids",
+      "user_passwords",
+      "password_resets",
+      "admin_credentials",
     ];
     for (const table of tables) {
       await pool.query(`DELETE FROM ${table}`).catch(() => undefined);

@@ -1,5 +1,11 @@
 import { envConfig } from "virtual:env-config";
-import { setStoredToken, clearStoredToken, setStoredUser } from "./custom-auth";
+import {
+  clearStoredToken,
+  getStoredToken,
+  isStoredTokenPersistent,
+  setStoredToken,
+  setStoredUser,
+} from "./custom-auth";
 
 const backendUrl = (): string => envConfig.backendUrl;
 
@@ -38,13 +44,26 @@ export async function registerWithEmail(
         avatar,
       }),
     });
-    const json = await res.json() as { message: string; data?: { uid: string; email: string; name: string; token: string } };
+    const json = (await res.json()) as {
+      message: string;
+      data?: { uid: string; email: string; name: string; token: string };
+    };
     if (!res.ok) return { success: false, message: json.message };
 
     if (json.data) {
       setStoredToken(json.data.token);
-      setStoredUser({ uid: json.data.uid, email: json.data.email, name: json.data.name });
-      return { success: true, message: json.message, uid: json.data.uid, email: json.data.email, name: json.data.name };
+      setStoredUser({
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      });
+      return {
+        success: true,
+        message: json.message,
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      };
     }
     return { success: false, message: json.message };
   } catch (e) {
@@ -55,7 +74,7 @@ export async function registerWithEmail(
 export async function loginWithEmail(
   email: string,
   password: string,
-  _rememberMe: boolean,
+  rememberMe: boolean,
 ): Promise<AuthResult> {
   try {
     const res = await fetch(`${backendUrl()}/auth/email/login`, {
@@ -63,13 +82,26 @@ export async function loginWithEmail(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
-    const json = await res.json() as { message: string; data?: { uid: string; email: string; name: string; token: string } };
+    const json = (await res.json()) as {
+      message: string;
+      data?: { uid: string; email: string; name: string; token: string };
+    };
     if (!res.ok) return { success: false, message: json.message };
 
     if (json.data) {
-      setStoredToken(json.data.token);
-      setStoredUser({ uid: json.data.uid, email: json.data.email, name: json.data.name });
-      return { success: true, message: json.message, uid: json.data.uid, email: json.data.email, name: json.data.name };
+      setStoredToken(json.data.token, rememberMe);
+      setStoredUser({
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      });
+      return {
+        success: true,
+        message: json.message,
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      };
     }
     return { success: false, message: json.message };
   } catch (e) {
@@ -77,20 +109,78 @@ export async function loginWithEmail(
   }
 }
 
-export async function loginWithGoogle(idToken: string, email: string, name?: string): Promise<AuthResult> {
+export async function reauthenticateWithEmail(
+  password: string,
+): Promise<AuthResult> {
+  try {
+    const token = getStoredToken();
+    if (token === null) {
+      return { success: false, message: "Authentication token not found" };
+    }
+    const res = await fetch(`${backendUrl()}/auth/email/reauthenticate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ password }),
+    });
+    const json = (await res.json()) as {
+      message: string;
+      data?: { uid: string; email: string; name: string; token: string };
+    };
+    if (!res.ok || json.data === undefined) {
+      return { success: false, message: json.message };
+    }
+    setStoredToken(json.data.token, isStoredTokenPersistent());
+    setStoredUser({
+      uid: json.data.uid,
+      email: json.data.email,
+      name: json.data.name,
+    });
+    return {
+      success: true,
+      message: json.message,
+      uid: json.data.uid,
+      email: json.data.email,
+      name: json.data.name,
+    };
+  } catch (e) {
+    return { success: false, message: (e as Error).message };
+  }
+}
+
+export async function loginWithGoogle(
+  idToken: string,
+  email: string,
+  name?: string,
+): Promise<AuthResult> {
   try {
     const res = await fetch(`${backendUrl()}/auth/google`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken, email, name }),
     });
-    const json = await res.json() as { message: string; data?: { uid: string; email: string; name: string; token: string } };
+    const json = (await res.json()) as {
+      message: string;
+      data?: { uid: string; email: string; name: string; token: string };
+    };
     if (!res.ok) return { success: false, message: json.message };
 
     if (json.data) {
       setStoredToken(json.data.token);
-      setStoredUser({ uid: json.data.uid, email: json.data.email, name: json.data.name });
-      return { success: true, message: json.message, uid: json.data.uid, email: json.data.email, name: json.data.name };
+      setStoredUser({
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      });
+      return {
+        success: true,
+        message: json.message,
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      };
     }
     return { success: false, message: json.message };
   } catch (e) {
@@ -105,13 +195,26 @@ export async function loginWithGithub(code: string): Promise<AuthResult> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code }),
     });
-    const json = await res.json() as { message: string; data?: { uid: string; email: string; name: string; token: string } };
+    const json = (await res.json()) as {
+      message: string;
+      data?: { uid: string; email: string; name: string; token: string };
+    };
     if (!res.ok) return { success: false, message: json.message };
 
     if (json.data) {
       setStoredToken(json.data.token);
-      setStoredUser({ uid: json.data.uid, email: json.data.email, name: json.data.name });
-      return { success: true, message: json.message, uid: json.data.uid, email: json.data.email, name: json.data.name };
+      setStoredUser({
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      });
+      return {
+        success: true,
+        message: json.message,
+        uid: json.data.uid,
+        email: json.data.email,
+        name: json.data.name,
+      };
     }
     return { success: false, message: json.message };
   } catch (e) {

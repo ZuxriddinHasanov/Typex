@@ -62,7 +62,11 @@ export async function getLeaderboard(
     friendsOnlyUid,
     numbers,
   );
-  const normalizedLeaderboard = leaderboard as never[];
+  const normalizedLeaderboard = leaderboard.map((entry) => {
+    const publicEntry = { ...entry } as Record<string, unknown>;
+    delete publicEntry["_id"];
+    return publicEntry;
+  }) as never[];
 
   return new TypeUZResponse("Leaderboard retrieved", {
     count,
@@ -97,7 +101,9 @@ export async function getRankFromLeaderboard(
     return new TypeUZResponse("Rank retrieved", null);
   }
 
-  return new TypeUZResponse("Rank retrieved", data as never);
+  const publicEntry = { ...data } as Record<string, unknown>;
+  delete publicEntry["_id"];
+  return new TypeUZResponse("Rank retrieved", publicEntry as never);
 }
 
 function getDailyLeaderboardWithError(

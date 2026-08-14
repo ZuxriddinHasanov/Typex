@@ -7,24 +7,21 @@ const CRON_SCHEDULE = "0 */2 * * * *";
 const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
-async function getTop10(
+async function updateLeaderboardAndNotifyChanges(
   leaderboardTime: string,
   language: string,
-): Promise<LeaderboardsDAL.DBLeaderboardEntry[]> {
-  return (await LeaderboardsDAL.get(
+  numbers: boolean,
+): Promise<void> {
+  const top10BeforeUpdate = (await LeaderboardsDAL.get(
     "time",
     leaderboardTime,
     language,
     0,
     10,
-  )) as LeaderboardsDAL.DBLeaderboardEntry[]; //can do that because gettop10 will not be called during an update
-}
-
-async function updateLeaderboardAndNotifyChanges(
-  leaderboardTime: string,
-  language: string,
-): Promise<void> {
-  const top10BeforeUpdate = await getTop10(leaderboardTime, language);
+    false,
+    undefined,
+    numbers,
+  )) as LeaderboardsDAL.DBLeaderboardEntry[];
 
   const previousRecordsMap = Object.fromEntries(
     top10BeforeUpdate.map((record) => {
@@ -32,9 +29,18 @@ async function updateLeaderboardAndNotifyChanges(
     }),
   );
 
-  await LeaderboardsDAL.update("time", leaderboardTime, language);
+  await LeaderboardsDAL.update("time", leaderboardTime, language, numbers);
 
-  const top10AfterUpdate = await getTop10(leaderboardTime, language);
+  const top10AfterUpdate = (await LeaderboardsDAL.get(
+    "time",
+    leaderboardTime,
+    language,
+    0,
+    10,
+    false,
+    undefined,
+    numbers,
+  )) as LeaderboardsDAL.DBLeaderboardEntry[];
 
   const newRecords = top10AfterUpdate.filter((record) => {
     const userId = record.uid;
@@ -52,7 +58,7 @@ async function updateLeaderboardAndNotifyChanges(
   });
 
   if (newRecords.length > 0) {
-    const leaderboardId = `time ${leaderboardTime} ${language}`;
+    const leaderboardId = `time ${leaderboardTime} ${language}${numbers ? " numbers" : ""}`;
 
     const mapped = newRecords.map((r) => ({
       ...r,
@@ -68,16 +74,10 @@ async function updateLeaderboards(): Promise<void> {
     return;
   }
 
-  const activeTimeModes = await LeaderboardsDAL.getActiveTimeModes();
-  const timeModesToUpdate =
-    activeTimeModes.length > 0
-      ? activeTimeModes
-      : ["120", "60", "30", "15", "10", "1"];
+  const activeLeaderboards = await LeaderboardsDAL.getActiveTimeLeaderboards();
 
-  for (const language of ["uzbek", "english"]) {
-    for (const timeMode of timeModesToUpdate) {
-      await updateLeaderboardAndNotifyChanges(timeMode, language);
-    }
+  for (const { mode2, language, numbers } of activeLeaderboards) {
+    await updateLeaderboardAndNotifyChanges(mode2, language, numbers);
   }
 }
 

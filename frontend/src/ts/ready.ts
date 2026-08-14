@@ -7,20 +7,34 @@ import { onDOMReady, qs } from "./utils/dom";
 import { isDevEnvironment } from "./utils/env";
 
 onDOMReady(async () => {
-  await configLoadPromise;
-  await authPromise;
+  try {
+    await configLoadPromise;
+  } catch (e) {
+    console.error("Failed to load config", e);
+  }
+  try {
+    await authPromise;
+  } catch (e) {
+    console.error("Failed to load auth", e);
+  }
 
   //this line goes back to pretty much the beginning of the project and im pretty sure its here
   //to make sure the initial theme application doesnt animate the background color
   qs("body")?.setStyle({
     transition: "background .25s, transform .05s",
   });
-  const app = document.querySelector("#app") as HTMLElement;
+  const app = document.querySelector<HTMLElement>("#app");
   app?.classList.remove("hidden");
-  animate(app, {
-    opacity: [0, 1],
-    duration: Misc.applyReducedMotion(250),
-  });
+  if (app !== null) {
+    try {
+      animate(app, {
+        opacity: [0, 1],
+        duration: Misc.applyReducedMotion(250),
+      });
+    } catch {
+      app.style.opacity = "1";
+    }
+  }
 
   void ServerConfiguration.sync();
 
