@@ -1,7 +1,6 @@
 import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
 import * as db from "../init/db";
 import TypeUZError from "../utils/error";
-import { isDevEnvironment } from "../utils/misc";
 import { devGet as devGetUser, devSet } from "../utils/dev-store";
 import { getCachedConfiguration } from "../init/configuration";
 import { getDayOfYear } from "date-fns";
@@ -346,7 +345,7 @@ export async function updateEmail(
 }
 
 export async function getUser(uid: string, stack: string): Promise<DBUser> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     // Try users_by_uid first (fast path)
     const byUid =
       devGetUser<Record<string, { uid: string; email: string; name: string }>>(
@@ -416,7 +415,7 @@ export async function getPartialUser<K extends keyof DBUser>(
   stack: string,
   fields: K[],
 ): Promise<Pick<DBUser, K>> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     const full = await getUser(uid, stack);
     const partial: Record<string, unknown> = {};
     fields.forEach((f) => {
@@ -528,7 +527,7 @@ export async function getPartialUser<K extends keyof DBUser>(
 }
 
 export async function findByName(name: string): Promise<DBUser | undefined> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     const usersByName =
       devGetUser<Record<string, { uid: string; email: string; name: string }>>(
         "users_by_name",
@@ -563,7 +562,7 @@ export async function findByName(name: string): Promise<DBUser | undefined> {
 }
 
 export async function findByEmail(email: string): Promise<DBUser | undefined> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     const usersByEmail =
       devGetUser<Record<string, { uid: string; email: string; name: string }>>(
         "users_by_email",
@@ -721,7 +720,7 @@ export async function setVerified(
   uid: string,
   verified: boolean,
 ): Promise<void> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     return;
   }
   await db.query("UPDATE users SET verified = $1 WHERE uid = $2", [
@@ -1303,7 +1302,7 @@ export async function updateProfile(
   profileDetailUpdates: Partial<UserProfileDetails>,
   inventory?: UserInventory,
 ): Promise<void> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     const profile =
       devGetUser<Record<string, unknown>>(`user_profile_${uid}`) ?? {};
     Object.assign(profile, { profileDetails: profileDetailUpdates });
@@ -1331,7 +1330,7 @@ export async function updateProfileDetails(
   uid: string,
   updates: Record<string, unknown>,
 ): Promise<void> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     const profile =
       devGetUser<Record<string, unknown>>(`user_profile_${uid}`) ?? {};
     Object.assign(profile, updates);
@@ -1664,7 +1663,7 @@ export async function updateAiUses(
   uid: string,
   aiUses: { date: string; count: number },
 ): Promise<void> {
-  if (isDevEnvironment()) {
+  if (db.getPool() === undefined) {
     const profile =
       devGetUser<Record<string, unknown>>(`user_profile_${uid}`) ?? {};
     profile["aiUses"] = aiUses;
