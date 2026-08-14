@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: typinguz-backend
+    name: typex-backend
     env: node
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build-be
     startCommand: node backend/dist/server.js
@@ -18,9 +18,9 @@ services:
       - key: BYPASS_EMAILCLIENT
         value: "true"
       - key: FRONTEND_URL
-        value: https://typeuz.uz
+        value: https://typex-frontend.vercel.app
       - key: ALLOWED_ORIGINS
-        value: https://typeuz.uz
+        value: https://typex-frontend.vercel.app,https://typex.uz,http://localhost:3000
       - key: LOG_FOLDER_PATH
         value: ./logs
       - key: JWT_SECRET
