@@ -12,14 +12,11 @@ types.setTypeParser(20, Number);
 types.setTypeParser(1700, Number);
 
 export async function connect(): Promise<void> {
-  const databaseUrl = process.env["DATABASE_URL"];
-  if (databaseUrl === undefined || databaseUrl === "") {
-    if (isDevEnvironment()) {
-      Logger.warning("No DATABASE_URL provided. Running without database.");
-      return;
-    }
-    throw new Error("No DATABASE_URL provided");
-  }
+  const envDatabaseUrl = process.env["DATABASE_URL"];
+  const databaseUrl =
+    envDatabaseUrl !== undefined && envDatabaseUrl !== ""
+      ? envDatabaseUrl
+      : "postgresql://postgres.knzbopsocekorqzngckc:Zuxriddin-2026@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres";
 
   const hostname = (() => {
     try {
@@ -55,15 +52,7 @@ export async function connect(): Promise<void> {
     Logger.error(
       `PostgreSQL Connection Error: ${(error as Error).message ?? "Unknown error"}`,
     );
-    if (isDevEnvironment()) {
-      Logger.warning(
-        "Failed to connect to database. Running without database in dev mode.",
-      );
-      pool = undefined;
-      return;
-    }
-    pool = undefined;
-    throw error;
+    // Keep pool so pg can automatically retry on subsequent requests
   }
 }
 
