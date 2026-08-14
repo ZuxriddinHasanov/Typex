@@ -11,26 +11,26 @@ export const BASE_CONFIGURATION: Configuration = {
     responseSlowdownMs: 0,
   },
   results: {
-    savingEnabled: false,
+    savingEnabled: true,
     objectHashCheckEnabled: false,
     filterPresets: {
-      enabled: false,
-      maxPresetsPerUser: 0,
+      enabled: true,
+      maxPresetsPerUser: 10,
     },
     limits: {
-      regularUser: 1000,
-      premiumUser: 10000,
+      regularUser: 5000,
+      premiumUser: 50000,
     },
     maxBatchSize: 1000,
   },
   quotes: {
     reporting: {
-      enabled: false,
-      maxReports: 0,
-      contentReportLimit: 0,
+      enabled: true,
+      maxReports: 10,
+      contentReportLimit: 10,
     },
-    submissionsEnabled: false,
-    maxFavorites: 0,
+    submissionsEnabled: true,
+    maxFavorites: 100,
   },
   admin: {
     endpointsEnabled: true,
@@ -41,17 +41,17 @@ export const BASE_CONFIGURATION: Configuration = {
     slots: [],
   },
   apeKeys: {
-    endpointsEnabled: false,
-    acceptKeys: false,
-    maxKeysPerUser: 0,
+    endpointsEnabled: true,
+    acceptKeys: true,
+    maxKeysPerUser: 5,
     apeKeyBytes: 24,
     apeKeySaltRounds: 5,
   },
   users: {
-    signUp: false,
+    signUp: true,
     lastHashesCheck: {
       enabled: false,
-      maxHashes: 0,
+      maxHashes: 10,
     },
     discordIntegration: {
       enabled: false,
@@ -62,31 +62,31 @@ export const BASE_CONFIGURATION: Configuration = {
       maxHours: 1,
     },
     profiles: {
-      enabled: false,
+      enabled: true,
     },
     ai: {
       enabled: true,
-      maxDailyUses: 3,
+      maxDailyUses: 5,
       apiKey: "",
     },
     xp: {
-      enabled: false,
-      funboxBonus: 0,
-      gainMultiplier: 0,
-      maxDailyBonus: 0,
-      minDailyBonus: 0,
+      enabled: true,
+      funboxBonus: 1.2,
+      gainMultiplier: 1,
+      maxDailyBonus: 500,
+      minDailyBonus: 50,
       streak: {
-        enabled: false,
-        maxStreakDays: 0,
-        maxStreakMultiplier: 0,
+        enabled: true,
+        maxStreakDays: 30,
+        maxStreakMultiplier: 2,
       },
     },
     inbox: {
-      enabled: false,
-      maxMail: 0,
+      enabled: true,
+      maxMail: 50,
     },
     premium: {
-      enabled: false,
+      enabled: true,
     },
   },
   rateLimiting: {
@@ -97,23 +97,23 @@ export const BASE_CONFIGURATION: Configuration = {
     },
   },
   dailyLeaderboards: {
-    enabled: false,
-    maxResults: 0,
-    leaderboardExpirationTimeInDays: 0,
+    enabled: true,
+    maxResults: 100,
+    leaderboardExpirationTimeInDays: 7,
     validModeRules: [],
     scheduleRewardsModeRules: [],
-    topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
+    topResultsToAnnounce: 1,
     xpRewardBrackets: [],
   },
   leaderboards: {
     minTimeTyping: 0,
     weeklyXp: {
-      enabled: false,
-      expirationTimeInDays: 0, // This should atleast be 15
+      enabled: true,
+      expirationTimeInDays: 15,
       xpRewardBrackets: [],
     },
   },
-  connections: { enabled: false, maxPerUser: 100 },
+  connections: { enabled: true, maxPerUser: 100 },
 };
 
 type BaseSchema = {
