@@ -42,7 +42,10 @@ export function envConfig(options: {
             "https://typex-backend-yrvx.onrender.com",
           ),
           recaptchaSiteKey: fallback(options.env["RECAPTCHA_SITE_KEY"], ""),
-          googleClientId: fallback(options.env["VITE_GOOGLE_CLIENT_ID"], ""),
+          googleClientId: fallback(
+            options.env["VITE_GOOGLE_CLIENT_ID"],
+            "254290811654-97e6thf6odffs58iop3it77k1s2tgq4r.apps.googleusercontent.com",
+          ),
           quickLoginEmail: undefined,
           quickLoginPassword: undefined,
           clientVersion: options.clientVersion,
