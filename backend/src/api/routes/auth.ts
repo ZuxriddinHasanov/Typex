@@ -50,8 +50,8 @@ const RegistrationSchema = z.object({
   name: UserNameSchema,
   firstName: z.string().min(1).max(50).optional(),
   lastName: z.string().min(1).max(50).optional(),
-  captcha: z.string(),
-  gender: GenderSchema,
+  captcha: z.string().optional(),
+  gender: GenderSchema.optional(),
   age: z.number().int().min(10).max(120).optional(),
   avatar: z.string().max(2048).optional(),
 });
