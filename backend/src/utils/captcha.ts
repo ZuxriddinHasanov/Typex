@@ -9,13 +9,17 @@ type CaptchaData = {
 
 const recaptchaSecret = process.env["RECAPTCHA_SECRET"] ?? null;
 
-export async function verify(captcha: string): Promise<boolean> {
-  if (isDevEnvironment()) {
+export async function verify(captcha?: string): Promise<boolean> {
+  if (
+    isDevEnvironment() ||
+    recaptchaSecret === null ||
+    recaptchaSecret === ""
+  ) {
     return true;
   }
 
-  if (recaptchaSecret === null) {
-    throw new Error("RECAPTCHA_SECRET is not defined");
+  if (captcha === undefined || captcha === "") {
+    return false;
   }
 
   const response = await fetch(
