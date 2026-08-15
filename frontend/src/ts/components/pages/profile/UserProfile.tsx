@@ -254,8 +254,14 @@ export function UserProfile(props: {
 
       <Show when={!props.profile.banned && !props.profile.lbOptOut}>
         <LeaderboardPosition
-          top15={props.profile.allTimeLbs?.time?.["15"]?.["english"]}
-          top60={props.profile.allTimeLbs?.time?.["60"]?.["english"]}
+          top15={
+            props.profile.allTimeLbs?.time?.["15"]?.["uzbek"] ??
+            props.profile.allTimeLbs?.time?.["15"]?.["english"]
+          }
+          top60={
+            props.profile.allTimeLbs?.time?.["60"]?.["uzbek"] ??
+            props.profile.allTimeLbs?.time?.["60"]?.["english"]
+          }
         />
       </Show>
 
@@ -263,7 +269,7 @@ export function UserProfile(props: {
         <div class="rounded-2xl border border-sub/5 bg-gradient-to-b from-sub-alt/40 to-bg p-6 shadow-sm backdrop-blur-sm">
           <PbTable
             mode="time"
-            mode2={["15", "30", "60", "120"]}
+            mode2={["10", "15", "30", "60", "120"]}
             pbs={props.profile.personalBests.time}
             isAccountPage={props.isAccountPage}
           />
@@ -279,7 +285,7 @@ export function UserProfile(props: {
       </div>
 
       <Show when={props.profile.lbOptOut}>
-        <div class="bg-red-500/10 border-red-500/20 rounded-xl border p-4 text-center">
+        <div class="border-red-500/20 bg-red-500/10 rounded-xl border p-4 text-center">
           <span class="text-red-400 text-sm font-medium">
             Diqqat: Ushbu akkaunt reytingdan chetlashtirilgan. Natijalar
             anticheat tizimi tomonidan tasdiqlanmagan bo&apos;lishi mumkin.
@@ -296,10 +302,6 @@ export function UserProfile(props: {
         />
       </div>
 
-      <Show when={props.isAccountPage === true ? true : isUsersProfile()}>
-        <WeeklyAnalysis />
-      </Show>
-
       <TypeUZAdSlot slotId="ad-account-2" class="w-full" />
     </div>
   );
@@ -314,7 +316,7 @@ function LeaderboardPosition(props: {
   return (
     <div class="grid w-full grid-cols-1 items-center gap-6 rounded-2xl border border-sub/5 bg-sub-alt/40 p-6 text-sub shadow-sm md:grid-cols-3">
       <span class="text-sm font-bold tracking-widest text-text uppercase md:col-span-1">
-        Barcha Vaqtlar (Ingliz) Reytingi
+        Barcha Vaqtlar Reytingi
       </span>
       <Show when={props.top15 !== undefined}>
         <div class="flex items-center justify-between gap-4 rounded-xl border border-sub/5 bg-bg/50 p-4">

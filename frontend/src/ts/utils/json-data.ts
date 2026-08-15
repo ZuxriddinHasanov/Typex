@@ -221,14 +221,18 @@ type GithubRelease = {
  * @returns A promise that resolves to the latest release name.
  */
 export async function getLatestReleaseFromGitHub(): Promise<string> {
-  type releaseType = { name: string };
-  const releases = await cachedFetchJson<releaseType[]>(
-    "https://api.github.com/repos/ZuxriddinNeo/typinguz/releases?per_page=1",
-  );
-  if (releases[0] === undefined || releases[0].name === undefined) {
-    throw new Error("No release found");
+  try {
+    type releaseType = { name: string };
+    const releases = await cachedFetchJson<releaseType[]>(
+      "https://api.github.com/repos/ZuxriddinNeo/typinguz/releases?per_page=1",
+    );
+    if (releases[0] === undefined || releases[0].name === undefined) {
+      return "v1.0.0";
+    }
+    return releases[0].name;
+  } catch {
+    return "v1.0.0";
   }
-  return releases[0].name;
 }
 
 /**
@@ -238,7 +242,11 @@ export async function getLatestReleaseFromGitHub(): Promise<string> {
 export async function getReleasesFromGitHub(options?: {
   page?: number;
 }): Promise<GithubRelease[]> {
-  return fetchJson(
-    `https://api.github.com/repos/ZuxriddinNeo/typinguz/releases?per_page=5&page=${options?.page ?? 1}`,
-  );
+  try {
+    return await fetchJson(
+      `https://api.github.com/repos/ZuxriddinNeo/typinguz/releases?per_page=5&page=${options?.page ?? 1}`,
+    );
+  } catch {
+    return [];
+  }
 }

@@ -1,7 +1,6 @@
 import { PSA } from "@typeuz/schemas/psas";
 import { IdSchema } from "@typeuz/schemas/util";
 import { isSafeNumber } from "@typeuz/util/numbers";
-import { tryCatch } from "@typeuz/util/trycatch";
 import { format } from "date-fns/format";
 import { z } from "zod";
 
@@ -41,85 +40,21 @@ async function getLatest(): Promise<PSA[] | null> {
       console.info("Dev: Backend server not running");
       return null;
     } else {
-      type InstatusSummary = {
-        page: {
-          name: string;
-          url: string;
-          status: string;
-        };
-        activeIncidents: {
-          id: string;
-          name: string;
-          started: string;
-          status: string;
-          impact: string;
-          url: string;
-          updatedAt: string;
-        }[];
-        activeMaintenances:
-          | {
-              id: string;
-              name: string;
-              start: string;
-              status: "NOTSTARTEDYET" | "INPROGRESS" | "COMPLETED";
-              duration: number;
-              url: string;
-              updatedAt: string;
-            }[]
-          | undefined;
-      };
-
-      const { data: instatus, error } = await tryCatch(
-        fetch("https://typeuz.instatus.com/summary.json"),
-      );
-
-      let maintenanceData: undefined | InstatusSummary["activeMaintenances"];
-
-      if (error) {
-        console.log("Failed to fetch Instatus summary", error);
-      } else {
-        const instatusData =
-          (await instatus.json()) as unknown as InstatusSummary;
-
-        maintenanceData = instatusData.activeMaintenances;
-      }
-
-      if (
-        maintenanceData !== undefined &&
-        maintenanceData.length > 0 &&
-        maintenanceData[0] !== undefined &&
-        maintenanceData[0].status === "INPROGRESS"
-      ) {
-        addBanner({
-          level: "error",
-          customContent: (
-            <>
-              Server is currently offline for scheduled maintenance.{" "}
-              <a target="_blank" href={maintenanceData[0].url}>
-                Check the status page
-              </a>{" "}
-              for more info.
-            </>
-          ),
-          icon: "fas fa-bullhorn",
-        });
-      } else {
-        addBanner({
-          level: "error",
-          icon: "fas fa-exclamation-triangle",
-          customContent: (
-            <>
-              Looks like the server is experiencing unexpected down time.
-              <br />
-              Check the{" "}
-              <a target="_blank" href="https://typeuz.instatus.com/">
-                status page
-              </a>{" "}
-              for more information.
-            </>
-          ),
-        });
-      }
+      addBanner({
+        level: "error",
+        icon: "fas fa-exclamation-triangle",
+        customContent: (
+          <>
+            Looks like the server is experiencing unexpected down time.
+            <br />
+            Check the{" "}
+            <a target="_blank" href="https://typeuz.instatus.com/">
+              status page
+            </a>{" "}
+            for more information.
+          </>
+        ),
+      });
     }
     return null;
   } else if (response.status === 503) {

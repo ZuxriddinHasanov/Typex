@@ -46,6 +46,7 @@ export const DefaultWordsModeSchema = z.union([
 ]);
 
 export const DefaultTimeModeSchema = z.union([
+  z.literal("10"),
   z.literal("15"),
   z.literal("30"),
   z.literal("60"),

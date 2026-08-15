@@ -12,10 +12,10 @@ import { hideLoaderBar, showLoaderBar } from "../../../states/loader-bar";
 import { filters, setFilters } from "../../../states/result-filters";
 import { qs } from "../../../utils/dom";
 import { downloadResultsCSV } from "../../../utils/misc";
-import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Page } from "../../common/Page";
+import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
 import { Charts } from "./Charts";
 import { Filters } from "./Filters";
 import { MyProfile } from "./MyProfile";
@@ -64,8 +64,20 @@ export function AccountPage(): JSXElement {
         <Show
           when={resultsQuery()?.length > 0}
           fallback={
-            <div class="grid h-150 place-items-center">
-              <div>No data found. Check your filters.</div>
+            <div class="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <i class="fas fa-keyboard text-4xl text-sub/40"></i>
+              <div class="text-base font-semibold text-text">
+                Hozircha test natijalari mavjud emas
+              </div>
+              <div class="text-sm text-sub">
+                Yangi test topshiring yoki filtr sozlamalarini tekshiring.
+              </div>
+              <a
+                href="/test"
+                class="mt-2 rounded-xl bg-main px-5 py-2 text-sm font-bold text-bg transition-transform hover:scale-105"
+              >
+                Test topshirish
+              </a>
             </div>
           }
         >
@@ -114,7 +126,10 @@ export function AccountPage(): JSXElement {
               />
             </div>
 
-            <TypeUZAdSlot slotId="ad-account-2" class="mx-auto w-full max-w-3xl" />
+            <TypeUZAdSlot
+              slotId="ad-account-2"
+              class="mx-auto w-full max-w-3xl"
+            />
 
             <AsyncContent collections={{ resultsQuery }}>
               {({ resultsQueryData }) => (

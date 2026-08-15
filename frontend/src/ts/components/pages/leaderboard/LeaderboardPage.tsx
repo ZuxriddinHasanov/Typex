@@ -23,7 +23,7 @@ import { User } from "../../common/User";
 
 const pageName = "leaderboards";
 
-const durationOptions = ["1", "10", "15", "30", "60", "120", "custom"] as const;
+const durationOptions = ["10", "15", "30", "60", "120"] as const;
 
 const languageOptions: { value: Language; label: string }[] = [
   { value: "uzbek", label: "O'zbek" },
@@ -156,11 +156,7 @@ export function LeaderboardPage(): JSXElement {
                   }
                 >
                   <For each={durationOptions}>
-                    {(d) => (
-                      <option value={d}>
-                        {d === "custom" ? "Maxsus" : `${d}s`}
-                      </option>
-                    )}
+                    {(d) => <option value={d}>{`${d}s`}</option>}
                   </For>
                 </select>
 
@@ -221,6 +217,30 @@ export function LeaderboardPage(): JSXElement {
 
             return (
               <>
+                <Show when={entries().length === 0}>
+                  <div class="flex flex-col items-center justify-center gap-4 rounded-2xl border border-sub-alt/40 bg-sub-alt/20 py-16 text-center">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-main/10 text-3xl text-main">
+                      <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <p class="text-lg font-bold text-text">
+                        Hozircha natijalar yo&apos;q
+                      </p>
+                      <p class="max-w-md text-sm text-sub">
+                        Ushbu bo&apos;limda birinchi bo&apos;lib test topshirib,
+                        reytingda 1-o&apos;rinni egallang!
+                      </p>
+                    </div>
+                    <a
+                      href="/test"
+                      class="mt-2 flex items-center gap-2 rounded-xl bg-main px-6 py-2.5 text-sm font-bold text-bg transition-transform hover:scale-105"
+                    >
+                      <i class="fas fa-keyboard"></i>
+                      Test topshirish
+                    </a>
+                  </div>
+                </Show>
+
                 <Show when={podium().length > 0}>
                   <div class="mt-8 mb-12 flex flex-row items-end justify-center gap-4 px-4 sm:gap-8">
                     <For each={[1, 0, 2]}>

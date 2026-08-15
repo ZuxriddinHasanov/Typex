@@ -47,7 +47,7 @@ export type ResultsQueryState = {
   pb: SnapshotResult<Mode>["isPb"][];
   mode: SnapshotResult<Mode>["mode"][];
   words: ("10" | "25" | "50" | "100" | "custom")[];
-  time: ("1" | "10" | "15" | "30" | "60" | "120" | "custom")[];
+  time: ("1" | "5" | "10" | "15" | "30" | "60" | "120" | "custom")[];
   punctuation: SnapshotResult<Mode>["punctuation"][];
   numbers: SnapshotResult<Mode>["numbers"][];
   timestamp: SnapshotResult<Mode>["timestamp"];
@@ -195,7 +195,7 @@ function normalizeResult(
   result.lazyMode ??= false;
   result.difficulty ??= "normal";
   result.funbox ??= [];
-  result.language ??= "english";
+  result.language ??= "uzbek";
   result.numbers ??= false;
   result.punctuation ??= false;
   result.quoteLength ??= -1;
@@ -473,7 +473,15 @@ export function buildResultsQuery(state: ResultsQueryState) {
         ),
       ),
     );
-  applyMode2Filter("time", state.time, ["15", "30", "60", "120"]);
+  applyMode2Filter("time", state.time, [
+    "1",
+    "5",
+    "10",
+    "15",
+    "30",
+    "60",
+    "120",
+  ]);
   applyMode2Filter("words", state.words, ["10", "25", "50", "100"]);
 
   return query;

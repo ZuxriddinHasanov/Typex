@@ -1,6 +1,6 @@
+import { createColumnHelper } from "@tanstack/solid-table";
 import { Difficulty } from "@typeuz/schemas/configs";
 import { Mode } from "@typeuz/schemas/shared";
-import { createColumnHelper } from "@tanstack/solid-table";
 import { format as dateFormat } from "date-fns/format";
 import { Accessor, createMemo, createSignal, JSXElement, Show } from "solid-js";
 
@@ -67,7 +67,7 @@ export function Table<M extends Mode>(props: {
         // bodyCellClass="p-1"
         data={props.data}
         columns={columns()}
-        fallback=<span>No data found. Check your filters.</span>
+        fallback=<span>Hozircha natijalar mavjud emas.</span>
         rowSelection={{
           getRowId: (row) => row._id,
           activeRow: props.selectedRowId,

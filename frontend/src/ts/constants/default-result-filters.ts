@@ -29,6 +29,7 @@ const object: ResultFilters = {
     custom: true,
   },
   time: {
+    "10": true,
     "15": true,
     "30": true,
     "60": true,
