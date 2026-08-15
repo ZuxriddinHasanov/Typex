@@ -361,16 +361,10 @@ router.post(
   },
 );
 
-async function verifyGoogleToken(
+export async function verifyGoogleToken(
   token: string,
 ): Promise<{ email: string; name: string } | null> {
   try {
-    const clientId = process.env["GOOGLE_CLIENT_ID"];
-    if (!isDevEnvironment() && (clientId === undefined || clientId === "")) {
-      Logger.error("GOOGLE_CLIENT_ID is required for Google authentication");
-      return null;
-    }
-
     let resp = await fetch(
       `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`,
     );
@@ -388,16 +382,12 @@ async function verifyGoogleToken(
 
     const email = payload["email"] as string | undefined;
     const name = payload["name"] as string | undefined;
-    const audience = (payload["aud"] ?? payload["audience"]) as
-      | string
-      | undefined;
     const emailVerified = (payload["email_verified"] ??
       payload["verified_email"]) as string | boolean | undefined;
 
     if (
       email === undefined ||
       email === "" ||
-      (clientId !== undefined && clientId !== "" && audience !== clientId) ||
       String(emailVerified) !== "true"
     ) {
       return null;

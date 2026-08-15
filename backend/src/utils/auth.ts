@@ -52,6 +52,47 @@ export async function verifyIdToken(
   return decoded;
 }
 
+export async function verifyGoogleTokenDirect(
+  token: string,
+): Promise<{ email: string; name: string } | null> {
+  try {
+    let resp = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`,
+    );
+    let payload: Record<string, unknown> = {};
+
+    if (resp.ok) {
+      payload = (await resp.json()) as Record<string, unknown>;
+    } else {
+      resp = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?access_token=${token}`,
+      );
+      if (!resp.ok) return null;
+      payload = (await resp.json()) as Record<string, unknown>;
+    }
+
+    const email = payload["email"] as string | undefined;
+    const name = payload["name"] as string | undefined;
+    const emailVerified = (payload["email_verified"] ??
+      payload["verified_email"]) as string | boolean | undefined;
+
+    if (
+      email === undefined ||
+      email === "" ||
+      String(emailVerified) !== "true"
+    ) {
+      return null;
+    }
+
+    return {
+      email,
+      name: name ?? email.split("@")[0] ?? "google_user",
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function updateUserEmail(
   uid: string,
   email: string,

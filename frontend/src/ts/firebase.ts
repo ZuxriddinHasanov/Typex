@@ -99,6 +99,42 @@ export async function init(callback: ReadyCallback): Promise<void> {
 
     onAuthStateChanged(Auth, async (user) => {
       if (!ignoreAuthCallback) {
+        if (user !== null) {
+          try {
+            const idToken = await user.getIdToken();
+            const backendUrl = (await import("virtual:env-config")).envConfig
+              .backendUrl;
+            const res = await fetch(`${backendUrl}/auth/google`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ idToken }),
+            });
+            const json = (await res.json()) as {
+              data?: {
+                token: string;
+                uid: string;
+                email: string;
+                name: string;
+              };
+            };
+            if (
+              json.data !== undefined &&
+              json.data.token !== undefined &&
+              json.data.token !== ""
+            ) {
+              const { setStoredToken, setStoredUser } =
+                await import("./utils/custom-auth");
+              setStoredToken(json.data.token, rememberMe);
+              setStoredUser({
+                uid: json.data.uid,
+                email: json.data.email,
+                name: json.data.name,
+              });
+            }
+          } catch {
+            // Silently ignore
+          }
+        }
         setUserState(user);
         await callback(true, user);
       }

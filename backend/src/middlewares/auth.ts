@@ -1,7 +1,7 @@
 import { compare } from "bcrypt";
 import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import TypeUZError from "../utils/error";
-import { verifyIdToken } from "../utils/auth";
+import { verifyIdToken, verifyGoogleTokenDirect } from "../utils/auth";
 import { verifyToken } from "../utils/jwt";
 import { base64UrlDecode, isDevEnvironment } from "../utils/misc";
 import { NextFunction, Response } from "express";
@@ -215,71 +215,44 @@ async function authenticateWithBearerToken(
   }
 
   try {
-    const decodedToken = await verifyIdToken(
-      token,
-      (options.requireFreshToken ?? false) || (options.noCache ?? false),
-    );
+    let email: string | undefined;
+    let uid: string | undefined;
 
-    if (options.requireFreshToken) {
-      const now = Date.now();
-      const tokenIssuedAt = new Date(decodedToken.iat * 1000).getTime();
-
-      if (now - tokenIssuedAt > 60 * 1000) {
-        throw new TypeUZError(
-          401,
-          "Unauthorized",
-          `This endpoint requires a fresh token`,
-        );
+    try {
+      const decodedToken = await verifyIdToken(
+        token,
+        (options.requireFreshToken ?? false) || (options.noCache ?? false),
+      );
+      email = decodedToken.email ?? "";
+      uid = decodedToken.uid;
+    } catch {
+      const google = await verifyGoogleTokenDirect(token);
+      if (google !== null) {
+        email = google.email;
+        let dbUser = await UserDAL.findByEmail(email);
+        if (dbUser === null) {
+          const newUid = crypto.randomUUID();
+          let username = google.name.replace(/[^a-zA-Z0-9_]/g, "");
+          if (username.length < 2) username = `user_${newUid.slice(0, 5)}`;
+          await UserDAL.addUser(username, email, newUid);
+          dbUser = await UserDAL.findByEmail(email);
+        }
+        uid = dbUser?.uid;
       }
+    }
+
+    if (uid === undefined || email === undefined) {
+      throw new TypeUZError(401, "Unauthorized", "Invalid token");
     }
 
     return {
       type: "Bearer",
-      uid: decodedToken.uid,
-      email: decodedToken.email ?? "",
+      uid,
+      email,
     };
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes("An internal error has occurred")
-    ) {
-      throw new TypeUZError(
-        503,
-        "Firebase returned an internal error when trying to verify the token.",
-        "authenticateWithBearerToken",
-      );
-    }
-
-    // oxlint-disable-next-line no-unsafe-member-access
-    const errorCode = error?.errorInfo?.code as string | undefined;
-
-    if (errorCode?.includes("auth/id-token-expired")) {
-      throw new TypeUZError(
-        401,
-        "Token expired - please login again",
-        "authenticateWithBearerToken",
-      );
-    } else if (errorCode?.includes("auth/id-token-revoked")) {
-      throw new TypeUZError(
-        401,
-        "Token revoked - please login again",
-        "authenticateWithBearerToken",
-      );
-    } else if (errorCode?.includes("auth/user-not-found")) {
-      throw new TypeUZError(
-        404,
-        "User not found",
-        "authenticateWithBearerToken",
-      );
-    } else if (errorCode?.includes("auth/argument-error")) {
-      throw new TypeUZError(
-        400,
-        "Incorrect Bearer token format",
-        "authenticateWithBearerToken",
-      );
-    } else {
-      throw error;
-    }
+    if (error instanceof TypeUZError) throw error;
+    throw new TypeUZError(401, "Unauthorized", "authenticateWithBearerToken");
   }
 }
 
