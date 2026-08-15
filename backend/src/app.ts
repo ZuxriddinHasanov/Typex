@@ -12,7 +12,6 @@ import { compatibilityCheckMiddleware } from "./middlewares/compatibilityCheck";
 import { COMPATIBILITY_CHECK_HEADER } from "@typeuz/contracts";
 import { createETagGenerator } from "./utils/etag";
 import { v4RequestBody } from "./middlewares/utility";
-import { getFrontendUrl, isDevEnvironment } from "./utils/misc";
 
 const etagFn = createETagGenerator({ weak: true });
 
@@ -29,24 +28,28 @@ function buildApp(): express.Application {
   app.use(urlencoded({ extended: true }));
   app.use(json());
 
-  const allowedOriginsEnv = process.env["ALLOWED_ORIGINS"];
-
-  const corsOrigins: string | string[] =
-    allowedOriginsEnv !== undefined && allowedOriginsEnv !== ""
-      ? allowedOriginsEnv
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : isDevEnvironment()
-        ? "*"
-        : getFrontendUrl();
   app.use(
     cors({
-      origin: corsOrigins,
-      credentials: corsOrigins !== "*",
+      origin: (origin, callback) => {
+        if (origin === undefined || origin === "") {
+          callback(null, true);
+          return;
+        }
+        callback(null, true);
+      },
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+        COMPATIBILITY_CHECK_HEADER,
+      ],
       exposedHeaders: [COMPATIBILITY_CHECK_HEADER],
     }),
   );
+  app.options("*", cors());
   app.use(helmet());
 
   app.set("trust proxy", 1);

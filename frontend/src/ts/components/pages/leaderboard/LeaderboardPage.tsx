@@ -24,27 +24,18 @@ import { User } from "../../common/User";
 const pageName = "leaderboards";
 
 const durationOptions = ["10", "15", "30", "60", "120"] as const;
+const wordCountOptions = ["10", "25", "50", "100"] as const;
 
-const languageOptions: { value: Language; label: string }[] = [
-  { value: "uzbek", label: "O'zbek" },
-  { value: "english", label: "English" },
-  { value: "russian", label: "Русский" },
-];
+type LbTab = "time" | "words" | "weekly";
 
-const contentTypeOptions: { value: "" | "words" | "mixed"; label: string }[] = [
-  { value: "words", label: "So'zlar" },
-  { value: "mixed", label: "Aralash" },
-];
-
-type LbType = "allTime" | "weekly";
-
-const LbTABS: { id: LbType; label: string; icon: string }[] = [
-  { id: "allTime", label: "Tezlik", icon: "fa-tachometer-alt" },
+const LbTABS: { id: LbTab; label: string; icon: string }[] = [
+  { id: "time", label: "Vaqt bo'yicha", icon: "fa-stopwatch" },
+  { id: "words", label: "So'zlar bo'yicha", icon: "fa-font" },
   { id: "weekly", label: "Tajriba (XP)", icon: "fa-star" },
 ];
 
 export function LeaderboardPage(): JSXElement {
-  const [lbType, setLbType] = createSignal<LbType>("allTime");
+  const [activeTab, setActiveTab] = createSignal<LbTab>("time");
 
   const isOpen = () => getActivePage() === pageName;
 
@@ -53,7 +44,7 @@ export function LeaderboardPage(): JSXElement {
 
   const effectiveSelection = () => {
     const s = selection();
-    if (lbType() === "weekly") {
+    if (activeTab() === "weekly") {
       return {
         ...s,
         type: "weekly" as const,
@@ -63,12 +54,35 @@ export function LeaderboardPage(): JSXElement {
         numbers: undefined,
       };
     }
+    if (activeTab() === "words") {
+      const mode2Val = (s as { mode2?: string }).mode2;
+      const validMode2 =
+        mode2Val !== undefined &&
+        wordCountOptions.includes(mode2Val as (typeof wordCountOptions)[number])
+          ? mode2Val
+          : "10";
+      return {
+        ...s,
+        type: "allTime" as const,
+        mode: "words" as const,
+        mode2: validMode2,
+        language: (s as { language?: Language }).language ?? "uzbek",
+        numbers: false,
+      };
+    }
+    const mode2Val = (s as { mode2?: string }).mode2;
+    const validMode2 =
+      mode2Val !== undefined &&
+      durationOptions.includes(mode2Val as (typeof durationOptions)[number])
+        ? mode2Val
+        : "15";
     return {
       ...s,
       type: "allTime" as const,
-      mode: (s as { mode?: string }).mode ?? "time",
-      mode2: (s as { mode2?: string }).mode2 ?? "15",
+      mode: "time" as const,
+      mode2: validMode2,
       language: (s as { language?: Language }).language ?? "uzbek",
+      numbers: false,
     };
   };
 
@@ -78,12 +92,12 @@ export function LeaderboardPage(): JSXElement {
     ...getLeaderboardQueryOptions({
       ...effectiveSelection(),
       page: page(),
-    } as never),
+    }),
     enabled: isOpen(),
   }));
 
   const rankQuery = useQuery(() => ({
-    ...getRankQueryOptions(effectiveSelection() as never),
+    ...getRankQueryOptions(effectiveSelection()),
     enabled: isOpen() && isAuthenticated(),
   }));
 
@@ -95,10 +109,7 @@ export function LeaderboardPage(): JSXElement {
   };
 
   createEffect(() => {
-    updateGetParameters(
-      sel() as unknown as Parameters<typeof updateGetParameters>[0],
-      page(),
-    );
+    updateGetParameters(sel(), page());
   });
 
   return (
@@ -112,10 +123,26 @@ export function LeaderboardPage(): JSXElement {
               {(tab) => (
                 <button
                   type="button"
-                  onClick={() => setLbType(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    setPage(0);
+                    if (tab.id === "time") {
+                      setSelection({
+                        ...sel(),
+                        mode: "time",
+                        mode2: "15",
+                      } as never);
+                    } else if (tab.id === "words") {
+                      setSelection({
+                        ...sel(),
+                        mode: "words",
+                        mode2: "10",
+                      } as never);
+                    }
+                  }}
                   class={cn(
                     "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-                    lbType() === tab.id
+                    activeTab() === tab.id
                       ? "bg-main text-bg"
                       : "bg-sub-alt text-text hover:bg-sub",
                   )}
@@ -127,61 +154,60 @@ export function LeaderboardPage(): JSXElement {
             </For>
           </div>
 
-          <div class="flex flex-wrap items-center gap-3">
-            <Show when={lbType() !== "weekly"}>
-              <div class="flex items-center gap-3">
-                <select
-                  class="rounded-lg border border-sub-alt bg-sub-alt px-3 py-1.5 text-sm text-text outline-none focus:border-main"
-                  value={sel().language}
-                  onChange={(e) =>
-                    setSelection({
-                      ...sel(),
-                      language: e.currentTarget.value as Language,
-                    } as never)
-                  }
-                >
-                  <For each={languageOptions}>
-                    {(lang) => <option value={lang.value}>{lang.label}</option>}
-                  </For>
-                </select>
+          <div class="flex flex-wrap items-center gap-2">
+            <Show when={activeTab() === "time"}>
+              <div class="flex flex-wrap items-center gap-2">
+                <For each={durationOptions}>
+                  {(d) => (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelection({
+                          ...sel(),
+                          mode: "time",
+                          mode2: d,
+                        } as never);
+                        setPage(0);
+                      }}
+                      class={cn(
+                        "rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
+                        sel().mode2 === d
+                          ? "bg-main text-bg"
+                          : "bg-sub-alt text-sub hover:text-text",
+                      )}
+                    >
+                      {d}s
+                    </button>
+                  )}
+                </For>
+              </div>
+            </Show>
 
-                <select
-                  class="rounded-lg border border-sub-alt bg-sub-alt px-3 py-1.5 text-sm text-text outline-none focus:border-main"
-                  value={sel().mode2}
-                  onChange={(e) =>
-                    setSelection({
-                      ...sel(),
-                      mode2: e.currentTarget.value,
-                    } as never)
-                  }
-                >
-                  <For each={durationOptions}>
-                    {(d) => <option value={d}>{`${d}s`}</option>}
-                  </For>
-                </select>
-
-                <select
-                  class="rounded-lg border border-sub-alt bg-sub-alt px-3 py-1.5 text-sm text-text outline-none focus:border-main"
-                  value={
-                    sel().numbers === undefined
-                      ? "words"
-                      : sel().numbers
-                        ? "mixed"
-                        : "words"
-                  }
-                  onChange={(e) => {
-                    const v = e.currentTarget.value;
-                    if (v === "words") {
-                      setSelection({ ...sel(), numbers: false } as never);
-                    } else {
-                      setSelection({ ...sel(), numbers: true } as never);
-                    }
-                  }}
-                >
-                  <For each={contentTypeOptions}>
-                    {(ct) => <option value={ct.value}>{ct.label}</option>}
-                  </For>
-                </select>
+            <Show when={activeTab() === "words"}>
+              <div class="flex flex-wrap items-center gap-2">
+                <For each={wordCountOptions}>
+                  {(w) => (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelection({
+                          ...sel(),
+                          mode: "words",
+                          mode2: w,
+                        } as never);
+                        setPage(0);
+                      }}
+                      class={cn(
+                        "rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
+                        sel().mode2 === w
+                          ? "bg-main text-bg"
+                          : "bg-sub-alt text-sub hover:text-text",
+                      )}
+                    >
+                      {w} so&apos;z
+                    </button>
+                  )}
+                </For>
               </div>
             </Show>
           </div>

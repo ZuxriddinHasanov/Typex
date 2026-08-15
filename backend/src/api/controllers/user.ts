@@ -1302,57 +1302,38 @@ export async function revokeAllTokens(
 }
 
 async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
-  const allTime15English = await LeaderboardsDAL.getRank(
-    "time",
-    "15",
-    "english",
-    uid,
-  );
+  const modes2 = ["10", "15", "30", "60", "120"];
+  const languages = ["uzbek", "english", "russian"];
+  const timeLbs: Record<
+    string,
+    Record<string, { rank: number; count: number } | undefined>
+  > = {};
 
-  const allTime15EnglishCount = await LeaderboardsDAL.getCount(
-    "time",
-    "15",
-    "english",
-  );
-
-  const allTime60English = await LeaderboardsDAL.getRank(
-    "time",
-    "60",
-    "english",
-    uid,
-  );
-
-  const allTime60EnglishCount = await LeaderboardsDAL.getCount(
-    "time",
-    "60",
-    "english",
-  );
-
-  const english15 =
-    allTime15English === false || allTime15English === null
-      ? undefined
-      : {
-          rank: allTime15English.rank,
-          count: allTime15EnglishCount,
-        };
-
-  const english60 =
-    allTime60English === false || allTime60English === null
-      ? undefined
-      : {
-          rank: allTime60English.rank,
-          count: allTime60EnglishCount,
-        };
+  for (const mode2 of modes2) {
+    timeLbs[mode2] = {};
+    for (const language of languages) {
+      try {
+        const rankEntry = await LeaderboardsDAL.getRank(
+          "time",
+          mode2,
+          language,
+          uid,
+        );
+        const count = await LeaderboardsDAL.getCount("time", mode2, language);
+        if (rankEntry !== false && rankEntry !== null && rankEntry.rank > 0) {
+          timeLbs[mode2][language] = {
+            rank: rankEntry.rank,
+            count: count,
+          };
+        }
+      } catch {
+        // continue
+      }
+    }
+  }
 
   return {
-    time: {
-      "15": {
-        english: english15,
-      },
-      "60": {
-        english: english60,
-      },
-    },
+    time: timeLbs,
   };
 }
 

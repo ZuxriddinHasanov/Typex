@@ -21,7 +21,6 @@ import { Filters } from "./Filters";
 import { MyProfile } from "./MyProfile";
 import { Table } from "./Table";
 import { TestStats } from "./TestStats";
-import { VerifyNotice } from "./VerifyNotice";
 
 export function AccountPage(): JSXElement {
   const [limit, setLimit] = createSignal(10);
@@ -54,7 +53,6 @@ export function AccountPage(): JSXElement {
   return (
     <Page id="account" needsAuthentication>
       <div class="flex flex-col gap-8">
-        <VerifyNotice />
         <MyProfile />
 
         <TypeUZAdSlot slotId="ad-account-1" class="mx-auto w-full max-w-3xl" />

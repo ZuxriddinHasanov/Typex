@@ -75,7 +75,6 @@ import {
   isFunboxActive,
   isFunboxActiveWithProperty,
 } from "./funbox/list";
-import { getFunbox } from "@typeuz/funbox";
 import * as CompositionState from "../legacy-states/composition";
 import { SnapshotResult } from "../constants/default-snapshot";
 import { WordGenError } from "../utils/word-gen-error";
@@ -1220,21 +1219,12 @@ async function saveResult(
 
   if (data.isPb !== undefined && data.isPb) {
     //new pb
-    const localPb = DB.getLocalPB(
-      result.mode,
-      result.mode2,
-      result.punctuation,
-      result.numbers,
-      result.language,
-      result.difficulty,
-      result.lazyMode,
-      getFunbox(result.funbox),
-    );
-
-    if (localPb !== undefined) {
-      Result.showConfetti();
-    }
+    Result.showConfetti();
     Result.showCrown("normal");
+    showSuccessNotification(
+      "Tabriklaymiz! Yangi shaxsiy rekord (PB) o'rnatildi! 🎉 Reytingdagi o'rningiz yangilandi!",
+      { important: true },
+    );
 
     localDataToSave.isPb = true;
   } else {

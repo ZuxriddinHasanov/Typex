@@ -213,7 +213,9 @@ function ActionButtons(props: {
           const url = `${location.origin}/profile/${props.profile.name}`;
           navigator.clipboard.writeText(url).then(
             function () {
-              showNoticeNotification("Havola nusxalandi");
+              showNoticeNotification(
+                "Profil havolasi nusxalandi! 🔗 Do'stlaringizga ulashishingiz mumkin.",
+              );
             },
             function () {
               alert(`Nusxalash imkoni bo'lmadi. Havola: ${url}`);
