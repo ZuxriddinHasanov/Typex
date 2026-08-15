@@ -107,13 +107,28 @@ export async function get(
         ? entries
         : entries.map((it) => omit(it, ["isPremium"]));
     } else {
-      const rows = await db.queryAll<LeaderboardRow>(
+      let rows = await db.queryAll<LeaderboardRow>(
         `SELECT * FROM leaderboard_entries
          WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
          ORDER BY rank ASC
          LIMIT $5 OFFSET $6`,
         [language, mode, mode2, numbers ?? false, limit, skip],
       );
+
+      if (rows.length === 0 && page === 0) {
+        try {
+          await update(mode, mode2, language, numbers);
+          rows = await db.queryAll<LeaderboardRow>(
+            `SELECT * FROM leaderboard_entries
+             WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
+             ORDER BY rank ASC
+             LIMIT $5 OFFSET $6`,
+            [language, mode, mode2, numbers ?? false, limit, skip],
+          );
+        } catch {
+          // ignore
+        }
+      }
 
       const entries = rows.map(mapLeaderboardRow);
       return premiumFeaturesEnabled
@@ -257,12 +272,20 @@ export async function update(
           END AS is_premium
         FROM users u
         CROSS JOIN LATERAL jsonb_array_elements(
-          COALESCE(u.personal_bests #> ARRAY[$2, $3]::text[], '[]'::jsonb)
+          CASE
+            WHEN jsonb_typeof(u.personal_bests #> ARRAY[$2, $3]::text[]) = 'array'
+            THEN u.personal_bests #> ARRAY[$2, $3]::text[]
+            ELSE '[]'::jsonb
+          END
         ) AS pb
         LEFT JOIN LATERAL (
           SELECT (badge->>'id')::int AS badge_id
           FROM jsonb_array_elements(
-            COALESCE(u.inventory->'badges', '[]'::jsonb)
+            CASE
+              WHEN jsonb_typeof(u.inventory->'badges') = 'array'
+              THEN u.inventory->'badges'
+              ELSE '[]'::jsonb
+            END
           ) AS badge
           WHERE COALESCE((badge->>'selected')::boolean, false)
           LIMIT 1

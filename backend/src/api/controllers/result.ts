@@ -657,13 +657,16 @@ export async function addResult(
   await UserDAL.incrementXp(uid, xpGained.xp);
   await UserDAL.incrementTestActivity(user, completedEvent.timestamp);
 
+  void LeaderboardsDAL.update(
+    completedEvent.mode,
+    completedEvent.mode2,
+    completedEvent.language,
+    completedEvent.numbers,
+  ).catch((err: unknown) => {
+    Logger.error(`Failed to update leaderboard: ${String(err)}`);
+  });
+
   if (isPb) {
-    void LeaderboardsDAL.update(
-      completedEvent.mode,
-      completedEvent.mode2,
-      completedEvent.language,
-      completedEvent.numbers,
-    ).catch(() => undefined);
     void addLog(
       "user_new_pb",
       `${`${completedEvent.mode} ${completedEvent.mode2}`} ${

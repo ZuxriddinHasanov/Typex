@@ -37,39 +37,69 @@ type ResultRow = {
 };
 
 function rowToDBResult(row: ResultRow): DBResult {
+  const parseJsonField = <T>(val: unknown, fallback: T): T => {
+    if (val === null || val === undefined) return fallback;
+    if (typeof val === "string") {
+      try {
+        return JSON.parse(val) as T;
+      } catch {
+        return fallback;
+      }
+    }
+    return val as T;
+  };
+
   const base: Record<string, unknown> = {
     _id: row._id,
-    wpm: row.wpm,
-    rawWpm: row.raw_wpm,
-    charStats: row.char_stats,
-    acc: row.acc,
+    wpm: Number(row.wpm),
+    rawWpm: Number(row.raw_wpm),
+    charStats: parseJsonField(row.char_stats, [0, 0, 0, 0]),
+    acc: Number(row.acc),
     mode: row.mode,
     mode2: row.mode2,
-    quoteLength: row.quote_length ?? undefined,
-    timestamp: row.timestamp,
-    testDuration: row.test_duration,
-    consistency: row.consistency,
-    keyConsistency: row.key_consistency ?? undefined,
+    quoteLength:
+      row.quote_length !== null && row.quote_length !== undefined
+        ? Number(row.quote_length)
+        : undefined,
+    timestamp: Number(row.timestamp),
+    testDuration: Number(row.test_duration),
+    consistency: Number(row.consistency),
+    keyConsistency:
+      row.key_consistency !== null && row.key_consistency !== undefined
+        ? Number(row.key_consistency)
+        : undefined,
     chartData:
       row.chart_data === "toolong"
         ? "toolong"
-        : (row.chart_data ?? { wpm: [], burst: [], err: [] }),
-    restartCount: row.restart_count ?? undefined,
-    incompleteTestSeconds: row.incomplete_test_seconds ?? undefined,
-    afkDuration: row.afk_duration ?? undefined,
-    tags: row.tags ?? undefined,
+        : parseJsonField(row.chart_data, { wpm: [], burst: [], err: [] }),
+    restartCount:
+      row.restart_count !== null && row.restart_count !== undefined
+        ? Number(row.restart_count)
+        : undefined,
+    incompleteTestSeconds:
+      row.incomplete_test_seconds !== null &&
+      row.incomplete_test_seconds !== undefined
+        ? Number(row.incomplete_test_seconds)
+        : undefined,
+    afkDuration:
+      row.afk_duration !== null && row.afk_duration !== undefined
+        ? Number(row.afk_duration)
+        : undefined,
+    tags: parseJsonField(row.tags, []),
     bailedOut: row.bailed_out ?? undefined,
     blindMode: row.blind_mode ?? undefined,
     lazyMode: row.lazy_mode ?? undefined,
-    funbox: row.funbox ?? undefined,
+    funbox: parseJsonField(row.funbox, []),
     language: row.language ?? undefined,
     difficulty: row.difficulty ?? undefined,
     numbers: row.numbers ?? undefined,
     punctuation: row.punctuation ?? undefined,
     name: row.name,
     isPb: row.is_pb ?? undefined,
-    keySpacingStats: row.key_spacing_stats ?? undefined,
-    keyDurationStats: row.key_duration_stats ?? undefined,
+    keySpacingStats:
+      parseJsonField<unknown>(row.key_spacing_stats, null) ?? undefined,
+    keyDurationStats:
+      parseJsonField<unknown>(row.key_duration_stats, null) ?? undefined,
     uid: row.uid,
   };
   return replaceLegacyValues(base as unknown as DBResult);
