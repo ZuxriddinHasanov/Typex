@@ -143,7 +143,7 @@ function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{
 export function buildClient<T extends AppRouter>(
   contract: T,
   baseUrl: string,
-  timeout: number = 10_000,
+  timeout: number = 60_000,
 ) {
   return initClient(contract, {
     baseUrl: baseUrl,

@@ -221,32 +221,15 @@ type GithubRelease = {
  * @returns A promise that resolves to the latest release name.
  */
 export async function getLatestReleaseFromGitHub(): Promise<string> {
-  try {
-    type releaseType = { name: string };
-    const releases = await cachedFetchJson<releaseType[]>(
-      "https://api.github.com/repos/ZuxriddinNeo/typinguz/releases?per_page=1",
-    );
-    if (releases[0] === undefined || releases[0].name === undefined) {
-      return "v1.0.0";
-    }
-    return releases[0].name;
-  } catch {
-    return "v1.0.0";
-  }
+  return "v1.0.0";
 }
 
 /**
  * Fetches the list of releases from GitHub.
  * @returns A promise that resolves to the list of releases.
  */
-export async function getReleasesFromGitHub(options?: {
+export async function getReleasesFromGitHub(_options?: {
   page?: number;
 }): Promise<GithubRelease[]> {
-  try {
-    return await fetchJson(
-      `https://api.github.com/repos/ZuxriddinNeo/typinguz/releases?per_page=5&page=${options?.page ?? 1}`,
-    );
-  } catch {
-    return [];
-  }
+  return [];
 }

@@ -9,7 +9,6 @@ import { authEvent } from "../events/auth";
 import { addBanner } from "../states/banners";
 import { addPsa } from "../states/psas";
 import { secondsToString } from "../utils/date-and-time";
-import { isDevEnvironment } from "../utils/env";
 import { LocalStorageWithSchema } from "../utils/local-storage-with-schema";
 
 const confirmedPSAs = new LocalStorageWithSchema({
@@ -33,49 +32,22 @@ function setMemory(id: string): void {
 }
 
 async function getLatest(): Promise<PSA[] | null> {
-  const response = await Ape.psas.get();
-
-  if (response.status === 500) {
-    if (isDevEnvironment()) {
-      console.info("Dev: Backend server not running");
-      return null;
-    } else {
+  try {
+    const response = await Ape.psas.get();
+    if (response.status === 503) {
       addBanner({
         level: "error",
-        icon: "fas fa-exclamation-triangle",
-        customContent: (
-          <>
-            Looks like the server is experiencing unexpected down time.
-            <br />
-            Check the{" "}
-            <a target="_blank" href="https://typeuz.instatus.com/">
-              status page
-            </a>{" "}
-            for more information.
-          </>
-        ),
+        icon: "fas fa-bullhorn",
+        customContent: <>Server vaqtincha texnik ta&apos;mirlashda.</>,
       });
+      return null;
+    } else if (response.status !== 200) {
+      return null;
     }
-    return null;
-  } else if (response.status === 503) {
-    addBanner({
-      level: "error",
-      icon: "fas fa-bullhorn",
-      customContent: (
-        <>
-          Server is currently under maintenance.{" "}
-          <a target="_blank" href="https://typeuz.instatus.com/">
-            Check the status page
-          </a>{" "}
-          for more info.
-        </>
-      ),
-    });
-    return null;
-  } else if (response.status !== 200) {
+    return response.body.data;
+  } catch {
     return null;
   }
-  return response.body.data;
 }
 
 export async function show(): Promise<void> {
