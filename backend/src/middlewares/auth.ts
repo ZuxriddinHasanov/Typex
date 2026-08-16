@@ -223,9 +223,21 @@ async function authenticateWithBearerToken(
         token,
         (options.requireFreshToken ?? false) || (options.noCache ?? false),
       );
+      if (options.requireFreshToken) {
+        const authTime =
+          ((decodedToken.auth_time ?? decodedToken.iat ?? 0) as number) * 1000;
+        if (authTime === 0 || Date.now() - authTime > 60 * 1000) {
+          throw new TypeUZError(
+            401,
+            "Unauthorized",
+            "This endpoint requires a fresh token",
+          );
+        }
+      }
       email = decodedToken.email ?? "";
       uid = decodedToken.uid;
-    } catch {
+    } catch (innerErr) {
+      if (innerErr instanceof TypeUZError) throw innerErr;
       const google = await verifyGoogleTokenDirect(token);
       if (google !== null) {
         email = google.email;

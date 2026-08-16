@@ -31,10 +31,6 @@ function buildApp(): express.Application {
   app.use(
     cors({
       origin: (origin, callback) => {
-        if (origin === undefined || origin === "") {
-          callback(null, true);
-          return;
-        }
         callback(null, true);
       },
       credentials: true,
@@ -44,12 +40,19 @@ function buildApp(): express.Application {
         "Authorization",
         "X-Requested-With",
         "Accept",
+        "Origin",
+        "X-Client-Version",
+        "x-client-version",
+        "Sentry-Trace",
+        "sentry-trace",
+        "Baggage",
+        "baggage",
         COMPATIBILITY_CHECK_HEADER,
       ],
       exposedHeaders: [COMPATIBILITY_CHECK_HEADER],
     }),
   );
-  app.options("*", cors());
+  app.options(/(.*)/, cors());
   app.use(helmet());
 
   app.set("trust proxy", 1);

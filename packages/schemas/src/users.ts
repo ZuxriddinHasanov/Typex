@@ -316,6 +316,7 @@ export type TypingStats = z.infer<typeof TypingStatsSchema>;
 export const UserProfileSchema = UserSchema.pick({
   uid: true,
   name: true,
+  email: true,
   banned: true,
   addedAt: true,
   discordId: true,
@@ -336,6 +337,8 @@ export const UserProfileSchema = UserSchema.pick({
     streak: z.number().int().nonnegative(),
     maxStreak: z.number().int().nonnegative(),
     details: UserProfileDetailsSchema,
+    lastLoginAt: z.number().int().nonnegative().optional(),
+    lastResult: z.any().optional(),
   })
   .partial({
     //omitted for banned users
@@ -343,6 +346,7 @@ export const UserProfileSchema = UserSchema.pick({
     details: true,
     allTimeLbs: true,
     uid: true,
+    email: true,
   });
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 

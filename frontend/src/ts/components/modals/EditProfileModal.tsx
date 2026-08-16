@@ -27,6 +27,21 @@ import { TextareaField } from "../ui/form/TextareaField";
 import { fromSchema } from "../ui/form/utils";
 import { showUpdateNameModal } from "./account-settings/UpdateNameModal";
 
+const AVATARS = [
+  "fa-user-astronaut",
+  "fa-user-ninja",
+  "fa-user-tie",
+  "fa-user-graduate",
+  "fa-user-secret",
+  "fa-user-alt",
+  "fa-user-nurse",
+  "fa-user-shield",
+  "fa-crown",
+  "fa-dragon",
+  "fa-paw",
+  "fa-rocket",
+];
+
 export function EditProfile() {
   const snapshot = getSnapshot();
   if (snapshot === undefined) {
@@ -35,6 +50,7 @@ export function EditProfile() {
   const badges = snapshot.inventory?.badges ?? [];
   const form = createForm(() => ({
     defaultValues: {
+      avatar: snapshot.avatar ?? "",
       bio: snapshot.details?.bio ?? "",
       keyboard: snapshot.details?.keyboard ?? "",
       github: snapshot.details?.socialProfiles?.github ?? "",
@@ -68,6 +84,15 @@ export function EditProfile() {
         return;
       }
 
+      if (value.avatar !== (snapshot.avatar ?? "")) {
+        const detailsResponse = await Ape.users.updateProfileDetails({
+          body: { avatar: value.avatar },
+        });
+        if (detailsResponse.status !== 200) {
+          showErrorNotification("Failed to update avatar", { response: detailsResponse });
+        }
+      }
+
       const newBadges =
         snapshot.inventory?.badges?.map((it) => ({
           ...it,
@@ -78,6 +103,7 @@ export function EditProfile() {
       hideModal("EditProfile");
       setSnapshot({
         ...snapshot,
+        avatar: value.avatar,
         details: response.body.data ?? updates,
         inventory: { ...snapshot.inventory, badges: newBadges },
       });
@@ -107,6 +133,34 @@ export function EditProfile() {
               <Fa icon="fa-pen" /> O&apos;zgartirish
             </Button>
           </div>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-semibold tracking-wide text-sub uppercase">Avatar</label>
+          <form.Field name="avatar">
+            {(field) => (
+              <div class="flex flex-wrap gap-2 mt-2">
+                <For each={AVATARS}>
+                  {(icon) => (
+                    <button
+                      type="button"
+                      class={cn(
+                        "grid h-12 w-12 place-items-center rounded-xl text-xl transition-all",
+                        field().state.value === icon
+                          ? "bg-main text-bg shadow-md scale-110"
+                          : "bg-sub-alt/50 text-sub hover:bg-main/20 hover:text-main"
+                      )}
+                      onClick={() =>
+                        field().handleChange(field().state.value === icon ? "" : icon)
+                      }
+                      title={icon.replace("fa-", "")}
+                    >
+                      <Fa icon={icon} />
+                    </button>
+                  )}
+                </For>
+              </div>
+            )}
+          </form.Field>
         </div>
 
         <div class="flex flex-col gap-1.5">

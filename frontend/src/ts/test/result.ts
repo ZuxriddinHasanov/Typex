@@ -38,6 +38,7 @@ import type {
   LabelPosition,
 } from "chartjs-plugin-annotation";
 import Ape from "../ape";
+import { getStoredToken } from "../utils/custom-auth";
 import { CompletedEvent } from "@typeuz/schemas/results";
 import { getActiveFunboxes, isFunboxActiveWithProperty } from "./funbox/list";
 import { getFunbox } from "@typeuz/funbox";
@@ -177,10 +178,19 @@ async function updateChartData(): Promise<void> {
   ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
 
   ChartController.result.getDataset("raw").data = chartData2;
-
   ChartController.result.getDataset("burst").data = chartData3;
-
   ChartController.result.getDataset("error").data = result.chartData.err;
+
+  let l_error = "xatolar";
+  if (Config.language === "english") {
+    l_error = "errors";
+  } else if (Config.language === "russian") {
+    l_error = "ошибки";
+  }
+
+  ChartController.result.getDataset("error").label = l_error;
+  ChartController.result.getDataset("raw").label = "raw";
+  ChartController.result.getDataset("burst").label = "burst";
   ChartController.result.getScale("error").max = Math.max(
     ...result.chartData.err,
   );
@@ -326,7 +336,7 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  qs("#result .stats .wpm .top .text")?.setText(Config.typingSpeedUnit);
+  qs("#result .stats .wpm .top .text")?.setText(`Tezlik (${Config.typingSpeedUnit})`);
 
   if (inf) {
     qs("#result .stats .wpm .bottom")?.setText("Infinite");
@@ -462,12 +472,84 @@ export function updateTodayTracker(): void {
   );
 }
 
+function translateResultLabels(): void {
+  const lang = Config.language;
+  const isEn = lang === "english";
+  const isRu = lang === "russian";
+
+  const getStr = (uz: string, en: string, ru: string) => isEn ? en : isRu ? ru : uz;
+
+  const wpmNode = qs("#result .group.wpm .top .text");
+  if (wpmNode) wpmNode.innerHTML = getStr("Tezlik", "Speed", "Скорость");
+
+  const accNode = qs("#result .group.acc .top");
+  if (accNode) accNode.innerHTML = getStr("Aniqlik", "Accuracy", "Точность");
+
+  const testTypeNode = qs("#result .group.testType .top");
+  if (testTypeNode) testTypeNode.innerHTML = getStr("Test turi", "Test type", "Тип теста");
+
+  const rawNode = qs("#result .group.raw .top");
+  if (rawNode) rawNode.innerHTML = "raw";
+
+  const keyNode = qs("#result .group.key .top");
+  if (keyNode) keyNode.innerHTML = getStr("Belgilar", "Characters", "Символы");
+
+  const consNode = qs("#result .group.consistency .top");
+  if (consNode) consNode.innerHTML = getStr("Barqarorlik", "Consistency", "Стабильность");
+
+  const timeNode = qs("#result .group.time .top");
+  if (timeNode) timeNode.innerHTML = getStr("Vaqt", "Time", "Время");
+
+  const dailyNode = qs("#result .group.dailyLeaderboard .top");
+  if (dailyNode) dailyNode.innerHTML = getStr("Kunlik reyting", "Daily LB", "Дневной топ");
+
+  const nextBtn = qs("#nextTestButton");
+  if (nextBtn) nextBtn.setAttribute("aria-label", getStr("Keyingi test", "Next test", "Следующий тест"));
+
+  const repeatBtn = qs("#restartTestButtonWithSameWordset");
+  if (repeatBtn) repeatBtn.setAttribute("aria-label", getStr("Testni qaytarish", "Repeat test", "Повторить тест"));
+
+  const practiceBtn = qs("#practiseWordsButton");
+  if (practiceBtn) practiceBtn.setAttribute("aria-label", getStr("So'zlarni mashq qilish", "Practice words", "Тренировка слов"));
+
+  const historyBtn = qs("#showWordHistoryButton");
+  if (historyBtn) historyBtn.setAttribute("aria-label", getStr("So'zlar tarixini ko'rsatish", "Toggle words history", "История слов"));
+
+  const replayBtn = qs("#watchReplayButton");
+  if (replayBtn) replayBtn.setAttribute("aria-label", getStr("Qaytadan ko'rish", "Watch replay", "Смотреть повтор"));
+
+  const saveBtn = qs("#saveScreenshotButton");
+  if (saveBtn) saveBtn.setAttribute("aria-label", getStr("Skrinshotni nusxalash\n(yuklab olish uchun shift+click)", "Copy screenshot to clipboard\n(shift click to download)", "Копировать скриншот\n(shift+клик для скачивания)"));
+
+  const errorFilterBtn = qs("#result .chart button[data-id='errors'] .text");
+  if (errorFilterBtn) errorFilterBtn.innerHTML = getStr("xatolar", "errors", "ошибки");
+}
+
 function updateKey(): void {
-  qs("#result .stats .key .bottom")?.setText(
-    `${result.charStats[0]}/${result.charStats[1]}/${result.charStats[2]}/${
-      result.charStats[3]
-    }`,
-  );
+  translateResultLabels();
+  let l_correct = "to'g'ri";
+  let l_error = "noto'g'ri";
+  let l_extra = "ortiqcha";
+  let l_missed = "o'tkazib yuborilgan";
+
+  if (Config.language === "english") {
+    l_correct = "correct";
+    l_error = "incorrect";
+    l_extra = "extra";
+    l_missed = "missed";
+  } else if (Config.language === "russian") {
+    l_correct = "верно";
+    l_error = "неверно";
+    l_extra = "лишние";
+    l_missed = "пропущено";
+  }
+
+  let text = `${result.charStats[0]} ${l_correct}`;
+  if (result.charStats[1] > 0) text += ` · ${result.charStats[1]} ${l_error}`;
+  if (result.charStats[2] > 0) text += ` · ${result.charStats[2]} ${l_extra}`;
+  if (result.charStats[3] > 0) text += ` · ${result.charStats[3]} ${l_missed}`;
+  
+  qs("#result .stats .key .bottom")?.setText(text);
 }
 
 export function showCrown(type: PbCrown.CrownType): void {
@@ -813,20 +895,20 @@ function updateOther(
 ): void {
   let otherText = "";
   if (difficultyFailed) {
-    otherText += `<br>failed (${failReason})`;
+    otherText += `<br>muvaffaqiyatsiz (${failReason})`;
   }
   if (afkDetected) {
-    otherText += "<br>afk detected";
+    otherText += "<br>afk aniqlandi";
   }
   if (isTestInvalid()) {
-    otherText += "<br>invalid";
+    otherText += "<br>Test yaroqsiz";
     const extra: string[] = [];
     if (
       result.wpm < 0 ||
       (result.wpm > 350 && result.mode !== "words" && result.mode2 !== "10") ||
       (result.wpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
-      extra.push("wpm");
+      extra.push("tezlik");
     }
     if (
       result.rawWpm < 0 ||
@@ -835,23 +917,23 @@ function updateOther(
         result.mode2 !== "10") ||
       (result.rawWpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
-      extra.push("raw");
+      extra.push("xom tezlik");
     }
     if (result.acc < 75 || result.acc > 100) {
-      extra.push("accuracy");
+      extra.push("aniqlik");
     }
     if (extra.length > 0) {
-      otherText += ` (${extra.join(",")})`;
+      otherText += ` <span aria-label="Aniqlik 75% dan past yoki tezlik juda yuqori bo'lgani uchun bu natija reytingga qo'shilmadi." data-balloon-pos="up" data-balloon-break data-balloon-length="large">(${extra.join(",")})</span>`;
     }
   }
   if (isRepeated) {
-    otherText += "<br>repeated";
+    otherText += "<br>takrorlangan";
   }
   if (result.bailedOut) {
     otherText += "<br>bailed out";
   }
   if (tooShort) {
-    otherText += "<br>too short";
+    otherText += "<br>juda qisqa";
   }
 
   if (otherText === "") {
@@ -956,7 +1038,7 @@ export async function update(
   qs("#words")?.removeClass("blurred");
   blurInputElement();
   qs("#result .stats .time .bottom .afk")?.setText("");
-  if (isAuthenticated()) {
+  if (isAuthenticated() || getStoredToken() !== null) {
     qs("#result .loginTip")?.hide();
   } else {
     qs("#result .loginTip")?.show();
@@ -1030,7 +1112,7 @@ export async function update(
   } else {
     qsa("main #result .stats")?.show();
     qs("main #result .chart")?.show();
-    if (!isAuthenticated()) {
+    if (!isAuthenticated() && getStoredToken() === null) {
       qs("main #result .loginTip")?.show();
       qs("main #result #rateQuoteButton")?.hide();
       qs("main #result #reportQuoteButton")?.hide();

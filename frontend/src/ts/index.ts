@@ -25,6 +25,26 @@ import { loadFromLocalStorage } from "./config/lifecycle";
 
 import "./input/hotkeys";
 import { showModal } from "./states/modals";
+import { setStoredToken, setStoredUser } from "./utils/custom-auth";
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has("auth_token")) {
+  const token = urlParams.get("auth_token");
+  const uid = urlParams.get("auth_uid");
+  const email = urlParams.get("auth_email");
+  const name = urlParams.get("auth_name");
+  if (token && uid && email && name) {
+    setStoredToken(token);
+    setStoredUser({ uid, email, name });
+    // Clean up URL without reloading
+    const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    window.history.replaceState({ path: newUrl }, "", newUrl);
+  }
+} else if (urlParams.has("auth_error")) {
+  import("./states/notifications").then(m => m.showErrorNotification("Auth error: " + urlParams.get("auth_error")));
+  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+  window.history.replaceState({ path: newUrl }, "", newUrl);
+}
 
 try {
   // Lock Math.random

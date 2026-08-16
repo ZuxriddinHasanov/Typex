@@ -3,7 +3,22 @@ import path from "path";
 import { isDevEnvironment } from "./misc";
 
 function getDataDir(): string {
-  const dirs = [path.join(process.cwd(), ".dev-data"), "/tmp/.dev-data"];
+  const dirs = [
+    path.join(process.cwd(), "backend", ".dev-data"),
+    path.join(process.cwd(), ".dev-data"),
+    path.join(__dirname, "../../.dev-data"),
+    path.join(__dirname, "../../../backend/.dev-data"),
+    "/tmp/.dev-data",
+  ];
+  for (const dir of dirs) {
+    try {
+      if (fs.existsSync(dir) && fs.readdirSync(dir).length > 0) {
+        return dir;
+      }
+    } catch {
+      continue;
+    }
+  }
   for (const dir of dirs) {
     try {
       if (!fs.existsSync(dir)) {
@@ -15,7 +30,7 @@ function getDataDir(): string {
       continue;
     }
   }
-  return dirs[1] ?? "/tmp/.dev-data";
+  return dirs[0] ?? path.join(process.cwd(), ".dev-data");
 }
 
 const DATA_DIR = getDataDir();

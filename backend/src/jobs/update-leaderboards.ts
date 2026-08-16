@@ -2,19 +2,21 @@ import { CronJob } from "cron";
 import GeorgeQueue from "../queues/george-queue";
 import * as LeaderboardsDAL from "../dal/leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
+import Logger from "../utils/logger";
 
 const CRON_SCHEDULE = "0 */2 * * * *";
 const RECENT_AGE_MINUTES = 10;
 const RECENT_AGE_MILLISECONDS = RECENT_AGE_MINUTES * 60 * 1000;
 
 async function updateLeaderboardAndNotifyChanges(
-  leaderboardTime: string,
+  mode: string,
+  leaderboardMode2: string,
   language: string,
   numbers: boolean,
 ): Promise<void> {
   const top10BeforeUpdate = (await LeaderboardsDAL.get(
-    "time",
-    leaderboardTime,
+    mode,
+    leaderboardMode2,
     language,
     0,
     10,
@@ -29,11 +31,11 @@ async function updateLeaderboardAndNotifyChanges(
     }),
   );
 
-  await LeaderboardsDAL.update("time", leaderboardTime, language, numbers);
+  await LeaderboardsDAL.update(mode, leaderboardMode2, language, numbers);
 
   const top10AfterUpdate = (await LeaderboardsDAL.get(
-    "time",
-    leaderboardTime,
+    mode,
+    leaderboardMode2,
     language,
     0,
     10,
@@ -58,7 +60,7 @@ async function updateLeaderboardAndNotifyChanges(
   });
 
   if (newRecords.length > 0) {
-    const leaderboardId = `time ${leaderboardTime} ${language}${numbers ? " numbers" : ""}`;
+    const leaderboardId = `${mode} ${leaderboardMode2} ${language}${numbers ? " numbers" : ""}`;
 
     const mapped = newRecords.map((r) => ({
       ...r,
@@ -69,15 +71,19 @@ async function updateLeaderboardAndNotifyChanges(
 }
 
 async function updateLeaderboards(): Promise<void> {
-  const { maintenance } = await getCachedConfiguration();
-  if (maintenance) {
-    return;
-  }
+  try {
+    const { maintenance } = await getCachedConfiguration();
+    if (maintenance) {
+      return;
+    }
 
-  const activeLeaderboards = await LeaderboardsDAL.getActiveTimeLeaderboards();
+    const activeLeaderboards = await LeaderboardsDAL.getActiveLeaderboards();
 
-  for (const { mode2, language, numbers } of activeLeaderboards) {
-    await updateLeaderboardAndNotifyChanges(mode2, language, numbers);
+    for (const { mode, mode2, language, numbers } of activeLeaderboards) {
+      await updateLeaderboardAndNotifyChanges(mode, mode2, language, numbers);
+    }
+  } catch (error) {
+    Logger.error(`Failed to update leaderboards: ${(error as Error).message}`);
   }
 }
 

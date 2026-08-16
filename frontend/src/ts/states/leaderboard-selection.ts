@@ -13,20 +13,20 @@ export const pageSize = 50;
 export type LeaderboardType = Selection["type"];
 const XpSelection = z.object({
   type: z.literal("weekly"),
-  friendsOnly: z.boolean(),
-  previous: z.boolean(),
-  language: z.never().optional(),
-  mode: z.never().optional(),
-  mode2: z.never().optional(),
-  numbers: z.never().optional(),
+  friendsOnly: z.boolean().optional().default(false),
+  previous: z.boolean().optional().default(false),
+  language: z.any().optional(),
+  mode: z.any().optional(),
+  mode2: z.any().optional(),
+  numbers: z.any().optional(),
 });
 const SpeedSelection = z.object({
   type: z.enum(["daily", "allTime"]),
-  friendsOnly: z.boolean(),
-  previous: z.boolean(),
-  mode: ModeSchema,
-  mode2: z.string(),
-  language: LanguageSchema,
+  friendsOnly: z.boolean().optional().default(false),
+  previous: z.boolean().optional().default(false),
+  mode: ModeSchema.optional().default("time"),
+  mode2: z.string().optional().default("15"),
+  language: LanguageSchema.optional().default("uzbek"),
   numbers: z.boolean().optional(),
 });
 

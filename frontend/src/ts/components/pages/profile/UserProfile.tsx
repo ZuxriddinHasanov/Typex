@@ -1,3 +1,4 @@
+// oxlint-disable typescript/no-explicit-any, react/no-unescaped-entities
 import { PersonalBest, PersonalBests } from "@typeuz/schemas/shared";
 import {
   RankAndCount,
@@ -252,6 +253,10 @@ export function UserProfile(props: {
         <WeeklyAnalysis />
       </Show>
 
+      <Show when={props.profile.lastResult}>
+        <LastTestCard lastResult={props.profile.lastResult} />
+      </Show>
+
       <Show when={!props.profile.banned && !props.profile.lbOptOut}>
         <LeaderboardPosition
           top15={
@@ -438,6 +443,97 @@ function PbTable<M extends "time" | "words">(props: {
             fa={{ icon: "fa-ellipsis-v" }}
             onClick={() => PbTablesModal.show(props.mode)}
           />
+        </div>
+      </Show>
+    </div>
+  );
+}
+
+function LastTestCard(props: {
+  lastResult: Record<string, unknown>;
+}): JSXElement {
+  const [expanded, setExpanded] = createSignal(false);
+  const lr = () => props.lastResult as Record<string, any>;
+
+  return (
+    <div class="overflow-hidden rounded-2xl border border-sub/10 bg-sub-alt/30 p-6 shadow-sm backdrop-blur-sm transition-all">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-sub/10 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="grid h-10 w-10 place-items-center rounded-xl bg-main/20 text-main">
+            <Fa icon="fa-chart-line" class="text-lg" />
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-text">So&apos;nggi test natijasi</h3>
+            <span class="text-xs text-sub">
+              {lr().timestamp
+                ? formatDate(lr().timestamp, "dd MMM yyyy, HH:mm")
+                : "Yaqinda topshirilgan"}
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded())}
+          class="flex items-center gap-2 rounded-xl bg-sub-alt/60 px-4 py-2 text-xs font-bold text-text transition-colors hover:bg-main hover:text-bg"
+        >
+          <span>{expanded() ? "Yopish" : "To'liq statistika"}</span>
+          <Fa icon={expanded() ? "fa-chevron-up" : "fa-chevron-down"} />
+        </button>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div class="flex flex-col gap-1 rounded-xl bg-bg/50 p-4">
+          <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
+            Tezlik (WPM)
+          </span>
+          <span class="text-2xl font-black text-main">{lr().wpm ?? 0}</span>
+        </div>
+        <div class="flex flex-col gap-1 rounded-xl bg-bg/50 p-4">
+          <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
+            Aniqlik
+          </span>
+          <span class="text-2xl font-black text-text">{lr().acc ?? 100}%</span>
+        </div>
+        <div class="flex flex-col gap-1 rounded-xl bg-bg/50 p-4">
+          <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
+            Xom tezlik (Raw)
+          </span>
+          <span class="text-2xl font-black text-text">
+            {lr().rawWpm ?? lr().wpm ?? 0}
+          </span>
+        </div>
+        <div class="flex flex-col gap-1 rounded-xl bg-bg/50 p-4">
+          <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
+            Konsistensiya
+          </span>
+          <span class="text-2xl font-black text-text">
+            {lr().consistency ? Math.round(lr().consistency) : 100}%
+          </span>
+        </div>
+      </div>
+
+      <Show when={expanded()}>
+        <div class="mt-4 animate-in fade-in slide-in-from-top-2 rounded-xl border border-sub/10 bg-bg/70 p-4 text-xs">
+          <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div>
+              <span class="text-sub">Rejim: </span>
+              <span class="font-bold text-text uppercase">
+                {lr().mode} {lr().mode2}
+              </span>
+            </div>
+            <div>
+              <span class="text-sub">Til: </span>
+              <span class="font-bold text-text">{lr().language ?? "uzbek"}</span>
+            </div>
+            <div>
+              <span class="text-sub">Davomiylik: </span>
+              <span class="font-bold text-text">{lr().testDuration ?? 0}s</span>
+            </div>
+            <div>
+              <span class="text-sub">AFK vaqti: </span>
+              <span class="font-bold text-text">{lr().afkDuration ?? 0}s</span>
+            </div>
+          </div>
         </div>
       </Show>
     </div>

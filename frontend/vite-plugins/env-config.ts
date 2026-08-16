@@ -30,7 +30,10 @@ export function envConfig(options: {
           ),
           clientVersion: options.clientVersion,
           recaptchaSiteKey: "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
-          googleClientId: fallback(options.env["VITE_GOOGLE_CLIENT_ID"], ""),
+          googleClientId: fallback(
+            options.env["VITE_GOOGLE_CLIENT_ID"],
+            "254290811654-97e6thf6odffs58iop3it77k1s2tgq4r.apps.googleusercontent.com",
+          ),
           quickLoginEmail: options.env["QUICK_LOGIN_EMAIL"],
           quickLoginPassword: options.env["QUICK_LOGIN_PASSWORD"],
         };

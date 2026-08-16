@@ -73,6 +73,11 @@ const pages = {
   adminLogin: solidPage("adminLogin"),
   adminDashboard: solidPage("adminDashboard"),
   adminUsers: solidPage("adminUsers"),
+  adminUserDetail: solidPage("adminUserDetail", {
+    beforeShow: async (options) => {
+      // Just pass the param
+    },
+  }),
   adminContent: solidPage("adminContent"),
   adminAnalytics: solidPage("adminAnalytics"),
   adminAi: solidPage("adminAi"),

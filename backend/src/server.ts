@@ -132,42 +132,48 @@ async function bootServer(port: number): Promise<Server> {
       );
     }
 
-    if (isDbConnected) {
-      Logger.info("Starting cron jobs...");
-      jobs.forEach((job) => job.start());
-      Logger.success("Cron jobs started");
-    }
-
-    if (isDbConnected) {
-      Logger.info("Setting up leaderboard indicies...");
-      await leaderboardDbSetup();
-
-      Logger.info("Setting up blocklist indicies...");
-      await blocklistDbSetup();
-
-      Logger.info("Setting up connections indicies...");
-      await connectionsDbSetup();
-    }
-
     if (isDbConnected || isDevEnvironment()) {
       await seedDefaultAdmin();
     }
 
     recordServerVersion(version);
+
+    const server = await new Promise<Server>((resolve, reject) => {
+      const s = app.listen(port, "0.0.0.0", () => {
+        Logger.success(`API server listening on port ${port}`);
+        resolve(s);
+      });
+      s.on("error", reject);
+    });
+
+    if (isDbConnected) {
+      Logger.info("Starting cron jobs...");
+      jobs.forEach((job) => job.start());
+      Logger.success("Cron jobs started");
+
+      void (async () => {
+        try {
+          Logger.info("Setting up leaderboard indicies...");
+          await leaderboardDbSetup();
+
+          Logger.info("Setting up blocklist indicies...");
+          await blocklistDbSetup();
+
+          Logger.info("Setting up connections indicies...");
+          await connectionsDbSetup();
+        } catch (err) {
+          Logger.error(`Indicies setup error: ${(err as Error).message}`);
+        }
+      })();
+    }
+
+    return server;
   } catch (error) {
     Logger.error("Failed to initialize server services");
     const message = getErrorMessage(error);
     Logger.error(message ?? "Unknown error");
     throw error;
   }
-
-  return await new Promise((resolve, reject) => {
-    const server = app.listen(port, "0.0.0.0", () => {
-      Logger.success(`API server listening on port ${port}`);
-      resolve(server);
-    });
-    server.on("error", reject);
-  });
 }
 
 const PORT = parseInt(process.env["PORT"] ?? "5005", 10);

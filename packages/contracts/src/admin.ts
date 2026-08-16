@@ -101,6 +101,7 @@ export const AdminUserSchema = z.object({
   addedAt: z.number().int().nonnegative().optional(),
   completedTests: z.number().int().nonnegative().optional(),
   timeTyping: z.number().nonnegative().optional(),
+  lastTest: z.any().optional(),
 });
 export type AdminUser = z.infer<typeof AdminUserSchema>;
 
@@ -190,9 +191,16 @@ export const AdminListUserRecordSchema = z.object({
   banned: z.boolean().optional(),
   addedAt: z.number().optional(),
   pbs: z.record(z.string(), z.number()).optional(),
+  personalBests: z.record(z.string(), z.any()).optional(),
   completedTests: z.number().optional(),
+  startedTests: z.number().optional(),
   timeTyping: z.number().optional(),
   streak: z.number().optional(),
+  maxStreak: z.number().optional(),
+  xp: z.number().optional(),
+  gender: z.string().nullable().optional(),
+  age: z.number().nullable().optional(),
+  avatar: z.string().nullable().optional(),
   lastLoginAt: z.number().optional(),
 });
 export type AdminListUserRecord = z.infer<typeof AdminListUserRecordSchema>;

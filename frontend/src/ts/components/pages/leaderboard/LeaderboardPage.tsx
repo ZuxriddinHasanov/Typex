@@ -1,3 +1,4 @@
+// oxlint-disable react/no-unescaped-entities, typescript/no-explicit-any, solid/prefer-show, typescript/strict-boolean-expressions, curly, dot-notation, no-unnecessary-type-assertion, typescript/no-unsafe-assignment, typescript/no-unsafe-member-access, typescript/no-unsafe-call, typescript/no-unsafe-return, typescript/no-unsafe-argument, react/button-has-type
 import type { Language } from "@typeuz/schemas/languages";
 
 import { useQuery } from "@tanstack/solid-query";
@@ -7,7 +8,7 @@ import {
   getLeaderboardQueryOptions,
   getRankQueryOptions,
 } from "../../../queries/leaderboards";
-import { getActivePage, isAuthenticated } from "../../../states/core";
+import { getActivePage, getUserId, isAuthenticated } from "../../../states/core";
 import {
   getPage,
   getSelection,
@@ -25,6 +26,12 @@ const pageName = "leaderboards";
 
 const durationOptions = ["10", "15", "30", "60", "120"] as const;
 const wordCountOptions = ["10", "25", "50", "100"] as const;
+
+const languages = [
+  { id: "uzbek", label: "O'zbekcha", flag: "🇺🇿" },
+  { id: "english", label: "English", flag: "🇬🇧" },
+  { id: "russian", label: "Русский", flag: "🇷🇺" },
+] as const;
 
 type LbTab = "time" | "words" | "weekly";
 
@@ -46,12 +53,9 @@ export function LeaderboardPage(): JSXElement {
     const s = selection();
     if (activeTab() === "weekly") {
       return {
-        ...s,
         type: "weekly" as const,
-        mode: undefined,
-        mode2: undefined,
-        language: undefined,
-        numbers: undefined,
+        friendsOnly: (s as { friendsOnly?: boolean }).friendsOnly ?? false,
+        previous: (s as { previous?: boolean }).previous ?? false,
       };
     }
     if (activeTab() === "words") {
@@ -210,6 +214,33 @@ export function LeaderboardPage(): JSXElement {
                 </For>
               </div>
             </Show>
+            <Show when={activeTab() !== "weekly"}>
+              <div class="flex flex-wrap items-center gap-1.5 border-l border-sub/10 pl-2 sm:ml-2">
+                <For each={languages}>
+                  {(lang) => (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelection({
+                          ...sel(),
+                          language: lang.id as Language,
+                        } as never);
+                        setPage(0);
+                      }}
+                      class={cn(
+                        "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
+                        (sel() as any).language === lang.id
+                          ? "bg-main text-bg"
+                          : "bg-sub-alt text-sub hover:text-text",
+                      )}
+                    >
+                      <span>{lang.flag}</span>
+                      <span>{lang.label}</span>
+                    </button>
+                  )}
+                </For>
+              </div>
+            </Show>
           </div>
         </div>
 
@@ -330,6 +361,7 @@ export function LeaderboardPage(): JSXElement {
                         totalXp?: number;
                         acc?: number;
                       };
+                      const isMe = () => e.uid === getUserId();
                       const idx = () =>
                         "rank" in e
                           ? (e as unknown as { rank: number }).rank
@@ -339,29 +371,47 @@ export function LeaderboardPage(): JSXElement {
                       return (
                         <div
                           class={cn(
-                            "animate-in fade-in slide-in-from-bottom-4 fill-mode-both flex items-center gap-4 rounded-2xl bg-sub-alt/40 px-5 py-3 transition-colors duration-300 hover:bg-sub-alt",
+                            "animate-in fade-in slide-in-from-bottom-4 fill-mode-both flex items-center gap-4 rounded-2xl px-5 py-3 transition-all duration-300",
+                            isMe()
+                              ? "border-2 border-main bg-main/15 shadow-md shadow-main/10"
+                              : "bg-sub-alt/40 hover:bg-sub-alt",
                           )}
                           style={{ "animation-delay": `${(i() % 10) * 50}ms` }}
                         >
-                          <span class="w-8 text-center text-lg font-bold text-sub">
+                          <span
+                            class={cn(
+                              "w-8 text-center text-lg font-bold",
+                              isMe() ? "text-main font-black" : "text-sub",
+                            )}
+                          >
                             #{idx()}
                           </span>
                           <div class="flex flex-1 items-center gap-3">
                             <User
                               user={e}
                               avatarFallback="user-circle"
-                              avatarColor="sub"
+                              avatarColor={isMe() ? "main" : "sub"}
                               flagsColor="sub"
                               class="text-base"
                               linkToProfile={true}
                             />
+                            <Show when={isMe()}>
+                              <span class="rounded-md bg-main/20 px-2 py-0.5 text-[10px] font-black text-main uppercase">
+                                Siz
+                              </span>
+                            </Show>
                             <Show when={e.acc}>
                               <span class="text-xs text-sub/60">
                                 {e.acc}% aniqlik
                               </span>
                             </Show>
                           </div>
-                          <span class="text-sm font-medium text-text">
+                          <span
+                            class={cn(
+                              "text-sm font-semibold",
+                              isMe() ? "text-main font-black" : "text-text",
+                            )}
+                          >
                             {"totalXp" in entry
                               ? `${(entry as { totalXp: number }).totalXp} XP`
                               : `${(entry as { wpm: number }).wpm} WPM`}
@@ -371,6 +421,41 @@ export function LeaderboardPage(): JSXElement {
                     }}
                   </For>
                 </div>
+
+                {/* Current user fixed card at bottom if not in current page list */}
+                <Show
+                  when={
+                    isAuthenticated() &&
+                    rankQuery.data &&
+                    !entries().some((e: any) => e.uid === getUserId())
+                  }
+                >
+                  <div class="mt-6 flex items-center gap-4 rounded-2xl border-2 border-main/50 bg-main/10 px-6 py-4 shadow-xl backdrop-blur-md">
+                    <div class="flex items-center gap-2">
+                      <span class="rounded-lg bg-main px-2.5 py-1 text-xs font-black text-bg uppercase">
+                        Siz
+                      </span>
+                      <span class="text-xl font-black text-main">
+                        #{rankQuery.data?.rank}
+                      </span>
+                    </div>
+                    <div class="flex flex-1 items-center gap-3">
+                      <span class="font-bold text-text">Sizning o'rningiz</span>
+                      <span class="text-xs text-sub/70">
+                        (Top {page() === 0 ? "50" : (page() + 1) * 50} dan tashqarida)
+                      </span>
+                    </div>
+                    <span class="text-base font-black text-main">
+                      {rankQuery.data && typeof rankQuery.data === "object"
+                        ? "wpm" in rankQuery.data
+                          ? `${(rankQuery.data as any).wpm} WPM`
+                          : "totalXp" in rankQuery.data
+                            ? `${(rankQuery.data as any).totalXp} XP`
+                            : "—"
+                        : "—"}
+                    </span>
+                  </div>
+                </Show>
               </>
             );
           }}

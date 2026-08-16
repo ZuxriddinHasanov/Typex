@@ -1338,20 +1338,38 @@ export async function updateProfileDetails(
     return;
   }
 
-  const user = await db.queryOne<{ profile_details: unknown }>(
-    "SELECT profile_details FROM users WHERE uid = $1",
-    [uid],
-  );
-  if (!user) {
-    throw new TypeUZError(404, "User not found", "update profile details");
+  const setClauses: string[] = [];
+  const values: unknown[] = [];
+  let paramIndex = 1;
+
+  if (updates["firstName"] !== undefined) {
+    setClauses.push(`first_name = $${paramIndex++}`);
+    values.push(updates["firstName"]);
+  }
+  if (updates["lastName"] !== undefined) {
+    setClauses.push(`last_name = $${paramIndex++}`);
+    values.push(updates["lastName"]);
+  }
+  if (updates["gender"] !== undefined) {
+    setClauses.push(`gender = $${paramIndex++}`);
+    values.push(updates["gender"]);
+  }
+  if (updates["age"] !== undefined) {
+    setClauses.push(`age = $${paramIndex++}`);
+    values.push(updates["age"]);
+  }
+  if (updates["avatar"] !== undefined) {
+    setClauses.push(`avatar = $${paramIndex++}`);
+    values.push(updates["avatar"]);
   }
 
-  const profile = (user.profile_details as Record<string, unknown>) ?? {};
-  Object.assign(profile, updates);
+  if (setClauses.length === 0) return;
 
+  values.push(uid);
+  
   await db.query(
-    "UPDATE users SET profile_details = $1::jsonb WHERE uid = $2",
-    [JSON.stringify(profile), uid],
+    `UPDATE users SET ${setClauses.join(", ")} WHERE uid = $${paramIndex}`,
+    values,
   );
 }
 

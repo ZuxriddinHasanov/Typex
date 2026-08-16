@@ -215,7 +215,7 @@ export class WeeklyXpLeaderboard {
   ): Promise<XpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
-      throw new Error("Redis connection is unavailable");
+      return null;
     }
     if (userIds?.length === 0) {
       return null;

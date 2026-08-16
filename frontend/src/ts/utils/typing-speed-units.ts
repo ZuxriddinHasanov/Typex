@@ -39,11 +39,12 @@ class Unit implements TypingSpeedUnitSettings {
 }
 
 const typingSpeedUnits: Record<TypingSpeedUnit, Unit> = {
-  wpm: new Unit("wpm", 1, "Words per Minute", 10, 10),
-  cpm: new Unit("cpm", 5, "Characters per Minute", 50, 100),
-  wps: new Unit("wps", 1 / 60, "Words per Second", 0.5, 2),
-  cps: new Unit("cps", 5 / 60, "Characters per Second", 5, 5),
-  wph: new Unit("wph", 60, "Words per Hour", 250, 1000),
+  wpm: new Unit("wpm", 1, "Daqiqadagi so'zlar", 10, 10),
+  cpm: new Unit("cpm", 5, "Daqiqadagi belgilar", 50, 100),
+  wps: new Unit("wps", 1 / 60, "Soniyadagi so'zlar", 0.5, 2),
+  cps: new Unit("cps", 5 / 60, "Soniyadagi belgilar", 5, 5),
+  wph: new Unit("wph", 60, "Soatdagi so'zlar", 250, 1000),
+  cph: new Unit("cph", 5 * 60, "Soatdagi belgilar", 5000, 2500),
 };
 
 export function get(unit: TypingSpeedUnit): TypingSpeedUnitSettings {

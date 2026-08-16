@@ -22,6 +22,7 @@ import { AdminContentPage } from "./pages/admin/AdminContentPage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminNotificationsPage } from "./pages/admin/AdminNotificationsPage";
 import { AdminSettingsPage } from "./pages/admin/AdminSettingsPage";
+import { AdminUserDetailPage } from "./pages/admin/AdminUserDetailPage";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
 import { LandingPage } from "./pages/landing/LandingPage";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
@@ -42,6 +43,19 @@ import { Popups } from "./popups/Popups";
 const components: Record<string, () => JSXElement> = {
   admindashboardpage: () => <AdminDashboardPage />,
   adminuserspage: () => <AdminUsersPage />,
+  adminuserdetailpage: () => {
+    // We can get uid from page params
+    // But Solid doesn't easily expose the router params to top-level mount here unless we pass it.
+    // Let's use a small wrapper or just get it from URL/history state if needed.
+    // Actually, we registered it in page-controller with `params` object on the page options.
+    // The Page component itself can read `PageController.options.params.uid`.
+    const getUid = () => {
+      // Very hacky but works for now to extract from URL if not using a real router hook
+      const match = location.pathname.match(/\/typeuz-hq\/users\/([^/]+)/);
+      return match ? match[1] : "";
+    };
+    return <AdminUserDetailPage uid={getUid()} />;
+  },
   admincontentpage: () => <AdminContentPage />,
   adminanalyticspage: () => <AdminAnalyticsPage />,
   adminalipage: () => <AdminAIPage />,

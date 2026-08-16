@@ -207,11 +207,12 @@ function getWeeklyXpLeaderboardWithError(
   return weeklyXpLeaderboard;
 }
 
+import * as db from "../../init/db";
+
 export async function getWeeklyXpLeaderboard(
   req: TypeUZRequest<GetWeeklyXpLeaderboardQuery>,
 ): Promise<GetWeeklyXpLeaderboardResponse> {
   const { page, pageSize, weeksBefore, friendsOnly } = req.query;
-
   const { uid } = req.ctx.decodedToken;
   const connectionsConfig = req.ctx.configuration.connections;
 
@@ -221,17 +222,50 @@ export async function getWeeklyXpLeaderboard(
     connectionsConfig,
   );
 
-  const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
-    req.ctx.configuration.leaderboards.weeklyXp,
-    weeksBefore,
-  );
-  const results = await weeklyXpLeaderboard.getResults(
-    page,
-    pageSize,
-    req.ctx.configuration.leaderboards.weeklyXp,
-    req.ctx.configuration.users.premium.enabled,
-    friendUids,
-  );
+  let results: { entries: any[]; count: number } | null = null;
+  try {
+    const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
+      req.ctx.configuration.leaderboards.weeklyXp,
+      weeksBefore,
+    );
+    results = await weeklyXpLeaderboard.getResults(
+      page,
+      pageSize,
+      req.ctx.configuration.leaderboards.weeklyXp,
+      req.ctx.configuration.users.premium.enabled,
+      friendUids,
+    );
+  } catch {
+    // Redis might be unavailable
+  }
+
+  // Fallback to PostgreSQL users table for XP
+  if (!results || results.entries.length === 0) {
+    const limit = pageSize;
+    const offset = page * pageSize;
+    let queryArgs: any[] = [limit, offset];
+    let countQuery = "SELECT COUNT(*)::int AS count FROM users WHERE xp > 0";
+    let dataQuery = `SELECT uid, name, xp AS "totalXp", 0 AS "timeTypedSeconds",
+                     ROW_NUMBER() OVER (ORDER BY xp DESC)::int AS rank
+                     FROM users WHERE xp > 0`;
+
+    if (friendUids && friendUids.length > 0) {
+      const allUids = [...friendUids, uid];
+      queryArgs.push(allUids);
+      countQuery += " AND uid = ANY($3::text[])";
+      dataQuery += " AND uid = ANY($3::text[])";
+    }
+
+    dataQuery += " ORDER BY xp DESC LIMIT $1 OFFSET $2";
+
+    const countRes = await db.queryOne<{ count: number }>(countQuery, queryArgs.slice(2));
+    const dataRes = await db.queryAll<any>(dataQuery, queryArgs);
+
+    results = {
+      entries: dataRes,
+      count: countRes?.count ?? 0,
+    };
+  }
 
   return new TypeUZResponse("Weekly xp leaderboard retrieved", {
     entries: results?.entries ?? [],
@@ -253,15 +287,38 @@ export async function getWeeklyXpLeaderboardRank(
     connectionsConfig,
   );
 
-  const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
-    req.ctx.configuration.leaderboards.weeklyXp,
-    req.query.weeksBefore,
-  );
-  const rankEntry = await weeklyXpLeaderboard.getRank(
-    uid,
-    req.ctx.configuration.leaderboards.weeklyXp,
-    friendUids,
-  );
+  let rankEntry: any = null;
+  try {
+    const weeklyXpLeaderboard = getWeeklyXpLeaderboardWithError(
+      req.ctx.configuration.leaderboards.weeklyXp,
+      req.query.weeksBefore,
+    );
+    rankEntry = await weeklyXpLeaderboard.getRank(
+      uid,
+      req.ctx.configuration.leaderboards.weeklyXp,
+      friendUids,
+    );
+  } catch {
+    // Ignore Redis errors
+  }
+
+  if (!rankEntry) {
+    let rankQuery = `SELECT uid, name, xp AS "totalXp", 0 AS "timeTypedSeconds",
+                     (SELECT COUNT(*)+1 FROM users u2 WHERE u2.xp > u1.xp) AS rank
+                     FROM users u1 WHERE uid = $1`;
+    let args = [uid];
+    if (friendUids && friendUids.length > 0) {
+      const allUids = [...friendUids, uid];
+      rankQuery = `SELECT uid, name, xp AS "totalXp", 0 AS "timeTypedSeconds",
+                   (SELECT COUNT(*)+1 FROM users u2 WHERE u2.xp > u1.xp AND u2.uid = ANY($2::text[])) AS "friendsRank"
+                   FROM users u1 WHERE uid = $1 AND uid = ANY($2::text[])`;
+      args.push(allUids as any);
+    }
+    const row = await db.queryOne<any>(rankQuery, args);
+    if (row && row.totalXp > 0) {
+      rankEntry = row;
+    }
+  }
 
   return new TypeUZResponse("Weekly xp leaderboard rank retrieved", rankEntry);
 }

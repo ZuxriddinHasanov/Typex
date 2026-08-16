@@ -63,44 +63,23 @@ type UserMeta = {
 };
 
 async function findUserByEmail(email: string): Promise<UserMeta | null> {
-  if (isDevEnvironment()) {
-    const allUsers = devGet<Record<string, UserMeta>>("users_by_email") ?? {};
-    return allUsers[email.toLowerCase()] ?? null;
-  }
   const user = await UserDAL.findByEmail(email);
   if (!user) return null;
   return { uid: user.uid, email: user.email, name: user.name };
 }
 
 async function findUserByName(name: string): Promise<UserMeta | null> {
-  if (isDevEnvironment()) {
-    const allByName = devGet<Record<string, UserMeta>>("users_by_name") ?? {};
-    return allByName[name.toLowerCase()] ?? null;
-  }
   const user = await UserDAL.findByName(name);
   if (!user) return null;
   return { uid: user.uid, email: user.email, name: user.name };
 }
 
-async function saveUserMeta(meta: UserMeta): Promise<void> {
-  if (isDevEnvironment()) {
-    const allUsers = devGet<Record<string, UserMeta>>("users_by_email") ?? {};
-    allUsers[meta.email.toLowerCase()] = meta;
-    devSet("users_by_email", allUsers);
-    const allByName = devGet<Record<string, UserMeta>>("users_by_name") ?? {};
-    allByName[meta.name.toLowerCase()] = meta;
-    devSet("users_by_name", allByName);
-    // uid → user mapping for getUser(uid) calls
-    const allByUid = devGet<Record<string, UserMeta>>("users_by_uid") ?? {};
-    allByUid[meta.uid] = meta;
-    devSet("users_by_uid", allByUid);
-  }
+async function saveUserMeta(_meta: UserMeta): Promise<void> {
+  // Now handled by UserDAL.addUser directly in PostgreSQL
 }
 
 async function signUserToken(user: UserMeta): Promise<string> {
-  const tokenVersion = isDevEnvironment()
-    ? 0
-    : ((await UserDAL.getTokenVersion(user.uid)) ?? 0);
+  const tokenVersion = (await UserDAL.getTokenVersion(user.uid)) ?? 0;
   return signToken({
     uid: user.uid,
     email: user.email,
@@ -280,11 +259,9 @@ router.post(
         return;
       }
 
-      if (!isDevEnvironment()) {
-        await UserDAL.updateLastLoginAt(user.uid).catch(() => {
-          // Silently ignore
-        });
-      }
+      await UserDAL.updateLastLoginAt(user.uid).catch(() => {
+        // Silently ignore
+      });
 
       const token = await signUserToken(user);
       recordLogin(user.uid);
@@ -404,7 +381,11 @@ export async function verifyGoogleToken(
 
 router.post("/google", authLimiter, async (req: Request, res: Response) => {
   try {
-    const { idToken } = req.body as { idToken?: string };
+    const { idToken, email: devEmail, name: devName } = req.body as {
+      idToken?: string;
+      email?: string;
+      name?: string;
+    };
 
     if (idToken === undefined || idToken === "") {
       res
@@ -413,7 +394,13 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
       return;
     }
 
-    const googleInfo = await verifyGoogleToken(idToken);
+    let googleInfo = await verifyGoogleToken(idToken);
+    if (googleInfo === null && isDevEnvironment() && devEmail !== undefined && devEmail !== "") {
+      googleInfo = {
+        email: devEmail,
+        name: devName ?? devEmail.split("@")[0] ?? "google_dev_user",
+      };
+    }
     if (
       googleInfo === null ||
       googleInfo.email === undefined ||
@@ -575,9 +562,7 @@ router.post("/github", authLimiter, async (req: Request, res: Response) => {
         }
       }
 
-      if (!isDevEnvironment()) {
-        await UserDAL.addUser(username, email, uid);
-      }
+      await UserDAL.addUser(username, email, uid);
       await saveUserMeta({ uid, email, name: username });
       user = await findUserByEmail(email);
     }
@@ -591,11 +576,9 @@ router.post("/github", authLimiter, async (req: Request, res: Response) => {
 
     const token = await signUserToken(user);
 
-    if (!isDevEnvironment()) {
-      await UserDAL.updateLastLoginAt(user.uid).catch(() => {
-        // Silently ignore
-      });
-    }
+    await UserDAL.updateLastLoginAt(user.uid).catch(() => {
+      // Silently ignore
+    });
 
     recordLogin(user.uid);
     res.status(200).json(
@@ -616,8 +599,72 @@ router.post("/github", authLimiter, async (req: Request, res: Response) => {
 
 router.get("/github/login", (_req: Request, res: Response) => {
   const clientId = process.env["GITHUB_CLIENT_ID"];
+  const feUrl = (): string =>
+    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://typeuz.uz")}/auth-callback.html`;
+
   if (clientId === undefined || clientId === "") {
-    res.status(503).json(new TypeUZResponse("GitHub auth sozlanmagan", null));
+    if (isDevEnvironment()) {
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8" />
+          <title>Dev GitHub Login</title>
+          <style>
+            body { font-family: sans-serif; background: #18181b; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+            .card { background: #27272a; padding: 24px; border-radius: 12px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+            input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #3f3f46; background: #18181b; color: #fff; margin: 12px 0; box-sizing: border-box; }
+            button { width: 100%; padding: 10px; background: #FF5A1F; border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
+            .info { font-size: 12px; color: #a1a1aa; margin-top: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <h3>Dev GitHub Login</h3>
+            <p style="font-size: 13px; color: #a1a1aa;">GITHUB_CLIENT_ID sozlanmaganligi sababli dev rejimida username bilan kirishingiz mumkin:</p>
+            <input type="text" id="username" placeholder="GitHub username" value="github_user" />
+            <button onclick="login()">GitHub sifatida kirish</button>
+            <p class="info">Haqiqiy GitHub OAuth uchun .env faylida GITHUB_CLIENT_ID va GITHUB_CLIENT_SECRET sozlang.</p>
+          </div>
+          <script>
+            async function login() {
+              const username = document.getElementById('username').value.trim() || 'github_user';
+              const devRes = await fetch('/dev/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username })
+              });
+              const devData = await devRes.json();
+              if (devData && devData.data) {
+                const tokenRes = await fetch('/auth/google', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ idToken: 'dev_mock_token', email: devData.data.email, name: devData.data.name })
+                });
+                const tokenData = await tokenRes.json();
+                const authData = (tokenData && tokenData.data) ? tokenData.data : devData.data;
+                if (window.opener) {
+                  window.opener.postMessage({
+                    type: 'typeuz_oauth',
+                    success: true,
+                    token: authData.token || 'dev_token_' + authData.uid,
+                    uid: authData.uid,
+                    email: authData.email,
+                    name: authData.name
+                  }, '*');
+                  window.close();
+                }
+              } else {
+                alert((devData && devData.message) || 'Xatolik yuz berdi');
+              }
+            }
+          </script>
+        </body>
+        </html>
+      `);
+      return;
+    }
+    res.redirect(`${feUrl()}?auth_error=${encodeURIComponent("GitHub auth sozlanmagan")}`);
     return;
   }
   const state = crypto.randomBytes(32).toString("hex");
@@ -637,7 +684,7 @@ router.get("/github/login", (_req: Request, res: Response) => {
 
 router.get("/github/callback", async (req: Request, res: Response) => {
   const feUrl = (): string =>
-    `${process.env["FRONTEND_URL"] ?? "https://typeuz.uz"}/auth-callback.html`;
+    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://typeuz.uz")}/auth-callback.html`;
 
   try {
     const { code, state } = req.query as { code?: string; state?: string };
@@ -733,9 +780,7 @@ router.get("/github/callback", async (req: Request, res: Response) => {
     if (user === null) {
       const uid = crypto.randomUUID();
       const username = ghUser.login ?? `gh_${uid.slice(0, 8)}`;
-      if (!isDevEnvironment()) {
-        await UserDAL.addUser(username, email, uid);
-      }
+      await UserDAL.addUser(username, email, uid);
       await saveUserMeta({ uid, email, name: username });
       user = await findUserByEmail(email);
     }
@@ -797,6 +842,7 @@ async function saveAdminCredDoc(doc: AdminCredDoc): Promise<void> {
 const adminLoginLimiter1 = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
+  skip: () => isDevEnvironment(),
   message: { message: "Ketma-ket xatoliklar: 1 daqiqa kuting" },
   standardHeaders: true,
   legacyHeaders: false,
@@ -814,6 +860,7 @@ const adminLoginLimiter1 = rateLimit({
 const adminLoginLimiter2 = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 10,
+  skip: () => isDevEnvironment(),
   message: { message: "Juda ko'p urinish: 10 daqiqa bloklandi!" },
   standardHeaders: true,
   legacyHeaders: false,

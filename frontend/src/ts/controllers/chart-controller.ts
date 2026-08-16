@@ -143,7 +143,7 @@ export const result = new ChartWithUpdateColors<
       {
         //@ts-expect-error the type is defined incorrectly, have to ignore the error
         clip: false,
-        label: "errors",
+        label: "xatolar",
         data: [],
         borderColor: "rgba(255, 125, 125, 1)",
         pointBackgroundColor: "rgba(255, 125, 125, 1)",
@@ -197,7 +197,7 @@ export const result = new ChartWithUpdateColors<
         display: true,
         title: {
           display: true,
-          text: "Words per Minute",
+          text: "Daqiqadagi so'zlar (WPM)",
         },
         beginAtZero: true,
         min: 0,
@@ -214,7 +214,7 @@ export const result = new ChartWithUpdateColors<
         display: false,
         title: {
           display: true,
-          text: "Raw Words per Minute",
+          text: "Xom tezlik (Raw WPM)",
         },
         beginAtZero: true,
         min: 0,
@@ -231,7 +231,7 @@ export const result = new ChartWithUpdateColors<
         display: false,
         title: {
           display: true,
-          text: "Burst Words per Minute",
+          text: "Shiddat (Burst)",
         },
         beginAtZero: true,
         min: 0,
@@ -249,7 +249,7 @@ export const result = new ChartWithUpdateColors<
         position: "right",
         title: {
           display: true,
-          text: "Errors",
+          text: "Xatolar",
         },
         beginAtZero: true,
         ticks: {

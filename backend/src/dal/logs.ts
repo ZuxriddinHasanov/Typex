@@ -34,9 +34,13 @@ async function insertIntoDb(
     }`,
   );
 
-  await db.query(
-    `INSERT INTO logs (timestamp, uid, important, event, message)
-     VALUES ($1, $2, $3, $4, $5::jsonb)`,
-    [Date.now(), uid ?? "", important, event, stringified],
-  );
+  try {
+    await db.query(
+      `INSERT INTO logs (timestamp, uid, important, event, message)
+       VALUES ($1, $2, $3, $4, $5::jsonb)`,
+      [Date.now(), uid ?? "", important, event, stringified],
+    );
+  } catch (error) {
+    Logger.error(`Failed to insert log into DB: ${(error as Error).message}`);
+  }
 }

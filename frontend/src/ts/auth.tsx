@@ -349,6 +349,50 @@ async function signInWithGooglePopup(rememberMe: boolean): Promise<AuthResult> {
           error?: string;
         }) => {
           if (response.error !== undefined && response.error !== "") {
+            if (isDevEnvironment()) {
+              const devEmail = prompt(
+                "Google OAuth (dev mode): Test emailingizni kiriting:",
+                "user@gmail.com",
+              );
+              if (devEmail) {
+                const backendUrl = (await import("virtual:env-config")).envConfig.backendUrl;
+                try {
+                  const res = await fetch(`${backendUrl}/auth/google`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      idToken: "dev_mock_token",
+                      email: devEmail,
+                      name: devEmail.split("@")[0],
+                    }),
+                  });
+                  const json = (await res.json()) as {
+                    data?: {
+                      token: string;
+                      uid: string;
+                      email: string;
+                      name: string;
+                    };
+                    message?: string;
+                  };
+                  if (json.data?.token) {
+                    setStoredToken(json.data.token, rememberMe);
+                    setStoredUser({
+                      uid: json.data.uid,
+                      email: json.data.email,
+                      name: json.data.name,
+                    });
+                    void onAuthStateChanged(true, {
+                      uid: json.data.uid,
+                    } as unknown as User);
+                    resolve({ success: true });
+                    return;
+                  }
+                } catch {
+                  // ignore
+                }
+              }
+            }
             resolve({
               success: false,
               message: `Google login: ${response.error}`,

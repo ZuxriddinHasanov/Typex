@@ -1,6 +1,4 @@
-import { collection } from "../init/db";
-import { devGet, devSet } from "./dev-store";
-import { isDevEnvironment } from "./misc";
+import { query, queryOne } from "../init/db";
 
 export type PasswordDocument = {
   uid: string;
@@ -11,20 +9,20 @@ export type PasswordDocument = {
 export async function getPasswordDocument(
   uid: string,
 ): Promise<PasswordDocument | null> {
-  if (isDevEnvironment()) {
-    return devGet<PasswordDocument>(`pw_${uid}`);
-  }
-  return (await collection("user-passwords").findOne({
-    uid,
-  })) as PasswordDocument | null;
+  const row = await queryOne(
+    "SELECT data FROM user_passwords WHERE uid = $1",
+    [uid],
+  );
+  if (!row) return null;
+  const data = typeof row["data"] === "string" ? JSON.parse(row["data"]) : row["data"];
+  return data as PasswordDocument;
 }
 
 export async function savePasswordDocument(
   document: PasswordDocument,
 ): Promise<void> {
-  if (isDevEnvironment()) {
-    devSet(`pw_${document.uid}`, document);
-    return;
-  }
-  await collection("user-passwords").insertOne(document);
+  await query(
+    "INSERT INTO user_passwords (uid, data) VALUES ($1, $2) ON CONFLICT (uid) DO UPDATE SET data = EXCLUDED.data",
+    [document.uid, JSON.stringify(document)],
+  );
 }

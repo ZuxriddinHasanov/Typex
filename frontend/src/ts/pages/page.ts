@@ -15,6 +15,7 @@ export type PageName =
   | "adminLogin"
   | "adminDashboard"
   | "adminUsers"
+  | "adminUserDetail"
   | "adminContent"
   | "adminAnalytics"
   | "adminAi"

@@ -26,11 +26,11 @@ export function Nav(): JSXElement {
         data-nav-item="landing"
       >
         <Fa icon="fa-home" class="mr-2" />
-        Bosh sahifa
+        {getConfig.language === "uzbek" ? "Bosh sahifa" : getConfig.language === "russian" ? "Главная" : "Home"}
       </a>
       <a href="/" class={navItemClass("test")} router-link data-nav-item="test">
         <Fa icon="fa-keyboard" class="mr-2" />
-        Test
+        {getConfig.language === "uzbek" ? "Test" : getConfig.language === "russian" ? "Тест" : "Test"}
       </a>
       <a
         href="/leaderboards"
@@ -38,7 +38,8 @@ export function Nav(): JSXElement {
         router-link
         data-nav-item="leaderboards"
       >
-        Reyting
+        <Fa icon="fa-crown" class="mr-2" />
+        {getConfig.language === "uzbek" ? "Reyting" : getConfig.language === "russian" ? "Рейтинг" : "Leaderboard"}
       </a>
       <a
         href="/about"
@@ -46,7 +47,8 @@ export function Nav(): JSXElement {
         router-link
         data-nav-item="about"
       >
-        Loyiha haqida
+        <Fa icon="fa-info-circle" class="mr-2" />
+        {getConfig.language === "uzbek" ? "Loyiha haqida" : getConfig.language === "russian" ? "О проекте" : "About"}
       </a>
       <button
         type="button"
@@ -62,6 +64,18 @@ export function Nav(): JSXElement {
           class="transition-all duration-300"
         />
       </button>
+      <button
+        type="button"
+        onClick={() => {
+          const current = getConfig.language;
+          const nextLang = current === "uzbek" ? "english" : current === "english" ? "russian" : "uzbek";
+          setConfig("language", nextLang);
+        }}
+        class="ml-2 flex h-9 px-3 items-center justify-center rounded-full text-sub transition-all duration-300 hover:bg-sub-alt hover:text-text font-bold text-xs uppercase"
+        aria-label="Toggle language"
+      >
+        {getConfig.language === "uzbek" ? "UZ" : getConfig.language === "russian" ? "RU" : "EN"}
+      </button>
       <Show
         when={isAuthenticated()}
         fallback={
@@ -71,7 +85,7 @@ export function Nav(): JSXElement {
             router-link
             data-nav-item="login"
           >
-            Kirish
+            {getConfig.language === "uzbek" ? "Kirish" : getConfig.language === "russian" ? "Войти" : "Login"}
           </a>
         }
       >
@@ -86,7 +100,7 @@ export function Nav(): JSXElement {
           router-link
         >
           <Fa icon="fa-user" />
-          Mening profilim
+          {getConfig.language === "uzbek" ? "Profil" : getConfig.language === "russian" ? "Профиль" : "Profile"}
         </a>
       </Show>
     </nav>

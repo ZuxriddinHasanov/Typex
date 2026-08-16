@@ -127,6 +127,12 @@ const routes: Route[] = [
     },
   },
   {
+    path: "/typeuz-hq/users/:uid",
+    load: async (params, options) => {
+      await PageController.change("adminUserDetail", { ...options, params });
+    },
+  },
+  {
     path: "/typeuz-hq/content",
     load: async (_params, options) => {
       await PageController.change("adminContent", options);

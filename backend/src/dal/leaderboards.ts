@@ -413,12 +413,13 @@ export async function purgeUser(uid: string): Promise<void> {
   cachedCounts.clear();
 }
 
-export async function getActiveTimeLeaderboards(): Promise<
-  { mode2: string; language: string; numbers: boolean }[]
+export async function getActiveLeaderboards(): Promise<
+  { mode: string; mode2: string; language: string; numbers: boolean }[]
 > {
   return await db.queryAll(
-    `SELECT DISTINCT mode2, language, numbers FROM (
+    `SELECT DISTINCT mode, mode2, language, numbers FROM (
        SELECT
+         'time' AS mode,
          time_mode.mode2,
          pb->>'language' AS language,
          COALESCE((pb->>'numbers')::boolean, false) AS numbers
@@ -431,9 +432,23 @@ export async function getActiveTimeLeaderboards(): Promise<
        ) AS pb
        WHERE pb->>'language' IS NOT NULL
        UNION
-       SELECT mode2, language, numbers
+       SELECT
+         'words' AS mode,
+         words_mode.mode2,
+         pb->>'language' AS language,
+         COALESCE((pb->>'numbers')::boolean, false) AS numbers
+       FROM users u
+       CROSS JOIN LATERAL jsonb_object_keys(
+         COALESCE(u.personal_bests->'words', '{}'::jsonb)
+       ) AS words_mode(mode2)
+       CROSS JOIN LATERAL jsonb_array_elements(
+         COALESCE(u.personal_bests #> ARRAY['words', words_mode.mode2]::text[], '[]'::jsonb)
+       ) AS pb
+       WHERE pb->>'language' IS NOT NULL
+       UNION
+       SELECT mode, mode2, language, numbers
        FROM leaderboard_entries
-       WHERE mode = 'time'
+       WHERE mode IN ('time', 'words')
      ) AS active`,
   );
 }

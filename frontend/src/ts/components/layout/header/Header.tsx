@@ -17,7 +17,7 @@ export function Header(): JSXElement {
             : "opacity-100",
         )}
       >
-        <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-3.5">
+        <header class="mx-auto flex w-full max-w-[1300px] items-center justify-between px-6 py-3.5">
           <Logo />
           <Nav />
         </header>

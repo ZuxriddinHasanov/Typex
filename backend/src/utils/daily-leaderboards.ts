@@ -200,7 +200,7 @@ export class DailyLeaderboard {
   ): Promise<LeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
-      throw new Error("Redis connection is unavailable");
+      return null;
     }
     if (userIds?.length === 0) {
       return null;

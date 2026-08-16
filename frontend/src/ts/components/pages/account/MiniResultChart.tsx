@@ -61,7 +61,7 @@ export function MiniResultChart(props: { resultId: string }): JSXElement {
                       backgroundColor: getTheme().sub,
                     },
                     {
-                      label: "errors",
+                      label: getConfig.language === "uzbek" ? "xatolar" : getConfig.language === "russian" ? "ошибки" : "errors",
                       data: data.err,
                       pointBorderColor: getTheme().error,
                       backgroundColor: getTheme().error,
@@ -121,7 +121,7 @@ export function MiniResultChart(props: { resultId: string }): JSXElement {
                       position: "right",
                       title: {
                         display: true,
-                        text: "Errors",
+                        text: getConfig.language === "uzbek" ? "Xatolar" : getConfig.language === "russian" ? "Ошибки" : "Errors",
                       },
                       beginAtZero: beginAtZero(),
                       ticks: {

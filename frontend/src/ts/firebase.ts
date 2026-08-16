@@ -155,7 +155,38 @@ export async function init(callback: ReadyCallback): Promise<void> {
  * @returns the current user if authenticated, else `null`
  */
 export function getAuthenticatedUser(): User | null {
-  return Auth?.currentUser ?? null;
+  if (Auth?.currentUser) return Auth.currentUser;
+  const user = getStoredUser();
+  if (user !== null) {
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.name,
+      emailVerified: true,
+      isAnonymous: false,
+      metadata: {},
+      providerData: [],
+      refreshToken: "",
+      tenantId: null,
+      delete: async () => undefined,
+      getIdToken: async () => getStoredToken() ?? "",
+      getIdTokenResult: async () => ({} as never),
+      reload: async () => undefined,
+      toJSON: () => ({}),
+      phoneNumber: null,
+      photoURL: null,
+      providerId: "custom",
+    } as unknown as User;
+  }
+  const devAuth = getDevAuth();
+  if (devAuth !== null) {
+    return {
+      uid: devAuth.uid,
+      emailVerified: true,
+      getIdToken: async () => "",
+    } as unknown as User;
+  }
+  return null;
 }
 
 export function getAnalytics(): AnalyticsType {

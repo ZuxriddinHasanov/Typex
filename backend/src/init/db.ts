@@ -16,7 +16,7 @@ export async function connect(): Promise<void> {
   const databaseUrl =
     envDatabaseUrl !== undefined && envDatabaseUrl !== ""
       ? envDatabaseUrl
-      : "postgresql://postgres.knzbopsocekorqzngckc:Zuxriddin-2026@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres";
+      : "postgresql://postgres.knzbopsocekorqzngckc:Zuxriddin-2026@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres";
 
   const hostname = (() => {
     try {
@@ -35,13 +35,17 @@ export async function connect(): Promise<void> {
   pool = new Pool({
     connectionString: databaseUrl,
     connectionTimeoutMillis: 15000,
-    max: 20,
+    max: 50,
     ssl:
       process.env["DB_SSL"] === "false" || isLocalHost
         ? undefined
         : {
             rejectUnauthorized: false,
           },
+  });
+
+  pool.on("error", (err) => {
+    Logger.error(`Unexpected error on idle client: ${err.message}`);
   });
 
   try {

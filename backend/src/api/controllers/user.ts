@@ -17,7 +17,11 @@ import {
 import GeorgeQueue from "../../queues/george-queue";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
-import { deleteAll as deleteAllResults, getResults } from "../../dal/result";
+import {
+  deleteAll as deleteAllResults,
+  getResults,
+  getLastResult,
+} from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
@@ -1075,13 +1079,14 @@ export async function getProfile(
     }, {});
   };
 
-  const validTimePbs = extractValid(personalBests.time, [
+  const validTimePbs = extractValid(personalBests?.time ?? {}, [
+    "10",
     "15",
     "30",
     "60",
     "120",
   ]);
-  const validWordsPbs = extractValid(personalBests.words, [
+  const validWordsPbs = extractValid(personalBests?.words ?? {}, [
     "10",
     "25",
     "50",
@@ -1123,12 +1128,39 @@ export async function getProfile(
 
   const allTimeLbs = await getAllTimeLbs(user.uid);
 
+  let lastResult: Record<string, unknown> | null = null;
+  try {
+    const lr = await getLastResult(user.uid);
+    if (lr) {
+      lastResult = {
+        _id: lr._id,
+        wpm: lr.wpm,
+        rawWpm: lr.rawWpm,
+        acc: lr.acc,
+        mode: lr.mode,
+        mode2: lr.mode2,
+        timestamp: lr.timestamp,
+        language: lr.language,
+        consistency: lr.consistency,
+        testDuration: lr.testDuration,
+        charStats: lr.charStats,
+        afkDuration: lr.afkDuration,
+        bailedOut: lr.bailedOut,
+      };
+    }
+  } catch {
+    // no last result
+  }
+
   const profileData = {
     ...baseProfile,
+    email: user.email,
+    lastLoginAt: user.lastLoginAt,
     inventory,
     details: profileDetails,
     allTimeLbs,
     uid: user.uid,
+    lastResult,
   } as UserProfile;
 
   if (user.profileDetails?.showActivityOnPublicProfile) {
@@ -1258,6 +1290,31 @@ export async function reportUser(
   };
 
   await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
+
+  // Send Telegram notification
+  try {
+    const token = process.env["TELEGRAM_BOT_TOKEN"];
+    const chatId = process.env["TELEGRAM_CHAT_ID"];
+    if (token && chatId) {
+      const msg = `🚨 *Yangi Shikoyat (Foydalanuvchi)*\n\n` +
+                  `*Kimdan:* \`${uid}\`\n` +
+                  `*Kim ustidan:* \`${uidToReport}\`\n` +
+                  `*Sabab:* ${reason}\n` +
+                  `*Izoh:* ${comment || "Yo'q"}`;
+      
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: msg,
+          parse_mode: "Markdown"
+        })
+      }).catch(err => console.error("Telegram API error:", err));
+    }
+  } catch (e) {
+    console.error("Failed to send Telegram notification:", e);
+  }
 
   return new TypeUZResponse("User reported", null);
 }
