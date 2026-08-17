@@ -2,6 +2,7 @@ import { createSignal, JSXElement, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { cn } from "../../utils/cn";
+import { Fa } from "./Fa";
 import { LoadingCircle } from "./LoadingCircle";
 
 //cache successful and missing avatars
@@ -15,12 +16,30 @@ export function DiscordAvatar(props: {
   class?: string;
   fallbackIcon?: "user-circle" | "user";
 }): JSXElement {
-  const cacheKey = (): string => `${props.avatar ?? props.discordAvatar ?? "none"}`;
+  const cacheKey = (): string =>
+    `${props.avatar ?? props.discordAvatar ?? "none"}`;
   const [showSpinner, setShowSpinner] = createSignal(true);
 
+  const isIconAvatar = () =>
+    typeof props.avatar === "string" &&
+    props.avatar.trim() !== "" &&
+    !props.avatar.startsWith("http://") &&
+    !props.avatar.startsWith("https://") &&
+    !props.avatar.startsWith("data:") &&
+    !props.avatar.startsWith("/");
+
+  const isImageAvatar = () =>
+    typeof props.avatar === "string" &&
+    (props.avatar.startsWith("http://") ||
+      props.avatar.startsWith("https://") ||
+      props.avatar.startsWith("data:") ||
+      props.avatar.startsWith("/"));
+
   const showDiscordAvatar = () =>
-    ((props.discordId !== undefined && props.discordAvatar !== undefined) ||
-      (props.avatar !== undefined && props.avatar !== null && props.avatar !== "")) &&
+    props.discordId !== undefined &&
+    props.discordId !== "" &&
+    props.discordAvatar !== undefined &&
+    props.discordAvatar !== "" &&
     avatar[cacheKey()] !== false;
 
   const fallback = () => {
@@ -59,26 +78,45 @@ export function DiscordAvatar(props: {
         props.class,
       )}
     >
-      <Show when={showDiscordAvatar()} fallback={fallback()}>
-        <Show when={showSpinner()}>
-          <LoadingCircle
-            color="sub"
-            mode="svg"
-            class="col-start-1 row-start-1 h-full w-full fill-current"
+      <Show
+        when={isIconAvatar()}
+        fallback={
+          <Show
+            when={isImageAvatar() || showDiscordAvatar()}
+            fallback={fallback()}
+          >
+            <Show when={showSpinner()}>
+              <LoadingCircle
+                color="sub"
+                mode="svg"
+                class="col-start-1 row-start-1 h-full w-full fill-current"
+              />
+            </Show>
+            <img
+              src={
+                isImageAvatar()
+                  ? (props.avatar as string)
+                  : `https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`
+              }
+              class="col-start-1 row-start-1 h-full w-full rounded-full object-cover"
+              onLoad={() => {
+                setAvatar(cacheKey(), true);
+                setShowSpinner(false);
+              }}
+              onError={() => {
+                setAvatar(cacheKey(), false);
+                setShowSpinner(false);
+              }}
+            />
+          </Show>
+        }
+      >
+        <div class="col-start-1 row-start-1 flex h-full w-full items-center justify-center rounded-full text-inherit">
+          <Fa
+            icon={(props.avatar ?? "fa-user") as never}
+            class="text-[0.9em]"
           />
-        </Show>
-        <img
-          src={props.avatar ?? `https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`}
-          class="col-start-1 row-start-1 rounded-full w-full h-full object-cover"
-          onLoad={() => {
-            setAvatar(cacheKey(), true);
-            setShowSpinner(false);
-          }}
-          onError={() => {
-            setAvatar(cacheKey(), false);
-            setShowSpinner(false);
-          }}
-        />
+        </div>
       </Show>
     </div>
   );

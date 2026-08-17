@@ -1,6 +1,6 @@
+import { createForm } from "@tanstack/solid-form";
 import { ReportUserCommentSchema } from "@typeuz/contracts/users";
 import { ReportUserReason } from "@typeuz/schemas/users";
-import { createForm } from "@tanstack/solid-form";
 
 import Ape from "../../ape";
 import { hideLoaderBar, showLoaderBar } from "../../states/loader-bar";
@@ -43,11 +43,12 @@ export function UserReportModal() {
       modalClass="max-w-3xl"
       id="UserReport"
       mode="dialog"
-      title={`Report user ${getUserToReport()?.name}`}
+      title={`Foydalanuvchi ustidan shikoyat: ${getUserToReport()?.name ?? ""}`}
     >
-      <p>
-        Please report users responsibly and add comments in English only. Misuse
-        may result in you losing access to this feature.
+      <p class="text-sm text-sub">
+        Iltimos, asosli shikoyat qoldiring. Qoidabuzarlik haqidagi xabaringiz
+        ma&apos;muriyat tomonidan ko&apos;rib chiqiladi va Telegram orqali xabar
+        beriladi.
       </p>
 
       <form
@@ -61,21 +62,21 @@ export function UserReportModal() {
         <form.Field
           name="reason"
           children={(field) => (
-            <LabeledField label="reason">
+            <LabeledField label="Sabab">
               <SlimSelect
                 appendTo="container"
                 options={[
-                  { value: "Inappropriate name", text: "Inappropriate name" },
-                  { value: "Inappropriate bio", text: "Inappropriate bio" },
+                  { value: "Inappropriate name", text: "Noo'rin ism" },
+                  { value: "Inappropriate bio", text: "Noo'rin bio/tavsif" },
                   {
                     value: "Inappropriate social links",
-                    text: "Inappropriate social links",
+                    text: "Noo'rin ijtimoiy tarmoq havolalari",
                   },
                   ...[
                     !getUserToReport()?.lbOptOut
                       ? {
                           value: "Suspected cheating",
-                          text: "Suspected cheating",
+                          text: "Qalloblik / Cheat shubhasi",
                         }
                       : undefined,
                   ],
@@ -92,12 +93,13 @@ export function UserReportModal() {
           name="comment"
           validators={{ onChange: fromSchema(ReportUserCommentSchema) }}
           children={(field) => (
-            <LabeledField label="comment">
+            <LabeledField label="Qo'shimcha izoh">
               <div class="relative">
                 <TextareaField
                   field={field}
                   class="bg-bg-secondary min-h-50 w-full rounded p-2 text-text"
                   autocomplete="off"
+                  placeholder="Shikoyat sababini batafsil yozing..."
                 />
                 <div
                   class={`absolute right-2 bottom-2 text-xs ${250 - field().state.value.length < 0 ? "text-error" : "text-sub"}`}
@@ -112,7 +114,7 @@ export function UserReportModal() {
           name="captcha"
           children={(field) => <Captcha field={field} />}
         />
-        <SubmitButton form={form} text="report" class="w-full" />
+        <SubmitButton form={form} text="Shikoyatni yuborish" class="w-full" />
       </form>
     </AnimatedModal>
   );
@@ -138,11 +140,13 @@ async function apply(options: {
   hideLoaderBar();
 
   if (response.status !== 200) {
-    showErrorNotification("Failed to report user", { response });
+    showErrorNotification("Shikoyat yuborishda xatolik yuz berdi", {
+      response,
+    });
     return;
   }
 
-  showSuccessNotification("Report submitted. Thank you!");
+  showSuccessNotification("Shikoyat qabul qilindi. Rahmat!");
   setUserToReport(null);
   hideModal("UserReport");
 }
