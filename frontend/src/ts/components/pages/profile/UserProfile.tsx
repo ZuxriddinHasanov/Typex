@@ -5,7 +5,7 @@ import {
   UserProfile as UserProfileType,
 } from "@typeuz/schemas/users";
 import { formatDate } from "date-fns/format";
-import { createMemo, createResource, For, JSXElement, Show } from "solid-js";
+import { createMemo, createResource, createSignal, For, JSXElement, Show } from "solid-js";
 
 import Ape from "../../../ape";
 import * as PbTablesModal from "../../../modals/pb-tables";

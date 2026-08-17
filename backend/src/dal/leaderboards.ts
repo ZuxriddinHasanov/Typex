@@ -39,6 +39,7 @@ type LeaderboardRow = {
   last_name: string | null;
   discord_id: string | null;
   discord_avatar: string | null;
+  avatar: string | null;
   badge_id: number | null;
   is_premium: boolean;
   friends_rank?: number;
@@ -62,6 +63,7 @@ function mapLeaderboardRow(row: LeaderboardRow): DBLeaderboardEntry {
     ...(row.discord_avatar === null
       ? {}
       : { discordAvatar: row.discord_avatar }),
+    ...(row.avatar === null ? {} : { avatar: row.avatar }),
     ...(row.badge_id === null ? {} : { badgeId: row.badge_id }),
     ...(row.is_premium ? { isPremium: true } : {}),
     ...(row.friends_rank === undefined
@@ -263,6 +265,7 @@ export async function update(
           u.last_name,
           u.discord_id,
           u.discord_avatar,
+          u.avatar,
           selected_badge.badge_id,
           CASE
             WHEN u.premium->>'expirationTimestamp' IS NULL THEN false
@@ -316,13 +319,13 @@ export async function update(
         uid, language, mode, mode2, numbers,
         wpm, acc, raw, consistency, timestamp,
         rank, name, first_name, last_name,
-        discord_id, discord_avatar, badge_id, is_premium
+        discord_id, discord_avatar, avatar, badge_id, is_premium
       )
       SELECT
         uid, $1, $2, $3, $4,
         wpm, acc, raw, consistency, timestamp,
         rank, name, first_name, last_name,
-        discord_id, discord_avatar, badge_id, is_premium
+        discord_id, discord_avatar, avatar, badge_id, is_premium
       FROM ranked`,
       [language, mode, mode2, numbers ?? false, 0],
     );

@@ -17,7 +17,7 @@
     "build": "madge --circular --extensions ts ./src && vite build",
     "madge": " madge --circular --extensions ts ./src",
     "start": "vite preview --port 3000",
-    "dev": "vite dev",
+    "dev": "vite dev --port 3000",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "dev-test": "concurrently --kill-others \"vite dev\" \"vitest\"",

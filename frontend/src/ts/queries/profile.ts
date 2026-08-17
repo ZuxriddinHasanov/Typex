@@ -16,10 +16,12 @@ export const getUserProfile = (username: string) =>
   queryOptions({
     queryKey: queryKeys.profile(username),
     queryFn: async () => {
+      console.log("queryFn called for", username);
       const response = await Ape.users.getProfile({
         params: { uidOrName: username },
         query: { isUid: false },
       });
+      console.log("queryFn response", response);
       if (response.status !== 200) {
         throw new Error(`Could not fetch profile: ${response.body.message}`);
       }

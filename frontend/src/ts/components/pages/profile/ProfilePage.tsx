@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { JSXElement, Show } from "solid-js";
+import { createEffect, JSXElement, Show } from "solid-js";
 
 import { PageName } from "../../../pages/page";
 import { getUserProfile } from "../../../queries/profile";
@@ -11,17 +11,21 @@ import { UserProfile } from "./UserProfile";
 
 const pageName: PageName = "profile";
 export function ProfilePage(): JSXElement {
-  const isOpen = () => getActivePage() === pageName;
+  const isOpen = () => getActivePage() === "profile";
 
   const profileQuery = useQuery(() => ({
     ...getUserProfile(getSelectedProfileName() as string),
     enabled: isOpen() && getSelectedProfileName() !== undefined,
   }));
 
+  createEffect(() => {
+    console.log("ProfilePage reactive effect:", { isOpen: isOpen(), name: getSelectedProfileName(), loading: profileQuery.isLoading, error: profileQuery.isError, data: profileQuery.data !== undefined });
+  });
+
   return (
     <Page id="profile">
       <div class="flex h-full items-center justify-center text-lg">
-        <AsyncContent queries={{ profileQuery }} ignoreError={true}>
+        <AsyncContent queries={{ profileQuery }} ignoreError={false}>
           {({ profileQueryData }) => (
             <UserProfile profile={profileQueryData()} />
           )}

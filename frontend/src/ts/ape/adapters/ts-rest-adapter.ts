@@ -51,20 +51,25 @@ function getOrCreateGuestToken(): string {
 async function getAuthHeader(): Promise<Record<string, string>> {
   const jwt = getStoredToken();
   if (jwt !== null) {
+    console.log("getAuthHeader: using stored JWT", jwt);
     return { Authorization: `Bearer ${jwt}` };
   }
 
   const token = await getIdToken();
-  if (token !== null) {
+  if (token !== null && token !== "") {
+    console.log("getAuthHeader: using firebase token", token);
     return { Authorization: `Bearer ${token}` };
   }
 
   const dev = getDevAuth();
   if (dev !== null) {
+    console.log("getAuthHeader: using dev auth", dev);
     return { Authorization: `Uid ${dev.uid}|${dev.email}` };
   }
 
-  return { Authorization: `Guest ${getOrCreateGuestToken()}` };
+  const guestToken = getOrCreateGuestToken();
+  console.log("getAuthHeader: using guest token", guestToken);
+  return { Authorization: `Guest ${guestToken}` };
 }
 
 function buildApi(timeout: number): (args: ApiFetcherArgs) => Promise<{

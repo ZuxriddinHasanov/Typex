@@ -177,6 +177,7 @@ CREATE TABLE leaderboard_entries (
   last_name TEXT,
   discord_id TEXT,
   discord_avatar TEXT,
+  avatar TEXT,
   badge_id INTEGER,
   is_premium BOOLEAN DEFAULT false,
   PRIMARY KEY (uid, language, mode, mode2, numbers)

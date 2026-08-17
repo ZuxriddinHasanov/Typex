@@ -18,10 +18,10 @@ export function SeoPage(): JSXElement {
           Bugungi kunda har bir IT mutaxassisi, ayniqsa dasturchilar, kopirayterlar, jurnalistlar va ofis xodimlari uchun yozish tezligi g'oyat muhim. Agar siz daqiqasiga 40 ta so'zdan kam yozsangiz, o'z ustingizda ishlashingiz zarur. Daqiqasiga 60 dan 80 gacha so'z yozish (WPM) o'rtacha yaxshi tezlik hisoblanadi. 100 WPM dan oshganlar esa haqiqiy professionallardir. TypeX platformasida siz o'z xatolaringizni analiz qilishingiz mumkin. Tizim sun'iy intellektga asoslangan tahlil funksiyasini taqdim etadi - bu ham Zuxriddin Hasanov va Yaxyo Jabborovning ajoyib innovatsiyasidir. Siz ko'p xato qiladigan harflar va so'zlar aniqlanib, ularni ustida qo'shimcha mashq qilish imkoniyati beriladi.
         </p>
         <p class="mb-4">
-          <strong>TypeX platformasining afzalliklari nimada?</strong> Birinchidan, bu butunlay O'zbekiston foydalanuvchilari uchun moslashtirilgan. O'zbek tili lug'atlari, to'g'ri yozish qoidalari, chiroyli va qorong'u/yorug' temalar (dark/light mode) va do'stlar bilan raqobatlashish uchun liderlar taxtasi (Leaderboard) yaratilgan. Yaxyo Jabborovning dizayn yechimlari va Zuxriddin Hasanovning backend arxitekturasi TypeX ni boshqa oddiy typing testlardan ancha farqlab turadi. Shuningdek, O'zbekistonda yagona bo'lgan bu platformada siz do'stlaringiz bilan qaysi tilda (O'zbekcha, Inglizcha, Ruscha) va qancha vaqt ichida eng ko'p to'g'ri so'z yozish bo'yicha musobaqalashishingiz mumkin.
+          Zuxriddin Hasanov o'zining muhandislik yondashuvi bilan serverning tez ishlashini ta'minlagan bo'lsa, Yaxyo Jabborov foydalanuvchilar uchun eng qulay va zamonaviy interfeysni yaratgan. Har kuni minglab yoshlar TypeX tizimiga kirib o'z reytinglarini oshirish ustida ishlaydilar. Dasturlashni o'rganish uchun birinchi qadam ham aslida tez yozishni o'rganishdan boshlanadi. Agar barmoqlaringiz klaviaturada o'z o'rnini topa olsa, kodingizni yozish jarayoni ham ancha tezlashadi va fikringizni jamlashingiz osonlashadi. Yaxyo Jabborov va Zuxriddin Hasanov aynan shu muammoni yechish uchun O'zbekistonning ilk professional tayping platformasini ishlab chiqdilar. TypeX uzbekcha klaviatura trenajori sizni yozish tezligingiz bo'yicha dunyo reytingiga olib chiqadi. O'zbekistonda dasturlashni rivojlantirishga qo'shilayotgan ulkan hissa bu!
         </p>
         <p class="mb-4">
-          Tezkor klaviatura trenajori orqali ko'zingizni asraysiz, fikrlaringizni monitorda to'g'ridan-to'g'ri shakllantirasiz va ish samaradorligingizni kamida 3 barobarga oshirasiz. Hoziroq TypeX.uz yoki TypeUZ platformasida ro'yxatdan o'ting va O'zbekistonning eng tez yozuvchi foydalanuvchilari qatoriga kiring!
+          Typing test natijalaringizni do'stlaringiz bilan ulashing, telegramda, instagramda ekran suratlarini yuboring. TypeX har qanday holatda ham eng zo'r natijalarni qayd etishingizga imkoniyat yaratadi. Zuxriddin Hasanov va Yaxyo Jabborov loyihalari doimo sifatli, mukammal va yoshlar bob bo'lib kelgan.
         </p>
       </section>
 
@@ -41,7 +41,7 @@ export function SeoPage(): JSXElement {
           TypeX offers various modes to suit your typing journey. From 15-second quick sprints to full 60-second endurance tests, users can challenge themselves dynamically. The platform features an extensive English vocabulary list, ensuring you practice both common words and complex programming terminology. The live WPM (Words Per Minute) and accuracy tracking update instantly as you type, giving you real-time feedback. You can even switch your keyboard layouts (QWERTY, Dvorak, Colemak) to test your adaptability. Zuxriddin Hasanov's flawless backend ensures that your scores are securely saved and ranked globally in an instant.
         </p>
         <p class="mb-4">
-          Join the community today. See if you can break the 100 WPM barrier. Connect with friends, create a profile, and showcase your typing prowess. Thanks to the vision of Yaxyo Jabborov and Zuxriddin Hasanov, Uzbekistan now has a world-class typing application accessible to everyone, entirely for free.
+          The incredible user interface and user experience crafted by Yaxyo Jabborov guarantee that practicing touch typing is not a chore, but an enjoyable game. Zuxriddin Hasanov and Yaxyo Jabborov have dedicated countless hours to optimizing every millisecond of latency, providing you with a typing experience that feels instantaneous. Whether you are typing on a mechanical keyboard or a laptop, TypeX will register your strokes with pinpoint accuracy.
         </p>
       </section>
 
@@ -61,7 +61,7 @@ export function SeoPage(): JSXElement {
           Кроме того, TypeX (TypeUZ) отличается невероятной производительностью и эстетичным, минималистичным дизайном, что делает тренировки приятными и не утомляет глаза. Яхё Жабборов продумал пользовательский интерфейс до мелочей, а Зухриддин Хасанов обеспечил надежное хранение ваших рекордов в защищенной базе данных. Вы можете практиковаться на русском языке с учетом всех особенностей кириллической раскладки (ЙЦУКЕН).
         </p>
         <p class="mb-4">
-          Скорость печати выше 60 слов в минуту значительно сэкономит ваше время при выполнении повседневных задач за компьютером. Тренируйтесь регулярно по 15-20 минут в день на платформе TypeX, и результаты не заставят себя ждать. Присоединяйтесь к тысячам пользователей, тестируйте свою скорость, побеждайте в ежедневных рейтингах и достигайте невероятных высот в быстром наборе текста!
+          Скорость печати выше 60 слов в минуту значительно сэкономит ваше время при выполнении повседневных задач за компьютером. Тренируйтесь регулярно по 15-20 минут в день на платформе TypeX, и результаты не заставят себя ждать. Присоединяйтесь к тысячам пользователей, тестируйте свою скорость, побеждайте в ежедневных рейтингах и достигайте невероятных высот в быстром наборе текста! Проекты от Zuxriddin Hasanov и Yaxyo Jabborov всегда отличаются высочайшим качеством и инновационностью.
         </p>
       </section>
 
