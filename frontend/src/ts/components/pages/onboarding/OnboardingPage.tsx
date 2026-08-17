@@ -1,13 +1,16 @@
-// oxlint-disable react/no-unescaped-entities, solid/self-closing-comp
 import { createForm } from "@tanstack/solid-form";
-import { For, JSXElement, Show, createSignal } from "solid-js";
+import { useQuery } from "@tanstack/solid-query";
+import { For, JSXElement, Show, createEffect, createSignal } from "solid-js";
 
 import Ape from "../../../ape";
-import { navigate } from "../../../controllers/route-controller";
+import { getUserProfile } from "../../../queries/profile";
+import { setActivePage } from "../../../states/core";
 import {
   showErrorNotification,
   showNoticeNotification,
+  showSuccessNotification,
 } from "../../../states/notifications";
+import { getSnapshot } from "../../../states/snapshot";
 import { Fa } from "../../common/Fa";
 import { Page } from "../../common/Page";
 import { InputField } from "../../ui/form/InputField";
@@ -35,46 +38,95 @@ export function OnboardingPage(): JSXElement {
 
   const missingFields = (): boolean => true;
 
+  const profileQuery = useQuery(() => {
+    const name = getSnapshot()?.name ?? "";
+    return {
+      ...getUserProfile(name),
+      enabled: name !== "",
+    };
+  });
+
   const form = createForm(() => ({
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      gender: "",
-      age: "" as string | number,
+      firstName: profileQuery.data?.firstName ?? "",
+      lastName: profileQuery.data?.lastName ?? "",
+      gender: profileQuery.data?.gender ?? "",
+      age: (profileQuery.data?.age ?? "") as string | number,
     },
     onSubmit: async ({ value }) => {
       setSaving(true);
       try {
-        const body: Record<string, unknown> = {};
-        if (value.firstName) body["firstName"] = value.firstName;
-        if (value.lastName) body["lastName"] = value.lastName;
-        if (value.gender) body["gender"] = value.gender;
-        if (value.age !== "" && value.age !== undefined) {
-          body["age"] = Number(value.age);
+        const res = await Ape.users.updateProfileDetails({
+          body: {
+            gender:
+              value.gender === "male" ||
+              value.gender === "female" ||
+              value.gender === "other"
+                ? value.gender
+                : undefined,
+            age:
+              value.age !== "" && value.age !== undefined && value.age !== null
+                ? Number(value.age)
+                : undefined,
+            avatar: selectedAvatar() || undefined,
+            firstName: value.firstName || undefined,
+            lastName: value.lastName || undefined,
+          },
+        });
+        if (res.status !== 200) {
+          showErrorNotification("Profilni saqlashda xatolik yuz berdi");
+          return;
         }
-        const av = selectedAvatar();
-        if (av) body["avatar"] = av;
 
-        if (Object.keys(body).length > 0) {
-          const res = await Ape.users.updateProfileDetails({ body });
-          if (res.status !== 200) {
-            showErrorNotification("Profilni saqlashda xatolik yuz berdi");
-            return;
-          }
-        }
-
+        showSuccessNotification("Profil muvaffaqiyatli to'ldirildi!");
         localStorage.setItem("typeuz_onboarding_done", "true");
-        void navigate("/");
+        history.pushState(null, "", "/");
+        setActivePage("test");
       } catch (e) {
-        showErrorNotification(`Xatolik: ${(e as Error).message}`);
+        console.error(e);
+        showErrorNotification("Profilni saqlashda xatolik yuz berdi");
       } finally {
         setSaving(false);
       }
     },
-    onSubmitInvalid: () => {
+    onSubmitInvalid: (errors) => {
+      console.error(errors);
       showNoticeNotification("Iltimos, maydonlarni to'g'ri to'ldiring");
     },
   }));
+
+  createEffect(() => {
+    const data = profileQuery.data;
+    if (data !== undefined && data !== null) {
+      if (
+        data.firstName !== undefined &&
+        data.firstName !== null &&
+        data.firstName !== ""
+      ) {
+        form.setFieldValue("firstName", data.firstName);
+      }
+      if (
+        data.lastName !== undefined &&
+        data.lastName !== null &&
+        data.lastName !== ""
+      ) {
+        form.setFieldValue("lastName", data.lastName);
+      }
+      if (data.gender !== undefined && data.gender !== null) {
+        form.setFieldValue("gender", data.gender);
+      }
+      if (data.age !== undefined && data.age !== null && data.age > 0) {
+        form.setFieldValue("age", data.age);
+      }
+      if (
+        data.avatar !== undefined &&
+        data.avatar !== null &&
+        data.avatar !== ""
+      ) {
+        setSelectedAvatar(data.avatar);
+      }
+    }
+  });
 
   return (
     <Page id="onboarding">
@@ -94,9 +146,9 @@ export function OnboardingPage(): JSXElement {
               <Fa icon="fa-tachometer-alt" />
             </div>
             <div>
-              <h3 class="font-semibold text-text">Tezlikni o'lchash</h3>
+              <h3 class="font-semibold text-text">Tezlikni o&apos;lchash</h3>
               <p class="mt-1 text-sm text-sub">
-                WPM, aniqlik, vaqt va boshqa ko'rsatkichlarni real vaqtda
+                WPM, aniqlik, vaqt va boshqa ko&apos;rsatkichlarni real vaqtda
                 kuzating
               </p>
             </div>
@@ -109,7 +161,7 @@ export function OnboardingPage(): JSXElement {
               <h3 class="font-semibold text-text">Statistika va reyting</h3>
               <p class="mt-1 text-sm text-sub">
                 Barcha natijalaringiz profilingizda saqlanadi va reytingda
-                o'rningizni ko'rasiz
+                o&apos;rningizni ko&apos;rasiz
               </p>
             </div>
           </div>
@@ -120,7 +172,7 @@ export function OnboardingPage(): JSXElement {
             <div>
               <h3 class="font-semibold text-text">3 tilda test</h3>
               <p class="mt-1 text-sm text-sub">
-                O'zbek, ingliz va rus tillarida yozuv tezligi testini
+                O&apos;zbek, ingliz va rus tillarida yozuv tezligi testini
                 topshirishingiz mumkin
               </p>
             </div>
@@ -132,7 +184,7 @@ export function OnboardingPage(): JSXElement {
             <div class="mb-4 flex items-center gap-2">
               <Fa icon="fa-pen-square" class="text-main" />
               <h2 class="text-lg font-semibold text-text">
-                Profilingizni to'ldiring
+                Profilingizni to&apos;ldiring
               </h2>
               <span class="text-xs text-sub/60">(ixtiyoriy)</span>
             </div>
@@ -231,7 +283,8 @@ export function OnboardingPage(): JSXElement {
                   type="button"
                   onClick={() => {
                     localStorage.setItem("typeuz_onboarding_done", "true");
-                    void navigate("/");
+                    history.pushState(null, "", "/");
+                    setActivePage("test");
                   }}
                   class="text-sm text-sub/60 transition-colors hover:text-text"
                 >
@@ -246,7 +299,8 @@ export function OnboardingPage(): JSXElement {
           type="button"
           onClick={() => {
             localStorage.setItem("typeuz_onboarding_done", "true");
-            void navigate("/");
+            history.pushState(null, "", "/");
+            setActivePage("test");
           }}
           class="inline-flex items-center gap-2 rounded-full bg-main px-10 py-4 text-base font-semibold text-bg transition-all hover:scale-105 hover:shadow-lg hover:shadow-main/25"
         >

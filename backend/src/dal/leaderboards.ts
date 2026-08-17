@@ -19,6 +19,7 @@ export type DBLeaderboardEntry = {
   name: string;
   firstName?: string;
   lastName?: string;
+  avatar?: string;
   discordId?: string;
   discordAvatar?: string;
   badgeId?: number;
@@ -37,9 +38,9 @@ type LeaderboardRow = {
   name: string;
   first_name: string | null;
   last_name: string | null;
+  avatar: string | null;
   discord_id: string | null;
   discord_avatar: string | null;
-  avatar: string | null;
   badge_id: number | null;
   is_premium: boolean;
   friends_rank?: number;
@@ -59,13 +60,13 @@ function mapLeaderboardRow(row: LeaderboardRow): DBLeaderboardEntry {
       : { consistency: Number(row.consistency) }),
     ...(row.first_name === null ? {} : { firstName: row.first_name }),
     ...(row.last_name === null ? {} : { lastName: row.last_name }),
+    ...(row.avatar === null ? {} : { avatar: row.avatar }),
     ...(row.discord_id === null ? {} : { discordId: row.discord_id }),
     ...(row.discord_avatar === null
       ? {}
       : { discordAvatar: row.discord_avatar }),
-    ...(row.avatar === null ? {} : { avatar: row.avatar }),
     ...(row.badge_id === null ? {} : { badgeId: row.badge_id }),
-    ...(row.is_premium ? { isPremium: true } : {}),
+    isPremium: row.is_premium,
     ...(row.friends_rank === undefined
       ? {}
       : { friendsRank: Number(row.friends_rank) }),
@@ -263,6 +264,7 @@ export async function update(
           u.name,
           u.first_name,
           u.last_name,
+          u.avatar,
           u.discord_id,
           u.discord_avatar,
           u.avatar,
@@ -318,14 +320,14 @@ export async function update(
       INSERT INTO leaderboard_entries (
         uid, language, mode, mode2, numbers,
         wpm, acc, raw, consistency, timestamp,
-        rank, name, first_name, last_name,
-        discord_id, discord_avatar, avatar, badge_id, is_premium
+        rank, name, first_name, last_name, avatar,
+        discord_id, discord_avatar, badge_id, is_premium
       )
       SELECT
         uid, $1, $2, $3, $4,
         wpm, acc, raw, consistency, timestamp,
-        rank, name, first_name, last_name,
-        discord_id, discord_avatar, avatar, badge_id, is_premium
+        rank, name, first_name, last_name, avatar,
+        discord_id, discord_avatar, badge_id, is_premium
       FROM ranked`,
       [language, mode, mode2, numbers ?? false, 0],
     );

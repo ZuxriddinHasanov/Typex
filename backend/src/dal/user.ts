@@ -1366,11 +1366,47 @@ export async function updateProfileDetails(
   if (setClauses.length === 0) return;
 
   values.push(uid);
-  
+
   await db.query(
     `UPDATE users SET ${setClauses.join(", ")} WHERE uid = $${paramIndex}`,
     values,
   );
+
+  // Update leaderboard entries if avatar or name changed
+  if (
+    updates["avatar"] !== undefined ||
+    updates["firstName"] !== undefined ||
+    updates["lastName"] !== undefined
+  ) {
+    const lbSetClauses: string[] = [];
+    const lbValues: unknown[] = [];
+    let lbParamIndex = 1;
+
+    if (updates["avatar"] !== undefined) {
+      lbSetClauses.push(`avatar = $${lbParamIndex++}`);
+      lbValues.push(updates["avatar"]);
+    }
+    if (updates["firstName"] !== undefined) {
+      lbSetClauses.push(`first_name = $${lbParamIndex++}`);
+      lbValues.push(updates["firstName"]);
+    }
+    if (updates["lastName"] !== undefined) {
+      lbSetClauses.push(`last_name = $${lbParamIndex++}`);
+      lbValues.push(updates["lastName"]);
+    }
+
+    if (lbSetClauses.length > 0) {
+      lbValues.push(uid);
+      await db
+        .query(
+          `UPDATE leaderboard_entries SET ${lbSetClauses.join(", ")} WHERE uid = $${lbParamIndex}`,
+          lbValues,
+        )
+        .catch((err: unknown) => {
+          void err;
+        });
+    }
+  }
 }
 
 export async function getInbox(uid: string): Promise<MonkeyMail[]> {

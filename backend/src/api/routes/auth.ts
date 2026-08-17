@@ -340,7 +340,12 @@ router.post(
 
 export async function verifyGoogleToken(
   token: string,
-): Promise<{ email: string; name: string } | null> {
+): Promise<{
+  email: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+} | null> {
   try {
     let resp = await fetch(
       `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`,
@@ -359,6 +364,8 @@ export async function verifyGoogleToken(
 
     const email = payload["email"] as string | undefined;
     const name = payload["name"] as string | undefined;
+    const firstName = payload["given_name"] as string | undefined;
+    const lastName = payload["family_name"] as string | undefined;
     const emailVerified = (payload["email_verified"] ??
       payload["verified_email"]) as string | boolean | undefined;
 
@@ -373,6 +380,8 @@ export async function verifyGoogleToken(
     return {
       email,
       name: name ?? email.split("@")[0] ?? "google_user",
+      firstName,
+      lastName,
     };
   } catch {
     return null;
@@ -381,7 +390,11 @@ export async function verifyGoogleToken(
 
 router.post("/google", authLimiter, async (req: Request, res: Response) => {
   try {
-    const { idToken, email: devEmail, name: devName } = req.body as {
+    const {
+      idToken,
+      email: devEmail,
+      name: devName,
+    } = req.body as {
       idToken?: string;
       email?: string;
       name?: string;
@@ -395,7 +408,12 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
     }
 
     let googleInfo = await verifyGoogleToken(idToken);
-    if (googleInfo === null && isDevEnvironment() && devEmail !== undefined && devEmail !== "") {
+    if (
+      googleInfo === null &&
+      isDevEnvironment() &&
+      devEmail !== undefined &&
+      devEmail !== ""
+    ) {
       googleInfo = {
         email: devEmail,
         name: devName ?? devEmail.split("@")[0] ?? "google_dev_user",
@@ -434,7 +452,23 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
         }
       }
 
-      await UserDAL.addUser(username, email, uid);
+      let firstName: string | undefined = undefined;
+      let lastName: string | undefined = undefined;
+      if (name) {
+        const parts = name.trim().split(" ");
+        firstName = parts[0];
+        if (parts.length > 1) lastName = parts.slice(1).join(" ");
+      }
+      await UserDAL.addUser(
+        username,
+        email,
+        uid,
+        undefined,
+        undefined,
+        undefined,
+        firstName,
+        lastName,
+      );
       await saveUserMeta({ uid, email, name: username });
       user = await findUserByEmail(email);
     }
@@ -664,7 +698,9 @@ router.get("/github/login", (_req: Request, res: Response) => {
       `);
       return;
     }
-    res.redirect(`${feUrl()}?auth_error=${encodeURIComponent("GitHub auth sozlanmagan")}`);
+    res.redirect(
+      `${feUrl()}?auth_error=${encodeURIComponent("GitHub auth sozlanmagan")}`,
+    );
     return;
   }
   const state = crypto.randomBytes(32).toString("hex");

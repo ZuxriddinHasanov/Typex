@@ -1327,32 +1327,7 @@ qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   });
 });
 
-// little roadblock for basic cheating
-window.addEventListener("focus", () => {
-  if (
-    !isTestActive() &&
-    !TestState.resultVisible &&
-    (Config.mode === "time" || Config.mode === "words" || Config.mode === "ai")
-  ) {
-    restart({
-      noAnim: true,
-    });
-  }
-});
-
-// little roadblock for basic cheating
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState !== "visible") return;
-  if (
-    !isTestActive() &&
-    !TestState.resultVisible &&
-    (Config.mode === "time" || Config.mode === "words" || Config.mode === "ai")
-  ) {
-    restart({
-      noAnim: true,
-    });
-  }
-});
+// Removed window focus and visibilitychange anti-cheat listeners to prevent test refresh on tab switch
 
 restartTestEvent.subscribe((event) => restart(event));
 

@@ -21,6 +21,7 @@ import { getUserId, isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
 import { getLastResult } from "../../../states/snapshot";
+import { t } from "../../../states/ui-language";
 import { setUserToReport } from "../../../states/user-report";
 import { secondsToString } from "../../../utils/date-and-time";
 import { getXpDetails } from "../../../utils/levels";
@@ -159,7 +160,7 @@ function ActionButtons(props: {
                 }}
               >
                 <Fa icon="fa-flag" class="text-xs" />
-                <span>Shikoyat qilish</span>
+                <span>{t("profile.report")}</span>
               </button>
             </Show>
             <Show when={showFriendsButton()}>
@@ -303,7 +304,17 @@ function AvatarAndName(props: {
         <div class="group relative">
           <div class="absolute inset-0 rounded-full bg-main opacity-20 blur-md transition-opacity group-hover:opacity-40"></div>
           <Show
-            when={props.profile.details?.avatar && !props.profile.avatar && !props.profile.discordAvatar}
+            when={
+              props.profile.details?.avatar !== undefined &&
+              props.profile.details?.avatar !== null &&
+              props.profile.details?.avatar !== "" &&
+              (props.profile.avatar === undefined ||
+                props.profile.avatar === null ||
+                props.profile.avatar === "") &&
+              (props.profile.discordAvatar === undefined ||
+                props.profile.discordAvatar === null ||
+                props.profile.discordAvatar === "")
+            }
             fallback={
               <DiscordAvatar
                 class="relative h-20 w-20 rounded-full border-2 border-sub/10 object-cover shadow-sm"
@@ -315,7 +326,7 @@ function AvatarAndName(props: {
             }
           >
             <div class="relative flex h-20 w-20 items-center justify-center rounded-full border-2 border-main/20 bg-main/10 text-4xl text-main shadow-sm">
-              <i class={`fas ${props.profile.details?.avatar}`}></i>
+              <i class={`fas ${props.profile.details?.avatar ?? ""}`}></i>
             </div>
           </Show>
         </div>

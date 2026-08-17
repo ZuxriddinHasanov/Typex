@@ -175,6 +175,7 @@ CREATE TABLE leaderboard_entries (
   name TEXT NOT NULL,
   first_name TEXT,
   last_name TEXT,
+  avatar TEXT,
   discord_id TEXT,
   discord_avatar TEXT,
   avatar TEXT,

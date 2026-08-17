@@ -331,6 +331,8 @@ export const UserProfileSchema = UserSchema.pick({
   gender: true,
   age: true,
   avatar: true,
+  firstName: true,
+  lastName: true,
 })
   .extend({
     typingStats: TypingStatsSchema,

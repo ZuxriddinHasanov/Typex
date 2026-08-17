@@ -181,14 +181,7 @@ async function updateChartData(): Promise<void> {
   ChartController.result.getDataset("burst").data = chartData3;
   ChartController.result.getDataset("error").data = result.chartData.err;
 
-  let l_error = "xatolar";
-  if (Config.language === "english") {
-    l_error = "errors";
-  } else if (Config.language === "russian") {
-    l_error = "ошибки";
-  }
-
-  ChartController.result.getDataset("error").label = l_error;
+  ChartController.result.getDataset("error").label = t("test.errors");
   ChartController.result.getDataset("raw").label = "raw";
   ChartController.result.getDataset("burst").label = "burst";
   ChartController.result.getScale("error").max = Math.max(
@@ -336,7 +329,9 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  qs("#result .stats .wpm .top .text")?.setText(`Tezlik (${Config.typingSpeedUnit})`);
+  qs("#result .stats .wpm .top .text")?.setText(
+    `Tezlik (${Config.typingSpeedUnit})`,
+  );
 
   if (inf) {
     qs("#result .stats .wpm .bottom")?.setText("Infinite");
@@ -374,7 +369,7 @@ function updateWpmAndAcc(): void {
 
       qs("#result .stats .acc .bottom")?.setAttribute(
         "aria-label",
-        `${acc.correct} correct\n${acc.incorrect} incorrect`,
+        `${acc.correct} ${t("test.correct")}\n${acc.incorrect} ${t("test.incorrect")}`,
       );
     } else {
       //not showing decimal places
@@ -403,7 +398,7 @@ function updateWpmAndAcc(): void {
             result.acc === 100
               ? "100%"
               : Format.percentage(result.acc, { showDecimalPlaces: true })
-          }\n${acc.correct} correct\n${acc.incorrect} incorrect`,
+          }\n${acc.correct} ${t("test.correct")}\n${acc.incorrect} ${t("test.incorrect")}`,
         )
         ?.setAttribute("data-balloon-break", "");
     }
@@ -466,96 +461,118 @@ function updateTime(): void {
   }
 }
 
+import { t } from "../states/ui-language";
+
 export function updateTodayTracker(): void {
   qs("#result .stats .time .bottom .timeToday")?.setText(
     TodayTracker.getString(),
   );
 }
 
-function translateResultLabels(): void {
-  const lang = Config.language;
-  const isEn = lang === "english";
-  const isRu = lang === "russian";
-
-  const getStr = (uz: string, en: string, ru: string) => isEn ? en : isRu ? ru : uz;
-
+export function translateResultLabels(): void {
   const wpmNode = qs("#result .group.wpm .top .text");
-  if (wpmNode) wpmNode.innerHTML = getStr("Tezlik", "Speed", "Скорость");
+  if (wpmNode) {
+    wpmNode.setText(t("test.wpm"));
+  }
 
   const accNode = qs("#result .group.acc .top");
-  if (accNode) accNode.innerHTML = getStr("Aniqlik", "Accuracy", "Точность");
+  if (accNode) {
+    accNode.setText(t("test.acc"));
+  }
 
   const testTypeNode = qs("#result .group.testType .top");
-  if (testTypeNode) testTypeNode.innerHTML = getStr("Test turi", "Test type", "Тип теста");
+  if (testTypeNode) {
+    testTypeNode.setText("Test turi");
+  }
 
   const rawNode = qs("#result .group.raw .top");
-  if (rawNode) rawNode.innerHTML = "raw";
+  if (rawNode) {
+    rawNode.setText(t("test.raw"));
+  }
 
   const keyNode = qs("#result .group.key .top");
-  if (keyNode) keyNode.innerHTML = getStr("Belgilar", "Characters", "Символы");
+  if (keyNode) {
+    keyNode.setText(t("test.characters"));
+  }
 
   const consNode = qs("#result .group.consistency .top");
-  if (consNode) consNode.innerHTML = getStr("Barqarorlik", "Consistency", "Стабильность");
+  if (consNode) {
+    consNode.setText(t("test.consistency"));
+  }
 
   const timeNode = qs("#result .group.time .top");
-  if (timeNode) timeNode.innerHTML = getStr("Vaqt", "Time", "Время");
+  if (timeNode) {
+    timeNode.setText(t("test.time"));
+  }
 
   const dailyNode = qs("#result .group.dailyLeaderboard .top");
-  if (dailyNode) dailyNode.innerHTML = getStr("Kunlik reyting", "Daily LB", "Дневной топ");
+  if (dailyNode) {
+    dailyNode.setText(t("profile.allTimeLb"));
+  }
 
   const nextBtn = qs("#nextTestButton");
-  if (nextBtn) nextBtn.setAttribute("aria-label", getStr("Keyingi test", "Next test", "Следующий тест"));
+  if (nextBtn) {
+    nextBtn.setAttribute("aria-label", t("test.nextTest"));
+  }
 
   const repeatBtn = qs("#restartTestButtonWithSameWordset");
-  if (repeatBtn) repeatBtn.setAttribute("aria-label", getStr("Testni qaytarish", "Repeat test", "Повторить тест"));
+  if (repeatBtn) {
+    repeatBtn.setAttribute("aria-label", t("test.repeatTest"));
+  }
 
   const practiceBtn = qs("#practiseWordsButton");
-  if (practiceBtn) practiceBtn.setAttribute("aria-label", getStr("So'zlarni mashq qilish", "Practice words", "Тренировка слов"));
+  if (practiceBtn) {
+    practiceBtn.setAttribute("aria-label", t("test.practiceWords"));
+  }
 
   const historyBtn = qs("#showWordHistoryButton");
-  if (historyBtn) historyBtn.setAttribute("aria-label", getStr("So'zlar tarixini ko'rsatish", "Toggle words history", "История слов"));
+  if (historyBtn) {
+    historyBtn.setAttribute("aria-label", t("test.history"));
+  }
 
   const replayBtn = qs("#watchReplayButton");
-  if (replayBtn) replayBtn.setAttribute("aria-label", getStr("Qaytadan ko'rish", "Watch replay", "Смотреть повтор"));
+  if (replayBtn) {
+    replayBtn.setAttribute("aria-label", t("test.replay"));
+  }
 
   const saveBtn = qs("#saveScreenshotButton");
-  if (saveBtn) saveBtn.setAttribute("aria-label", getStr("Skrinshotni nusxalash\n(yuklab olish uchun shift+click)", "Copy screenshot to clipboard\n(shift click to download)", "Копировать скриншот\n(shift+клик для скачивания)"));
+  if (saveBtn) {
+    saveBtn.setAttribute("aria-label", t("test.saveScreenshot"));
+  }
 
   const errorFilterBtn = qs("#result .chart button[data-id='errors'] .text");
-  if (errorFilterBtn) errorFilterBtn.innerHTML = getStr("xatolar", "errors", "ошибки");
+  if (errorFilterBtn) {
+    errorFilterBtn.setText(t("test.errors"));
+  }
 }
 
 function updateKey(): void {
   translateResultLabels();
-  let l_correct = "to'g'ri";
-  let l_error = "noto'g'ri";
-  let l_extra = "ortiqcha";
-  let l_missed = "o'tkazib yuborilgan";
-
-  if (Config.language === "english") {
-    l_correct = "correct";
-    l_error = "incorrect";
-    l_extra = "extra";
-    l_missed = "missed";
-  } else if (Config.language === "russian") {
-    l_correct = "верно";
-    l_error = "неверно";
-    l_extra = "лишние";
-    l_missed = "пропущено";
-  }
+  let l_correct = t("test.correct");
+  let l_error = t("test.incorrect");
+  let l_extra = t("test.extra");
+  let l_missed = t("test.missed");
 
   let text = `<div style="font-size: 2rem; line-height: 1.2;">${result.charStats[0]} ${l_correct}</div>`;
   const errors = [];
-  if (result.charStats[1] > 0) { errors.push(`${result.charStats[1]} ${l_error}`); }
-  if (result.charStats[2] > 0) { errors.push(`${result.charStats[2]} ${l_extra}`); }
-  if (result.charStats[3] > 0) { errors.push(`${result.charStats[3]} ${l_missed}`); }
-  
+  if (result.charStats[1] > 0) {
+    errors.push(`${result.charStats[1]} ${l_error}`);
+  }
+  if (result.charStats[2] > 0) {
+    errors.push(`${result.charStats[2]} ${l_extra}`);
+  }
+  if (result.charStats[3] > 0) {
+    errors.push(`${result.charStats[3]} ${l_missed}`);
+  }
+
   if (errors.length > 0) {
     text += `<div style="font-size: 1.2rem; line-height: 1.2; color: var(--sub-color);">${errors.join(" · ")}</div>`;
   }
-  
+
   const bottomEl = qs("#result .stats .key .bottom");
-  if (bottomEl) { bottomEl.setHtml(text); }
+  if (bottomEl) {
+    bottomEl.setHtml(text);
+  }
 }
 
 export function showCrown(type: PbCrown.CrownType): void {

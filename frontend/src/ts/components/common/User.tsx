@@ -21,8 +21,12 @@ import { UserFlags } from "./UserFlags";
 type Props = {
   class?: string;
   user: SupportsFlags &
-    Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar" | "xp" | "avatar"> & {
+    Pick<
+      UserType,
+      "uid" | "name" | "discordId" | "discordAvatar" | "xp" | "avatar"
+    > & {
       badgeId?: number;
+      avatar?: string;
     };
   showAvatar?: boolean;
   avatarFallback?: "user" | "user-circle";

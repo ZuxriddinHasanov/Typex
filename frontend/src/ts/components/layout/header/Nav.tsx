@@ -5,6 +5,12 @@ import { JSXElement, Show } from "solid-js";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { isAuthenticated, getActivePage } from "../../../states/core";
+import {
+  changeUiLanguage,
+  getUiLanguage,
+  t,
+  type UILanguage,
+} from "../../../states/ui-language";
 import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
 
@@ -26,11 +32,11 @@ export function Nav(): JSXElement {
         data-nav-item="landing"
       >
         <Fa icon="fa-home" class="mr-2" />
-        Bosh sahifa
+        {t("nav.home")}
       </a>
       <a href="/" class={navItemClass("test")} router-link data-nav-item="test">
         <Fa icon="fa-keyboard" class="mr-2" />
-        Test
+        {t("nav.test")}
       </a>
       <a
         href="/leaderboards"
@@ -39,7 +45,7 @@ export function Nav(): JSXElement {
         data-nav-item="leaderboards"
       >
         <Fa icon="fa-crown" class="mr-2" />
-        Reyting
+        {t("nav.leaderboard")}
       </a>
       <a
         href="/about"
@@ -48,7 +54,7 @@ export function Nav(): JSXElement {
         data-nav-item="about"
       >
         <Fa icon="fa-info-circle" class="mr-2" />
-        Loyiha haqida
+        {t("nav.about")}
       </a>
       <button
         type="button"
@@ -64,18 +70,21 @@ export function Nav(): JSXElement {
           class="transition-all duration-300"
         />
       </button>
-      <button
-        type="button"
-        onClick={() => {
-          const current = getConfig.language;
-          const nextLang = current === "uzbek" ? "english" : current === "english" ? "russian" : "uzbek";
-          setConfig("language", nextLang);
-        }}
-        class="ml-2 flex h-9 px-3 items-center justify-center rounded-full text-sub transition-all duration-300 hover:bg-sub-alt hover:text-text font-bold text-xs uppercase"
-        aria-label="Toggle language"
+      <select
+        onChange={(e) => changeUiLanguage(e.currentTarget.value as UILanguage)}
+        class="ml-2 h-9 cursor-pointer rounded-full bg-sub-alt/30 px-3 text-xs font-bold text-sub uppercase transition-all outline-none hover:bg-sub-alt/60 hover:text-text"
+        aria-label="Select language"
       >
-        {getConfig.language === "uzbek" ? "UZ" : getConfig.language === "russian" ? "RU" : "EN"}
-      </button>
+        <option value="uzbek" selected={getUiLanguage() === "uzbek"}>
+          UZ
+        </option>
+        <option value="english" selected={getUiLanguage() === "english"}>
+          EN
+        </option>
+        <option value="russian" selected={getUiLanguage() === "russian"}>
+          RU
+        </option>
+      </select>
       <Show
         when={isAuthenticated()}
         fallback={
@@ -85,7 +94,7 @@ export function Nav(): JSXElement {
             router-link
             data-nav-item="login"
           >
-            Kirish
+            {t("nav.login")}
           </a>
         }
       >
@@ -100,7 +109,7 @@ export function Nav(): JSXElement {
           router-link
         >
           <Fa icon="fa-user" />
-          {getConfig.language === "uzbek" ? "Profil" : getConfig.language === "russian" ? "Профиль" : "Profile"}
+          {t("nav.profile")}
         </a>
       </Show>
     </nav>
