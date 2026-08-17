@@ -303,18 +303,19 @@ function AvatarAndName(props: {
         <div class="group relative">
           <div class="absolute inset-0 rounded-full bg-main opacity-20 blur-md transition-opacity group-hover:opacity-40"></div>
           <Show
-            when={props.profile.avatar}
+            when={props.profile.details?.avatar && !props.profile.avatar && !props.profile.discordAvatar}
             fallback={
               <DiscordAvatar
                 class="relative h-20 w-20 rounded-full border-2 border-sub/10 object-cover shadow-sm"
                 size={256}
+                avatar={props.profile.avatar}
                 discordAvatar={props.profile.discordAvatar}
                 discordId={props.profile.discordId}
               />
             }
           >
             <div class="relative flex h-20 w-20 items-center justify-center rounded-full border-2 border-main/20 bg-main/10 text-4xl text-main shadow-sm">
-              <i class={`fas ${props.profile.avatar}`}></i>
+              <i class={`fas ${props.profile.details?.avatar}`}></i>
             </div>
           </Show>
         </div>

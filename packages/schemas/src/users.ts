@@ -108,6 +108,7 @@ export const UserProfileDetailsSchema = z
   .object({
     bio: profileDetailsBase(z.string().max(250)).or(z.literal("")),
     keyboard: profileDetailsBase(z.string().max(75)).or(z.literal("")),
+    avatar: profileDetailsBase(z.string()).or(z.literal("")).optional(),
     socialProfiles: z
       .object({
         twitter: TwitterProfileSchema,
@@ -259,9 +260,9 @@ export const UserSchema = z.object({
   email: UserEmailSchema,
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
-  gender: GenderSchema,
-  age: z.number().int().min(10).max(120).optional(),
-  avatar: z.string().optional(),
+  gender: GenderSchema.optional().nullable(),
+  age: z.number().int().min(10).max(120).optional().nullable(),
+  avatar: z.string().optional().nullable(),
   personalBests: PersonalBestsSchema,
   lastResultHashes: z.array(z.string()).optional(),
   completedTests: z.number().int().nonnegative().optional(),

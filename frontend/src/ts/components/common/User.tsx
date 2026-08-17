@@ -21,7 +21,7 @@ import { UserFlags } from "./UserFlags";
 type Props = {
   class?: string;
   user: SupportsFlags &
-    Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar" | "xp"> & {
+    Pick<UserType, "uid" | "name" | "discordId" | "discordAvatar" | "xp" | "avatar"> & {
       badgeId?: number;
     };
   showAvatar?: boolean;
@@ -100,6 +100,7 @@ export function User(props: Props): JSXElement {
                       size={64}
                       discordId={props.user.discordId}
                       discordAvatar={props.user.discordAvatar}
+                      avatar={props.user.avatar}
                       fallbackIcon={props.avatarFallback ?? "user"}
                       class={cn(
                         props.avatarColor === "text" && "text-text",
