@@ -544,12 +544,18 @@ function updateKey(): void {
     l_missed = "пропущено";
   }
 
-  let text = `${result.charStats[0]} ${l_correct}`;
-  if (result.charStats[1] > 0) text += ` · ${result.charStats[1]} ${l_error}`;
-  if (result.charStats[2] > 0) text += ` · ${result.charStats[2]} ${l_extra}`;
-  if (result.charStats[3] > 0) text += ` · ${result.charStats[3]} ${l_missed}`;
+  let text = `<div style="font-size: 2rem; line-height: 1.2;">${result.charStats[0]} ${l_correct}</div>`;
+  const errors = [];
+  if (result.charStats[1] > 0) { errors.push(`${result.charStats[1]} ${l_error}`); }
+  if (result.charStats[2] > 0) { errors.push(`${result.charStats[2]} ${l_extra}`); }
+  if (result.charStats[3] > 0) { errors.push(`${result.charStats[3]} ${l_missed}`); }
   
-  qs("#result .stats .key .bottom")?.setText(text);
+  if (errors.length > 0) {
+    text += `<div style="font-size: 1.2rem; line-height: 1.2; color: var(--sub-color);">${errors.join(" · ")}</div>`;
+  }
+  
+  const bottomEl = qs("#result .stats .key .bottom");
+  if (bottomEl) { bottomEl.setHtml(text); }
 }
 
 export function showCrown(type: PbCrown.CrownType): void {

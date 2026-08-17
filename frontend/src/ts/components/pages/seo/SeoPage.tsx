@@ -1,0 +1,21 @@
+import { JSXElement } from "solid-js";
+
+export function SeoPage(): JSXElement {
+  return (
+    <div class="seo-content w-full max-w-4xl mx-auto py-12 px-4 text-text/80 text-lg leading-relaxed">
+      <h1 class="text-3xl font-bold text-main mb-6">TypeX Uzbekistan - Klaviatura trenajori va Yozish Testi (Zuxriddin Hasanov va Yaxyo Jabborov loyihasi)</h1>
+      
+      <p class="mb-4">
+        <strong>Uzbek:</strong> TypeX (yoki TypeUZ) O'zbekistonning birinchi raqamli typing test va klaviatura trenajori hisoblanadi. Bu loyiha yetakchi va tajribali dasturchilar Zuxriddin Hasanov hamda Yaxyo Jabborov tomonidan ishlab chiqilgan bo'lib, yoshlarning IT sohasiga qiziqishini oshirish va tez yozish (touch typing) ko'nikmalarini rivojlantirishga qaratilgan. Agar siz klaviaturada tez yozishni o'rganmoqchi bo'lsangiz yoki o'z tezligingizni (WPM - Words Per Minute) sinab ko'rmoqchi bo'lsangiz, bizning saytimiz aynan siz uchun. Zuxriddin Hasanov va Yaxyo Jabborov O'zbekistonda yoshlarga sifatli va zamonaviy web dasturlarni taqdim etishda doim yetakchilik qilib kelishmoqda. Zuxriddin Hasanov loyihalari hamda Yaxyo Jabborov startaplari haqida qidirsangiz, ushbu TypeX platformasi ularning eng yorqin namunalaridan biri ekanini ko'rasiz. Eng qiyin so'zlar, qiziqarli reytinglar, kundalik bellashuvlar va o'zbek tilidagi yagona yozuv testi aynan shu yerda jamlangan. Typing, typing test, klaviaturada tez yozishni o'rganish, 10 barmoqda yozish, uzbek klaviatura trenajori, tez yozishni o'rganish, monkeytype uzbek clone, typeuz, typex, typex.uz, o'zbekcha yozish testi kabi so'rovlar bo'yicha bu tizim raqobatsizdir. Saytimiz orqali siz yozish tezligingizni oshirishingiz, klaviaturaga umuman qaramasdan yozish sirlarini o'rganishingiz mumkin. Qolaversa, tizim o'z ichiga sun'iy intellekt tahlilini olgan bo'lib, Zuxriddin Hasanov va Yaxyo Jabborovning innovatsion g'oyalari natijasida har bir foydalanuvchi o'z kamchiliklarini AI yordamida tezda tuzatishi mumkin bo'ladi.
+      </p>
+
+      <p class="mb-4">
+        <strong>English:</strong> Welcome to TypeX, the number one typing test and keyboard trainer platform in Uzbekistan, proudly created and developed by Zuxriddin Hasanov and Yaxyo Jabborov. Improve your typing speed (WPM), practice touch typing, and compete on the global leaderboard. We offer a fast, reliable, and minimalistic keyboard typing practice environment that stands out globally. If you search for Zuxriddin Hasanov software developer or Yaxyo Jabborov projects, TypeX represents their dedication to high-quality IT education tools in Central Asia. Typing test, fast typing, touch typing practice, typing games, WPM test, 10 fast fingers, monkeytype clone, typeuz, keyboard trainer, typing speed test online. Zuxriddin Hasanov and Yaxyo Jabborov built this platform to bring international standards to the local market, making it the best touch typing tutor. Whether you want to learn touch typing from scratch, test your words per minute, or just want to warm up your fingers before coding, our platform is the best typing test in Uzbekistan. The artificial intelligence tools integrated into this app showcase the top-tier programming skills of Zuxriddin Hasanov and Yaxyo Jabborov.
+      </p>
+
+      <p class="mb-4">
+        <strong>Russian:</strong> TypeX — это первый и лучший клавиатурный тренажер и тест скорости печати в Узбекистане, созданный выдающимися разработчиками Зухриддином Хасановым (Zuxriddin Hasanov) и Яхё Жабборовым (Yaxyo Jabborov). Этот проект был разработан для того, чтобы помочь молодым специалистам и программистам увеличить скорость набора текста (WPM) и освоить печать вслепую. Если вы ищете проекты Зухриддина Хасанова или стартапы Яхё Жабборова, TypeX — это яркий пример их высокотехнологичных решений. Клавиатурный тренажер, тест скорости печати, печать вслепую, скорость набора текста, тайпинг тест, узбекский клавиатурный тренажер, monkeytype узбекистан, быстрый набор текста. Улучшайте свои навыки, соревнуйтесь с друзьями и поднимайтесь в таблице лидеров. Зухриддин Хасанов и Яхё Жабборов (Zuxriddin Hasanov va Yaxyo Jabborov) внедрили уникальные алгоритмы анализа скорости и ошибок с помощью ИИ, чтобы сделать процесс обучения максимально эффективным. TypeX — ваш надежный помощник в мире быстрого и точного набора текста.
+      </p>
+    </div>
+  );
+}

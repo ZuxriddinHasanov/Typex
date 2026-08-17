@@ -13,6 +13,7 @@ import { Overlays } from "./layout/overlays/Overlays";
 import { Modals } from "./modals/Modals";
 import { NotFoundPage } from "./pages/404Page";
 import { AboutPage } from "./pages/AboutPage";
+import { SeoPage } from "./pages/seo/SeoPage";
 import { AccountPage } from "./pages/account/AccountPage";
 import { MyProfile } from "./pages/account/MyProfile";
 import { AdminAdsPage } from "./pages/admin/AdminAdsPage";
@@ -66,6 +67,7 @@ const components: Record<string, () => JSXElement> = {
   landingpage: () => <LandingPage />,
   footer: () => <Footer />,
   aboutpage: () => <AboutPage />,
+  seopage: () => <SeoPage />,
   accountpage: () => <AccountPage />,
   loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,

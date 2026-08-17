@@ -214,33 +214,6 @@ export function LeaderboardPage(): JSXElement {
                 </For>
               </div>
             </Show>
-            <Show when={activeTab() !== "weekly"}>
-              <div class="flex flex-wrap items-center gap-1.5 border-l border-sub/10 pl-2 sm:ml-2">
-                <For each={languages}>
-                  {(lang) => (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelection({
-                          ...sel(),
-                          language: lang.id as Language,
-                        } as never);
-                        setPage(0);
-                      }}
-                      class={cn(
-                        "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-                        (sel() as any).language === lang.id
-                          ? "bg-main text-bg"
-                          : "bg-sub-alt text-sub hover:text-text",
-                      )}
-                    >
-                      <span>{lang.flag}</span>
-                      <span>{lang.label}</span>
-                    </button>
-                  )}
-                </For>
-              </div>
-            </Show>
           </div>
         </div>
 

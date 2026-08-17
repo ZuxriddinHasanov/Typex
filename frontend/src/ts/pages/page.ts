@@ -30,6 +30,7 @@ export type PageName =
   | "friends"
   | "privacy"
   | "terms"
+  | "seo"
   | "security";
 
 type Options<T> = {

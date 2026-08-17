@@ -28,31 +28,31 @@ function buildApp(): express.Application {
   app.use(urlencoded({ extended: true }));
   app.use(json());
 
-  app.use(
-    cors({
-      origin: (origin, callback) => {
-        callback(null, true);
-      },
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-      allowedHeaders: [
-        "Content-Type",
-        "Authorization",
-        "X-Requested-With",
-        "Accept",
-        "Origin",
-        "X-Client-Version",
-        "x-client-version",
-        "Sentry-Trace",
-        "sentry-trace",
-        "Baggage",
-        "baggage",
-        COMPATIBILITY_CHECK_HEADER,
-      ],
-      exposedHeaders: [COMPATIBILITY_CHECK_HEADER],
-    }),
-  );
-  app.options(/(.*)/, cors());
+  const corsOptions = {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      callback(null, true);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+      "X-Client-Version",
+      "x-client-version",
+      "Sentry-Trace",
+      "sentry-trace",
+      "Baggage",
+      "baggage",
+      COMPATIBILITY_CHECK_HEADER,
+    ],
+    exposedHeaders: [COMPATIBILITY_CHECK_HEADER],
+  };
+
+  app.use(cors(corsOptions));
+  app.options(/(.*)/, cors(corsOptions));
   app.use(helmet());
 
   app.set("trust proxy", 1);

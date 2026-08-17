@@ -147,17 +147,6 @@ export function Footer(): JSXElement {
                     Instagram
                   </a>
 
-                  <a
-                    href="https://t.me/ZuxriddinNeo"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="group flex w-fit items-center gap-2 text-sm font-medium text-sub transition-all hover:text-main"
-                  >
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sub-alt/50 transition-colors group-hover:bg-main/10 group-hover:text-main">
-                      <Fa icon="fa-user-circle" />
-                    </span>
-                    Asoschi bilan bog&apos;lanish
-                  </a>
                 </div>
               </div>
             </div>

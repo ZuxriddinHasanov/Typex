@@ -89,17 +89,6 @@ export function Sidebar(props: {
           )}
         />
       </Show>
-      <Show when={props.selection().type === "daily"}>
-        <Group
-          selected={props.selection().language}
-          onSelect={selectLanguage}
-          items={getLanguageButtons(
-            getValidLeaderboards(props.validModeRules).daily,
-            props.selection().mode,
-            props.selection().mode2,
-          )}
-        />
-      </Show>
     </>
   );
 }

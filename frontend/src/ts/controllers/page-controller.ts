@@ -41,6 +41,7 @@ const pages = {
   landing: solidPage("landing"),
   test: PageTest.page,
   about: solidPage("about"),
+  seo: solidPage("seo"),
   account: solidPage("account", {
     loadingOptions: {
       loadingMode: () => {

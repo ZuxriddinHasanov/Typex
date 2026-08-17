@@ -26,11 +26,11 @@ export function Nav(): JSXElement {
         data-nav-item="landing"
       >
         <Fa icon="fa-home" class="mr-2" />
-        {getConfig.language === "uzbek" ? "Bosh sahifa" : getConfig.language === "russian" ? "Главная" : "Home"}
+        Bosh sahifa
       </a>
       <a href="/" class={navItemClass("test")} router-link data-nav-item="test">
         <Fa icon="fa-keyboard" class="mr-2" />
-        {getConfig.language === "uzbek" ? "Test" : getConfig.language === "russian" ? "Тест" : "Test"}
+        Test
       </a>
       <a
         href="/leaderboards"
@@ -39,7 +39,7 @@ export function Nav(): JSXElement {
         data-nav-item="leaderboards"
       >
         <Fa icon="fa-crown" class="mr-2" />
-        {getConfig.language === "uzbek" ? "Reyting" : getConfig.language === "russian" ? "Рейтинг" : "Leaderboard"}
+        Reyting
       </a>
       <a
         href="/about"
@@ -48,7 +48,7 @@ export function Nav(): JSXElement {
         data-nav-item="about"
       >
         <Fa icon="fa-info-circle" class="mr-2" />
-        {getConfig.language === "uzbek" ? "Loyiha haqida" : getConfig.language === "russian" ? "О проекте" : "About"}
+        Loyiha haqida
       </a>
       <button
         type="button"
@@ -85,7 +85,7 @@ export function Nav(): JSXElement {
             router-link
             data-nav-item="login"
           >
-            {getConfig.language === "uzbek" ? "Kirish" : getConfig.language === "russian" ? "Войти" : "Login"}
+            Kirish
           </a>
         }
       >

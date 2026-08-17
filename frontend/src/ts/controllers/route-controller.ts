@@ -57,6 +57,12 @@ const routes: Route[] = [
     },
   },
   {
+    path: "/seo-typing-test",
+    load: async (_params, options) => {
+      await PageController.change("seo", options);
+    },
+  },
+  {
     path: "/test",
     load: async (_params, options) => {
       await PageController.change("test", options);
