@@ -116,7 +116,25 @@
     }
   </script>
   <meta name="darkreader-lock" />
-  <!-- Google tag (gtag.js) — replace GA_MEASUREMENT_ID -->
-  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->
-  <!-- <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
+  <style>
+    /* 
+      Layer order NEEDS to be here and one layer per line.
+      This is because vite changes the order of the css imports,
+      and the layer definition needs to be at the very very top, otherwise things break.
+    */
+    @layer normalize;
+    @layer theme;
+    @layer base;
+    @layer components;
+    @layer properties;
+    @layer vendor;
+    @layer custom-styles;
+    @layer hidden;
+    @layer utilities;
+  </style>
+  <link rel="stylesheet" href="styles/index.scss" />
+  <link rel="stylesheet" href="styles/tailwind.css" />
+  <link rel="stylesheet" href="styles/vendor.scss" />
+
+  <style class="customFont" type="text/css"></style>
 </head>
