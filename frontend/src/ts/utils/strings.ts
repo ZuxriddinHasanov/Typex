@@ -131,11 +131,11 @@ export function highlightMatches(text: string, matches: string[]): string {
 
   // matches that don't have a letter before or after them
   const pattern = new RegExp(
-    `(?<!\\p{L})(?:${matches.join("|")})(?!\\p{L})`,
+    `(^|[^\\p{L}])(${matches.join("|")})(?=[^\\p{L}]|$)`,
     "gu",
   );
 
-  return text.replace(pattern, '<span class="highlight">$&</span>');
+  return text.replace(pattern, '$1<span class="highlight">$2</span>');
 }
 
 /**
@@ -218,7 +218,7 @@ export function splitIntoCharacters(s: string): string[] {
  * @returns A new string with control characters properly converted.
  */
 export function replaceControlCharacters(textToClear: string): string {
-  textToClear = textToClear.replace(/(?<!\\)\\t/g, "\t");
+  textToClear = textToClear.replace(/(^|[^\\])\\t/g, "$1\t");
   textToClear = textToClear.replace(/\\n/g, " \n");
   textToClear = textToClear.replace(/([^\\]|^)\\n/gm, "$1\n");
   textToClear = textToClear.replace(/\\\\t/gm, "\\t");

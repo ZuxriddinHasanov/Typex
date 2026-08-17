@@ -99,6 +99,7 @@ export class LocalStorageWithSchema<T> {
       }
       return true;
     } catch (e) {
+      console.error(`LS ${this.key} failed to parse on set! Data:`, data);
       let message = "Unknown error occurred";
 
       if (isZodError(e)) {
