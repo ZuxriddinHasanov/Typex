@@ -267,7 +267,6 @@ export async function update(
           u.avatar,
           u.discord_id,
           u.discord_avatar,
-          u.avatar,
           selected_badge.badge_id,
           CASE
             WHEN u.premium->>'expirationTimestamp' IS NULL THEN false
