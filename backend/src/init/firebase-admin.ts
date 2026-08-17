@@ -33,10 +33,8 @@ export function init(): void {
 
 function get(): typeof admin {
   if (admin.apps.length === 0) {
-    throw new TypeUZError(
-      500,
+    throw new Error(
       "Firebase app not initialized! Make sure generate a service account key and place it in credentials/serviceAccountKey.json.",
-      "get() firebase-admin.ts",
     );
   }
   return admin;

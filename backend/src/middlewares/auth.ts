@@ -100,17 +100,22 @@ export function authenticateTsRestRequest<
         decodedToken: token,
       };
     } catch (error) {
-      authType = authHeader?.split(" ")[0] ?? "None";
+      if (isPublic) {
+        token = { type: "None", uid: "", email: "" };
+        req.ctx = { ...req.ctx, decodedToken: token };
+      } else {
+        authType = authHeader?.split(" ")[0] ?? "None";
 
-      recordAuthTime(
-        authType,
-        "failure",
-        Math.round(performance.now() - startTime),
-        req,
-      );
+        recordAuthTime(
+          authType,
+          "failure",
+          Math.round(performance.now() - startTime),
+          req,
+        );
 
-      next(error);
-      return;
+        next(error);
+        return;
+      }
     }
     recordAuthTime(
       token.type,
