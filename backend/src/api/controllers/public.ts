@@ -200,3 +200,49 @@ export async function getSiteContent(
 ): Promise<TypeUZResponse<SiteContentData>> {
   return new TypeUZResponse("OK", loadSiteContent());
 }
+
+export async function submitFeedback(
+  req: TypeUZRequest,
+): Promise<TypeUZResponse<{ success: boolean }>> {
+  const body = (req as any).body;
+  const { title, description, imageBase64 } = body;
+  const token = process.env["TELEGRAM_BOT_TOKEN"];
+  const chatId = process.env["TELEGRAM_CHAT_ID"];
+
+  if (token && chatId) {
+    let message = `🔔 *Yangi Shikoyat / Fikr*\n\n`;
+    message += `*Sarlavha:* ${title}\n`;
+    message += `*Batafsil:* ${description}\n`;
+    message += `*Foydalanuvchi:* ${(req as any).user?.uid ?? "Mehmon"}`;
+
+    if (imageBase64) {
+      const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+      
+      const formData = new FormData();
+      formData.append("chat_id", chatId);
+      formData.append("caption", message);
+      formData.append("parse_mode", "Markdown");
+      formData.append("photo", new Blob([buffer]), "screenshot.png");
+
+      fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+        method: "POST",
+        body: formData,
+      }).catch(err => console.error("Telegram API error:", err));
+    } else {
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: "Markdown",
+        }),
+      }).catch(err => console.error("Telegram API error:", err));
+    }
+  }
+
+  return new TypeUZResponse("Feedback submitted", { success: true });
+}

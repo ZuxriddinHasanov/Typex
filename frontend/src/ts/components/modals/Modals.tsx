@@ -22,6 +22,7 @@ import { StreakHourOffsetModal } from "./StreakHourOffsetModal";
 import { SupportModal } from "./SupportModal";
 import { UserReportModal } from "./UserReportModal";
 import { VersionHistoryModal } from "./VersionHistoryModal";
+import { GlobalFeedbackModal } from "./GlobalFeedbackModal";
 
 export function Modals(): JSXElement {
   return (
@@ -48,6 +49,7 @@ export function Modals(): JSXElement {
       <ForgotPasswordModal />
       <UserReportModal />
       <EditResultTagsModal />
+      <GlobalFeedbackModal />
     </>
   );
 }

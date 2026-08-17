@@ -17,4 +17,7 @@ export default s.router(publicContract, {
   getSiteContent: {
     handler: async (r) => callController(PublicController.getSiteContent)(r),
   },
+  submitFeedback: {
+    handler: async (r) => (callController(PublicController.submitFeedback) as any)(r),
+  },
 });

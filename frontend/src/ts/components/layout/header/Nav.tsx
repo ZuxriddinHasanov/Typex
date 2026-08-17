@@ -5,6 +5,7 @@ import { JSXElement, Show } from "solid-js";
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
 import { isAuthenticated, getActivePage } from "../../../states/core";
+import { showModal } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import { Fa } from "../../common/Fa";
 
@@ -63,6 +64,17 @@ export function Nav(): JSXElement {
           icon={getConfig.theme === "typeuz" ? "fa-sun" : "fa-moon"}
           class="transition-all duration-300"
         />
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          showModal("GlobalFeedback");
+        }}
+        class="ml-2 flex h-9 w-9 items-center justify-center rounded-full text-sub transition-all duration-300 hover:bg-sub-alt hover:text-text"
+        aria-label="Fikr bildirish"
+        title="Fikr bildirish / Shikoyat"
+      >
+        <Fa icon="fa-comment-alt" class="transition-all duration-300" />
       </button>
       <button
         type="button"

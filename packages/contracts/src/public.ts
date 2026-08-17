@@ -89,6 +89,20 @@ export const publicContract = c.router(
         })),
       },
     },
+    submitFeedback: {
+      summary: "submit global feedback with screenshot",
+      description: "Submit feedback with optional image base64, title and description",
+      method: "POST",
+      path: "/feedback",
+      body: z.object({
+        title: z.string().min(1),
+        description: z.string().min(1),
+        imageBase64: z.string().optional(),
+      }),
+      responses: {
+        200: responseWithData(z.object({ success: z.boolean() })),
+      },
+    },
   },
   {
     pathPrefix: "/public",
