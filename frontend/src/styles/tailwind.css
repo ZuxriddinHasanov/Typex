@@ -141,4 +141,16 @@
   }
 }
 
+main.focus #typingTest {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 100% !important;
+  max-width: 1250px !important;
+  z-index: 50 !important;
+  padding: 2rem !important;
+  transition: none !important;
+}
+
 
