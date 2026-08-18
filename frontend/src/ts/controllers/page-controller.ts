@@ -326,6 +326,13 @@ export async function change(
 
   //between
   setActivePage(nextPage.id);
+  
+  if (nextPage.id === "test") {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+
   updateSeoForPage(nextPage, options.params);
   Focus.set(false);
 

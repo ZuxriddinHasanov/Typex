@@ -47,7 +47,7 @@ export const getLeaderboardQueryOptions = (
 
       let request;
 
-      if (options.type === "weekly") {
+      if (options.type === "weekly" && !options.mode) {
         request = Ape.leaderboards.getWeeklyXp({
           query: {
             ...baseQuery,
@@ -57,14 +57,18 @@ export const getLeaderboardQueryOptions = (
       } else {
         const modeQuery: GetLeaderboardQuery = {
           ...baseQuery,
-          mode: options.mode,
-          mode2: options.mode2,
-          language: options.language,
+          mode: options.mode as any,
+          mode2: options.mode2 as any,
+          language: options.language as any,
           numbers: options.numbers,
         };
 
         if (options.type === "allTime") {
           request = Ape.leaderboards.get({ query: modeQuery });
+        } else if (options.type === "weekly") {
+          request = Ape.leaderboards.getWeekly({ query: modeQuery });
+        } else if (options.type === "monthly") {
+          request = Ape.leaderboards.getMonthly({ query: modeQuery });
         } else {
           request = Ape.leaderboards.getDaily({
             query: {
@@ -108,7 +112,7 @@ export const getRankQueryOptions = (options: Selection) =>
     queryKey: queryKeys.rank(options),
     queryFn: async () => {
       let request;
-      if (options.type === "weekly") {
+      if (options.type === "weekly" && !options.mode) {
         request = Ape.leaderboards.getWeeklyXpRank({
           query: {
             friendsOnly: options.friendsOnly ? true : undefined,
@@ -117,14 +121,18 @@ export const getRankQueryOptions = (options: Selection) =>
         });
       } else {
         const baseQuery: GetLeaderboardRankQuery = {
-          mode: options.mode,
-          mode2: options.mode2,
-          language: options.language,
+          mode: options.mode as any,
+          mode2: options.mode2 as any,
+          language: options.language as any,
           numbers: options.numbers,
           friendsOnly: options.friendsOnly ? true : undefined,
         };
         if (options.type === "allTime") {
           request = Ape.leaderboards.getRank({ query: baseQuery });
+        } else if (options.type === "weekly") {
+          request = Ape.leaderboards.getWeeklyRank({ query: baseQuery });
+        } else if (options.type === "monthly") {
+          request = Ape.leaderboards.getMonthlyRank({ query: baseQuery });
         } else {
           request = Ape.leaderboards.getDailyRank({
             query: {

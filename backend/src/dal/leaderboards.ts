@@ -417,6 +417,204 @@ export async function purgeUser(uid: string): Promise<void> {
   cachedCounts.clear();
 }
 
+export async function getPeriod(
+  mode: string,
+  mode2: string,
+  language: string,
+  page: number,
+  pageSize: number,
+  premiumFeaturesEnabled: boolean = false,
+  uid?: string,
+  numbers?: boolean,
+  daysBefore: number = 7,
+): Promise<DBLeaderboardEntry[] | false> {
+  const skip = page * pageSize;
+  const limit = pageSize;
+  const minTimestamp = Date.now() - (daysBefore * 24 * 60 * 60 * 1000);
+
+  let uidsFilter: string[] = [];
+  if (uid !== undefined) {
+    uidsFilter = [...(await getFriendsUids(uid)), uid];
+  }
+
+  const query = `
+    WITH valid_results AS (
+      SELECT r.uid, r.wpm, r.acc, r.raw_wpm as raw, r.consistency, r.timestamp,
+        CASE
+          WHEN u.premium->>'expirationTimestamp' IS NULL THEN false
+          WHEN (u.premium->>'expirationTimestamp')::bigint = -1 THEN true
+          WHEN (u.premium->>'expirationTimestamp')::bigint > EXTRACT(EPOCH FROM NOW())::bigint * 1000 THEN true
+          ELSE false
+        END AS is_premium,
+        u.name, u.first_name, u.last_name, u.avatar, u.discord_id, u.discord_avatar,
+        (
+          SELECT (badge->>'id')::int
+          FROM jsonb_array_elements(
+            CASE
+              WHEN jsonb_typeof(u.inventory->'badges') = 'array' THEN u.inventory->'badges'
+              ELSE '[]'::jsonb
+            END
+          ) AS badge
+          WHERE COALESCE((badge->>'selected')::boolean, false)
+          LIMIT 1
+        ) as badge_id
+      FROM results r
+      JOIN users u ON r.uid = u.uid
+      WHERE r.language = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+        AND r.timestamp >= $5
+        AND r.wpm > 0 AND r.acc > 0
+        AND COALESCE(u.banned, false) = false
+        AND COALESCE(u.lb_opt_out, false) = false
+        AND COALESCE(u.needs_to_change_name, false) = false
+    ),
+    best_results AS (
+      SELECT DISTINCT ON (uid) *
+      FROM valid_results
+      ORDER BY uid, wpm DESC, acc DESC, timestamp DESC
+    ),
+    ranked AS (
+      SELECT *, ROW_NUMBER() OVER (ORDER BY wpm DESC, acc DESC, timestamp DESC)::int AS rank
+      FROM best_results
+    )
+    SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
+    FROM ranked
+    ${uid !== undefined ? 'WHERE uid = ANY($8::text[])' : ''}
+    ORDER BY rank ASC
+    LIMIT $6 OFFSET $7
+  `;
+
+  const params = uid !== undefined 
+    ? [language, mode, mode2, numbers ?? false, minTimestamp, limit, skip, uidsFilter]
+    : [language, mode, mode2, numbers ?? false, minTimestamp, limit, skip];
+    
+  try {
+    const rows = await db.queryAll<LeaderboardRow>(query, params);
+    const entries = rows.map(mapLeaderboardRow);
+    return premiumFeaturesEnabled ? entries : entries.map(it => omit(it, ['isPremium']));
+  } catch (e) {
+    return false;
+  }
+}
+
+export async function getPeriodRank(
+  mode: string,
+  mode2: string,
+  language: string,
+  uid: string,
+  friendsOnly: boolean = false,
+  numbers?: boolean,
+  daysBefore: number = 7,
+): Promise<DBLeaderboardEntry | null | false> {
+  const minTimestamp = Date.now() - (daysBefore * 24 * 60 * 60 * 1000);
+  let uidsFilter: string[] = [];
+  if (friendsOnly) {
+    uidsFilter = [...(await getFriendsUids(uid)), uid];
+  }
+
+  const query = `
+    WITH valid_results AS (
+      SELECT r.uid, r.wpm, r.acc, r.raw_wpm as raw, r.consistency, r.timestamp,
+        CASE
+          WHEN u.premium->>'expirationTimestamp' IS NULL THEN false
+          WHEN (u.premium->>'expirationTimestamp')::bigint = -1 THEN true
+          WHEN (u.premium->>'expirationTimestamp')::bigint > EXTRACT(EPOCH FROM NOW())::bigint * 1000 THEN true
+          ELSE false
+        END AS is_premium,
+        u.name, u.first_name, u.last_name, u.avatar, u.discord_id, u.discord_avatar,
+        (
+          SELECT (badge->>'id')::int
+          FROM jsonb_array_elements(
+            CASE
+              WHEN jsonb_typeof(u.inventory->'badges') = 'array' THEN u.inventory->'badges'
+              ELSE '[]'::jsonb
+            END
+          ) AS badge
+          WHERE COALESCE((badge->>'selected')::boolean, false)
+          LIMIT 1
+        ) as badge_id
+      FROM results r
+      JOIN users u ON r.uid = u.uid
+      WHERE r.language = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+        AND r.timestamp >= $5
+        AND r.wpm > 0 AND r.acc > 0
+        AND COALESCE(u.banned, false) = false
+        AND COALESCE(u.lb_opt_out, false) = false
+        AND COALESCE(u.needs_to_change_name, false) = false
+    ),
+    best_results AS (
+      SELECT DISTINCT ON (uid) *
+      FROM valid_results
+      ORDER BY uid, wpm DESC, acc DESC, timestamp DESC
+    ),
+    ranked AS (
+      SELECT *, ROW_NUMBER() OVER (ORDER BY wpm DESC, acc DESC, timestamp DESC)::int AS rank
+      FROM best_results
+    )
+    SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
+    FROM ranked
+    ${friendsOnly ? 'WHERE uid = ANY($6::text[])' : ''}
+  `;
+
+  const params = friendsOnly
+    ? [language, mode, mode2, numbers ?? false, minTimestamp, uidsFilter]
+    : [language, mode, mode2, numbers ?? false, minTimestamp];
+    
+  try {
+    const rows = await db.queryAll<LeaderboardRow>(query, params);
+    const rankedRows = rows.map(mapLeaderboardRow);
+    return rankedRows.find(r => r.uid === uid) ?? null;
+  } catch (e) {
+    return false;
+  }
+}
+
+export async function getPeriodCount(
+  mode: string,
+  mode2: string,
+  language: string,
+  uid?: string,
+  numbers?: boolean,
+  daysBefore: number = 7,
+): Promise<number> {
+  const minTimestamp = Date.now() - (daysBefore * 24 * 60 * 60 * 1000);
+  let uidsFilter: string[] = [];
+  if (uid !== undefined) {
+    uidsFilter = [...(await getFriendsUids(uid)), uid];
+  }
+
+  const query = `
+    WITH valid_results AS (
+      SELECT r.uid
+      FROM results r
+      JOIN users u ON r.uid = u.uid
+      WHERE r.language = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+        AND r.timestamp >= $5
+        AND r.wpm > 0 AND r.acc > 0
+        AND COALESCE(u.banned, false) = false
+        AND COALESCE(u.lb_opt_out, false) = false
+        AND COALESCE(u.needs_to_change_name, false) = false
+    ),
+    best_results AS (
+      SELECT DISTINCT ON (uid) uid
+      FROM valid_results
+    )
+    SELECT COUNT(*)::int AS count FROM best_results
+    ${uid !== undefined ? 'WHERE uid = ANY($6::text[])' : ''}
+  `;
+
+  const params = uid !== undefined
+    ? [language, mode, mode2, numbers ?? false, minTimestamp, uidsFilter]
+    : [language, mode, mode2, numbers ?? false, minTimestamp];
+    
+  try {
+    const result = await db.queryOne<{ count: number }>(query, params);
+    return result?.count ?? 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+
 export async function getActiveLeaderboards(): Promise<
   { mode: string; mode2: string; language: string; numbers: boolean }[]
 > {

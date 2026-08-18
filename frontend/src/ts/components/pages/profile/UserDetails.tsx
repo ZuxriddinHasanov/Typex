@@ -316,7 +316,7 @@ function AvatarAndName(props: {
               />
             }
           >
-            <div class="relative flex h-28 w-28 sm:h-36 sm:w-36 items-center justify-center rounded-full border-2 border-main/20 bg-main/10 text-5xl sm:text-7xl text-main shadow-sm">
+            <div class="relative flex h-28 w-28 sm:h-36 sm:w-36 items-center justify-center rounded-full border-2 border-main/20 bg-main/10 text-[5rem] sm:text-[7rem] text-main shadow-sm">
               <i class={`fas ${props.profile.details?.avatar ?? ""}`}></i>
             </div>
           </Show>

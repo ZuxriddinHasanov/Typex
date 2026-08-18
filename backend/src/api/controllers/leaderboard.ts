@@ -190,6 +190,108 @@ export async function getDailyLeaderboardRank(
   return new TypeUZResponse("Daily leaderboard rank retrieved", rank);
 }
 
+export async function getWeeklyLeaderboard(
+  req: TypeUZRequest<GetLeaderboardQuery>,
+): Promise<GetLeaderboardResponse> {
+  const { language, mode, mode2, page, pageSize, friendsOnly, numbers } = req.query;
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendsOnlyUid = getFriendsOnlyUid(uid, friendsOnly, connectionsConfig);
+
+  const leaderboard = await LeaderboardsDAL.getPeriod(
+    mode, mode2, language, page, pageSize,
+    req.ctx.configuration.users.premium.enabled,
+    friendsOnlyUid, numbers, 7
+  );
+
+  if (leaderboard === false) {
+    throw new TypeUZError(503, "Leaderboard is currently updating.");
+  }
+
+  const count = await LeaderboardsDAL.getPeriodCount(mode, mode2, language, friendsOnlyUid, numbers, 7);
+  const normalizedLeaderboard = leaderboard.map((entry) => {
+    const publicEntry = { ...entry } as Record<string, unknown>;
+    delete publicEntry["_id"];
+    return publicEntry;
+  }) as never[];
+
+  return new TypeUZResponse("Weekly leaderboard retrieved", {
+    count, entries: normalizedLeaderboard, pageSize,
+  });
+}
+
+export async function getWeeklyLeaderboardRank(
+  req: TypeUZRequest<GetLeaderboardRankQuery>,
+): Promise<GetLeaderboardRankResponse> {
+  const { language, mode, mode2, friendsOnly, numbers } = req.query;
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const data = await LeaderboardsDAL.getPeriodRank(
+    mode, mode2, language, uid,
+    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig) !== undefined,
+    numbers, 7
+  );
+  if (data === false) throw new TypeUZError(503, "Leaderboard is currently updating.");
+  if (data === null) return new TypeUZResponse("Rank retrieved", null);
+
+  const publicEntry = { ...data } as Record<string, unknown>;
+  delete publicEntry["_id"];
+  return new TypeUZResponse("Rank retrieved", publicEntry as never);
+}
+
+export async function getMonthlyLeaderboard(
+  req: TypeUZRequest<GetLeaderboardQuery>,
+): Promise<GetLeaderboardResponse> {
+  const { language, mode, mode2, page, pageSize, friendsOnly, numbers } = req.query;
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const friendsOnlyUid = getFriendsOnlyUid(uid, friendsOnly, connectionsConfig);
+
+  const leaderboard = await LeaderboardsDAL.getPeriod(
+    mode, mode2, language, page, pageSize,
+    req.ctx.configuration.users.premium.enabled,
+    friendsOnlyUid, numbers, 30
+  );
+
+  if (leaderboard === false) {
+    throw new TypeUZError(503, "Leaderboard is currently updating.");
+  }
+
+  const count = await LeaderboardsDAL.getPeriodCount(mode, mode2, language, friendsOnlyUid, numbers, 30);
+  const normalizedLeaderboard = leaderboard.map((entry) => {
+    const publicEntry = { ...entry } as Record<string, unknown>;
+    delete publicEntry["_id"];
+    return publicEntry;
+  }) as never[];
+
+  return new TypeUZResponse("Monthly leaderboard retrieved", {
+    count, entries: normalizedLeaderboard, pageSize,
+  });
+}
+
+export async function getMonthlyLeaderboardRank(
+  req: TypeUZRequest<GetLeaderboardRankQuery>,
+): Promise<GetLeaderboardRankResponse> {
+  const { language, mode, mode2, friendsOnly, numbers } = req.query;
+  const { uid } = req.ctx.decodedToken;
+  const connectionsConfig = req.ctx.configuration.connections;
+
+  const data = await LeaderboardsDAL.getPeriodRank(
+    mode, mode2, language, uid,
+    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig) !== undefined,
+    numbers, 30
+  );
+  if (data === false) throw new TypeUZError(503, "Leaderboard is currently updating.");
+  if (data === null) return new TypeUZResponse("Rank retrieved", null);
+
+  const publicEntry = { ...data } as Record<string, unknown>;
+  delete publicEntry["_id"];
+  return new TypeUZResponse("Rank retrieved", publicEntry as never);
+}
+
 function getWeeklyXpLeaderboardWithError(
   config: Configuration["leaderboards"]["weeklyXp"],
   weeksBefore?: number,

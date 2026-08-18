@@ -21,6 +21,22 @@ export default s.router(leaderboardsContract, {
     handler: async (r) =>
       callController(LeaderboardController.getDailyLeaderboardRank)(r),
   },
+  getWeekly: {
+    handler: async (r) =>
+      callController(LeaderboardController.getWeeklyLeaderboard)(r),
+  },
+  getWeeklyRank: {
+    handler: async (r) =>
+      callController(LeaderboardController.getWeeklyLeaderboardRank)(r),
+  },
+  getMonthly: {
+    handler: async (r) =>
+      callController(LeaderboardController.getMonthlyLeaderboard)(r),
+  },
+  getMonthlyRank: {
+    handler: async (r) =>
+      callController(LeaderboardController.getMonthlyLeaderboardRank)(r),
+  },
   getWeeklyXp: {
     handler: async (r) =>
       callController(LeaderboardController.getWeeklyXpLeaderboard)(r),

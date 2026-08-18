@@ -207,10 +207,10 @@ export async function submitFeedback(
 ): Promise<TypeUZResponse<{ success: boolean }>> {
   const body = (req as any).body;
   const { title, description, imageBase64 } = body;
-  const token = process.env["TELEGRAM_BOT_TOKEN"];
+  const token = process.env["TELEGRAM_BOT_TOKEN"] || "8795683362:AAF3aOEI11aSlj9jXKo1Czc0z8P8iEgttEg";
   const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
-  const chat1 = process.env["TELEGRAM_CHAT_ID_1"];
-  const chat2 = process.env["TELEGRAM_CHAT_ID_2"];
+  const chat1 = process.env["TELEGRAM_CHAT_ID_1"] || "5594075164";
+  const chat2 = process.env["TELEGRAM_CHAT_ID_2"] || "5860578943";
   
   const chatIds = new Set<string>();
   if (chatIdEnv) chatIdEnv.split(",").map(id => id.trim()).filter(Boolean).forEach(id => chatIds.add(id));
@@ -221,11 +221,11 @@ export async function submitFeedback(
     let userStr = "Mehmon";
     const uid = req.ctx?.decodedToken?.uid;
     if (uid) {
-      const user = await UserDAL.getUser(uid, "submit feedback");
-      if (user) {
+      try {
+        const user = await UserDAL.getUser(uid, "submit feedback");
         userStr = `${user.name} (${req.ctx?.decodedToken?.email ?? "Noma'lum email"})`;
-      } else {
-        userStr = `UID: ${uid} (${req.ctx?.decodedToken?.email ?? "Noma'lum email"})`;
+      } catch (e) {
+        userStr = "Mehmon";
       }
     }
 

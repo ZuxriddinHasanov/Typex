@@ -249,6 +249,62 @@ export const leaderboardsContract = c.router(
         },
       }),
     },
+    getWeekly: {
+      method: "GET",
+      path: "/weekly",
+      responses: {
+        200: GetLeaderboardResponseSchema,
+        404: TypeUZClientError,
+        503: TypeUZClientError,
+      },
+      query: GetLeaderboardQuerySchema.strict(),
+      summary: "Get the weekly speed leaderboard.",
+      metadata: meta({
+        authenticationOptions: { isPublic: true },
+      }),
+    },
+    getWeeklyRank: {
+      method: "GET",
+      path: "/weekly/rank",
+      responses: {
+        200: GetLeaderboardRankResponseSchema,
+        404: TypeUZClientError,
+        503: TypeUZClientError,
+      },
+      query: GetLeaderboardRankQuerySchema.strict(),
+      summary: "Get rank of current user from weekly speed leaderboard.",
+      metadata: meta({
+        authenticationOptions: { acceptApeKeys: true },
+      }),
+    },
+    getMonthly: {
+      method: "GET",
+      path: "/monthly",
+      responses: {
+        200: GetLeaderboardResponseSchema,
+        404: TypeUZClientError,
+        503: TypeUZClientError,
+      },
+      query: GetLeaderboardQuerySchema.strict(),
+      summary: "Get the monthly speed leaderboard.",
+      metadata: meta({
+        authenticationOptions: { isPublic: true },
+      }),
+    },
+    getMonthlyRank: {
+      method: "GET",
+      path: "/monthly/rank",
+      responses: {
+        200: GetLeaderboardRankResponseSchema,
+        404: TypeUZClientError,
+        503: TypeUZClientError,
+      },
+      query: GetLeaderboardRankQuerySchema.strict(),
+      summary: "Get rank of current user from monthly speed leaderboard.",
+      metadata: meta({
+        authenticationOptions: { acceptApeKeys: true },
+      }),
+    },
   },
   {
     pathPrefix: "/leaderboards",

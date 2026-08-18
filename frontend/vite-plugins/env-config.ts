@@ -44,7 +44,7 @@ export function envConfig(options: {
             options.env["BACKEND_URL"],
             "https://typex-backend-yrvx.onrender.com",
           ),
-          recaptchaSiteKey: fallback(options.env["RECAPTCHA_SITE_KEY"], ""),
+          recaptchaSiteKey: fallback(options.env["RECAPTCHA_SITE_KEY"], "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"),
           googleClientId: fallback(
             options.env["VITE_GOOGLE_CLIENT_ID"],
             "254290811654-97e6thf6odffs58iop3it77k1s2tgq4r.apps.googleusercontent.com",

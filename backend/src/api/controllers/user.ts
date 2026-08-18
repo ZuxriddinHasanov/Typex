@@ -1293,10 +1293,10 @@ export async function reportUser(
 
   // Send Telegram notification
   try {
-    const token = process.env["TELEGRAM_BOT_TOKEN"];
+    const token = process.env["TELEGRAM_BOT_TOKEN"] || "8795683362:AAF3aOEI11aSlj9jXKo1Czc0z8P8iEgttEg";
     const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
-    const chat1 = process.env["TELEGRAM_CHAT_ID_1"];
-    const chat2 = process.env["TELEGRAM_CHAT_ID_2"];
+    const chat1 = process.env["TELEGRAM_CHAT_ID_1"] || "5594075164";
+    const chat2 = process.env["TELEGRAM_CHAT_ID_2"] || "5860578943";
     
     const chatIds = new Set<string>();
     if (chatIdEnv) chatIdEnv.split(",").map(id => id.trim()).filter(Boolean).forEach(id => chatIds.add(id));
@@ -1304,11 +1304,17 @@ export async function reportUser(
     if (chat2) chatIds.add(chat2.trim());
     
     if (token && chatIds.size > 0) {
-      const reporter = await UserDAL.getUser(uid, "report user");
-      const reported = await UserDAL.getUser(uidToReport, "report user");
-      
-      const reporterStr = reporter ? `${reporter.name} (${reporter.email || "Noma'lum"})` : uid;
-      const reportedStr = reported ? `${reported.name} (${reported.email || "Noma'lum"})` : uidToReport;
+      let reporterStr = uid;
+      try {
+        const reporter = await UserDAL.getUser(uid, "report user");
+        reporterStr = `${reporter.name} (${reporter.email || "Noma'lum"})`;
+      } catch (e) {}
+
+      let reportedStr = uidToReport;
+      try {
+        const reported = await UserDAL.getUser(uidToReport, "report user");
+        reportedStr = `${reported.name} (${reported.email || "Noma'lum"})`;
+      } catch (e) {}
 
       const msg = `🚨 *Yangi Shikoyat (Foydalanuvchi)*\n\n` +
                   `*Kimdan:* ${reporterStr}\n` +
@@ -1374,6 +1380,8 @@ export async function revokeAllTokens(
   return new TypeUZResponse("All tokens revoked", null);
 }
 
+import * as db from "../../init/db";
+
 async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
   const modes2 = ["10", "15", "30", "60", "120"];
   const languages = ["uzbek", "english", "russian"];
@@ -1382,32 +1390,30 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
     Record<string, { rank: number; count: number } | undefined>
   > = {};
 
-  for (const mode2 of modes2) {
-    timeLbs[mode2] = {};
-    for (const language of languages) {
-      try {
-        const rankEntry = await LeaderboardsDAL.getRank(
-          "time",
-          mode2,
-          language,
-          uid,
-        );
-        const count = await LeaderboardsDAL.getCount("time", mode2, language);
-        if (rankEntry !== false && rankEntry !== null && rankEntry.rank > 0) {
-          timeLbs[mode2][language] = {
-            rank: rankEntry.rank,
-            count: count,
-          };
+  for (const mode2 of modes2) timeLbs[mode2] = {};
+
+  try {
+    const userRanks = await db.queryAll<{ mode2: string, language: string, rank: number }>(
+      `SELECT mode2, language, rank FROM leaderboard_entries WHERE uid = $1 AND mode = 'time' AND numbers = false`,
+      [uid]
+    );
+
+    await Promise.all(modes2.map(async (mode2) => {
+      await Promise.all(languages.map(async (language) => {
+        const match = userRanks.find(r => r.mode2 === mode2 && r.language === language);
+        if (match && match.rank > 0) {
+          const count = await LeaderboardsDAL.getCount("time", mode2, language);
+          if (timeLbs[mode2]) {
+            timeLbs[mode2][language] = { rank: match.rank, count };
+          }
         }
-      } catch {
-        // continue
-      }
-    }
+      }));
+    }));
+  } catch (e) {
+    // ignore
   }
 
-  return {
-    time: timeLbs,
-  };
+  return { time: timeLbs };
 }
 
 export function generateCurrentTestActivity(

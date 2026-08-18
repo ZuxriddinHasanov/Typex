@@ -55,6 +55,8 @@ const LbTABS: { id: LbTab; label: string; icon: string }[] = [
 type PeriodTab = "daily" | "weekly" | "monthly" | "allTime";
 const PERIODS: { id: PeriodTab; label: string }[] = [
   { id: "daily", label: "Kunlik" },
+  { id: "weekly", label: "Haftalik" },
+  { id: "monthly", label: "Oylik" },
   { id: "allTime", label: "Umumiy" },
 ];
 
@@ -405,7 +407,12 @@ export function LeaderboardPage(): JSXElement {
                                           discordAvatar={entry()?.discordAvatar}
                                           avatar={entry()?.avatar}
                                           size={256}
-                                          class="h-full w-full rounded-full object-cover"
+                                          class={cn(
+                                            "h-full w-full rounded-full object-cover",
+                                            pos === 0 ? "text-[4.5rem] sm:text-[6rem]" :
+                                            pos === 1 ? "text-[3.5rem] sm:text-[5rem]" :
+                                            "text-[2.5rem] sm:text-[3.5rem]"
+                                          )}
                                         />
                                       </Show>
                                     </div>
@@ -527,7 +534,7 @@ export function LeaderboardPage(): JSXElement {
                                   discordAvatar={e.discordAvatar}
                                   avatar={e.avatar}
                                   size={64}
-                                  class="h-full w-full object-cover"
+                                  class="h-full w-full object-cover text-3xl sm:text-4xl"
                                 />
                               </Show>
                             </div>
