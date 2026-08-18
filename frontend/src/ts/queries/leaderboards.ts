@@ -76,10 +76,13 @@ export const getLeaderboardQueryOptions = (
       }
 
       const response = await request;
+      if (response.status === 404) {
+        return { count: 0, entries: [], pageSize, minWpm: 0 } as any;
+      }
       if (response.status !== 200) {
         throw new Error(
           `Failed to get ${options.type} leaderboard data: ${
-            response.body.message
+            (response.body as any)?.message ?? "Unknown error"
           }`,
         );
       }
@@ -133,10 +136,13 @@ export const getRankQueryOptions = (options: Selection) =>
       }
 
       const response = await request;
+      if (response.status === 404) {
+        return null;
+      }
       if (response.status !== 200) {
         throw new Error(
           `Failed to get ${options.type} leaderboard rank: ${
-            response.body.message
+            (response.body as any)?.message ?? "Unknown error"
           }`,
         );
       }

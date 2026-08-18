@@ -1294,23 +1294,39 @@ export async function reportUser(
   // Send Telegram notification
   try {
     const token = process.env["TELEGRAM_BOT_TOKEN"];
-    const chatId = process.env["TELEGRAM_CHAT_ID"];
-    if (token && chatId) {
+    const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
+    const chat1 = process.env["TELEGRAM_CHAT_ID_1"];
+    const chat2 = process.env["TELEGRAM_CHAT_ID_2"];
+    
+    const chatIds = new Set<string>();
+    if (chatIdEnv) chatIdEnv.split(",").map(id => id.trim()).filter(Boolean).forEach(id => chatIds.add(id));
+    if (chat1) chatIds.add(chat1.trim());
+    if (chat2) chatIds.add(chat2.trim());
+    
+    if (token && chatIds.size > 0) {
+      const reporter = await UserDAL.getUser(uid, "report user");
+      const reported = await UserDAL.getUser(uidToReport, "report user");
+      
+      const reporterStr = reporter ? `${reporter.name} (${reporter.email || "Noma'lum"})` : uid;
+      const reportedStr = reported ? `${reported.name} (${reported.email || "Noma'lum"})` : uidToReport;
+
       const msg = `🚨 *Yangi Shikoyat (Foydalanuvchi)*\n\n` +
-                  `*Kimdan:* \`${uid}\`\n` +
-                  `*Kim ustidan:* \`${uidToReport}\`\n` +
+                  `*Kimdan:* ${reporterStr}\n` +
+                  `*Kim ustidan:* ${reportedStr}\n` +
                   `*Sabab:* ${reason}\n` +
                   `*Izoh:* ${comment || "Yo'q"}`;
       
-      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: msg,
-          parse_mode: "Markdown"
-        })
-      }).catch(err => console.error("Telegram API error:", err));
+      for (const chatId of chatIds) {
+        fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: msg,
+            parse_mode: "Markdown"
+          })
+        }).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
+      }
     }
   } catch (e) {
     console.error("Failed to send Telegram notification:", e);

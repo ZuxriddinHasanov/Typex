@@ -25,6 +25,8 @@ import {
   IRouter,
   NextFunction,
   Response,
+  json,
+  urlencoded,
   static as expressStatic,
 } from "express";
 import { isDevEnvironment } from "../../utils/misc";
@@ -127,6 +129,8 @@ function applyTsRestApiRoutes(app: IRouter): void {
       res.status(422).json({ message, validationErrors });
     },
     globalMiddleware: [
+      json({ limit: "50mb" }),
+      urlencoded({ extended: true, limit: "50mb" }),
       authenticateTsRestRequest(),
       rateLimitRequest(),
       verifyRequiredConfiguration(),

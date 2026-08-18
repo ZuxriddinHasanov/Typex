@@ -16,6 +16,7 @@ type ValidLeaderboards = {
   allTime: LanguagesByModeByMode2;
   weekly: LanguagesByModeByMode2;
   daily: LanguagesByModeByMode2;
+  monthly: LanguagesByModeByMode2;
 };
 
 export type ModeSelect = Pick<Selection, "mode" | "mode2">;
@@ -129,7 +130,7 @@ function normalizeSelection(
       mode2: undefined,
       language: undefined,
       previous: false,
-    };
+    } as Selection;
   }
 
   let { mode, mode2, language } = draft;

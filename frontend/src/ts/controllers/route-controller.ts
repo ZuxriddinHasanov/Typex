@@ -314,11 +314,7 @@ authEvent.subscribe((event) => {
       force: true,
       loadingOptions: {
         loadingMode: () => {
-          if (event.data.isUserSignedIn) {
-            return "sync";
-          } else {
-            return "none";
-          }
+          return "none";
         },
         loadingPromise: async () => {
           await event.data.loadPromise;

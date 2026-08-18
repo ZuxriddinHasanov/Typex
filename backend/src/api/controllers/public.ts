@@ -4,6 +4,7 @@ import {
   GetTypingStatsResponse,
 } from "@typeuz/contracts/public";
 import * as PublicDAL from "../../dal/public";
+import * as UserDAL from "../../dal/user";
 import { TypeUZResponse } from "../../utils/typeuz-response";
 import { TypeUZRequest } from "../types";
 import { isDevEnvironment } from "../../utils/misc";
@@ -207,40 +208,60 @@ export async function submitFeedback(
   const body = (req as any).body;
   const { title, description, imageBase64 } = body;
   const token = process.env["TELEGRAM_BOT_TOKEN"];
-  const chatId = process.env["TELEGRAM_CHAT_ID"];
+  const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
+  const chat1 = process.env["TELEGRAM_CHAT_ID_1"];
+  const chat2 = process.env["TELEGRAM_CHAT_ID_2"];
+  
+  const chatIds = new Set<string>();
+  if (chatIdEnv) chatIdEnv.split(",").map(id => id.trim()).filter(Boolean).forEach(id => chatIds.add(id));
+  if (chat1) chatIds.add(chat1.trim());
+  if (chat2) chatIds.add(chat2.trim());
 
-  if (token && chatId) {
+  if (token && chatIds.size > 0) {
+    let userStr = "Mehmon";
+    const uid = req.ctx?.decodedToken?.uid;
+    if (uid) {
+      const user = await UserDAL.getUser(uid, "submit feedback");
+      if (user) {
+        userStr = `${user.name} (${req.ctx?.decodedToken?.email ?? "Noma'lum email"})`;
+      } else {
+        userStr = `UID: ${uid} (${req.ctx?.decodedToken?.email ?? "Noma'lum email"})`;
+      }
+    }
+
     let message = `🔔 *Yangi Shikoyat / Fikr*\n\n`;
     message += `*Sarlavha:* ${title}\n`;
     message += `*Batafsil:* ${description}\n`;
-    message += `*Foydalanuvchi:* ${(req as any).user?.uid ?? "Mehmon"}`;
+    message += `*Foydalanuvchi:* ${userStr}`;
 
-    if (imageBase64) {
-      const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
-      const buffer = Buffer.from(base64Data, "base64");
-      
-      const formData = new FormData();
-      formData.append("chat_id", chatId);
-      formData.append("caption", message);
-      formData.append("parse_mode", "Markdown");
-      formData.append("photo", new Blob([buffer]), "screenshot.png");
+    for (const chatId of chatIds) {
+      if (imageBase64) {
+        const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+        
+        const formData = new FormData();
+        formData.append("chat_id", chatId);
+        formData.append("caption", message);
+        formData.append("parse_mode", "Markdown");
+        formData.append("photo", new Blob([buffer]), "screenshot.png");
 
-      fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
-        method: "POST",
-        body: formData,
-      }).catch(err => console.error("Telegram API error:", err));
-    } else {
-      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-          parse_mode: "Markdown",
-        }),
-      }).catch(err => console.error("Telegram API error:", err));
+        fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+          method: "POST",
+          body: formData,
+        }).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
+      } else {
+        fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: "Markdown",
+          }),
+        }).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
+      }
     }
   }
 

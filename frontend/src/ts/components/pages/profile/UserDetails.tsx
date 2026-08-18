@@ -128,16 +128,6 @@ function ActionButtons(props: {
     props.profile.uid !== undefined &&
     props.profile.uid === (getUserId() ?? "");
 
-  const showFriendsButton = () =>
-    isAuthenticated() && !isUsersProfile() && !hasConnection(props.profile.uid);
-
-  const handleAddFriend = () => {
-    void addConnection({
-      receiverName: props.profile.name,
-      receiverUid: props.profile.uid,
-    });
-  };
-
   return (
     <>
       <Show
@@ -161,16 +151,6 @@ function ActionButtons(props: {
               >
                 <Fa icon="fa-flag" class="text-xs" />
                 <span>{t("profile.report")}</span>
-              </button>
-            </Show>
-            <Show when={showFriendsButton()}>
-              <button
-                type="button"
-                class="group flex items-center gap-2 rounded-md bg-text px-4 py-2 text-sm font-medium text-bg shadow-none transition-colors hover:bg-text/90"
-                onClick={handleAddFriend}
-              >
-                <Fa icon="fa-user-plus" class="text-xs" />
-                <span>Do&apos;st qo&apos;shish</span>
               </button>
             </Show>
           </>
@@ -204,6 +184,17 @@ function ActionButtons(props: {
         >
           <Fa icon="fa-certificate" class="text-main" />
           <span>Sertifikatlar</span>
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            const { signOut } = await import("../../../auth");
+            signOut();
+          }}
+          class="group flex items-center gap-2 rounded-md border-2 border-error/50 bg-transparent px-6 py-2.5 text-sm font-bold text-error transition-colors hover:border-error hover:bg-error/20"
+        >
+          <Fa icon="fa-sign-out-alt" />
+          <span>Chiqish</span>
         </button>
       </Show>
 
@@ -317,7 +308,7 @@ function AvatarAndName(props: {
             }
             fallback={
               <DiscordAvatar
-                class="relative h-20 w-20 rounded-full border-2 border-sub/10 object-cover shadow-sm"
+                class="relative h-28 w-28 sm:h-36 sm:w-36 rounded-full border-2 border-sub/10 object-cover shadow-sm"
                 size={256}
                 avatar={props.profile.avatar}
                 discordAvatar={props.profile.discordAvatar}
@@ -325,7 +316,7 @@ function AvatarAndName(props: {
               />
             }
           >
-            <div class="relative flex h-20 w-20 items-center justify-center rounded-full border-2 border-main/20 bg-main/10 text-4xl text-main shadow-sm">
+            <div class="relative flex h-28 w-28 sm:h-36 sm:w-36 items-center justify-center rounded-full border-2 border-main/20 bg-main/10 text-5xl sm:text-7xl text-main shadow-sm">
               <i class={`fas ${props.profile.details?.avatar ?? ""}`}></i>
             </div>
           </Show>

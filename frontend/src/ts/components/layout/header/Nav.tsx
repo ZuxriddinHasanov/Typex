@@ -79,6 +79,17 @@ export function Nav(): JSXElement {
       <button
         type="button"
         onClick={() => {
+          showModal("Alerts");
+        }}
+        class="ml-2 flex h-9 w-9 items-center justify-center rounded-full text-sub transition-all duration-300 hover:bg-sub-alt hover:text-text relative"
+        aria-label="Bildirishnomalar"
+        title="Bildirishnomalar"
+      >
+        <Fa icon="fa-bell" class="transition-all duration-300" />
+      </button>
+      <button
+        type="button"
+        onClick={() => {
           const current = getConfig.language;
           const nextLang =
             current === "uzbek"

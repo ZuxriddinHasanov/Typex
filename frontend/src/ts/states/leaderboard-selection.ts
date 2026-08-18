@@ -2,7 +2,6 @@ import { LanguageSchema } from "@typeuz/schemas/languages";
 import { ModeSchema } from "@typeuz/schemas/shared";
 import { Accessor, createSignal, Setter } from "solid-js";
 import { z } from "zod";
-import { serialize as serializeUrlSearchParams } from "zod-urlsearchparams";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 import { get as getServerConfiguration } from "../ape/server-configuration";
@@ -21,7 +20,7 @@ const XpSelection = z.object({
   numbers: z.any().optional(),
 });
 const SpeedSelection = z.object({
-  type: z.enum(["daily", "allTime"]),
+  type: z.enum(["daily", "weekly", "monthly", "allTime"]),
   friendsOnly: z.boolean().optional().default(false),
   previous: z.boolean().optional().default(false),
   mode: ModeSchema.optional().default("time"),
@@ -35,7 +34,7 @@ export type Selection = z.infer<typeof SelectionSchema>;
 
 export const LeaderboardUrlParamsSchema = z
   .object({
-    type: z.enum(["allTime", "daily", "weekly"]),
+    type: z.enum(["allTime", "daily", "weekly", "monthly"]),
     mode: ModeSchema.optional(),
     mode2: z.string().optional(),
     language: LanguageSchema.optional(),
@@ -101,37 +100,51 @@ export function updateGetParameters(
   selection: Selection,
   pageNumber: number,
 ): void {
-  const params: LeaderboardUrlParams = {
-    type: selection.type,
-    mode: selection.mode,
-    mode2: selection.mode2,
-    language: selection.language,
-    numbers: selection.numbers,
-    page: pageNumber + 1,
-  };
+  try {
+    const searchParams = new URLSearchParams();
+    searchParams.set("type", selection.type);
 
-  if (selection.type === "weekly" && selection.previous) {
-    params.lastWeek = true;
-  }
-  if (selection.type === "daily" && selection.previous) {
-    params.yesterday = true;
-  }
-  if (selection.friendsOnly) {
-    params.friendsOnly = true;
-  }
+    if (selection.type !== "weekly") {
+      if (typeof selection.mode === "string" && selection.mode.length > 0) {
+        searchParams.set("mode", selection.mode);
+      }
+      if (typeof selection.mode2 === "string" && selection.mode2.length > 0) {
+        searchParams.set("mode2", selection.mode2);
+      }
+      if (typeof selection.language === "string" && selection.language.length > 0) {
+        searchParams.set("language", selection.language);
+      }
+      if (selection.numbers) {
+        searchParams.set("numbers", "true");
+      }
+    }
 
-  const urlParams = serializeUrlSearchParams({
-    schema: LeaderboardUrlParamsSchema,
-    data: params,
-  });
-  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({}, "", newUrl);
+    if (pageNumber > 0) {
+      searchParams.set("page", String(pageNumber + 1));
+    }
+
+    if (selection.type === "weekly" && selection.previous) {
+      searchParams.set("lastWeek", "true");
+    }
+    if (selection.type === "daily" && selection.previous) {
+      searchParams.set("yesterday", "true");
+    }
+    if (selection.friendsOnly) {
+      searchParams.set("friendsOnly", "true");
+    }
+
+    const queryStr = searchParams.toString();
+    const newUrl = queryStr.length > 0 ? `${window.location.pathname}?${queryStr}` : window.location.pathname;
+    window.history.replaceState({}, "", newUrl);
+  } catch (e) {
+    console.error("Failed to update leaderboard URL params:", e);
+  }
 }
 
 function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
   return useLocalStorage<Selection>({
     key: "leaderboardSelector",
-    schema: SelectionSchema,
+    schema: SelectionSchema as z.ZodType<Selection>,
     fallback: {
       type: "allTime",
       mode: "time",

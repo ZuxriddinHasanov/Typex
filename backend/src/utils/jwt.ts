@@ -23,7 +23,7 @@ export type JwtPayload = {
 };
 
 export function signToken(payload: JwtPayload): string {
-  return jwt.sign(payload, getSecret(), { expiresIn: "30d" });
+  return jwt.sign(payload, getSecret(), { expiresIn: "7d" });
 }
 
 export function assertJwtConfigured(): void {

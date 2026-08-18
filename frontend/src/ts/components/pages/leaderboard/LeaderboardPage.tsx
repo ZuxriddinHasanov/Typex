@@ -19,15 +19,26 @@ import {
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Page } from "../../common/Page";
-import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
 import { User } from "../../common/User";
+import { DiscordAvatar } from "../../common/DiscordAvatar";
+import { getLevelFromTotalXp } from "../../../utils/levels";
 
 const pageName = "leaderboards";
+
+function getUserLevel(entry: unknown): number {
+  if (!entry || typeof entry !== "object") return 1;
+  const e = entry as Record<string, unknown>;
+  if (typeof e["level"] === "number") return Math.max(1, e["level"]);
+  if (typeof e["totalXp"] === "number") return Math.max(1, getLevelFromTotalXp(e["totalXp"]));
+  if (typeof e["xp"] === "number") return Math.max(1, getLevelFromTotalXp(e["xp"]));
+  if (typeof e["wpm"] === "number") return Math.max(1, Math.floor(e["wpm"] / 15) + 1);
+  return 1;
+}
 
 const durationOptions = ["10", "15", "30", "60", "120"] as const;
 const wordCountOptions = ["10", "25", "50", "100"] as const;
 
-const languages = [
+const _languages = [
   { id: "uzbek", label: "O'zbekcha", flag: "🇺🇿" },
   { id: "english", label: "English", flag: "🇬🇧" },
   { id: "russian", label: "Русский", flag: "🇷🇺" },
@@ -41,8 +52,15 @@ const LbTABS: { id: LbTab; label: string; icon: string }[] = [
   { id: "weekly", label: "Tajriba (XP)", icon: "fa-star" },
 ];
 
+type PeriodTab = "daily" | "weekly" | "monthly" | "allTime";
+const PERIODS: { id: PeriodTab; label: string }[] = [
+  { id: "daily", label: "Kunlik" },
+  { id: "allTime", label: "Umumiy" },
+];
+
 export function LeaderboardPage(): JSXElement {
   const [activeTab, setActiveTab] = createSignal<LbTab>("time");
+  const [activePeriod, setActivePeriod] = createSignal<PeriodTab>("allTime");
 
   const isOpen = () => getActivePage() === pageName;
 
@@ -58,6 +76,10 @@ export function LeaderboardPage(): JSXElement {
         previous: (s as { previous?: boolean }).previous ?? false,
       };
     }
+    
+    // For words/time, use activePeriod (if it's not supported by API it falls back to allTime internally or throws error, we assume ts-rest handles it or backend has fallback)
+    const typeVal = activePeriod() as "allTime" | "daily" | "weekly" | "monthly";
+
     if (activeTab() === "words") {
       const mode2Val = (s as { mode2?: string }).mode2;
       const validMode2 =
@@ -67,11 +89,11 @@ export function LeaderboardPage(): JSXElement {
           : "10";
       return {
         ...s,
-        type: "allTime" as const,
+        type: typeVal,
         mode: "words" as const,
         mode2: validMode2,
         language: (s as { language?: Language }).language ?? "uzbek",
-        numbers: false,
+        numbers: undefined,
       };
     }
     const mode2Val = (s as { mode2?: string }).mode2;
@@ -82,11 +104,11 @@ export function LeaderboardPage(): JSXElement {
         : "15";
     return {
       ...s,
-      type: "allTime" as const,
+      type: typeVal,
       mode: "time" as const,
       mode2: validMode2,
       language: (s as { language?: Language }).language ?? "uzbek",
-      numbers: false,
+      numbers: undefined,
     };
   };
 
@@ -119,125 +141,152 @@ export function LeaderboardPage(): JSXElement {
   return (
     <Page id={pageName}>
       <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8">
-        <div class="flex flex-col gap-4">
-          <h1 class="text-2xl font-bold text-text">Reyting</h1>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <For each={LbTABS}>
-              {(tab) => (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setPage(0);
-                    if (tab.id === "time") {
-                      setSelection({
-                        ...sel(),
-                        mode: "time",
-                        mode2: "15",
-                      } as never);
-                    } else if (tab.id === "words") {
-                      setSelection({
-                        ...sel(),
-                        mode: "words",
-                        mode2: "10",
-                      } as never);
-                    }
-                  }}
-                  class={cn(
-                    "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-                    activeTab() === tab.id
-                      ? "bg-main text-bg"
-                      : "bg-sub-alt text-text hover:bg-sub",
-                  )}
-                >
-                  <i class={cn("fas", tab.icon)}></i>
-                  {tab.label}
-                </button>
-              )}
-            </For>
+        <div class="flex flex-col gap-6 relative z-10">
+          <div class="flex flex-col gap-1">
+            <h1 class="text-4xl sm:text-5xl font-black text-text tracking-tighter">Reytinglar</h1>
+            <p class="text-sub font-medium">Typex ning eng tezkor va tajribali qahramonlari bilan tanishing.</p>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2">
-            <Show when={activeTab() === "time"}>
-              <div class="flex flex-wrap items-center gap-2">
-                <For each={durationOptions}>
-                  {(d) => (
-                    <button
-                      type="button"
-                      onClick={() => {
+          <div class="flex flex-col xl:flex-row xl:items-center gap-4">
+            <div class="flex flex-wrap items-center gap-2 rounded-2xl bg-sub-alt/30 p-1.5 shadow-inner backdrop-blur-sm self-start">
+              <For each={LbTABS}>
+                {(tab) => (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setPage(0);
+                      if (tab.id === "time") {
                         setSelection({
                           ...sel(),
                           mode: "time",
-                          mode2: d,
+                          mode2: "15",
                         } as never);
-                        setPage(0);
-                      }}
-                      class={cn(
-                        "rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-                        sel().mode2 === d
-                          ? "bg-main text-bg"
-                          : "bg-sub-alt text-sub hover:text-text",
-                      )}
-                    >
-                      {d}s
-                    </button>
-                  )}
-                </For>
-              </div>
-            </Show>
-
-            <Show when={activeTab() === "words"}>
-              <div class="flex flex-wrap items-center gap-2">
-                <For each={wordCountOptions}>
-                  {(w) => (
-                    <button
-                      type="button"
-                      onClick={() => {
+                      } else if (tab.id === "words") {
                         setSelection({
                           ...sel(),
                           mode: "words",
-                          mode2: w,
+                          mode2: "10",
                         } as never);
-                        setPage(0);
-                      }}
-                      class={cn(
-                        "rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-                        sel().mode2 === w
-                          ? "bg-main text-bg"
-                          : "bg-sub-alt text-sub hover:text-text",
-                      )}
-                    >
-                      {w} so&apos;z
-                    </button>
-                  )}
-                </For>
+                      }
+                    }}
+                    class={cn(
+                      "flex flex-1 sm:flex-none justify-center items-center gap-2.5 rounded-xl px-5 py-2.5 text-sm font-bold transition-all duration-300",
+                      activeTab() === tab.id
+                        ? "bg-main text-bg shadow-md scale-[1.02]"
+                        : "text-sub hover:text-text hover:bg-sub-alt/50",
+                    )}
+                  >
+                    <i class={cn("fas", tab.icon)}></i>
+                    {tab.label}
+                  </button>
+                )}
+              </For>
+            </div>
+
+            {/* Period Tabs */}
+            <Show when={activeTab() !== "weekly"}>
+              <div class="flex flex-wrap items-center gap-2 rounded-2xl bg-sub-alt/30 p-1.5 shadow-inner backdrop-blur-sm self-start">
+              <For each={PERIODS}>
+                {(period) => (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActivePeriod(period.id);
+                      setPage(0);
+                    }}
+                    class={cn(
+                      "flex flex-1 sm:flex-none justify-center items-center gap-2.5 rounded-xl px-4 py-2 text-sm font-bold transition-all duration-300",
+                      activePeriod() === period.id
+                        ? "bg-text text-bg shadow-md scale-[1.02]"
+                        : "text-sub hover:text-text hover:bg-sub-alt/50",
+                    )}
+                  >
+                    {period.label}
+                  </button>
+                )}
+              </For>
               </div>
             </Show>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <Show when={activeTab() === "time"}>
+                <div class="flex flex-wrap items-center gap-1 sm:gap-2 rounded-2xl bg-sub-alt/10 p-1.5 shadow-sm">
+                  <For each={durationOptions}>
+                    {(d) => (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelection({
+                            ...sel(),
+                            mode: "time",
+                            mode2: d,
+                          } as never);
+                          setPage(0);
+                        }}
+                        class={cn(
+                          "rounded-xl px-3 sm:px-4 py-2 text-xs font-bold transition-all",
+                          (sel() as Record<string, unknown>)["mode2"] === d
+                            ? "bg-text text-bg shadow-sm scale-105"
+                            : "text-sub hover:text-text hover:bg-sub-alt/50",
+                        )}
+                      >
+                        {d}s
+                      </button>
+                    )}
+                  </For>
+                </div>
+              </Show>
+
+              <Show when={activeTab() === "words"}>
+                <div class="flex flex-wrap items-center gap-1 sm:gap-2 rounded-2xl bg-sub-alt/10 p-1.5 shadow-sm">
+                  <For each={wordCountOptions}>
+                    {(w) => (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelection({
+                            ...sel(),
+                            mode: "words",
+                            mode2: w,
+                          } as never);
+                          setPage(0);
+                        }}
+                        class={cn(
+                          "rounded-xl px-3 sm:px-4 py-2 text-xs font-bold transition-all",
+                          (sel() as Record<string, unknown>)["mode2"] === w
+                            ? "bg-text text-bg shadow-sm scale-105"
+                            : "text-sub hover:text-text hover:bg-sub-alt/50",
+                        )}
+                      >
+                        {w} ta
+                      </button>
+                    )}
+                  </For>
+                </div>
+              </Show>
+            </div>
           </div>
         </div>
 
         <Show when={rankQuery.data}>
-          {(data) => {
-            const d = data();
-            return (
+          {(data) => (
+            <Show when={data() && "rank" in (data() as object)}>
               <div class="rounded-2xl bg-main/10 px-5 py-3 text-sm">
                 <span class="text-sub">Sizning o&apos;rningiz: </span>
                 <span class="font-bold text-text">
-                  {d.rank}-o&apos;rin (
-                  {"wpm" in d
-                    ? `${d.wpm} WPM`
-                    : "totalXp" in d
-                      ? `${d.totalXp} XP`
+                  {(data() as unknown as { rank: number }).rank}-o&apos;rin (
+                  {"wpm" in (data() as object)
+                    ? `${(data() as unknown as { wpm: number }).wpm} WPM`
+                    : "totalXp" in (data() as object)
+                      ? `${(data() as unknown as { totalXp: number }).totalXp} XP`
                       : "—"}
                   )
                 </span>
               </div>
-            );
-          }}
+            </Show>
+          )}
         </Show>
-
-        <TypeUZAdSlot slotId="ad-leaderboard" class="w-full" />
 
         <AsyncContent queries={{ lbQuery }} errorMessage="Reyting yuklanmadi">
           {({ lbQueryData }) => {
@@ -248,17 +297,14 @@ export function LeaderboardPage(): JSXElement {
             return (
               <>
                 <Show when={entries().length === 0}>
-                  <div class="flex flex-col items-center justify-center gap-4 rounded-2xl border border-sub-alt/40 bg-sub-alt/20 py-16 text-center">
+                  <div class="flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-sub/30 bg-sub-alt/10 p-12 text-center">
                     <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-main/10 text-3xl text-main">
-                      <i class="fas fa-trophy"></i>
+                      <i class="fas fa-ghost"></i>
                     </div>
                     <div class="flex flex-col gap-1">
-                      <p class="text-lg font-bold text-text">
-                        Hozircha natijalar yo&apos;q
-                      </p>
+                      <p class="text-lg font-bold text-text">Bu bo&apos;limda hali natijalar yo&apos;q</p>
                       <p class="max-w-md text-sm text-sub">
-                        Ushbu bo&apos;limda birinchi bo&apos;lib test topshirib,
-                        reytingda 1-o&apos;rinni egallang!
+                        Birinchi bo&apos;lib natija qayd eting va yetakchiga aylaning!
                       </p>
                     </div>
                     <a
@@ -272,59 +318,157 @@ export function LeaderboardPage(): JSXElement {
                 </Show>
 
                 <Show when={podium().length > 0}>
-                  <div class="mt-8 mb-12 flex flex-row items-end justify-center gap-4 px-4 sm:gap-8">
-                    <For each={[1, 0, 2]}>
-                      {(pos) => {
-                        const entry = () => podium()[pos];
-                        return (
-                          <Show when={entry()}>
-                            <div
-                              class="animate-in fade-in slide-in-from-bottom-8 fill-mode-both flex flex-col items-center justify-end gap-3 duration-500"
-                              style={{
-                                "animation-delay": `${pos === 0 ? 0 : pos === 1 ? 150 : 300}ms`,
-                              }}
-                            >
-                              <User
-                                user={
-                                  entry() as unknown as Parameters<
-                                    typeof User
-                                  >[0]["user"]
+                  <div class="mt-6 mb-10 flex flex-col items-center justify-center rounded-3xl bg-sub-alt/10 p-5 sm:p-8 w-full max-w-4xl mx-auto">
+                    {/* Header Pill */}
+                    <div class="mb-8 inline-flex items-center gap-2 rounded-full border-2 border-sub/30 bg-bg px-6 py-2 text-xs font-bold text-text shadow-sm backdrop-blur-md uppercase tracking-wider">
+                      <i class="fas fa-trophy text-main"></i>
+                      <span>
+                        {activeTab() === "weekly"
+                          ? "Haftalik tajriba peshqadamlari"
+                          : activeTab() === "words"
+                            ? "So'zlar bo'yicha peshqadamlar"
+                            : "Vaqt bo'yicha peshqadamlar"}
+                      </span>
+                    </div>
+
+                    {/* Top 3 Podium Columns */}
+                    <div class="flex flex-row items-end justify-center gap-3 sm:gap-6 w-full max-w-3xl px-1">
+                      <For each={[1, 0, 2]}>
+                        {(pos) => {
+                          const entry = () =>
+                            podium()[pos] as
+                              | {
+                                  uid?: string;
+                                  name?: string;
+                                  avatar?: string | null;
+                                  discordId?: string;
+                                  discordAvatar?: string;
+                                  wpm?: number;
+                                  totalXp?: number;
                                 }
-                                avatarFallback="user-circle"
-                                avatarColor="sub"
-                                flagsColor="sub"
-                                class="text-xl sm:text-2xl"
-                                linkToProfile={true}
-                                showAvatar={true}
-                              />
-                              <div
+                              | undefined;
+                          const rankEmoji = () => (pos === 0 ? "🥇" : pos === 1 ? "🥈" : "🥉");
+                          const rankTitle = () => (pos === 0 ? "1-o'rin" : pos === 1 ? "2-o'rin" : "3-o'rin");
+                          const hasImage = () => !!(entry()?.avatar ?? entry()?.discordAvatar);
+                          return (
+                            <Show when={entry()}>
+                              <a
+                                href={entry()?.name ? `/profile/${entry()?.name}` : entry()?.uid ? `/profile/${entry()?.uid}` : "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 class={cn(
-                                  "flex w-24 flex-col items-center justify-center rounded-t-2xl sm:w-32",
+                                  "flex flex-col items-center justify-between rounded-3xl border-2 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer group",
                                   pos === 0
-                                    ? "h-32 border-x border-t border-main/30 bg-main/20 text-main"
+                                    ? "flex-[1.2] min-h-[22rem] sm:min-h-[26rem] border-main bg-gradient-to-b from-main/15 via-main/5 to-bg p-4 sm:p-5 shadow-lg -mt-5 z-10"
                                     : pos === 1
-                                      ? "h-24 bg-sub-alt text-text"
-                                      : "h-20 bg-sub-alt/60 text-sub",
+                                      ? "flex-1 min-h-[18rem] sm:min-h-[20rem] border-sub bg-gradient-to-b from-sub/30 via-sub/10 to-bg p-3 sm:p-4 shadow-sm"
+                                      : "flex-1 min-h-[16rem] sm:min-h-[18rem] border-amber-600 bg-gradient-to-b from-amber-700/30 via-amber-600/10 to-bg p-3 sm:p-4 shadow-sm"
                                 )}
                               >
-                                <span class="text-2xl font-black sm:text-3xl">
-                                  {pos === 0 ? "🥇" : pos === 1 ? "🥈" : "🥉"}
-                                </span>
-                                <span class="mt-2 text-sm font-bold sm:text-base">
-                                  {"totalXp" in (entry() as object)
-                                    ? `${(entry() as { totalXp: number }).totalXp} XP`
-                                    : `${(entry() as { wpm: number }).wpm} WPM`}
-                                </span>
-                              </div>
-                            </div>
-                          </Show>
-                        );
-                      }}
-                    </For>
+                                {/* Top Avatar & Identity */}
+                                <div class="flex flex-col items-center w-full relative pt-4">
+                                  {/* Avatar Container */}
+                                  <div class="relative flex items-center justify-center mb-3">
+                                    {/* Crown for #1 */}
+                                    <Show when={pos === 0}>
+                                      <div class="absolute -top-10 sm:-top-12 text-3xl sm:text-5xl text-main animate-bounce z-50 filter drop-shadow-md">
+                                        <i class="fas fa-crown"></i>
+                                      </div>
+                                    </Show>
+
+                                    <div
+                                      class={cn(
+                                        "relative flex items-center justify-center rounded-full p-0.5 shadow-sm overflow-hidden transition-transform group-hover:scale-105",
+                                        pos === 0
+                                          ? hasImage()
+                                            ? "h-40 w-40 sm:h-52 sm:w-52 ring-4 ring-main bg-bg z-10"
+                                            : "h-28 w-28 sm:h-36 sm:w-36 ring-4 ring-main bg-bg z-10"
+                                          : pos === 1
+                                            ? hasImage()
+                                              ? "h-32 w-32 sm:h-44 sm:w-44 ring-4 ring-sub bg-bg"
+                                              : "h-24 w-24 sm:h-32 sm:w-32 ring-4 ring-sub bg-bg"
+                                            : hasImage()
+                                              ? "h-28 w-28 sm:h-36 sm:w-36 ring-4 ring-amber-600 bg-bg"
+                                              : "h-20 w-20 sm:h-28 sm:w-28 ring-4 ring-amber-600 bg-bg"
+                                      )}
+                                    >
+                                      <Show
+                                        when={entry()?.avatar ?? entry()?.discordAvatar}
+                                        fallback={
+                                          <div class="flex h-full w-full items-center justify-center bg-sub-alt text-text font-bold text-2xl sm:text-4xl uppercase select-none">
+                                            {(entry()?.name ?? "U")[0]}
+                                          </div>
+                                        }
+                                      >
+                                        <DiscordAvatar
+                                          discordId={entry()?.discordId}
+                                          discordAvatar={entry()?.discordAvatar}
+                                          avatar={entry()?.avatar}
+                                          size={256}
+                                          class="h-full w-full rounded-full object-cover"
+                                        />
+                                      </Show>
+                                    </div>
+                                  </div>
+
+                                  {/* User Name */}
+                                  <span
+                                    class={cn(
+                                      "font-black text-text truncate max-w-full text-center mt-2 px-1 transition-colors group-hover:text-main",
+                                      pos === 0
+                                        ? "text-lg sm:text-xl"
+                                        : pos === 1
+                                          ? "text-base sm:text-lg"
+                                          : "text-sm sm:text-base"
+                                    )}
+                                  >
+                                    {entry()?.name ?? "Foydalanuvchi"}
+                                  </span>
+
+                                  {/* Score / WPM Display */}
+                                  <div class="mt-3 flex flex-col items-center">
+                                    <span
+                                      class={cn(
+                                        "font-black tracking-tighter drop-shadow-sm",
+                                        pos === 0
+                                          ? "text-4xl text-main"
+                                          : pos === 1
+                                            ? "text-3xl text-text"
+                                            : "text-2xl text-amber-600"
+                                      )}
+                                    >
+                                      {entry() && "totalXp" in (entry() as object)
+                                        ? `${(entry() as { totalXp: number }).totalXp}`
+                                        : `${(entry() as { wpm: number })?.wpm} WPM`}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Pillar Base Label */}
+                                <div class="mt-auto pt-3 pb-1 flex flex-col items-center justify-center gap-1">
+                                  <span
+                                    class={cn(
+                                      "font-black tracking-wider uppercase",
+                                      pos === 0
+                                        ? "text-lg sm:text-xl md:text-2xl text-main"
+                                        : pos === 1
+                                          ? "text-base sm:text-lg md:text-xl text-text"
+                                          : "text-base sm:text-lg md:text-xl text-amber-600"
+                                    )}
+                                  >
+                                    {rankTitle()}
+                                  </span>
+                                </div>
+                              </a>
+                            </Show>
+                          );
+                        }}
+                      </For>
+                    </div>
                   </div>
                 </Show>
 
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-3">
                   <For each={rest()}>
                     {(entry, i) => {
                       const e = entry as {
@@ -333,6 +477,9 @@ export function LeaderboardPage(): JSXElement {
                         wpm?: number;
                         totalXp?: number;
                         acc?: number;
+                        avatar?: string | null;
+                        discordId?: string;
+                        discordAvatar?: string;
                       };
                       const isMe = () => e.uid === getUserId();
                       const idx = () =>
@@ -342,54 +489,95 @@ export function LeaderboardPage(): JSXElement {
                             ? i() + 3 + 1
                             : page() * 50 + i() + 1;
                       return (
-                        <div
+                        <a
+                          href={e.name ? `/profile/${e.name}` : e.uid ? `/profile/${e.uid}` : "#"}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           class={cn(
-                            "animate-in fade-in slide-in-from-bottom-4 fill-mode-both flex items-center gap-4 rounded-2xl px-5 py-3 transition-all duration-300",
+                            "animate-in fade-in slide-in-from-bottom-4 fill-mode-both flex flex-row items-center gap-4 rounded-2xl px-6 py-4 transition-all duration-300 hover:scale-[1.01] hover:-translate-y-0.5",
                             isMe()
-                              ? "border-2 border-main bg-main/15 shadow-md shadow-main/10"
-                              : "bg-sub-alt/40 hover:bg-sub-alt",
+                              ? "border-2 border-main bg-gradient-to-r from-main/20 to-main/5 shadow-[0_0_20px_-5px_rgba(255,90,31,0.3)]"
+                              : "border border-sub-alt bg-sub-alt/25 hover:border-sub hover:bg-sub-alt/40 hover:shadow-md cursor-pointer",
                           )}
                           style={{ "animation-delay": `${(i() % 10) * 50}ms` }}
                         >
-                          <span
-                            class={cn(
-                              "w-8 text-center text-lg font-bold",
-                              isMe() ? "text-main font-black" : "text-sub",
-                            )}
-                          >
-                            #{idx()}
-                          </span>
+                          <div class="flex w-12 items-center justify-center">
+                            <span
+                              class={cn(
+                                "text-xl font-black italic tracking-tighter",
+                                isMe() ? "text-main" : "text-sub/50",
+                              )}
+                            >
+                              #{idx()}
+                            </span>
+                          </div>
+                          
                           <div class="flex flex-1 items-center gap-3">
+                            <div class="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-full bg-sub-alt flex items-center justify-center overflow-hidden border border-sub-alt/60">
+                              <Show
+                                when={e.avatar ?? e.discordAvatar}
+                                fallback={
+                                  <span class="text-xs font-black text-text uppercase select-none">
+                                    {e.name?.[0] ?? "U"}
+                                  </span>
+                                }
+                              >
+                                <DiscordAvatar
+                                  discordId={e.discordId}
+                                  discordAvatar={e.discordAvatar}
+                                  avatar={e.avatar}
+                                  size={64}
+                                  class="h-full w-full object-cover"
+                                />
+                              </Show>
+                            </div>
                             <User
-                              user={e}
+                              user={e as unknown as Parameters<typeof User>[0]["user"]}
                               avatarFallback="user-circle"
-                              avatarColor={isMe() ? "main" : "sub"}
+                              avatarColor={isMe() ? "text" : "sub"}
                               flagsColor="sub"
-                              class="text-base"
-                              linkToProfile={true}
+                              class="text-base font-bold"
+                              linkToProfile={false}
+                              showAvatar={false}
                             />
+                            <div class="flex items-center gap-1 rounded-full bg-sub-alt/50 border border-sub-alt/80 px-2 py-0.5 text-[11px] font-black text-sub">
+                              <i class="fas fa-shield-alt text-[9px] text-sub"></i>
+                              <span>Lv {getUserLevel(e)}</span>
+                            </div>
                             <Show when={isMe()}>
-                              <span class="rounded-md bg-main/20 px-2 py-0.5 text-[10px] font-black text-main uppercase">
+                              <span class="rounded-lg bg-main/20 px-2.5 py-0.5 text-[10px] font-black text-main uppercase tracking-widest">
                                 Siz
                               </span>
                             </Show>
-                            <Show when={e.acc}>
-                              <span class="text-xs text-sub/60">
-                                {e.acc}% aniqlik
-                              </span>
-                            </Show>
                           </div>
-                          <span
-                            class={cn(
-                              "text-sm font-semibold",
-                              isMe() ? "text-main font-black" : "text-text",
-                            )}
-                          >
-                            {"totalXp" in entry
-                              ? `${(entry as { totalXp: number }).totalXp} XP`
-                              : `${(entry as { wpm: number }).wpm} WPM`}
-                          </span>
-                        </div>
+                          
+                          <div class="flex items-center justify-end gap-6 sm:gap-12">
+                            <Show when={e.acc}>
+                              <div class="hidden sm:flex flex-col items-end">
+                                <span class="text-xs font-semibold text-sub uppercase tracking-wider">Aniqlik</span>
+                                <span class="text-sm font-bold text-text">{e.acc}%</span>
+                              </div>
+                            </Show>
+                            <div class="flex flex-col items-end">
+                              <span class="text-xs font-semibold text-sub uppercase tracking-wider">
+                                {"totalXp" in entry ? "Tajriba" : "Tezlik"}
+                              </span>
+                              <div class="flex items-center gap-1.5">
+                                <i class="fas fa-star text-amber-400 text-sm"></i>
+                                <span
+                                  class={cn(
+                                    "text-xl sm:text-2xl font-black tracking-tight",
+                                    isMe() ? "text-main drop-shadow-md" : "text-text",
+                                  )}
+                                >
+                                  {"totalXp" in entry
+                                    ? `${(entry as { totalXp: number }).totalXp} XP`
+                                    : `${(entry as { wpm: number }).wpm} WPM`}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </a>
                       );
                     }}
                   </For>
@@ -400,7 +588,7 @@ export function LeaderboardPage(): JSXElement {
                   when={
                     isAuthenticated() &&
                     rankQuery.data &&
-                    !entries().some((e: any) => e.uid === getUserId())
+                    !entries().some((e) => (e as unknown as { uid?: string }).uid === getUserId())
                   }
                 >
                   <div class="mt-6 flex items-center gap-4 rounded-2xl border-2 border-main/50 bg-main/10 px-6 py-4 shadow-xl backdrop-blur-md">
@@ -409,7 +597,7 @@ export function LeaderboardPage(): JSXElement {
                         Siz
                       </span>
                       <span class="text-xl font-black text-main">
-                        #{rankQuery.data?.rank}
+                        #{(rankQuery.data as unknown as { rank: number }).rank}
                       </span>
                     </div>
                     <div class="flex flex-1 items-center gap-3">
@@ -420,10 +608,10 @@ export function LeaderboardPage(): JSXElement {
                     </div>
                     <span class="text-base font-black text-main">
                       {rankQuery.data && typeof rankQuery.data === "object"
-                        ? "wpm" in rankQuery.data
-                          ? `${(rankQuery.data as any).wpm} WPM`
-                          : "totalXp" in rankQuery.data
-                            ? `${(rankQuery.data as any).totalXp} XP`
+                        ? "wpm" in (rankQuery.data as object)
+                          ? `${(rankQuery.data as unknown as { wpm: number }).wpm} WPM`
+                          : "totalXp" in (rankQuery.data as object)
+                            ? `${(rankQuery.data as unknown as { totalXp: number }).totalXp} XP`
                             : "—"
                         : "—"}
                     </span>

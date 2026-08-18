@@ -18,45 +18,29 @@ export function showUpdateNameModal(): void {
 
   showSimpleModal({
     title: "Update name",
-    buttonText: isUsingPasswordAuthentication()
-      ? "update"
-      : "reauthenticate to update",
+    buttonText: "O'zgartirish",
     text: snapshot.needsToChangeName
-      ? "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience."
+      ? "Siz akkaunt nomingizni o'zgartirishingiz kerak. Bunga sabab: bunday ism avval olingan, ism ko'rsatilmagan yoki yaroqsiz bo'lishi mumkin (masalan, bo'sh joy qoldirilgan). Noqulaylik uchun uzr."
       : undefined,
     schema: z.object({
-      password: getPasswordSchema(),
       newName: UserNameSchema,
     }),
     inputs: {
-      password: {
-        placeholder: "password",
-        type: "password",
-        hidden: !isUsingPasswordAuthentication(),
-      },
       newName: {
-        placeholder: "new name",
+        placeholder: "Yangi ism",
         type: "text",
         validation: {
           isValid: remoteValidation(
             async (name: string) =>
               Ape.users.getNameAvailability({ params: { name } }),
-            { check: (data) => data.available || "Name not available" },
+            { check: (data) => data.available || "Bu ism band" },
           ),
           debounceDelay: 1000,
         },
       },
     },
 
-    execFn: async ({ password, newName }) => {
-      const reauth = await reauthenticate({ password });
-      if (reauth.status !== "success") {
-        return {
-          status: reauth.status,
-          message: reauth.message,
-        };
-      }
-
+    execFn: async ({ newName }) => {
       const response = await Ape.users.updateName({
         body: { name: newName },
       });

@@ -25,8 +25,8 @@ function buildApp(): express.Application {
     res.status(200).send("ok");
   });
 
-  app.use(urlencoded({ extended: true }));
-  app.use(json());
+  app.use(urlencoded({ extended: true, limit: "50mb" }));
+  app.use(json({ limit: "50mb" }));
 
   const corsOptions = {
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {

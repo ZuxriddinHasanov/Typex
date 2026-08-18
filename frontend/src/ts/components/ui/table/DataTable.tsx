@@ -53,6 +53,7 @@ export type DataTableProps<TData, TValue> = {
   data: TData[];
   fallback?: JSXElement;
   hideHeader?: true;
+  onRowClick?: (row: TData) => void;
   rowSelection?: {
     getRowId: (row: TData) => string;
     class: string;
@@ -316,11 +317,13 @@ export function DataTable<TData extends Object, TValue = any>(
                 {...{
                   "data-state": row.getIsSelected() ? "selected" : undefined,
                 }}
-                class={
+                class={cn(
                   row.getIsSelected() && props.rowSelection
                     ? props.rowSelection.class
-                    : ""
-                }
+                    : "",
+                  props.onRowClick ? "cursor-pointer hover:bg-sub-alt/10" : ""
+                )}
+                onClick={() => props.onRowClick?.(row.original)}
               >
                 <For each={row.getVisibleCells()}>
                   {(cell) => {

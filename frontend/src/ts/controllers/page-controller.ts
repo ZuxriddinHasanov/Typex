@@ -52,6 +52,11 @@ const pages = {
         }
       },
       loadingPromise: async () => {
+        let attempts = 0;
+        while ((getSnapshot() === null || getSnapshot() === undefined) && attempts < 100) {
+          await new Promise((r) => setTimeout(r, 100));
+          attempts++;
+        }
         if (getSnapshot() === null || getSnapshot() === undefined) {
           throw new Error(
             "Looks like your account data didn't download correctly. Please refresh the page.<br>If this error persists, please contact support.",

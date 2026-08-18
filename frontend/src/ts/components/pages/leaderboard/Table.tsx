@@ -19,6 +19,7 @@ import { abbreviateNumber } from "../../../utils/numbers";
 import { Fa } from "../../common/Fa";
 import { User } from "../../common/User";
 import { DataTable, DataTableColumnDef } from "../../ui/table/DataTable";
+import { PageController } from "../../../controllers/page-controller";
 
 type SpeedEntry = LeaderboardEntry;
 type XpEntry = XpLeaderboardEntry;
@@ -64,6 +65,12 @@ export function Table(
               "**:data-[ui-element='button']:[--themable-button-text:var(--text-main)]",
             ),
           },
+    onRowClick: (row: TableEntry) => {
+      const target = row.name ?? row.uid;
+      if (target) {
+        PageController.change("profile", { params: { uidOrName: target } });
+      }
+    },
   }));
 
   const speedColumns = createMemo(() => {
@@ -174,7 +181,7 @@ const userColumn = ({
           user={info.row.original}
           isFriend={hasConnection(info.row.original.uid, "accepted")}
           class="w-min text-[1em] **:data-[ui-element='button']:[--themable-button-text:var(--text-color)]"
-          linkToProfile={true}
+          linkToProfile={false}
         />
       ),
     meta: {
