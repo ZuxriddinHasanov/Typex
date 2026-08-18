@@ -102,6 +102,9 @@ export const publicContract = c.router(
       responses: {
         200: responseWithData(z.object({ success: z.boolean() })),
       },
+      metadata: meta({
+        authenticationOptions: { isPublic: true },
+      }),
     },
   },
   {
