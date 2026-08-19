@@ -83,78 +83,7 @@ export async function get(
   uid?: string,
   numbers?: boolean,
 ): Promise<DBLeaderboardEntry[] | false> {
-  if (page < 0 || pageSize <= 0) {
-    throw new TypeUZError(500, "Invalid page or pageSize");
-  }
-
-  const skip = page * pageSize;
-  const limit = pageSize;
-
-  try {
-    if (uid !== undefined) {
-      const friendUids = await getFriendsUids(uid);
-      const allUids = [...friendUids, uid];
-
-      const rows = await db.queryAll<LeaderboardRow>(
-        `SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
-         FROM leaderboard_entries
-         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
-         AND uid = ANY($5::text[])
-         ORDER BY rank ASC
-         LIMIT $6 OFFSET $7`,
-        [language, mode, mode2, numbers ?? false, allUids, limit, skip],
-      );
-
-      const entries = rows.map(mapLeaderboardRow);
-      return premiumFeaturesEnabled
-        ? entries
-        : entries.map((it) => omit(it, ["isPremium"]));
-    } else {
-      let rows = await db.queryAll<LeaderboardRow>(
-        `SELECT * FROM leaderboard_entries
-         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
-         ORDER BY rank ASC
-         LIMIT $5 OFFSET $6`,
-        [language, mode, mode2, numbers ?? false, limit, skip],
-      );
-
-      if (rows.length === 0 && page === 0) {
-        try {
-          await update(mode, mode2, language, numbers);
-          rows = await db.queryAll<LeaderboardRow>(
-            `SELECT * FROM leaderboard_entries
-             WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
-             ORDER BY rank ASC
-             LIMIT $5 OFFSET $6`,
-            [language, mode, mode2, numbers ?? false, limit, skip],
-          );
-        } catch {
-          // ignore
-        }
-      }
-
-      const entries = rows.map(mapLeaderboardRow);
-      return premiumFeaturesEnabled
-        ? entries
-        : entries.map((it) => omit(it, ["isPremium"]));
-    }
-  } catch (e) {
-    if ((e as { code?: string }).code === "42P01") {
-      return false;
-    }
-    throw e;
-  }
-}
-
-const cachedCounts = new Map<string, number>();
-
-function countCacheKey(
-  language: string,
-  mode: string,
-  mode2: string,
-  numbers?: boolean,
-): string {
-  return `${language}_${mode}_${mode2}_${numbers ?? false}`;
+  return getPeriod(mode, mode2, language, page, pageSize, premiumFeaturesEnabled, uid, numbers, 36500);
 }
 
 export async function getCount(
@@ -164,31 +93,7 @@ export async function getCount(
   uid?: string,
   numbers?: boolean,
 ): Promise<number> {
-  const key = countCacheKey(language, mode, mode2, numbers);
-  if (uid === undefined && cachedCounts.has(key)) {
-    return cachedCounts.get(key) as number;
-  } else {
-    if (uid === undefined) {
-      const result = await db.queryOne<{ count: number }>(
-        `SELECT COUNT(*)::int AS count FROM leaderboard_entries
-         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4`,
-        [language, mode, mode2, numbers ?? false],
-      );
-      const count = result?.count ?? 0;
-      cachedCounts.set(key, count);
-      return count;
-    } else {
-      const friendUids = await getFriendsUids(uid);
-      const allUids = [...friendUids, uid];
-      const result = await db.queryOne<{ count: number }>(
-        `SELECT COUNT(*)::int AS count FROM leaderboard_entries
-         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
-         AND uid = ANY($5::text[])`,
-        [language, mode, mode2, numbers ?? false, allUids],
-      );
-      return result?.count ?? 0;
-    }
-  }
+  return getPeriodCount(mode, mode2, language, uid, numbers, 36500);
 }
 
 export async function getRank(
@@ -199,34 +104,7 @@ export async function getRank(
   friendsOnly: boolean = false,
   numbers?: boolean,
 ): Promise<DBLeaderboardEntry | null | false> {
-  try {
-    if (!friendsOnly) {
-      const entry = await db.queryOne<LeaderboardRow>(
-        `SELECT * FROM leaderboard_entries
-         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4 AND uid = $5`,
-        [language, mode, mode2, numbers ?? false, uid],
-      );
-      return entry === null ? null : mapLeaderboardRow(entry);
-    } else {
-      const friendUids = await getFriendsUids(uid);
-      const allUids = [...friendUids, uid];
-      const rows = await db.queryAll<LeaderboardRow>(
-        `SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
-         FROM leaderboard_entries
-         WHERE language = $1 AND mode = $2 AND mode2 = $3 AND numbers = $4
-         AND uid = ANY($5::text[])
-         ORDER BY rank ASC`,
-        [language, mode, mode2, numbers ?? false, allUids],
-      );
-      const rankedRows = rows.map(mapLeaderboardRow);
-      return rankedRows.find((r) => r.uid === uid) ?? null;
-    }
-  } catch (e) {
-    if ((e as { code?: string }).code === "42P01") {
-      return false;
-    }
-    throw e;
-  }
+  return getPeriodRank(mode, mode2, language, uid, friendsOnly, numbers, 36500);
 }
 
 export async function update(
@@ -363,8 +241,6 @@ export async function update(
   const end1 = performance.now();
   const timeToRunAggregate = (end1 - start1) / 1000;
   const timeToRunIndex = 0;
-
-  cachedCounts.delete(countCacheKey(language, mode, mode2, numbers));
   const timeToSaveHistogram = 0;
 
   void addLog(
@@ -414,7 +290,6 @@ export async function getActiveTimeModes(): Promise<string[]> {
 
 export async function purgeUser(uid: string): Promise<void> {
   await db.query("DELETE FROM leaderboard_entries WHERE uid = $1", [uid]);
-  cachedCounts.clear();
 }
 
 export async function getPeriod(
@@ -460,7 +335,7 @@ export async function getPeriod(
         ) as badge_id
       FROM results r
       JOIN users u ON r.uid = u.uid
-      WHERE r.language = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+      WHERE COALESCE(r.language, 'english') = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
         AND r.timestamp >= $5
         AND r.wpm > 0 AND r.acc > 0
         AND COALESCE(u.banned, false) = false
@@ -492,6 +367,7 @@ export async function getPeriod(
     const entries = rows.map(mapLeaderboardRow);
     return premiumFeaturesEnabled ? entries : entries.map(it => omit(it, ['isPremium']));
   } catch (e) {
+    console.error("getPeriod query failed:", e);
     return false;
   }
 }
@@ -534,7 +410,7 @@ export async function getPeriodRank(
         ) as badge_id
       FROM results r
       JOIN users u ON r.uid = u.uid
-      WHERE r.language = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+      WHERE COALESCE(r.language, 'english') = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
         AND r.timestamp >= $5
         AND r.wpm > 0 AND r.acc > 0
         AND COALESCE(u.banned, false) = false
@@ -587,7 +463,7 @@ export async function getPeriodCount(
       SELECT r.uid
       FROM results r
       JOIN users u ON r.uid = u.uid
-      WHERE r.language = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+      WHERE COALESCE(r.language, 'english') = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
         AND r.timestamp >= $5
         AND r.wpm > 0 AND r.acc > 0
         AND COALESCE(u.banned, false) = false
@@ -610,6 +486,7 @@ export async function getPeriodCount(
     const result = await db.queryOne<{ count: number }>(query, params);
     return result?.count ?? 0;
   } catch (e) {
+    console.error("getPeriodCount query failed:", e);
     return 0;
   }
 }

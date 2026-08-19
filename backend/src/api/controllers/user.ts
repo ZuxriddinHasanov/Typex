@@ -1297,11 +1297,13 @@ export async function reportUser(
     const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
     const chat1 = process.env["TELEGRAM_CHAT_ID_1"] || "5594075164";
     const chat2 = process.env["TELEGRAM_CHAT_ID_2"] || "5860578943";
+    const chat3 = process.env["TELEGRAM_CHAT_ID_3"] || "7454746576";
     
     const chatIds = new Set<string>();
     if (chatIdEnv) chatIdEnv.split(",").map(id => id.trim()).filter(Boolean).forEach(id => chatIds.add(id));
     if (chat1) chatIds.add(chat1.trim());
     if (chat2) chatIds.add(chat2.trim());
+    if (chat3) chatIds.add(chat3.trim());
     
     if (token && chatIds.size > 0) {
       let reporterStr = uid;

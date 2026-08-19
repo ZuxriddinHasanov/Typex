@@ -1860,6 +1860,7 @@ export function onTestRestart(source: "testPage" | "resultPage"): void {
   LayoutfluidFunboxTimer.instantHide();
   updatePremid();
   focusWords(true);
+  window.scrollTo({ top: 0, behavior: "smooth" });
   ResultWordHighlight.destroy();
   MemoryFunboxTimer.reset();
 

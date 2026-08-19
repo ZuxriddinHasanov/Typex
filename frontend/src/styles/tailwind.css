@@ -141,6 +141,9 @@
   }
 }
 
+main.focus {
+  overflow: hidden !important;
+}
 main.focus #typingTest {
   position: fixed !important;
   top: 50% !important;
@@ -148,9 +151,14 @@ main.focus #typingTest {
   transform: translate(-50%, -50%) !important;
   width: 100% !important;
   max-width: 1250px !important;
-  z-index: 50 !important;
-  padding: 2rem !important;
-  transition: none !important;
+  padding: 0 2rem;
+  z-index: 50;
+  animation: slideUpCenter 0.3s ease-out !important;
+}
+
+@keyframes slideUpCenter {
+  0% { transform: translate(-50%, -40%); opacity: 0; }
+  100% { transform: translate(-50%, -50%); opacity: 1; }
 }
 
 

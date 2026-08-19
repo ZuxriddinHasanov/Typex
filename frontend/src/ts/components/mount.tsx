@@ -27,6 +27,7 @@ import { AdminUserDetailPage } from "./pages/admin/AdminUserDetailPage";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
 import { LandingPage } from "./pages/landing/LandingPage";
 import { LeaderboardPage } from "./pages/leaderboard/LeaderboardPage";
+import { NotificationsPage } from "./pages/notifications/NotificationsPage";
 import { PrivacyPolicyPage } from "./pages/legal/PrivacyPolicyPage";
 import { SecurityPolicyPage } from "./pages/legal/SecurityPolicyPage";
 import { TermsOfServicePage } from "./pages/legal/TermsOfServicePage";
@@ -71,6 +72,7 @@ const components: Record<string, () => JSXElement> = {
   accountpage: () => <AccountPage />,
   loginpage: () => <LoginPage />,
   leaderboardpage: () => <LeaderboardPage />,
+  notificationspage: () => <NotificationsPage />,
   profilepage: () => <ProfilePage />,
   myprofile: () => <MyProfile />,
   modals: () => <Modals />,

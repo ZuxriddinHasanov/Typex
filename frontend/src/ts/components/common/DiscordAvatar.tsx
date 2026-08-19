@@ -14,6 +14,7 @@ export function DiscordAvatar(props: {
   avatar?: string | null;
   size?: number;
   class?: string;
+  imgClass?: string;
   fallbackIcon?: "user-circle" | "user";
 }): JSXElement {
   const cacheKey = (): string =>
@@ -98,7 +99,7 @@ export function DiscordAvatar(props: {
                   ? (props.avatar as string)
                   : `https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`
               }
-              class="col-start-1 row-start-1 h-full w-full rounded-full object-cover"
+              class={cn("col-start-1 row-start-1 h-full w-full rounded-full object-cover", props.imgClass)}
               onLoad={() => {
                 setAvatar(cacheKey(), true);
                 setShowSpinner(false);

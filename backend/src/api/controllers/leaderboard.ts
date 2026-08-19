@@ -130,64 +130,54 @@ function getDailyLeaderboardWithError(
 }
 
 export async function getDailyLeaderboard(
-  req: TypeUZRequest<GetDailyLeaderboardQuery>,
+  req: TypeUZRequest<GetLeaderboardQuery>,
 ): Promise<GetDailyLeaderboardResponse> {
-  const { page, pageSize, friendsOnly } = req.query;
+  const { language, mode, mode2, page, pageSize, friendsOnly, numbers } = req.query;
   const { uid } = req.ctx.decodedToken;
   const connectionsConfig = req.ctx.configuration.connections;
 
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig,
-  );
+  const friendsOnlyUid = getFriendsOnlyUid(uid, friendsOnly, connectionsConfig);
 
-  const dailyLeaderboard = getDailyLeaderboardWithError(
-    req.query,
-    req.ctx.configuration.dailyLeaderboards,
-  );
-
-  const results = await dailyLeaderboard.getResults(
-    page,
-    pageSize,
-    req.ctx.configuration.dailyLeaderboards,
+  const leaderboard = await LeaderboardsDAL.getPeriod(
+    mode, mode2, language, page, pageSize,
     req.ctx.configuration.users.premium.enabled,
-    friendUids,
+    friendsOnlyUid, numbers, 1
   );
+
+  if (leaderboard === false) {
+    throw new TypeUZError(503, "Leaderboard is currently updating.");
+  }
+
+  const count = await LeaderboardsDAL.getPeriodCount(mode, mode2, language, friendsOnlyUid, numbers, 1);
+  const normalizedLeaderboard = leaderboard.map((entry) => {
+    const publicEntry = { ...entry } as Record<string, unknown>;
+    delete publicEntry["_id"];
+    return publicEntry;
+  }) as never[];
 
   return new TypeUZResponse("Daily leaderboard retrieved", {
-    entries: results?.entries ?? [],
-    count: results?.count ?? 0,
-    minWpm: results?.minWpm ?? 0,
-    pageSize,
-  });
+    count, entries: normalizedLeaderboard, pageSize, minWpm: 0,
+  } as any);
 }
 
 export async function getDailyLeaderboardRank(
-  req: TypeUZRequest<GetDailyLeaderboardRankQuery>,
-): Promise<GetLeaderboardDailyRankResponse> {
-  const { friendsOnly } = req.query;
+  req: TypeUZRequest<GetLeaderboardRankQuery>,
+): Promise<GetLeaderboardRankResponse> {
+  const { language, mode, mode2, friendsOnly, numbers } = req.query;
   const { uid } = req.ctx.decodedToken;
   const connectionsConfig = req.ctx.configuration.connections;
 
-  const friendUids = await getFriendsUids(
-    uid,
-    friendsOnly === true,
-    connectionsConfig,
+  const data = await LeaderboardsDAL.getPeriodRank(
+    mode, mode2, language, uid,
+    getFriendsOnlyUid(uid, friendsOnly, connectionsConfig) !== undefined,
+    numbers, 1
   );
+  if (data === false) throw new TypeUZError(503, "Leaderboard is currently updating.");
+  if (data === null) return new TypeUZResponse("Rank retrieved", null);
 
-  const dailyLeaderboard = getDailyLeaderboardWithError(
-    req.query,
-    req.ctx.configuration.dailyLeaderboards,
-  );
-
-  const rank = await dailyLeaderboard.getRank(
-    uid,
-    req.ctx.configuration.dailyLeaderboards,
-    friendUids,
-  );
-
-  return new TypeUZResponse("Daily leaderboard rank retrieved", rank);
+  const publicEntry = { ...data } as Record<string, unknown>;
+  delete publicEntry["_id"];
+  return new TypeUZResponse("Rank retrieved", publicEntry as never);
 }
 
 export async function getWeeklyLeaderboard(

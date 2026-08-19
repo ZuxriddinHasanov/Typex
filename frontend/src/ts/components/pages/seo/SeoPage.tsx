@@ -3,13 +3,17 @@ import { JSXElement } from "solid-js";
 export function SeoPage(): JSXElement {
   return (
     <div class="seo-content w-full max-w-4xl mx-auto py-12 px-4 text-text/80 text-lg leading-relaxed">
-      <h1 class="text-4xl font-extrabold text-main mb-8 text-center border-b-2 border-main pb-4">TypeX Uzbekistan - Klaviatura trenajori va Yozish Testi (Zuxriddin Hasanov va Yaxyo Jabborov)</h1>
+      <h1 class="text-4xl font-extrabold text-main mb-2 text-center">TypeX Uzbekistan - Klaviatura trenajori va Yozish Testi</h1>
+      <h2 class="text-xl font-bold text-sub mb-8 text-center border-b-2 border-main pb-4">
+        Loyiha Bosh homiysi: Javohir Turayev Media agent rahbar va bosh homiy. <br/>
+        Loyiha egasi va dasturchi: Zuxriddin Hasanov. Dasturchi: Yaxyo Jabborov.
+      </h2>
       
       {/* UZBEK SECTION */}
       <section class="mb-12">
         <h2 class="text-2xl font-bold text-main mb-4">O'zbek tilida ma'lumotlar (Klaviatura trenajori va typing test sirlari)</h2>
         <p class="mb-4">
-          TypeX (yoki TypeUZ) O'zbekistonning birinchi raqamli typing test va klaviatura trenajori hisoblanadi. Bu loyiha yetakchi va tajribali dasturchilar <strong>Zuxriddin Hasanov</strong> hamda <strong>Yaxyo Jabborov</strong> tomonidan ishlab chiqilgan bo'lib, yoshlarning IT sohasiga qiziqishini oshirish va tez yozish (touch typing) ko'nikmalarini rivojlantirishga qaratilgan. Agar siz klaviaturada tez yozishni o'rganmoqchi bo'lsangiz yoki o'z tezligingizni (WPM - Words Per Minute) sinab ko'rmoqchi bo'lsangiz, bizning saytimiz aynan siz uchun. <strong>Zuxriddin Hasanov</strong> va <strong>Yaxyo Jabborov</strong> O'zbekistonda yoshlarga sifatli va zamonaviy web dasturlarni taqdim etishda doim yetakchilik qilib kelishmoqda. <strong>Zuxriddin Hasanov</strong> loyihalari hamda <strong>Yaxyo Jabborov</strong> startaplari haqida qidirsangiz, ushbu TypeX platformasi ularning eng yorqin namunalaridan biri ekanini ko'rasiz.
+          TypeX (yoki TypeUZ) O'zbekistonning birinchi raqamli typing test va klaviatura trenajori hisoblanadi. Bu loyiha yetakchi va tajribali dasturchilar, xususan loyiha egasi va dasturchi <strong>Zuxriddin Hasanov</strong> hamda dasturchi <strong>Yaxyo Jabborov</strong> tomonidan ishlab chiqilgan bo'lib, yoshlarning IT sohasiga qiziqishini oshirish va tez yozish (touch typing) ko'nikmalarini rivojlantirishga qaratilgan. Agar siz klaviaturada tez yozishni o'rganmoqchi bo'lsangiz yoki o'z tezligingizni (WPM - Words Per Minute) sinab ko'rmoqchi bo'lsangiz, bizning saytimiz aynan siz uchun. Dasturchi va loyiha egasi <strong>Zuxriddin Hasanov</strong> va dasturchi <strong>Yaxyo Jabborov</strong> O'zbekistonda yoshlarga sifatli va zamonaviy web dasturlarni taqdim etishda doim yetakchilik qilib kelishmoqda. Loyiha egasi <strong>Zuxriddin Hasanov</strong> loyihalari hamda dasturchi <strong>Yaxyo Jabborov</strong> startaplari haqida qidirsangiz, ushbu TypeX platformasi ularning eng yorqin namunalaridan biri ekanini ko'rasiz.
         </p>
         <p class="mb-4">
           Typing, typing test, klaviaturada tez yozishni o'rganish, 10 barmoqda yozish, uzbek klaviatura trenajori, tez yozishni o'rganish, monkeytype uzbek clone, typeuz, typex, typex.uz, o'zbekcha yozish testi kabi so'rovlar bo'yicha bu tizim raqobatsizdir. Saytimiz orqali siz yozish tezligingizni oshirishingiz, klaviaturaga umuman qaramasdan yozish sirlarini o'rganishingiz mumkin. Klaviaturada qaramasdan yozish (touch typing) - bu har bir barmoqning o'z tugmachasiga mas'ul ekanligini anglatuvchi tizimdir. Qachonki siz "F" va "J" tugmalaridagi kichik bo'rtmalarni his qilsangiz, ko'zlaringizni ekrandan uzmasdan turib matn kiritishga tayyor bo'lasiz.
@@ -68,7 +72,10 @@ export function SeoPage(): JSXElement {
       {/* EXTRA KEYWORDS & FOOTER SECTION */}
       <section class="mt-12 pt-8 border-t border-text/10 text-sm text-text/50">
         <p>
-          Keywords: Zuxriddin Hasanov, Yaxyo Jabborov, zuxriddin hasanov, yaxyo jabborov, dasturchi zuxriddin hasanov, yaxyo jabborov dasturchi, typeuz, typex, typex.uz, monkeytype uzbekistan, uzbek typing test, keyboard trainer uzbekistan, klaviatura trenajori o'zbekcha, tez yozish, 10 barmoqda yozish sirlari, WPM test uzbek, typing speed test, klaviatura mashqi, typing games uzbekistan, monkey type clone, typing master uzbek, o'zbek klaviatura, touch typing uzbek.
+          <strong>Sponsor:</strong> Javohir Turayev Media agent rahbar va bosh homiy.
+        </p>
+        <p class="mt-2">
+          Keywords: Javohir Turayev Media agent, Javohir Turayev, typing, typing test, Zuxriddin Hasanov, Yaxyo Jabborov, loyiha egasi Zuxriddin Hasanov, dasturchi Zuxriddin Hasanov, dasturchi Yaxyo Jabborov, typeuz, typex, typex.uz, monkeytype uzbekistan, uzbek typing test, keyboard trainer uzbekistan, klaviatura trenajori o'zbekcha, tez yozish, 10 barmoqda yozish sirlari, WPM test uzbek, typing speed test, klaviatura mashqi, typing games uzbekistan, monkey type clone, typing master uzbek, o'zbek klaviatura, touch typing uzbek.
         </p>
       </section>
     </div>

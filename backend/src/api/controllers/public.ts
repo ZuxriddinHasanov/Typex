@@ -211,11 +211,15 @@ export async function submitFeedback(
   const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
   const chat1 = process.env["TELEGRAM_CHAT_ID_1"] || "5594075164";
   const chat2 = process.env["TELEGRAM_CHAT_ID_2"] || "5860578943";
+  const chat3 = process.env["TELEGRAM_CHAT_ID_3"] || "7454746576";
   
   const chatIds = new Set<string>();
   if (chatIdEnv) chatIdEnv.split(",").map(id => id.trim()).filter(Boolean).forEach(id => chatIds.add(id));
   if (chat1) chatIds.add(chat1.trim());
   if (chat2) chatIds.add(chat2.trim());
+  if (chat3) chatIds.add(chat3.trim());
+    
+  console.log("Token:", token ? "exists" : "missing", "ChatIds:", Array.from(chatIds));
 
   if (token && chatIds.size > 0) {
     let userStr = "Mehmon";
@@ -223,9 +227,9 @@ export async function submitFeedback(
     if (uid) {
       try {
         const user = await UserDAL.getUser(uid, "submit feedback");
-        userStr = `${user.name} (${req.ctx?.decodedToken?.email ?? "Noma'lum email"})`;
+        userStr = `${user.name} (${req.ctx?.decodedToken?.email ?? "Noma'lum email"})\n*UID:* \`${uid}\``;
       } catch (e) {
-        userStr = "Mehmon";
+        userStr = `Mehmon\n*UID:* \`${uid}\``;
       }
     }
 
@@ -248,7 +252,7 @@ export async function submitFeedback(
         fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
           method: "POST",
           body: formData,
-        }).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
+        }).then(res => res.text().then(t => console.log(`Telegram sendPhoto res:`, t))).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
       } else {
         fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
           method: "POST",
@@ -260,10 +264,10 @@ export async function submitFeedback(
             text: message,
             parse_mode: "Markdown",
           }),
-        }).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
+        }).then(res => res.text().then(t => console.log(`Telegram sendMessage res:`, t))).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
       }
     }
   }
 
-  return new TypeUZResponse("Feedback submitted", { success: true });
+  return new TypeUZResponse("Feedback submitted", { success: true, debug: { token: !!token, chatIds: Array.from(chatIds) } } as any);
 }

@@ -102,6 +102,7 @@ const pages = {
   privacy: solidPage("privacy"),
   terms: solidPage("terms"),
   security: solidPage("security"),
+  notifications: solidPage("notifications"),
   leaderboards: solidPage("leaderboards", {
     urlParamsSchema: LeaderboardUrlParamsSchema,
     loadingOptions: {

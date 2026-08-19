@@ -23,6 +23,7 @@ export type PageName =
   | "adminAds"
   | "adminSettings"
   | "onboarding"
+  | "notifications"
   | "profile"
   | "profileSearch"
   | "404"

@@ -106,7 +106,7 @@ export function AboutPage(): JSXElement {
         <div class="mt-6 space-y-4 text-base leading-relaxed text-sub">
           <p>
             <span class="font-semibold text-text">TypeX.uz</span> 2024-yilda
-            <span class="font-semibold text-text"> Zuxriddin Hasanov </span>
+            <span class="font-semibold text-text"> loyiha egasi va dasturchi Zuxriddin Hasanov, dasturchi Yaxyo Jabborov </span>
             tomonidan tashkil etilgan. Maqsad — O&apos;zbekiston yoshlariga
             klaviaturada tez va to&apos;g&apos;ri yozish ko&apos;nikmasini
             shakllantirishda yordam berish.

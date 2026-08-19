@@ -75,6 +75,12 @@ const routes: Route[] = [
     },
   },
   {
+    path: "/notifications",
+    load: async (_params, options) => {
+      await PageController.change("notifications", options);
+    },
+  },
+  {
     path: "/leaderboards",
     load: async (_params, options) => {
       await PageController.change("leaderboards", options);

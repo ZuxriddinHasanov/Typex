@@ -23,6 +23,7 @@ import bcrypt from "bcrypt";
 import { devGet, devSet } from "./utils/dev-store";
 import { isDevEnvironment } from "./utils/misc";
 import { assertJwtConfigured } from "./utils/jwt";
+import { startTelegramPolling } from "./utils/telegram-polling";
 
 const ADMIN_CRED_KEY = "admin_credentials";
 
@@ -165,6 +166,13 @@ async function bootServer(port: number): Promise<Server> {
           Logger.error(`Indicies setup error: ${(err as Error).message}`);
         }
       })();
+    }
+
+    // Start telegram bot polling
+    try {
+      startTelegramPolling();
+    } catch (e) {
+      Logger.error(`Telegram polling error: ${(e as Error).message}`);
     }
 
     return server;

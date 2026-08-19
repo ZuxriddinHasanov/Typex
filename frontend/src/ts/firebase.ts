@@ -184,6 +184,7 @@ export function getAuthenticatedUser(): User | null {
       uid: devAuth.uid,
       emailVerified: true,
       getIdToken: async () => "",
+      providerData: [],
     } as unknown as User;
   }
   return null;

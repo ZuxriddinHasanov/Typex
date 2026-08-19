@@ -156,6 +156,14 @@ function ActionButtons(props: {
           </>
         }
       >
+        <a
+          href="/notifications"
+          router-link
+          class="group flex items-center gap-2 rounded-md bg-main/10 px-6 py-2.5 text-sm font-bold text-main transition-colors hover:bg-main/20 hover:scale-[1.02]"
+        >
+          <Fa icon="fa-bell" />
+          <span>Bildirishnomalar</span>
+        </a>
         <button
           type="button"
           onClick={() => {
@@ -308,7 +316,8 @@ function AvatarAndName(props: {
             }
             fallback={
               <DiscordAvatar
-                class="relative h-28 w-28 sm:h-36 sm:w-36 rounded-full border-2 border-sub/10 object-cover shadow-sm"
+                class="relative h-28 w-28 sm:h-36 sm:w-36 text-[6rem] sm:text-[8rem] rounded-full border-2 border-sub/20 bg-sub-alt/10 shadow-sm overflow-hidden"
+                imgClass="scale-[1.25]"
                 size={256}
                 avatar={props.profile.avatar}
                 discordAvatar={props.profile.discordAvatar}

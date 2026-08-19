@@ -60,7 +60,6 @@ export function buildDbResult(
   if (!ce.lazyMode) delete res.lazyMode;
   if (ce.difficulty === "normal") delete res.difficulty;
   if (ce.funbox.length === 0) delete res.funbox;
-  if (ce.language === "english") delete res.language;
   if (!ce.numbers) delete res.numbers;
   if (!ce.punctuation) delete res.punctuation;
   if (ce.mode !== "quote") delete res.quoteLength;

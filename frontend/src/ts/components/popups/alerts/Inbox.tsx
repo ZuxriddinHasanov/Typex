@@ -10,7 +10,6 @@ import {
   useInboxQuery,
 } from "../../../collections/inbox";
 import { updateInboxUnreadSize } from "../../../db";
-import { getModalVisibility } from "../../../states/modals";
 import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
@@ -20,9 +19,7 @@ import { LoadingCircle } from "../../common/LoadingCircle";
 import { AlertsSection } from "./AlertsSection";
 
 export function Inbox(): JSXElement {
-  const inboxQuery = useInboxQuery(
-    () => getModalVisibility("Alerts")?.visible ?? false,
-  );
+  const inboxQuery = useInboxQuery(() => true);
 
   createEffect(() => {
     const items = inboxQuery();

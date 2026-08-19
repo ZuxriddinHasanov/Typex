@@ -150,7 +150,7 @@ const authenticationMemos = Object.fromEntries(
       const user = getAuthenticatedUserReactive();
       if (user === null) return undefined;
       const result = {
-        isInUse: user.providerData.some((p) => p.providerId === providerId),
+        isInUse: (user.providerData || []).some((p) => p.providerId === providerId),
         hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
       };
 
@@ -882,9 +882,9 @@ export function isUsingAuthentication(authMethod: AuthMethod): boolean {
   }
   const providerId = getProviderId(authMethod);
   return (
-    getAuthenticatedUser()?.providerData.some(
+    (getAuthenticatedUser()?.providerData || []).some(
       (p) => p.providerId === providerId,
-    ) ?? false
+    )
   );
 }
 
