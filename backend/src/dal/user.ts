@@ -95,13 +95,13 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
   return {
     uid: r["uid"] as string,
     name: r["name"] as string,
-    firstName: r["first_name"] as string | undefined,
-    lastName: r["last_name"] as string | undefined,
+    firstName: (r["first_name"] as string) ?? undefined,
+    lastName: (r["last_name"] as string) ?? undefined,
     email: r["email"] as string,
     addedAt: r["added_at"] as number,
-    gender: r["gender"] as Gender | undefined,
-    age: r["age"] as number | undefined,
-    avatar: r["avatar"] as string | undefined,
+    gender: (r["gender"] as Gender) ?? undefined,
+    age: (r["age"] as number) ?? undefined,
+    avatar: (r["avatar"] as string) ?? undefined,
     personalBests: (parseJson(r["personal_bests"]) as
       | PersonalBests
       | undefined) ?? {
@@ -130,8 +130,8 @@ function userRowToDBUser(row: Record<string, unknown>): DBUser {
         }
       | undefined,
     xp: (r["xp"] as number) ?? 0,
-    discordId: r["discord_id"] as string | undefined,
-    discordAvatar: r["discord_avatar"] as string | undefined,
+    discordId: (r["discord_id"] as string) ?? undefined,
+    discordAvatar: (r["discord_avatar"] as string) ?? undefined,
     tags,
     profileDetails: parseJson(r["profile_details"]) as
       | UserProfileDetails
@@ -1681,8 +1681,8 @@ export async function getFriends(uid: string): Promise<Friend[]> {
     const friend: Friend = {
       uid: r["uid"] as string,
       name: r["name"] as string,
-      discordId: r["discord_id"] as string | undefined,
-      discordAvatar: r["discord_avatar"] as string | undefined,
+      discordId: (r["discord_id"] as string) ?? undefined,
+      discordAvatar: (r["discord_avatar"] as string) ?? undefined,
       startedTests: r["started_tests"] as number | undefined,
       completedTests: r["completed_tests"] as number | undefined,
       timeTyping: r["time_typing"] as number | undefined,
