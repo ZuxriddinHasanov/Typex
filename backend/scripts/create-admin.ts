@@ -44,7 +44,7 @@ async function main(): Promise<void> {
 
   const existing = await client.query("SELECT * FROM admin_credentials WHERE username = $1", [adminUsername]);
 
-  if (existing.rowCount && existing.rowCount > 0) {
+  if (existing.rowCount !== null && existing.rowCount !== undefined && existing.rowCount > 0) {
     console.log(`Admin account "${adminUsername}" already exists.`);
     console.log("To reset, delete the row from admin_credentials first.");
     await client.end();

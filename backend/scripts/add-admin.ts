@@ -31,7 +31,7 @@ async function main(): Promise<void> {
   await client.connect();
 
   const existing = await client.query("SELECT * FROM admin_uids WHERE uid = $1", [uid]);
-  if (existing.rowCount && existing.rowCount > 0) {
+  if (existing.rowCount !== null && existing.rowCount !== undefined && existing.rowCount > 0) {
     console.log(`User "${uid}" is already an admin.`);
     await client.end();
     return;
