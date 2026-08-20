@@ -113,6 +113,11 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.verified = userData.verified;
     snap.discordId = userData.discordId;
     snap.discordAvatar = userData.discordAvatar;
+    snap.avatar = userData.avatar;
+    snap.firstName = userData.firstName;
+    snap.lastName = userData.lastName;
+    snap.gender = userData.gender;
+    snap.age = userData.age;
     snap.needsToChangeName = userData.needsToChangeName;
     snap.typingStats = {
       timeTyping: userData.timeTyping ?? 0,
