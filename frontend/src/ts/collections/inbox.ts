@@ -36,6 +36,8 @@ export { maxMailboxSize };
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
 };
+let lastKnownInboxIds = new Set<string>();
+
 const inboxCollection = createCollection(
   queryCollectionOptions({
     staleTime: 1000 * 60 * 5,
@@ -59,13 +61,43 @@ const inboxCollection = createCollection(
         );
         throw new Error(`Error fetching user inbox: ${response.body.message}`);
       }
+
+      const data = response.body.data.inbox.map(addStatus);
+
+      if (lastKnownInboxIds.size > 0) {
+        let hasNew = false;
+        for (const item of data) {
+          if (!lastKnownInboxIds.has(item.id)) {
+            hasNew = true;
+          }
+        }
+        if (hasNew) {
+          showSuccessNotification(
+            "Sizga yangi xabar keldi! Inboxni tekshiring.",
+            {
+              customTitle: "Yangi xabar",
+              customIcon: "envelope",
+              durationMs: 8000,
+            },
+          );
+        }
+      }
+      lastKnownInboxIds.clear();
+      data.forEach((item) => lastKnownInboxIds.add(item.id));
+
       setMaxMailboxSize(response.body.data.maxMail);
-      return response.body.data.inbox.map(addStatus);
+      return data;
     },
     queryClient,
     getKey: (it) => it.id,
   }),
 );
+
+setInterval(() => {
+  if (isAuthenticated()) {
+    refetchInboxCollection().catch(console.error);
+  }
+}, 15000);
 
 export async function refetchInboxCollection(): Promise<void> {
   await inboxCollection.utils.refetch();

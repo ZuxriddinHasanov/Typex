@@ -1131,7 +1131,7 @@ export async function getProfile(
   let lastResult: Record<string, unknown> | null = null;
   try {
     const lr = await getLastResult(user.uid);
-    if (lr) {
+    if (lr !== null) {
       lastResult = {
         _id: lr._id,
         wpm: lr.wpm,
@@ -1293,37 +1293,47 @@ export async function reportUser(
 
   // Send Telegram notification
   try {
-    const token = process.env["TELEGRAM_BOT_TOKEN"] || "8795683362:AAF3aOEI11aSlj9jXKo1Czc0z8P8iEgttEg";
+    const token =
+      process.env["TELEGRAM_BOT_TOKEN"] ??
+      "8795683362:AAF3aOEI11aSlj9jXKo1Czc0z8P8iEgttEg";
     const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
-    const chat1 = process.env["TELEGRAM_CHAT_ID_1"] || "5594075164";
-    const chat2 = process.env["TELEGRAM_CHAT_ID_2"] || "5860578943";
-    const chat3 = process.env["TELEGRAM_CHAT_ID_3"] || "7454746576";
-    
+    const chat1 = process.env["TELEGRAM_CHAT_ID_1"] ?? "5594075164";
+    const chat2 = process.env["TELEGRAM_CHAT_ID_2"] ?? "5860578943";
+    const chat3 = process.env["TELEGRAM_CHAT_ID_3"] ?? "7454746576";
+
     const chatIds = new Set<string>();
-    if (chatIdEnv) chatIdEnv.split(",").map(id => id.trim()).filter(Boolean).forEach(id => chatIds.add(id));
-    if (chat1) chatIds.add(chat1.trim());
-    if (chat2) chatIds.add(chat2.trim());
-    if (chat3) chatIds.add(chat3.trim());
-    
-    if (token && chatIds.size > 0) {
+    if (chatIdEnv !== undefined && chatIdEnv !== "") {
+      chatIdEnv
+        .split(",")
+        .map((id) => id.trim())
+        .filter((id) => id !== "")
+        .forEach((id) => chatIds.add(id));
+    }
+    if (chat1 !== "") chatIds.add(chat1.trim());
+    if (chat2 !== "") chatIds.add(chat2.trim());
+    if (chat3 !== "") chatIds.add(chat3.trim());
+
+    if (token !== "" && chatIds.size > 0) {
       let reporterStr = uid;
       try {
         const reporter = await UserDAL.getUser(uid, "report user");
-        reporterStr = `${reporter.name} (${reporter.email || "Noma'lum"})`;
-      } catch (e) {}
+        reporterStr = `${reporter.name} (${reporter.email ?? "Noma'lum"})`;
+      } catch (e: unknown) {}
 
       let reportedStr = uidToReport;
       try {
         const reported = await UserDAL.getUser(uidToReport, "report user");
-        reportedStr = `${reported.name} (${reported.email || "Noma'lum"})`;
-      } catch (e) {}
+        reportedStr = `${reported.name} (${reported.email ?? "Noma'lum"})`;
+      } catch (e: unknown) {}
 
-      const msg = `🚨 *Yangi Shikoyat (Foydalanuvchi)*\n\n` +
-                  `*Kimdan:* ${reporterStr}\n` +
-                  `*Kim ustidan:* ${reportedStr}\n` +
-                  `*Sabab:* ${reason}\n` +
-                  `*Izoh:* ${comment || "Yo'q"}`;
-      
+      const msg =
+        `🚩 *Yangi Shikoyat (Foydalanuvchi)*\n\n` +
+        `*Kimdan:* ${reporterStr}\n` +
+        `*UID:* \`${uid}\`\n` +
+        `*Kim ustidan:* ${reportedStr}\n` +
+        `*Sabab:* ${reason}\n` +
+        `*Izoh:* ${comment !== "" ? comment : "Yo'q"}`;
+
       for (const chatId of chatIds) {
         fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
           method: "POST",
@@ -1331,12 +1341,14 @@ export async function reportUser(
           body: JSON.stringify({
             chat_id: chatId,
             text: msg,
-            parse_mode: "Markdown"
-          })
-        }).catch(err => console.error(`Telegram API error for chat ${chatId}:`, err));
+            parse_mode: "Markdown",
+          }),
+        }).catch((err: unknown) =>
+          console.error(`Telegram API error for chat ${chatId}:`, err),
+        );
       }
     }
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Failed to send Telegram notification:", e);
   }
 
@@ -1395,22 +1407,36 @@ async function getAllTimeLbs(uid: string): Promise<AllTimeLbs> {
   for (const mode2 of modes2) timeLbs[mode2] = {};
 
   try {
-    const userRanks = await db.queryAll<{ mode2: string, language: string, rank: number }>(
+    const userRanks = await db.queryAll<{
+      mode2: string;
+      language: string;
+      rank: number;
+    }>(
       `SELECT mode2, language, rank FROM leaderboard_entries WHERE uid = $1 AND mode = 'time' AND numbers = false`,
-      [uid]
+      [uid],
     );
 
-    await Promise.all(modes2.map(async (mode2) => {
-      await Promise.all(languages.map(async (language) => {
-        const match = userRanks.find(r => r.mode2 === mode2 && r.language === language);
-        if (match && match.rank > 0) {
-          const count = await LeaderboardsDAL.getCount("time", mode2, language);
-          if (timeLbs[mode2]) {
-            timeLbs[mode2][language] = { rank: match.rank, count };
-          }
-        }
-      }));
-    }));
+    await Promise.all(
+      modes2.map(async (mode2) => {
+        await Promise.all(
+          languages.map(async (language) => {
+            const match = userRanks.find(
+              (r) => r.mode2 === mode2 && r.language === language,
+            );
+            if (match && match.rank > 0) {
+              const count = await LeaderboardsDAL.getCount(
+                "time",
+                mode2,
+                language,
+              );
+              if (timeLbs[mode2]) {
+                timeLbs[mode2][language] = { rank: match.rank, count };
+              }
+            }
+          }),
+        );
+      }),
+    );
   } catch (e) {
     // ignore
   }
