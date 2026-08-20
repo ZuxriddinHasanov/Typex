@@ -33,7 +33,7 @@ if (urlParams.has("auth_token")) {
   const uid = urlParams.get("auth_uid");
   const email = urlParams.get("auth_email");
   const name = urlParams.get("auth_name");
-  if (token && uid && email && name) {
+  if (token !== null && uid !== null && email !== null && name !== null) {
     setStoredToken(token);
     setStoredUser({ uid, email, name });
     // Clean up URL without reloading

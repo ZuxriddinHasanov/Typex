@@ -21,12 +21,12 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
       }
       
       // Fetch basic user list and match the user for admin metadata
-      let adminData = null;
+      let adminData: { name?: string, uid?: string, email?: string, lastLoginAt?: number } | null = null;
       try {
         // Just search by uid
         const allUsers = await Ape.admin.searchUsers({ query: { q: props.uid } });
         if (allUsers.status === 200) {
-          adminData = (allUsers.body.data as any[]).find(u => u.uid === props.uid);
+          adminData = (allUsers.body.data as { name?: string, uid?: string, email?: string, lastLoginAt?: number }[]).find(u => u.uid === props.uid) ?? null;
         }
       } catch {
         /* ignore */
@@ -34,14 +34,14 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
       
       return { pub: pubData, admin: adminData };
     },
-    enabled: !!props.uid,
+    enabled: props.uid !== undefined && props.uid !== "",
   }));
 
   return (
     <Page id="adminUserDetail">
       <AdminLayout title="Foydalanuvchi haqida malumot">
         <Show
-          when={!userQuery.isLoading && userQuery.data}
+          when={!userQuery.isLoading && userQuery.data !== undefined}
           fallback={
             <div class="flex h-64 items-center justify-center">
               <Fa icon="fa-circle-notch" class="animate-spin text-4xl text-main" />
@@ -58,7 +58,7 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
             <div class="overflow-hidden rounded-3xl border border-sub/10 bg-bg/80 p-8 shadow-2xl backdrop-blur-xl">
               <div class="flex items-start gap-6">
                 <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-main/30 to-main/5 text-4xl font-black text-main shadow-inner ring-1 ring-main/20">
-                  {userQuery.data?.admin?.name?.charAt(0).toUpperCase() || "?"}
+                  {(userQuery.data?.admin?.name !== undefined && userQuery.data.admin.name !== "") ? userQuery.data.admin.name.charAt(0).toUpperCase() : "?"}
                 </div>
                 <div class="flex flex-col gap-2">
                   <h1 class="text-3xl font-black text-text">{userQuery.data?.admin?.name}</h1>
@@ -71,7 +71,7 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
                 <div class="rounded-2xl border border-sub/10 bg-sub-alt/10 p-5">
                   <span class="block text-xs font-bold text-sub uppercase tracking-wider">Tizimga kirish</span>
                   <span class="mt-2 block text-xl font-black text-text">
-                    {userQuery.data?.admin?.lastLoginAt ? new Date(userQuery.data.admin.lastLoginAt).toLocaleDateString() : "—"}
+                    {userQuery.data?.admin?.lastLoginAt !== undefined && userQuery.data.admin.lastLoginAt !== null ? new Date(userQuery.data.admin.lastLoginAt).toLocaleDateString() : "—"}
                   </span>
                 </div>
                 <div class="rounded-2xl border border-sub/10 bg-sub-alt/10 p-5">

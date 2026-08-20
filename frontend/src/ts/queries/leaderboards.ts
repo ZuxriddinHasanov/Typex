@@ -47,7 +47,7 @@ export const getLeaderboardQueryOptions = (
 
       let request;
 
-      if (options.type === "weekly" && !options.mode) {
+      if (options.type === "weekly" && options.mode === undefined) {
         request = Ape.leaderboards.getWeeklyXp({
           query: {
             ...baseQuery,
@@ -112,7 +112,7 @@ export const getRankQueryOptions = (options: Selection) =>
     queryKey: queryKeys.rank(options),
     queryFn: async () => {
       let request;
-      if (options.type === "weekly" && !options.mode) {
+      if (options.type === "weekly" && options.mode === undefined) {
         request = Ape.leaderboards.getWeeklyXpRank({
           query: {
             friendsOnly: options.friendsOnly ? true : undefined,
