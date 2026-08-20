@@ -8,13 +8,12 @@ export function AboutPage(): JSXElement {
     <main class="mx-auto mt-16 flex max-w-7xl flex-col gap-16 px-6 pb-24">
       {/* Hero */}
       <section id="hero" class="text-center" aria-label="Loyiha haqida">
-        <h1 class="text-4xl font-extrabold tracking-tight text-text sm:text-5xl">
+        <h1 class="mb-6 text-4xl font-extrabold tracking-tight text-text sm:text-5xl">
           TypeX<span class="text-main">.uz</span>
         </h1>
         <p class="mx-auto max-w-2xl text-lg leading-relaxed text-sub">
           <span class="font-semibold text-text">TypeX.uz</span> &mdash;
-          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. Asoschi
-          Zuxriddin Hasanov tomonidan ishlab chiqilgan ushbu platformada
+          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. Ushbu platformada
           O&apos;zbek, Ingliz va Rus tillarida yozish tezligingizni sinab
           ko&apos;ring, natijalaringizni AI yordamida tahlil qiling va reytingda
           yuksaling.
@@ -106,8 +105,7 @@ export function AboutPage(): JSXElement {
         <div class="mt-6 space-y-4 text-base leading-relaxed text-sub">
           <p>
             <span class="font-semibold text-text">TypeX.uz</span> 2024-yilda
-            <span class="font-semibold text-text"> loyiha egasi va dasturchi Zuxriddin Hasanov, dasturchi Yaxyo Jabborov </span>
-            tomonidan tashkil etilgan. Maqsad — O&apos;zbekiston yoshlariga
+            tashkil etilgan. Maqsad &mdash; O&apos;zbekiston yoshlariga
             klaviaturada tez va to&apos;g&apos;ri yozish ko&apos;nikmasini
             shakllantirishda yordam berish.
           </p>
