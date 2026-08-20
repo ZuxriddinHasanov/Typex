@@ -150,7 +150,9 @@ const authenticationMemos = Object.fromEntries(
       const user = getAuthenticatedUserReactive();
       if (user === null) return undefined;
       const result = {
-        isInUse: (user.providerData || []).some((p) => p.providerId === providerId),
+        isInUse: (user.providerData ?? []).some(
+          (p) => p.providerId === providerId,
+        ),
         hasAdditionalAuthMethods: hasAdditionalAuthMethods(authMethod),
       };
 
@@ -226,6 +228,10 @@ export async function loadUser(_user: UserType): Promise<void> {
     signOut();
     return;
   }
+  import("./collections/results")
+    .then((m) => m.refetchResultsCollection())
+    .catch(console.error);
+
   authEvent.dispatch({ type: "snapshotUpdated", data: { isInitial: true } });
 }
 
@@ -238,8 +244,10 @@ export async function onAuthStateChanged(
   let userPromise: Promise<void> = Promise.resolve();
 
   if (authInitialisedAndConnected) {
-    console.debug(`auth state changed, user ${user ? "true" : "false"}`);
-    if (user) {
+    console.debug(
+      `auth state changed, user ${user !== null ? "true" : "false"}`,
+    );
+    if (user !== null) {
       setUserId(user.uid);
       userPromise = loadUser(user);
     } else {
@@ -286,6 +294,14 @@ export async function signInWithProvider(
   authMethod: AuthMethod,
   options: { rememberMe: boolean },
 ): Promise<AuthResult> {
+  if (authMethod === "google") {
+    return signInWithGooglePopup(options.rememberMe);
+  }
+
+  if (authMethod === "github") {
+    return signInWithGitHubPopup(options.rememberMe);
+  }
+
   if (Auth !== undefined) {
     const provider = getAuthProvider(authMethod);
     if (provider === undefined) {
@@ -302,14 +318,6 @@ export async function signInWithProvider(
       return { success: false, message: error.message };
     }
     return { success: true };
-  }
-
-  if (authMethod === "google") {
-    return signInWithGooglePopup(options.rememberMe);
-  }
-
-  if (authMethod === "github") {
-    return signInWithGitHubPopup(options.rememberMe);
   }
 
   return { success: false, message: `Unsupported auth method: ${authMethod}` };
@@ -354,8 +362,9 @@ async function signInWithGooglePopup(rememberMe: boolean): Promise<AuthResult> {
                 "Google OAuth (dev mode): Test emailingizni kiriting:",
                 "user@gmail.com",
               );
-              if (devEmail) {
-                const backendUrl = (await import("virtual:env-config")).envConfig.backendUrl;
+              if (devEmail !== null && devEmail !== "") {
+                const backendUrl = (await import("virtual:env-config"))
+                  .envConfig.backendUrl;
                 try {
                   const res = await fetch(`${backendUrl}/auth/google`, {
                     method: "POST",
@@ -375,7 +384,11 @@ async function signInWithGooglePopup(rememberMe: boolean): Promise<AuthResult> {
                     };
                     message?: string;
                   };
-                  if (json.data?.token) {
+                  if (
+                    json.data !== undefined &&
+                    json.data.token !== undefined &&
+                    json.data.token !== ""
+                  ) {
                     setStoredToken(json.data.token, rememberMe);
                     setStoredUser({
                       uid: json.data.uid,
@@ -881,10 +894,8 @@ export function isUsingAuthentication(authMethod: AuthMethod): boolean {
     return authMethod === "password";
   }
   const providerId = getProviderId(authMethod);
-  return (
-    (getAuthenticatedUser()?.providerData || []).some(
-      (p) => p.providerId === providerId,
-    )
+  return (getAuthenticatedUser()?.providerData ?? []).some(
+    (p) => p.providerId === providerId,
   );
 }
 

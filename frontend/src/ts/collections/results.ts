@@ -24,7 +24,6 @@ import { queryOptions } from "@tanstack/solid-query";
 import { Accessor, createMemo } from "solid-js";
 import Ape from "../ape";
 import { SnapshotResult } from "../constants/default-snapshot";
-import { createEffectOn } from "../hooks/effects";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
@@ -714,11 +713,9 @@ export async function waitForResultsReady(): Promise<void> {
 /**
  *
  */
-createEffectOn(isAuthenticated, (hasUser) => {
-  if (hasUser) {
-    void resultsCollection.utils.refetch();
-  }
-});
+export function refetchResultsCollection(): void {
+  void resultsCollection.utils.refetch();
+}
 
 function getResults(): SnapshotResult<Mode>[] {
   return [...resultsCollection.values()];

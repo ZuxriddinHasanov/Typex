@@ -338,13 +338,12 @@ router.post(
   },
 );
 
-export async function verifyGoogleToken(
-  token: string,
-): Promise<{
+export async function verifyGoogleToken(token: string): Promise<{
   email: string;
   name: string;
   firstName?: string;
   lastName?: string;
+  avatar?: string;
 } | null> {
   try {
     let resp = await fetch(
@@ -366,6 +365,7 @@ export async function verifyGoogleToken(
     const name = payload["name"] as string | undefined;
     const firstName = payload["given_name"] as string | undefined;
     const lastName = payload["family_name"] as string | undefined;
+    const avatar = payload["picture"] as string | undefined;
     const emailVerified = (payload["email_verified"] ??
       payload["verified_email"]) as string | boolean | undefined;
 
@@ -382,6 +382,7 @@ export async function verifyGoogleToken(
       name: name ?? email.split("@")[0] ?? "google_user",
       firstName,
       lastName,
+      avatar,
     };
   } catch {
     return null;
@@ -430,7 +431,7 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
       return;
     }
 
-    const { email, name } = googleInfo;
+    const { email, name, avatar } = googleInfo;
 
     let user = await findUserByEmail(email);
 
@@ -465,12 +466,31 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
         uid,
         undefined,
         undefined,
-        undefined,
+        avatar,
         firstName,
         lastName,
       );
       await saveUserMeta({ uid, email, name: username });
       user = await findUserByEmail(email);
+    } else {
+      // User exists, but maybe they don't have an avatar yet
+      // UserDAL.findUserByEmail returns partial data for custom auth checking.
+      // Let's get the full DB user just to check avatar.
+      if (avatar !== undefined && avatar !== "") {
+        const fullUser = await UserDAL.getUser(
+          user.uid,
+          "google login avatar check",
+        );
+        if (
+          fullUser !== null &&
+          fullUser !== undefined &&
+          (fullUser.avatar === undefined ||
+            fullUser.avatar === "" ||
+            fullUser.avatar === null)
+        ) {
+          await UserDAL.updateProfileDetails(user.uid, { avatar });
+        }
+      }
     }
 
     if (user === null) {
