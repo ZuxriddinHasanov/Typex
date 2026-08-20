@@ -83,7 +83,10 @@ export function DiscordAvatar(props: {
         when={isIconAvatar()}
         fallback={
           <Show
-            when={isImageAvatar() || showDiscordAvatar()}
+            when={
+              (isImageAvatar() && avatar[cacheKey()] !== false) ||
+              showDiscordAvatar()
+            }
             fallback={fallback()}
           >
             <Show when={showSpinner()}>
@@ -100,7 +103,7 @@ export function DiscordAvatar(props: {
                   : `https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`
               }
               class={cn("col-start-1 row-start-1 h-full w-full rounded-full object-cover", props.imgClass)}
-              referrerpolicy="no-referrer"
+              referrerPolicy="no-referrer"
               onLoad={() => {
                 setAvatar(cacheKey(), true);
                 setShowSpinner(false);

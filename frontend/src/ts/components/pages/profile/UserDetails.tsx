@@ -316,7 +316,7 @@ function AvatarAndName(props: {
             }
             fallback={
               <DiscordAvatar
-                class="relative h-28 w-28 sm:h-36 sm:w-36 text-[6rem] sm:text-[8rem] rounded-full border-2 border-sub/20 bg-sub-alt/10 shadow-sm overflow-hidden"
+                class="relative h-28 w-28 sm:h-36 sm:w-36 text-[6rem] sm:text-[8rem] text-main rounded-full border-2 border-sub/20 bg-sub-alt/10 shadow-sm overflow-hidden"
                 imgClass="scale-[1.25]"
                 size={256}
                 avatar={props.profile.avatar}
