@@ -94,14 +94,13 @@ const sections = [
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>
-          TypeUZ ma'lumotlaringizni MongoDB ma'lumotlar bazasida xavfsiz
-          saqlaydi. Ma'lumotlar xavfsizligini ta'minlash uchun:
+          TypeUZ ma'lumotlaringizni PostgreSQL ma'lumotlar bazasida xavfsiz
+          saqlaydi. Tizim yozish tezligi, test tarixi, XP va tangalarni (🍌)
+          shifrlangan holda saqlaydi. Barcha to'lov va maxfiy ma'lumotlar
+          (masalan, parollar) hash qilingan holatda saqlanadi.
         </p>
         <ul class="list-inside list-disc space-y-1.5 pl-2">
-          <li>
-            Parollar hech qachon ochiq holda saqlanmaydi (bcrypt bilan
-            xeshlanadi)
-          </li>
+          <li>bcrypt bilan xeshlanadi</li>
           <li>SSL/TLS orqali shifrlangan ulanish</li>
           <li>Muntazam xavfsizlik auditi</li>
           <li>Ruxsatsiz kirishdan himoya qilish tizimlari</li>

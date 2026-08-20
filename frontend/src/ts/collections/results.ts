@@ -224,10 +224,9 @@ const resultsCollection = createCollection(
     queryFn: async () => {
       const tagIds = await getTagsOnce();
       const knownTagIds = new Set([...tagIds.map((it) => it._id)]);
-      //const options = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
 
       const response = await Ape.results.get({
-        //query: { limit: options.limit },
+        query: { limit: 1000 },
       });
 
       if (response.status !== 200) {

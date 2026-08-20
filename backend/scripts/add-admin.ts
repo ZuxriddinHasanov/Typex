@@ -4,16 +4,14 @@
  * Usage:
  *   pnpm tsx backend/scripts/add-admin.ts <uid>
  *
- * The <uid> is the user's unique ID from the "users" MongoDB collection.
- * To find your uid, query the database:
- *   db.users.findOne({ email: "your@email.com" }, { uid: 1 })
+ * The <uid> is the user's unique ID from the "users" PostgreSQL table.
  *
- * Environment variables (same as main app):
- *   DB_URI, DB_NAME, DB_USERNAME, DB_PASSWORD, DB_AUTH_MECHANISM, DB_AUTH_SOURCE
+ * Environment variables:
+ *   DATABASE_URL
  */
 
 import "dotenv/config";
-import { MongoClient } from "mongodb";
+import { Client } from "pg";
 
 const uid = process.argv[2];
 if (uid === undefined || uid === "") {
@@ -22,33 +20,26 @@ if (uid === undefined || uid === "") {
 }
 
 async function main(): Promise<void> {
-  const { DB_URI, DB_NAME, DB_USERNAME, DB_PASSWORD } = process.env;
+  const { DATABASE_URL } = process.env;
 
-  if (DB_URI === undefined || DB_URI === "" || DB_NAME === undefined || DB_NAME === "") {
-    console.error("DB_URI and DB_NAME environment variables are required.");
+  if (DATABASE_URL === undefined || DATABASE_URL === "") {
+    console.error("DATABASE_URL environment variable is required.");
     process.exit(1);
   }
 
-  const auth =
-    DB_USERNAME !== undefined && DB_USERNAME !== "" &&
-    DB_PASSWORD !== undefined && DB_PASSWORD !== ""
-      ? { username: DB_USERNAME, password: DB_PASSWORD }
-      : undefined;
-
-  const client = new MongoClient(DB_URI, { auth, connectTimeoutMS: 5000 });
+  const client = new Client({ connectionString: DATABASE_URL });
   await client.connect();
-  const db = client.db(DB_NAME);
 
-  const existing = await db.collection("admin-uids").findOne({ uid });
-  if (existing !== null) {
+  const existing = await client.query("SELECT * FROM admin_uids WHERE uid = $1", [uid]);
+  if (existing.rowCount && existing.rowCount > 0) {
     console.log(`User "${uid}" is already an admin.`);
-    await client.close();
+    await client.end();
     return;
   }
 
-  await db.collection("admin-uids").insertOne({ uid });
+  await client.query("INSERT INTO admin_uids (uid) VALUES ($1)", [uid]);
   console.log(`Admin privileges granted to user "${uid}".`);
-  await client.close();
+  await client.end();
 }
 
 void main().catch((err: unknown) => {
