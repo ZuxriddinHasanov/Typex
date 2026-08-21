@@ -677,7 +677,7 @@ export function signOut(): void {
       const { customSignOut } = await import("./utils/custom-auth-api");
       customSignOut();
       setUserId(null);
-      setUserVerified(false);
+      setUserVerified(false); void onAuthStateChanged(true, null);
     })();
     return;
   }
