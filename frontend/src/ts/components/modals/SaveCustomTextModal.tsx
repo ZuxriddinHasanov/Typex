@@ -104,7 +104,7 @@ export function SaveCustomTextModal(props: {
           shift + enter or bailing out. You can then load this text again to
           continue where you left off.
         </div>
-        <SubmitButton form={form} variant="button" text="save" />
+        <SubmitButton form={form} variant="button" text="saqlash" />
       </form>
     </AnimatedModal>
   );

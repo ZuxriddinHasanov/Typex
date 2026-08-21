@@ -80,6 +80,21 @@ const inboxCollection = createCollection(
               durationMs: 8000,
             },
           );
+          if ("Notification" in window) {
+            if (Notification.permission === "granted") {
+              new Notification("Yangi xabar (TypeUZ)", {
+                body: "Sizga yangi xabar keldi! Inboxni tekshiring.",
+              });
+            } else if (Notification.permission !== "denied") {
+              Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                  new Notification("Yangi xabar (TypeUZ)", {
+                    body: "Sizga yangi xabar keldi! Inboxni tekshiring.",
+                  });
+                }
+              });
+            }
+          }
         }
       }
       lastKnownInboxIds.clear();

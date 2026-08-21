@@ -168,7 +168,7 @@ export function CustomGeneratorModal(props: {
               selected={selectedPreset()}
               onChange={setSelectedPreset}
             />
-            <Button variant="button" text="apply" onClick={applyPreset} />
+            <Button variant="button" text="qo'llash" onClick={applyPreset} />
           </div>
         </LabeledField>
         <Separator />
@@ -215,14 +215,14 @@ export function CustomGeneratorModal(props: {
           <SubmitButton
             form={form}
             variant="button"
-            text="set"
+            text="o'rnatish"
             class="flex-1"
             onClick={() => (submitAction = "set")}
           />
           <SubmitButton
             form={form}
             variant="button"
-            text="add"
+            text="qo'shish"
             class="flex-1"
             onClick={() => (submitAction = "add")}
           />

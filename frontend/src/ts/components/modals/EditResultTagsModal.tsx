@@ -57,7 +57,7 @@ export function EditResultTagsModal() {
       </div>
       <Button
         class="w-full"
-        text="save"
+        text="saqlash"
         onClick={() => {
           const selected = getSelectedResult();
           if (selected === null) return;

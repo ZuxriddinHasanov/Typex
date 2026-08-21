@@ -428,7 +428,7 @@ export function CustomTextModal(): JSXElement {
               <Button
                 variant="button"
                 fa={{ icon: "fa-save" }}
-                text="save"
+                text="saqlash"
                 onClick={() => {
                   setTextToSave(cleanUpText());
                   showModal("SaveCustomText");
@@ -437,7 +437,7 @@ export function CustomTextModal(): JSXElement {
               <Button
                 variant="button"
                 fa={{ icon: "fa-folder" }}
-                text="saved texts"
+                text="saqlangan matnlar"
                 onClick={() => showModal("SavedTexts")}
               />
             </div>
@@ -624,19 +624,19 @@ export function CustomTextModal(): JSXElement {
               <Button
                 variant="button"
                 fa={{ icon: "fa-file-import" }}
-                text="open file"
+                text="faylni ochish"
                 onClick={() => fileInputRef.click()}
               />
               <Button
                 variant="button"
                 fa={{ icon: "fa-filter" }}
-                text="words filter"
+                text="so'zlar filtri"
                 onClick={() => showModal("WordFilter")}
               />
               <Button
                 variant="button"
                 fa={{ icon: "fa-cogs" }}
-                text="custom generator"
+                text="maxsus generator"
                 onClick={() => showModal("CustomGenerator")}
               />
             </div>
@@ -648,7 +648,7 @@ export function CustomTextModal(): JSXElement {
             >
               <Button
                 variant="button"
-                text="apply"
+                text="qo'llash"
                 class="w-full"
                 onClick={applyRemoveZeroWidth}
               />
@@ -663,7 +663,7 @@ export function CustomTextModal(): JSXElement {
             >
               <Button
                 variant="button"
-                text="apply"
+                text="qo'llash"
                 class="w-full"
                 onClick={applyRemoveFancyTypography}
               />
@@ -676,7 +676,7 @@ export function CustomTextModal(): JSXElement {
             >
               <Button
                 variant="button"
-                text="apply"
+                text="qo'llash"
                 class="w-full"
                 onClick={applyReplaceControlChars}
               />
@@ -691,7 +691,7 @@ export function CustomTextModal(): JSXElement {
               <div class="flex w-full gap-2">
                 <Button
                   variant="button"
-                  text="space"
+                  text="bo'sh joy (space)"
                   class="flex-1"
                   onClick={() => applyReplaceNewlines("space")}
                 />

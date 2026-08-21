@@ -170,7 +170,7 @@ export function EditPresetModal(): JSXElement {
             )}
           />
         </Show>
-        <SubmitButton form={form} variant="button" text="save" />
+        <SubmitButton form={form} variant="button" text="saqlash" />
       </form>
     </AnimatedModal>
   );

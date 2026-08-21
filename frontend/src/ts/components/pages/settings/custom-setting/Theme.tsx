@@ -227,7 +227,7 @@ export function Theme(): JSXElement {
         </Show>
         <Show when={!isAuthenticated()}>
           <Button
-            text="save"
+            text="saqlash"
             onClick={() => {
               setConfig(
                 "customThemeColors",

@@ -94,12 +94,12 @@ export function LastSignedOutResultModal() {
       but on small screens tab focuses discard first
       */}
       <div class="grid grid-cols-1 gap-2 sm:hidden">
-        <Button text="save" onClick={handleSave} />
+        <Button text="saqlash" onClick={handleSave} />
         <Button text="discard" onClick={handleDiscard} />
       </div>
       <div class="hidden grid-cols-2 gap-2 sm:grid">
         <Button text="discard" onClick={handleDiscard} />
-        <Button text="save" onClick={handleSave} />
+        <Button text="saqlash" onClick={handleSave} />
       </div>
     </AnimatedModal>
   );

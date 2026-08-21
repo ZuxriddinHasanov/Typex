@@ -139,7 +139,7 @@ export function StreakHourOffsetModal() {
           />
         </div>
 
-        <SubmitButton form={form} text="set" skipUnchangedCheck />
+        <SubmitButton form={form} text="o'rnatish" skipUnchangedCheck />
       </form>
     </AnimatedModal>
   );

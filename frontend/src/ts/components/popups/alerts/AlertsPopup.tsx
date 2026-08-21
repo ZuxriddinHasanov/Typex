@@ -50,7 +50,7 @@ function MobileClose(): JSXElement {
     <Button
       class="mb-8 hidden w-full pointer-coarse:flex"
       onClick={() => hideModalAndClearChain("Alerts")}
-      text="Close"
+      text="Yopish"
       fa={{ icon: "fa-times" }}
     />
   );

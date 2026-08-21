@@ -144,7 +144,7 @@ export function AddPresetModal(): JSXElement {
           <div>{formErrorMap().onChange}</div>
         </Show>
         */}
-        <SubmitButton form={form} variant="button" text="add" />
+        <SubmitButton form={form} variant="button" text="qo'shish" />
       </form>
     </AnimatedModal>
   );

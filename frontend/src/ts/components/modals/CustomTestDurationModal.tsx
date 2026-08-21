@@ -121,7 +121,7 @@ export function CustomTestDurationModal(): JSXElement {
         <SubmitButton
           form={form}
           variant="button"
-          text="apply"
+          text="qo'llash"
           skipUnchangedCheck
         />
       </form>

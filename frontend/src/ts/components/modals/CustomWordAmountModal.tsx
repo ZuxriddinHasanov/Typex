@@ -70,7 +70,7 @@ export function CustomWordAmountModal(): JSXElement {
         <SubmitButton
           form={form}
           variant="button"
-          text="apply"
+          text="qo'llash"
           skipUnchangedCheck
         />
       </form>

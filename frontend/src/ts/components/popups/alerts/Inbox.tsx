@@ -35,7 +35,7 @@ export function Inbox(): JSXElement {
     <AlertsSection
       title={
         <>
-          <H3 fa={{ icon: "fa-inbox" }} text="Inbox" />
+          <H3 fa={{ icon: "fa-inbox" }} text="Kiruvchi xabarlar" />
           <InboxCounter
             size={inboxSize()}
             maxSize={maxMailboxSize()}
@@ -55,7 +55,7 @@ export function Inbox(): JSXElement {
               >
                 <Button
                   fa={{ icon: "fa-gift", fixedWidth: true }}
-                  text="Claim all"
+                  text="Barchasini olish"
                   onClick={() => claimAllInboxItems()}
                 />
               </Show>
@@ -69,7 +69,7 @@ export function Inbox(): JSXElement {
               >
                 <Button
                   fa={{ icon: "fa-trash", fixedWidth: true }}
-                  text="Delete all"
+                  text="Barchasini o'chirish"
                   onClick={() => deleteAllInboxItems()}
                 />
               </Show>

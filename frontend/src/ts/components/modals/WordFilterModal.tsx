@@ -391,7 +391,7 @@ export function WordFilterModal(props: {
               </LabeledField>
               <Button
                 variant="button"
-                text="apply"
+                text="qo'llash"
                 disabled={loading()}
                 onClick={() => void applyPreset()}
               />
@@ -414,7 +414,7 @@ export function WordFilterModal(props: {
             <SubmitButton
               form={form}
               variant="button"
-              text="set"
+              text="o'rnatish"
               class="flex-1"
               skipUnchangedCheck
               disabled={loading()}
@@ -423,7 +423,7 @@ export function WordFilterModal(props: {
             <SubmitButton
               form={form}
               variant="button"
-              text="add"
+              text="qo'shish"
               class="flex-1"
               skipUnchangedCheck
               disabled={loading()}

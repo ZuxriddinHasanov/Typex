@@ -42,7 +42,7 @@ export function CookiesModal(): JSXElement {
       closeOnWrapperClick={false}
     >
       <H3
-        text="We use cookies by the way"
+        text="Aytgancha, biz cookie fayllaridan foydalanamiz"
         fa={{ icon: "fa-cookie-bite" }}
         class="mb-0 pb-0 text-2xl"
       />
@@ -89,7 +89,7 @@ export function CookiesModal(): JSXElement {
 
             <div class="grid gap-2">
               <Button
-                text="accept all"
+                text="barchasini qabul qilish"
                 active={true}
                 onClick={() => {
                   setAccepted({
@@ -105,7 +105,7 @@ export function CookiesModal(): JSXElement {
                 }}
               />
               <Button
-                text="reject non-essential"
+                text="keraksizlarini rad etish"
                 onClick={() => {
                   setAccepted({
                     security: true,
@@ -120,7 +120,7 @@ export function CookiesModal(): JSXElement {
                 }}
               />
               <Button
-                text="more options"
+                text="ko'proq sozlamalar"
                 onClick={() => setShowSettings(true)}
               />
             </div>
@@ -161,7 +161,7 @@ export function CookiesModal(): JSXElement {
             />
 
             <Button
-              text="accept selected"
+              text="tanlanganlarni qabul qilish"
               onClick={() => {
                 setAcceptedCookies(accepted());
                 if (guestName().trim() !== "") {
