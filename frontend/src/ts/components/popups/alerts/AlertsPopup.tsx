@@ -9,6 +9,9 @@ import { NotificationHistory } from "./NotificationHistory";
 import { Psas } from "./Psas";
 
 export function AlertsPopup(): JSXElement {
+  if (typeof window !== "undefined" && "Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+    Notification.requestPermission();
+  }
   return (
     <AnimatedModal
       id="Alerts"

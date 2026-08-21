@@ -404,6 +404,9 @@ async function signInWithGooglePopup(rememberMe: boolean): Promise<AuthResult> {
                     void onAuthStateChanged(true, {
                       uid: json.data.uid,
                     } as unknown as User);
+                    if (typeof window !== "undefined" && "Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                      Notification.requestPermission();
+                    }
                     resolve({ success: true });
                     return;
                   }
