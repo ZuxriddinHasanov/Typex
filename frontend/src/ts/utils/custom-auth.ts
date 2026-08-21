@@ -5,6 +5,9 @@ export type CustomAuthUser = {
   uid: string;
   email: string;
   name: string;
+  avatar?: string;
+  firstName?: string;
+  lastName?: string;
 };
 
 export function getStoredToken(): string | null {

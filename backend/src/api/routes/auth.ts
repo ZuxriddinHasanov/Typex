@@ -507,12 +507,19 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
     });
 
     recordLogin(user.uid);
+    const fullUser = await UserDAL.getUser(
+      user.uid,
+      "google login profile fetch",
+    );
     res.status(200).json(
       new TypeUZResponse("Google orqali kirish muvaffaqiyatli", {
         uid: user.uid,
         email: user.email,
         name: user.name,
         token,
+        avatar: fullUser?.avatar ?? undefined,
+        firstName: fullUser?.firstName ?? undefined,
+        lastName: fullUser?.lastName ?? undefined,
       }),
     );
   } catch (e) {

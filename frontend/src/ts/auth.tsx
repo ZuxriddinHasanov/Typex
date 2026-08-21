@@ -381,6 +381,9 @@ async function signInWithGooglePopup(rememberMe: boolean): Promise<AuthResult> {
                       uid: string;
                       email: string;
                       name: string;
+                      avatar?: string;
+                      firstName?: string;
+                      lastName?: string;
                     };
                     message?: string;
                   };
@@ -394,6 +397,9 @@ async function signInWithGooglePopup(rememberMe: boolean): Promise<AuthResult> {
                       uid: json.data.uid,
                       email: json.data.email,
                       name: json.data.name,
+                      avatar: json.data.avatar,
+                      firstName: json.data.firstName,
+                      lastName: json.data.lastName,
                     });
                     void onAuthStateChanged(true, {
                       uid: json.data.uid,
@@ -677,7 +683,8 @@ export function signOut(): void {
       const { customSignOut } = await import("./utils/custom-auth-api");
       customSignOut();
       setUserId(null);
-      setUserVerified(false); void onAuthStateChanged(true, null);
+      setUserVerified(false);
+      void onAuthStateChanged(true, null);
     })();
     return;
   }
