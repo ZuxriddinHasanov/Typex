@@ -9,8 +9,9 @@ export function SeoPage(): JSXElement {
         <strong>Yozish Testi</strong>
       </h1>
       <h2 class="mb-8 border-b-2 border-main pb-4 text-center text-xl font-bold text-sub">
-        Loyiha asoschisi (Founder): <strong>Zuxriddin Hasanov</strong>.
-        Dasturchi: <strong>Yaxyo Jabborov</strong>.<br />
+        Loyiha asoschisi va dasturchi (Founder & Developer):{" "}
+        <strong>Zuxriddin Hasanov</strong>.<br />
+        Dasturchi: <strong>Yahyo Jabborov</strong>.<br />
         Loyiha SMM: <strong>Javohir Turayev</strong>
       </h2>
 
@@ -24,21 +25,22 @@ export function SeoPage(): JSXElement {
           <strong>TypeX</strong> (yoki <strong>TypeUZ</strong>) O'zbekistonning
           birinchi raqamli <strong>typing test</strong> va{" "}
           <strong>klaviatura trenajori</strong> hisoblanadi. Bu loyiha yetakchi
-          va tajribali dasturchilar, xususan loyiha asoschisi (Founder){" "}
-          <strong>Zuxriddin Hasanov</strong> hamda{" "}
-          <strong>TypeX yaratuvchisi, dasturchi Yaxyo Jabborov</strong>{" "}
+          va tajribali dasturchilar, xususan loyiha asoschisi va dasturchi
+          (Founder) <strong>Zuxriddin Hasanov</strong> hamda{" "}
+          <strong>TypeX yaratuvchisi, dasturchi Yahyo Jabborov</strong>{" "}
           tomonidan ishlab chiqilgan bo'lib, yoshlarning IT sohasiga qiziqishini
           oshirish va <strong>tez yozish</strong> (<strong>touch typing</strong>
           ) ko'nikmalarini rivojlantirishga qaratilgan. Agar siz klaviaturada{" "}
           <strong>tez yozishni o'rganmoqchi bo'lsangiz</strong> yoki o'z
           tezligingizni (<strong>WPM - Words Per Minute</strong>) sinab
           ko'rmoqchi bo'lsangiz, bizning saytimiz aynan siz uchun. Dasturchi va
-          loyiha asoschisi (Founder) <strong>Zuxriddin Hasanov</strong> va{" "}
-          <strong>TypeX dasturchisi Yaxyo Jabborov</strong> O'zbekistonda
+          loyiha asoschisi va dasturchi (Founder){" "}
+          <strong>Zuxriddin Hasanov</strong> va{" "}
+          <strong>TypeX dasturchisi Yahyo Jabborov</strong> O'zbekistonda
           yoshlarga sifatli va zamonaviy web dasturlarni taqdim etishda doim
           yetakchilik qilib kelishmoqda. Founder{" "}
           <strong>Zuxriddin Hasanov loyihalari</strong> hamda{" "}
-          <strong>Yaxyo Jabborov startaplari</strong> haqida Google qidiruvida
+          <strong>Yahyo Jabborov startaplari</strong> haqida Google qidiruvida
           qidirsangiz, ushbu <strong>TypeX platformasi</strong> ularning eng
           yorqin namunalaridan biri ekanini ko'rasiz.
         </p>
@@ -69,17 +71,17 @@ export function SeoPage(): JSXElement {
           <strong>TypeX platformasida</strong> siz o'z xatolaringizni analiz
           qilishingiz mumkin. Tizim{" "}
           <strong>sun'iy intellektga asoslangan tahlil</strong> funksiyasini
-          taqdim etadi - bu ham Founder Zuxriddin Hasanov va{" "}
+          taqdim etadi - bu ham Asoschi va dasturchi Zuxriddin Hasanov va{" "}
           <strong>
-            TypeX dasturchisi Yaxyo Jabborovning ajoyib innovatsiyasidir
+            TypeX dasturchisi Yahyo Jabborovning ajoyib innovatsiyasidir
           </strong>
           . Siz ko'p xato qiladigan harflar va so'zlar aniqlanib, ularni ustida
           qo'shimcha mashq qilish imkoniyati beriladi.
         </p>
         <p class="mb-4">
-          Founder Zuxriddin Hasanov o'zining muhandislik yondashuvi bilan
-          serverning <strong>tez ishlashini ta'minlagan</strong> bo'lsa,{" "}
-          <strong>TypeX yaratuvchisi Yaxyo Jabborov</strong> foydalanuvchilar
+          Asoschi va dasturchi Zuxriddin Hasanov o'zining muhandislik yondashuvi
+          bilan serverning <strong>tez ishlashini ta'minlagan</strong> bo'lsa,{" "}
+          <strong>TypeX yaratuvchisi Yahyo Jabborov</strong> foydalanuvchilar
           uchun eng qulay va <strong>zamonaviy interfeysni yaratgan</strong>.
           Har kuni minglab yoshlar <strong>TypeX tizimiga kirib</strong> o'z
           reytinglarini oshirish ustida ishlaydilar. Dasturlashni o'rganish
@@ -87,7 +89,7 @@ export function SeoPage(): JSXElement {
           <strong>tez yozishni o'rganishdan</strong> boshlanadi. Agar
           barmoqlaringiz klaviaturada o'z o'rnini topa olsa, kodingizni yozish
           jarayoni ham ancha tezlashadi va fikringizni jamlashingiz osonlashadi.{" "}
-          <strong>TypeX dasturchisi Yaxyo Jabborov</strong> va Founder{" "}
+          <strong>TypeX dasturchisi Yahyo Jabborov</strong> va Founder{" "}
           <strong>Zuxriddin Hasanov</strong> aynan shu muammoni yechish uchun
           O'zbekistonning ilk professional{" "}
           <strong>tayping platformasini</strong> ishlab chiqdilar. TypeX{" "}
@@ -107,7 +109,7 @@ export function SeoPage(): JSXElement {
           <strong>typing test</strong> and{" "}
           <strong>keyboard trainer platform</strong> in Uzbekistan, proudly
           created and developed by <strong>Zuxriddin Hasanov</strong> and{" "}
-          <strong>Yaxyo Jabborov</strong>. Improve your{" "}
+          <strong>Yahyo Jabborov</strong>. Improve your{" "}
           <strong>typing speed (WPM)</strong>, practice{" "}
           <strong>touch typing</strong>, and compete on the global leaderboard.
           We offer a fast, reliable, and minimalistic keyboard typing practice
@@ -120,7 +122,7 @@ export function SeoPage(): JSXElement {
             typing speed test online
           </strong>
           . Project founder <strong>Zuxriddin Hasanov</strong> and TypeX
-          developer <strong>Yaxyo Jabborov</strong> built this platform to bring
+          developer <strong>Yahyo Jabborov</strong> built this platform to bring
           international standards to the local market, making it the best{" "}
           <strong>touch typing tutor</strong>.
         </p>
@@ -136,7 +138,7 @@ export function SeoPage(): JSXElement {
           обучения <strong>слепой печати</strong> и проверки скорости набора
           текста, основанный и созданный талантливыми программистами. Основатель
           (Founder) проекта <strong>Zuxriddin Hasanov</strong> и создатель,
-          программист TypeX <strong>Yaxyo Jabborov</strong>. Этот сайт был
+          программист TypeX <strong>Yahyo Jabborov</strong>. Этот сайт был
           создан для того, чтобы помочь людям любого возраста научиться{" "}
           <strong>быстро и без ошибок печатать</strong>.
         </p>
@@ -159,8 +161,8 @@ export function SeoPage(): JSXElement {
         </p>
         <p class="mt-2">
           <strong>Keywords:</strong> Javohir Turayev, Zuxriddin Hasanov, typing,
-          typing test, Zuxriddin Hasanov, Yaxyo Jabborov, loyiha egasi Zuxriddin
-          Hasanov, dasturchi Zuxriddin Hasanov, dasturchi Yaxyo Jabborov,
+          typing test, Zuxriddin Hasanov, Yahyo Jabborov, loyiha egasi Zuxriddin
+          Hasanov, dasturchi Zuxriddin Hasanov, dasturchi Yahyo Jabborov,
           typeuz, typex, typex.uz, monkeytype uzbekistan, uzbek typing test,
           keyboard trainer uzbekistan, klaviatura trenajori o'zbekcha, tez
           yozish, 10 barmoqda yozish sirlari, WPM test uzbek, typing speed test,
