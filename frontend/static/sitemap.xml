@@ -5,47 +5,43 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>https://typex.uz/</loc>
-    <lastmod>2026-07-17</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.00</priority>
-    <xhtml:link rel="alternate" hreflang="uz" href="https://typex.uz/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://en.typex.uz/" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://ru.typex.uz/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://typex.uz/" />
   </url>
   <url>
     <loc>https://typex.uz/test</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
     <loc>https://typex.uz/about</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.80</priority>
   </url>
   <url>
     <loc>https://typex.uz/leaderboards</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://typex.uz/privacy-policy</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
   <url>
     <loc>https://typex.uz/terms-of-service</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
   <url>
     <loc>https://typex.uz/security-policy</loc>
-    <lastmod>2026-07-17</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
   </url>
