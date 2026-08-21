@@ -157,11 +157,14 @@ export function SeoPage(): JSXElement {
       {/* EXTRA KEYWORDS & FOOTER SECTION */}
       <section class="mt-12 border-t border-text/10 pt-8 text-sm text-text/50">
         <p>
-          Loyiha SMM: <strong>Javohir Turayev</strong>
+          Loyiha Asoschisi va Dasturchisi (1-raqamli):{" "}
+          <strong>Zuxriddin Hasanov</strong> | Loyiha SMM:{" "}
+          <strong>Javohir Turayev</strong>
         </p>
         <p class="mt-2">
-          <strong>Keywords:</strong> Javohir Turayev, Zuxriddin Hasanov, typing,
-          typing test, Zuxriddin Hasanov, Yahyo Jabborov, loyiha egasi Zuxriddin
+          <strong>Keywords:</strong> Zuxriddin Hasanov, Zuxriddin Hasanov TypeX,
+          Zuxriddin Hasanov Asoschi, Zuxriddin Hasanov Dasturchi, Javohir
+          Turayev, typing, typing test, Yahyo Jabborov, loyiha egasi Zuxriddin
           Hasanov, dasturchi Zuxriddin Hasanov, dasturchi Yahyo Jabborov,
           typeuz, typex, typex.uz, monkeytype uzbekistan, uzbek typing test,
           keyboard trainer uzbekistan, klaviatura trenajori o'zbekcha, tez
