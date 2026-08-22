@@ -6,7 +6,6 @@ import { isDevEnvironment, omit } from "../utils/misc";
 
 import { addLog } from "./logs";
 import { getFriendsUids } from "./connections";
-import TypeUZError from "../utils/error";
 
 export type DBLeaderboardEntry = {
   uid: string;
@@ -83,7 +82,17 @@ export async function get(
   uid?: string,
   numbers?: boolean,
 ): Promise<DBLeaderboardEntry[] | false> {
-  return getPeriod(mode, mode2, language, page, pageSize, premiumFeaturesEnabled, uid, numbers, 36500);
+  return getPeriod(
+    mode,
+    mode2,
+    language,
+    page,
+    pageSize,
+    premiumFeaturesEnabled,
+    uid,
+    numbers,
+    36500,
+  );
 }
 
 export async function getCount(
@@ -172,8 +181,7 @@ export async function update(
           WHERE COALESCE((badge->>'selected')::boolean, false)
           LIMIT 1
         ) AS selected_badge ON true
-        WHERE pb->>'language' = $1
-          AND COALESCE((pb->>'numbers')::boolean, false) = $4
+        WHERE COALESCE((pb->>'numbers')::boolean, false) = $4
           AND pb->>'wpm' IS NOT NULL
           AND pb->>'acc' IS NOT NULL
           AND pb->>'raw' IS NOT NULL
@@ -305,7 +313,7 @@ export async function getPeriod(
 ): Promise<DBLeaderboardEntry[] | false> {
   const skip = page * pageSize;
   const limit = pageSize;
-  const minTimestamp = Date.now() - (daysBefore * 24 * 60 * 60 * 1000);
+  const minTimestamp = Date.now() - daysBefore * 24 * 60 * 60 * 1000;
 
   let uidsFilter: string[] = [];
   if (uid !== undefined) {
@@ -353,19 +361,31 @@ export async function getPeriod(
     )
     SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
     FROM ranked
-    ${uid !== undefined ? 'WHERE uid = ANY($8::text[])' : ''}
+    ${uid !== undefined ? "WHERE uid = ANY($8::text[])" : ""}
     ORDER BY rank ASC
     LIMIT $6 OFFSET $7
   `;
 
-  const params = uid !== undefined 
-    ? [language, mode, mode2, numbers ?? false, minTimestamp, limit, skip, uidsFilter]
-    : [language, mode, mode2, numbers ?? false, minTimestamp, limit, skip];
-    
+  const params =
+    uid !== undefined
+      ? [
+          language,
+          mode,
+          mode2,
+          numbers ?? false,
+          minTimestamp,
+          limit,
+          skip,
+          uidsFilter,
+        ]
+      : [language, mode, mode2, numbers ?? false, minTimestamp, limit, skip];
+
   try {
     const rows = await db.queryAll<LeaderboardRow>(query, params);
     const entries = rows.map(mapLeaderboardRow);
-    return premiumFeaturesEnabled ? entries : entries.map(it => omit(it, ['isPremium']));
+    return premiumFeaturesEnabled
+      ? entries
+      : entries.map((it) => omit(it, ["isPremium"]));
   } catch (e) {
     console.error("getPeriod query failed:", e);
     return false;
@@ -381,7 +401,7 @@ export async function getPeriodRank(
   numbers?: boolean,
   daysBefore: number = 7,
 ): Promise<DBLeaderboardEntry | null | false> {
-  const minTimestamp = Date.now() - (daysBefore * 24 * 60 * 60 * 1000);
+  const minTimestamp = Date.now() - daysBefore * 24 * 60 * 60 * 1000;
   let uidsFilter: string[] = [];
   if (friendsOnly) {
     uidsFilter = [...(await getFriendsUids(uid)), uid];
@@ -428,17 +448,17 @@ export async function getPeriodRank(
     )
     SELECT *, ROW_NUMBER() OVER (ORDER BY rank ASC)::int AS friends_rank
     FROM ranked
-    ${friendsOnly ? 'WHERE uid = ANY($6::text[])' : ''}
+    ${friendsOnly ? "WHERE uid = ANY($6::text[])" : ""}
   `;
 
   const params = friendsOnly
     ? [language, mode, mode2, numbers ?? false, minTimestamp, uidsFilter]
     : [language, mode, mode2, numbers ?? false, minTimestamp];
-    
+
   try {
     const rows = await db.queryAll<LeaderboardRow>(query, params);
     const rankedRows = rows.map(mapLeaderboardRow);
-    return rankedRows.find(r => r.uid === uid) ?? null;
+    return rankedRows.find((r) => r.uid === uid) ?? null;
   } catch (e) {
     return false;
   }
@@ -452,7 +472,7 @@ export async function getPeriodCount(
   numbers?: boolean,
   daysBefore: number = 7,
 ): Promise<number> {
-  const minTimestamp = Date.now() - (daysBefore * 24 * 60 * 60 * 1000);
+  const minTimestamp = Date.now() - daysBefore * 24 * 60 * 60 * 1000;
   let uidsFilter: string[] = [];
   if (uid !== undefined) {
     uidsFilter = [...(await getFriendsUids(uid)), uid];
@@ -475,13 +495,14 @@ export async function getPeriodCount(
       FROM valid_results
     )
     SELECT COUNT(*)::int AS count FROM best_results
-    ${uid !== undefined ? 'WHERE uid = ANY($6::text[])' : ''}
+    ${uid !== undefined ? "WHERE uid = ANY($6::text[])" : ""}
   `;
 
-  const params = uid !== undefined
-    ? [language, mode, mode2, numbers ?? false, minTimestamp, uidsFilter]
-    : [language, mode, mode2, numbers ?? false, minTimestamp];
-    
+  const params =
+    uid !== undefined
+      ? [language, mode, mode2, numbers ?? false, minTimestamp, uidsFilter]
+      : [language, mode, mode2, numbers ?? false, minTimestamp];
+
   try {
     const result = await db.queryOne<{ count: number }>(query, params);
     return result?.count ?? 0;
@@ -490,7 +511,6 @@ export async function getPeriodCount(
     return 0;
   }
 }
-
 
 export async function getActiveLeaderboards(): Promise<
   { mode: string; mode2: string; language: string; numbers: boolean }[]
