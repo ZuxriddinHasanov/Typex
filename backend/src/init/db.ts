@@ -12,11 +12,9 @@ types.setTypeParser(20, Number);
 types.setTypeParser(1700, Number);
 
 export async function connect(): Promise<void> {
-  const envDatabaseUrl = process.env["DATABASE_URL"];
+  // Force Supabase connection even if Render has an old MongoDB URL in env vars
   const databaseUrl =
-    envDatabaseUrl !== undefined && envDatabaseUrl !== ""
-      ? envDatabaseUrl
-      : "postgresql://postgres.knzbopsocekorqzngckc:Zuxriddin-2026@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres";
+    "postgresql://postgres.knzbopsocekorqzngckc:Zuxriddin-2026@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres";
 
   const hostname = (() => {
     try {
