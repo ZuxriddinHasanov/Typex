@@ -329,7 +329,7 @@ export async function changeUserPassword(
   try {
     const bcrypt = await import("bcrypt");
     const passwordHash = await bcrypt.hash(newPassword, 10);
-    const { savePasswordDocument } = await import("../../utils/custom-auth-store");
+    const { savePasswordDocument } = await import("../../utils/custom-auth-store.js");
     
     await savePasswordDocument({
       uid,
