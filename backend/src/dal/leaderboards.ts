@@ -172,8 +172,7 @@ export async function update(
           WHERE COALESCE((badge->>'selected')::boolean, false)
           LIMIT 1
         ) AS selected_badge ON true
-        WHERE pb->>'language' = $1
-          AND COALESCE((pb->>'numbers')::boolean, false) = $4
+        WHERE COALESCE((pb->>'numbers')::boolean, false) = $4
           AND pb->>'wpm' IS NOT NULL
           AND pb->>'acc' IS NOT NULL
           AND pb->>'raw' IS NOT NULL
@@ -335,7 +334,7 @@ export async function getPeriod(
         ) as badge_id
       FROM results r
       JOIN users u ON r.uid = u.uid
-      WHERE COALESCE(r.language, 'english') = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+      WHERE r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
         AND r.timestamp >= $5
         AND r.wpm > 0 AND r.acc > 0
         AND COALESCE(u.banned, false) = false
@@ -410,7 +409,7 @@ export async function getPeriodRank(
         ) as badge_id
       FROM results r
       JOIN users u ON r.uid = u.uid
-      WHERE COALESCE(r.language, 'english') = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+      WHERE r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
         AND r.timestamp >= $5
         AND r.wpm > 0 AND r.acc > 0
         AND COALESCE(u.banned, false) = false
@@ -463,7 +462,7 @@ export async function getPeriodCount(
       SELECT r.uid
       FROM results r
       JOIN users u ON r.uid = u.uid
-      WHERE COALESCE(r.language, 'english') = $1 AND r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
+      WHERE r.mode = $2 AND r.mode2 = $3 AND COALESCE(r.numbers, false) = $4
         AND r.timestamp >= $5
         AND r.wpm > 0 AND r.acc > 0
         AND COALESCE(u.banned, false) = false
