@@ -40,10 +40,7 @@ export function envConfig(options: {
 
         const prodConfig: EnvConfig = {
           isDevelopment: false,
-          backendUrl: fallback(
-            options.env["BACKEND_URL"],
-            "https://api.typex.uz",
-          ),
+          backendUrl: "https://api.typex.uz",
           recaptchaSiteKey: fallback(
             options.env["RECAPTCHA_SITE_KEY"],
             "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
