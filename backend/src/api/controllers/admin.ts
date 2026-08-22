@@ -318,6 +318,33 @@ export async function deleteUser(
   }
 }
 
+export async function changeUserPassword(
+  req: TypeUZRequest<undefined, any>, // The generic will map to ChangeUserPasswordRequest from contracts
+): Promise<TypeUZResponse> {
+  const { uid, newPassword } = req.body;
+  if (!uid || !newPassword || newPassword.length < 6) {
+    throw new TypeUZError(400, "Invalid parameters");
+  }
+
+  try {
+    const bcrypt = await import("bcrypt");
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    const { savePasswordDocument } = await import("../../utils/custom-auth-store");
+    
+    await savePasswordDocument({
+      uid,
+      passwordHash,
+      createdAt: Date.now()
+    });
+
+    safeImportantLog("admin_user_password_changed", {}, uid);
+    return new TypeUZResponse(`Password changed successfully`, null);
+  } catch (e) {
+    if (e instanceof TypeUZError) throw e;
+    throw new TypeUZError(500, "Failed to change user password");
+  }
+}
+
 export async function clearStreakHourOffset(
   req: TypeUZRequest<undefined, ClearStreakHourOffsetRequest>,
 ): Promise<TypeUZResponse> {

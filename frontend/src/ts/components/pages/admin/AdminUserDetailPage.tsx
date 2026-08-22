@@ -91,6 +91,51 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
                   <span class="mt-2 block text-xl font-black text-text">0 marta</span>
                 </div>
               </div>
+
+              <div class="mt-10 rounded-2xl border border-sub/10 bg-sub-alt/5 p-6">
+                <h3 class="mb-4 text-lg font-bold text-error">Xavfli amallar</h3>
+                
+                <div class="flex max-w-sm flex-col gap-2">
+                  <label class="text-sm font-semibold text-text">Foydalanuvchi parolini o'zgartirish</label>
+                  <form
+                    class="flex gap-2"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const input = (e.target as HTMLFormElement).elements.namedItem("newPassword") as HTMLInputElement;
+                      if (!input.value || input.value.length < 6) {
+                        alert("Parol kamida 6 belgidan iborat bo'lishi kerak!");
+                        return;
+                      }
+                      try {
+                        const res = await Ape.admin.changeUserPassword({
+                          body: { uid: props.uid, newPassword: input.value },
+                        });
+                        if (res.status === 200) {
+                          alert("Parol muvaffaqiyatli o'zgartirildi!");
+                          input.value = "";
+                        } else {
+                          alert("Xatolik: " + res.body.message);
+                        }
+                      } catch (err) {
+                        alert("Tarmoq xatosi!");
+                      }
+                    }}
+                  >
+                    <input
+                      name="newPassword"
+                      type="password"
+                      placeholder="Yangi parol..."
+                      class="flex-1 rounded-lg border border-sub/20 bg-bg p-2 text-text outline-none focus:border-main"
+                    />
+                    <button
+                      type="submit"
+                      class="rounded-lg bg-error/90 px-4 py-2 font-bold text-bg transition-colors hover:bg-error"
+                    >
+                      Saqlash
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </Show>

@@ -388,6 +388,16 @@ export const adminContract = c.router(
         200: TypeUZResponseSchema,
       },
     },
+    changeUserPassword: {
+      method: "POST",
+      summary: "Change user password",
+      description: "Directly change a user's password",
+      path: "/changeUserPassword",
+      body: z.object({ uid: IdSchema, newPassword: z.string().min(6) }).strict(),
+      responses: {
+        200: TypeUZResponseSchema,
+      },
+    },
     clearStreakHourOffset: {
       summary: "clear streak hour offset",
       description: "Clear the streak hour offset for a user",

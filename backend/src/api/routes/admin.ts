@@ -14,6 +14,9 @@ export default s.router(adminContract, {
   deleteUser: {
     handler: async (r) => callController(AdminController.deleteUser)(r),
   },
+  changeUserPassword: {
+    handler: async (r) => callController(AdminController.changeUserPassword)(r),
+  },
   clearStreakHourOffset: {
     handler: async (r) =>
       callController(AdminController.clearStreakHourOffset)(r),
