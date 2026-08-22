@@ -260,12 +260,12 @@ export function UserProfile(props: {
       <Show when={!props.profile.banned && !props.profile.lbOptOut}>
         <LeaderboardPosition
           top15={
-            props.profile.allTimeLbs?.time?.["15"]?.["uzbek"] ??
-            props.profile.allTimeLbs?.time?.["15"]?.["english"]
+            props.profile.allTimeLbs?.time?.["15"]?.["english"] ??
+            props.profile.allTimeLbs?.time?.["15"]?.["uzbek"]
           }
           top60={
-            props.profile.allTimeLbs?.time?.["60"]?.["uzbek"] ??
-            props.profile.allTimeLbs?.time?.["60"]?.["english"]
+            props.profile.allTimeLbs?.time?.["60"]?.["english"] ??
+            props.profile.allTimeLbs?.time?.["60"]?.["uzbek"]
           }
         />
       </Show>
@@ -523,7 +523,7 @@ function LastTestCard(props: {
             </div>
             <div>
               <span class="text-sub">Til: </span>
-              <span class="font-bold text-text">{lr().language ?? "uzbek"}</span>
+              <span class="font-bold text-text">{lr().language ?? "english"}</span>
             </div>
             <div>
               <span class="text-sub">Davomiylik: </span>

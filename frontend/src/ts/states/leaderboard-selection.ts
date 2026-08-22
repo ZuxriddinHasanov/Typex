@@ -25,7 +25,7 @@ const SpeedSelection = z.object({
   previous: z.boolean().optional().default(false),
   mode: ModeSchema.optional().default("time"),
   mode2: z.string().optional().default("15"),
-  language: LanguageSchema.optional().default("uzbek"),
+  language: LanguageSchema.optional().default("english"),
   numbers: z.boolean().optional(),
 });
 
@@ -81,7 +81,7 @@ export function readLeaderboardGetParameters(
   } else {
     newSelection.mode = params.mode ?? "time";
     newSelection.mode2 = params.mode2 ?? "15";
-    newSelection.language = params.language ?? "uzbek";
+    newSelection.language = params.language ?? "english";
     newSelection.numbers = params.numbers;
     newSelection.previous =
       params.type === "daily" && (params.yesterday ?? false);
@@ -149,7 +149,7 @@ function lsSelection(): [Accessor<Selection>, Setter<Selection>] {
       type: "allTime",
       mode: "time",
       mode2: "15",
-      language: "uzbek",
+      language: "english",
       numbers: undefined,
       friendsOnly: false,
       previous: false,

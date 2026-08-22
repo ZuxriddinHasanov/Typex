@@ -4,7 +4,7 @@ export type UILanguage = "uzbek" | "english" | "russian";
 
 const stored = localStorage.getItem("uiLanguage") as UILanguage | null;
 const initial: UILanguage =
-  stored && ["uzbek", "english", "russian"].includes(stored) ? stored : "uzbek";
+  stored && ["uzbek", "english", "russian"].includes(stored) ? stored : "english";
 
 export const [getUiLanguage, setUiLanguage] = createSignal<UILanguage>(initial);
 
@@ -179,5 +179,5 @@ const dictionary: Record<UILanguage, Record<string, string>> = {
 
 export function t(key: string): string {
   const lang = getUiLanguage();
-  return dictionary[lang]?.[key] ?? dictionary["uzbek"]?.[key] ?? key;
+  return dictionary[lang]?.[key] ?? dictionary["english"]?.[key] ?? key;
 }

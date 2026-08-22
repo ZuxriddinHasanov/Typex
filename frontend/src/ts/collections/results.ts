@@ -194,7 +194,7 @@ function normalizeResult(
   result.lazyMode ??= false;
   result.difficulty ??= "normal";
   result.funbox ??= [];
-  result.language ??= "uzbek";
+  result.language ??= "english";
   result.numbers ??= false;
   result.punctuation ??= false;
   result.quoteLength ??= -1;

@@ -94,7 +94,7 @@ export function LeaderboardPage(): JSXElement {
         type: typeVal,
         mode: "words" as const,
         mode2: validMode2,
-        language: (s as { language?: Language }).language ?? "uzbek",
+        language: (s as { language?: Language }).language ?? "english",
         numbers: undefined,
       };
     }
@@ -109,7 +109,7 @@ export function LeaderboardPage(): JSXElement {
       type: typeVal,
       mode: "time" as const,
       mode2: validMode2,
-      language: (s as { language?: Language }).language ?? "uzbek",
+      language: (s as { language?: Language }).language ?? "english",
       numbers: undefined,
     };
   };
