@@ -1,5 +1,7 @@
-import { Chart, ChartConfiguration } from "chart.js/auto";
-// oxlint-disable
+import { Chart, ChartConfiguration, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler } from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
+
+Chart.register(annotationPlugin, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler);
 import { createEffect, onCleanup, JSXElement } from "solid-js";
 
 export function LineChart(props: {
