@@ -736,10 +736,16 @@ export async function sendNotification(
       );
     }
 
+    const mail = buildMonkeyMail({ subject, body });
+    const config = { enabled: true, maxMail: 100 };
     if (!sendToAll) {
-      const mail = buildMonkeyMail({ subject, body });
-      const config = { enabled: true, maxMail: 100 };
       await UserDAL.addToInbox(uid, [mail], config).catch((_e: unknown) => {
+        void _e;
+      });
+    } else {
+      const allUsers = await db.queryAll<{uid: string}>("SELECT uid FROM users");
+      const entries = allUsers.map(u => ({ uid: u.uid, mail: [mail] }));
+      await UserDAL.addToInboxBulk(entries, config).catch((_e: unknown) => {
         void _e;
       });
     }

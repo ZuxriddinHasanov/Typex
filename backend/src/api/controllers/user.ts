@@ -1760,3 +1760,34 @@ export async function getFriends(
 
   return new TypeUZResponse("Friends retrieved", data);
 }
+export async function getTestAnalysis(req: TypeUZRequest<undefined, {wpm: number; acc: number; duration: number; errors?: number}>): Promise<TypeUZResponse<string>> {
+  const { uid } = req.ctx.decodedToken;
+  const { wpm, acc, duration, errors } = req.body;
+
+  const user = await UserDAL.getUser(uid, `getTestAnalysis`);
+  let aiUses = user?.aiUses ?? { date: ``, count: 0 };
+  const today = new Date().toISOString().slice(0, 10);
+  if (aiUses.date !== today) aiUses = { date: today, count: 0 };
+
+  const aiConfig = req.ctx.configuration.users.ai;
+  if (!aiConfig?.enabled || !aiConfig.apiKey || aiUses.count >= aiConfig.maxDailyUses) {
+    return new TypeUZResponse(`AI`, `AI tahlil limiti tugagan yoki o'chirilgan.`);
+  }
+
+  try {
+    const prompt = `Foydalanuvchi hozirgina TypeUZ da test topshirdi. Natijasi: WPM: ${wpm}, Aniqlik: ${acc}%. Test davomiyligi: ${duration} sek. Testda qilingan xatolar soni: ${errors ?? `Noma'lum`}. Ushbu test natijasini juda qisqa (2-3 gap) qilib o'zbek tilida tahlil qilib bering. Unga testdagi yutuq va kamchiligini ayting. Matn Markdown ko'rinishida bo'lsin.`;
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiConfig.apiKey}`, {
+      method: `POST`,
+      headers: { 'Content-Type': `application/json` },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+    });
+    if (!response.ok) throw new Error(`Gemini API error`);
+    const data = await response.json() as any;
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? `Tahlil olinmadi.`;
+    aiUses.count++;
+    await UserDAL.updateAiUses(uid, aiUses);
+    return new TypeUZResponse(`AI Tahlil`, text);
+  } catch (e) {
+    return new TypeUZResponse(`Error`, `AI tahlil vaqtinchalik ishlamayapti.`);
+  }
+}

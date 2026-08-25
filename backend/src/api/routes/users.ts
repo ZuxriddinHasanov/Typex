@@ -143,7 +143,7 @@ export default s.router(usersContract, {
   getFriends: {
     handler: async (r) => callController(UserController.getFriends)(r),
   },
-  getWeeklyAnalysis: {
+  getTestAnalysis: { handler: async (r) => callController(UserController.getTestAnalysis)(r) }, getWeeklyAnalysis: {
     handler: async (r) =>
       callController(UserController.getWeeklyAnalysis)(r),
   },

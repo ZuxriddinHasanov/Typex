@@ -1080,6 +1080,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.testDuration - completedEvent.afkDuration,
   );
   Result.updateTodayTracker();
+  try {
+    (window as any)._lastResultStats = {
+      wpm: Math.round(completedEvent.wpm),
+      acc: Math.round(completedEvent.acc),
+      duration: Math.round(completedEvent.testDuration),
+      errors: completedEvent.chartData?.err ? Math.max(...completedEvent.chartData.err) : 0
+    };
+  } catch(e){}
 
   let savingResultPromise: ReturnType<typeof saveResult> =
     Promise.resolve(null);
