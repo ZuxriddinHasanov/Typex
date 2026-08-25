@@ -47,14 +47,17 @@ function filePath(key: string): string {
 }
 
 export function devGet<T>(key: string): T | null {
+  console.log("devGet:", key, "DATA_DIR:", DATA_DIR);
   if (!isDevEnvironment()) return null;
   try {
     ensureDir();
     const fp = filePath(key);
+    console.log("devGet path:", fp, "exists:", fs.existsSync(fp));
     if (!fs.existsSync(fp)) return null;
     const raw = fs.readFileSync(fp, "utf-8");
     return JSON.parse(raw) as T;
-  } catch {
+  } catch (e) {
+    console.log("devGet error:", e);
     return null;
   }
 }

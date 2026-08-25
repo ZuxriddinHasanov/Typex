@@ -1,5 +1,13 @@
 import "dotenv/config";
 import * as db from "./init/db";
+
+process.on("uncaughtException", (err) => {
+  console.error("uncaughtException:", err.message);
+  if (!err.message.includes("Connection terminated unexpectedly")) {
+    process.exit(1);
+  }
+});
+
 import jobs from "./jobs";
 import {
   getLiveConfiguration,

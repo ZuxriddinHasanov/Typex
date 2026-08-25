@@ -264,3 +264,4 @@ CREATE INDEX idx_logs_uid ON logs(uid);
 CREATE INDEX idx_leaderboard_entries_lookup ON leaderboard_entries(language, mode, mode2, numbers, rank);
 CREATE UNIQUE INDEX idx_users_email_unique ON users (LOWER(email));
 CREATE UNIQUE INDEX idx_users_name_unique ON users (LOWER(name));
+CREATE TABLE IF NOT EXISTS notifications ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), uid TEXT NOT NULL, subject TEXT NOT NULL, body TEXT NOT NULL, timestamp BIGINT NOT NULL, read BOOLEAN DEFAULT false );

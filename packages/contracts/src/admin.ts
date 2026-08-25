@@ -215,6 +215,10 @@ export type AdminListUsersResponse = z.infer<
   typeof AdminListUsersResponseSchema
 >;
 
+export const AdminUserTestsResponseSchema = responseWithData(
+  z.array(z.any())
+);
+
 // --- Daily Active Users ---
 export const AdminDauPointSchema = z.object({
   date: z.string(),
@@ -339,8 +343,8 @@ export type UpdateAdConfigRequest = z.infer<typeof UpdateAdConfigRequestSchema>;
 // --- Add Creative ---
 export const AddCreativeRequestSchema = z
   .object({
-    imageUrl: z.string().url(),
-    targetUrl: z.string().url(),
+    imageUrl: z.string().min(1),
+    targetUrl: z.string().optional().or(z.literal("")),
   })
   .strict();
 export type AddCreativeRequest = z.infer<typeof AddCreativeRequestSchema>;
@@ -703,6 +707,14 @@ export const adminContract = c.router(
       query: AdminListUsersQuerySchema,
       responses: {
         200: AdminListUsersResponseSchema,
+      },
+    },
+    getUserTests: {
+      summary: "get latest tests for a specific user",
+      method: "GET",
+      path: "/users/:uid/tests",
+      responses: {
+        200: AdminUserTestsResponseSchema,
       },
     },
   },

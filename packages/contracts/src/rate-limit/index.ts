@@ -14,7 +14,7 @@ export const limits = {
 
   adminLimit: {
     window: 5000, // 5 seconds
-    max: 1,
+    max: 100, // Increased from 1 to 100 to allow concurrent dashboard requests
   },
 
   // Config Routing

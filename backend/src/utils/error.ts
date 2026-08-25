@@ -56,17 +56,23 @@ class TypeUZError extends Error implements TypeUZServerErrorType {
     super(message);
     this.status = status ?? 500;
     this.errorId = uuidv4();
-    this.stack = stack;
+    if (stack) {
+      this.stack = stack;
+    }
     this.uid = uid;
+
+    if (this.status === 403) {
+      console.log(">>>>>>>> INSTANTIATED 403 ERROR:", message);
+      console.trace();
+    }
 
     if (isDevEnvironment()) {
       this.message =
-        (stack ?? "")
-          ? `${String(message)}\nStack: ${String(stack)}`
+        (this.stack ?? "")
+          ? `${String(message)}\nStack: ${String(this.stack)}`
           : String(message);
     } else {
       if ((this.stack ?? "") && this.status >= 500) {
-        this.stack = `${this.message}\n${this.stack}`;
         this.message = `Internal Server Error ${this.errorId}`;
       } else {
         this.message = String(message);

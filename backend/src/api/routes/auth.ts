@@ -27,12 +27,28 @@ import {
 
 const LOGIN_LOG_KEY = "login_log";
 function recordLogin(uid: string): void {
-  const log = isDevEnvironment()
-    ? (devGet<Array<{ uid: string; timestamp: number }>>(LOGIN_LOG_KEY) ?? [])
-    : [];
-  log.push({ uid, timestamp: Date.now() });
-  if (log.length > 50000) log.splice(0, log.length - 50000);
-  if (isDevEnvironment()) devSet(LOGIN_LOG_KEY, log);
+  if (isDevEnvironment()) {
+    const log = devGet<Array<{ uid: string; timestamp: number }>>(LOGIN_LOG_KEY) ?? [];
+    log.push({ uid, timestamp: Date.now() });
+    if (log.length > 50000) log.splice(0, log.length - 50000);
+    devSet(LOGIN_LOG_KEY, log);
+  } else {
+    // async run
+    void (async () => {
+      try {
+        const { getDb } = await import("../../init/db.js");
+        const dbClient = getDb();
+        if (!dbClient) return;
+        const res = await dbClient.query("SELECT data FROM configuration WHERE _id = 'login_log'");
+        const log = res.rows.length > 0 ? (res.rows[0].data as Array<{uid:string, timestamp:number}>) : [];
+        log.push({ uid, timestamp: Date.now() });
+        if (log.length > 50000) log.splice(0, log.length - 50000);
+        await dbClient.query("INSERT INTO configuration (_id, data) VALUES ('login_log', $1) ON CONFLICT (_id) DO UPDATE SET data = EXCLUDED.data", [JSON.stringify(log)]);
+      } catch (e) {
+        console.error("Failed to record login in pg:", e);
+      }
+    })();
+  }
 }
 
 const router = Router();

@@ -133,17 +133,19 @@ export function AdminLayout(props: {
         </header>
 
         {/* Content */}
-        <main class="flex-1 overflow-y-auto p-12">
-          <Show
-            when={props.children}
-            fallback={
-              <div class="flex h-64 items-center justify-center text-lg text-sub">
-                Yuklanmoqda...
-              </div>
-            }
-          >
-            {props.children}
-          </Show>
+        <main class="flex-1 overflow-y-auto">
+          <div class="mx-auto w-full max-w-7xl p-8 lg:p-12">
+            <Show
+              when={props.children}
+              fallback={
+                <div class="flex h-64 items-center justify-center text-lg text-sub">
+                  Yuklanmoqda...
+                </div>
+              }
+            >
+              {props.children}
+            </Show>
+          </div>
         </main>
       </div>
     </div>

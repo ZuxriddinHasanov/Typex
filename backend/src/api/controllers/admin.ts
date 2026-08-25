@@ -208,22 +208,36 @@ export async function getUserGrowth(
 > {
   const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
   const allUsers = await getUsersArray();
-  const users = allUsers.filter(
-    (u) => ((u["addedAt"] as number) ?? 0) >= thirtyDaysAgo,
-  );
-  const dayMap = new Map<string, { total: number; newUsers: number }>();
-  let runningTotal = users.length;
-  for (const u of users.reverse()) {
-    const d = new Date((u["addedAt"] as number) ?? 0)
-      .toISOString()
-      .slice(0, 10);
-    const prev = dayMap.get(d) ?? { total: 0, newUsers: 0 };
-    dayMap.set(d, { total: runningTotal--, newUsers: prev.newUsers + 1 });
+  const dayMap = new Map<string, { newUsers: number }>();
+  let baseTotal = 0;
+  for (const u of allUsers) {
+    const t = (u["addedAt"] as number) ?? 0;
+    if (t < thirtyDaysAgo) {
+      baseTotal++;
+    } else {
+      const d = new Date(t).toISOString().slice(0, 10);
+      const prev = dayMap.get(d) ?? { newUsers: 0 };
+      dayMap.set(d, { newUsers: prev.newUsers + 1 });
+    }
   }
-  const data = Array.from(dayMap.entries())
-    .map(([date, val]) => ({ date, total: val.total, newUsers: val.newUsers }))
+  const sortedDays = Array.from(dayMap.entries())
+    .map(([date, val]) => ({ date, newUsers: val.newUsers }))
     .sort((a, b) => a.date.localeCompare(b.date));
+  let currentTotal = baseTotal;
+  const data = sortedDays.map((d) => {
+    currentTotal += d.newUsers;
+    return { date: d.date, newUsers: d.newUsers, total: currentTotal };
+  });
   return new TypeUZResponse("User growth", data);
+}
+
+export async function getUserTests(
+  req: TypeUZRequest,
+): Promise<TypeUZResponse<any[]>> {
+  const uid = req.params["uid"];
+  const { getResults } = await import("../../dal/result.js");
+  const tests = await getResults(uid ?? "", { limit: 100 });
+  return new TypeUZResponse("User tests", tests);
 }
 
 function safeImportantLog(
@@ -905,7 +919,7 @@ export async function addCreative(
   const newCreative = {
     id: crypto.randomUUID(),
     imageUrl,
-    targetUrl,
+    targetUrl: targetUrl ?? "",
     enabled: true,
   };
 
@@ -1196,10 +1210,21 @@ export async function updateThemeSettings(
 // --- Login Analytics ---
 const LOGIN_LOG_KEY_CTRL = "login_log";
 
-function getLoginLogCtrl(): Array<{ uid: string; timestamp: number }> {
-  return (
-    devGet<Array<{ uid: string; timestamp: number }>>(LOGIN_LOG_KEY_CTRL) ?? []
-  );
+async function getLoginLogCtrl(): Promise<Array<{ uid: string; timestamp: number }>> {
+  if (isDevEnvironment()) {
+    return devGet<Array<{ uid: string; timestamp: number }>>(LOGIN_LOG_KEY_CTRL) ?? [];
+  } else {
+    try {
+      const { getDb } = await import("../../init/db.js");
+      const dbClient = getDb();
+      if (!dbClient) return [];
+      const res = await dbClient.query("SELECT data FROM configuration WHERE _id = 'login_log'");
+      return res.rows.length > 0 ? (res.rows[0].data as Array<{uid:string, timestamp:number}>) : [];
+    } catch (e) {
+      console.error("Failed to read login log from pg:", e);
+      return [];
+    }
+  }
 }
 
 export async function getSignupsByDay(
@@ -1224,7 +1249,8 @@ export async function getLoginsByDay(
   _req: TypeUZRequest,
 ): Promise<TypeUZResponse<Array<{ date: string; count: number }>>> {
   const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-  const log = getLoginLogCtrl().filter((e) => e.timestamp >= thirtyDaysAgo);
+  const allLogs = await getLoginLogCtrl();
+  const log = allLogs.filter((e) => e.timestamp >= thirtyDaysAgo);
   const dayMap = new Map<string, number>();
   for (const e of log) {
     const d = new Date(e.timestamp).toISOString().slice(0, 10);
@@ -1240,7 +1266,8 @@ export async function getLoginsByWeek(
   _req: TypeUZRequest,
 ): Promise<TypeUZResponse<Array<{ week: string; count: number }>>> {
   const twelveWeeksAgo = Date.now() - 84 * 24 * 60 * 60 * 1000;
-  const log = getLoginLogCtrl().filter((e) => e.timestamp >= twelveWeeksAgo);
+  const allLogs = await getLoginLogCtrl();
+  const log = allLogs.filter((e) => e.timestamp >= twelveWeeksAgo);
   const weekMap = new Map<string, number>();
   for (const e of log) {
     const d = new Date(e.timestamp);

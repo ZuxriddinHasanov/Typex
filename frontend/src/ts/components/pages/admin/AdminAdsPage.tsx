@@ -26,9 +26,13 @@ export function AdminAdsPage(): JSXElement {
     if (!c) return;
     void Ape.admin
       .updateAdConfig({ body: { ...c, enabled: !c.enabled } })
-      .then(() => {
-        showSuccessNotification("Reklama holati o'zgartirildi");
-        void adQuery.refetch();
+      .then((r) => {
+        if (r.status === 200) {
+          showSuccessNotification("Reklama holati o'zgartirildi");
+          void adQuery.refetch();
+        } else {
+          showErrorNotification("Xatolik: " + r.status);
+        }
       })
       .catch(() => showErrorNotification("Xatolik"));
   };
@@ -37,9 +41,13 @@ export function AdminAdsPage(): JSXElement {
     defaultValues: { imageUrl: "", targetUrl: "" },
     onSubmit: async ({ value }) => {
       try {
-        await Ape.admin.addCreative({ body: value });
-        showSuccessNotification("Kreativ qo'shildi");
-        void adQuery.refetch();
+        const r = await Ape.admin.addCreative({ body: value });
+        if (r.status === 200) {
+          showSuccessNotification("Kreativ qo'shildi");
+          void adQuery.refetch();
+        } else {
+          showErrorNotification("Xatolik: " + r.status);
+        }
       } catch {
         showErrorNotification("Xatolik");
       }
@@ -80,9 +88,13 @@ export function AdminAdsPage(): JSXElement {
     }
     void Ape.admin
       .updateAdConfig({ body: { ...c, slots: newSlots } })
-      .then(() => {
-        showSuccessNotification("Slot saqlandi");
-        void adQuery.refetch();
+      .then((r) => {
+        if (r.status === 200) {
+          showSuccessNotification("Slot saqlandi");
+          void adQuery.refetch();
+        } else {
+          showErrorNotification("Xatolik: " + r.status);
+        }
       })
       .catch(() => showErrorNotification("Xatolik"));
   }
