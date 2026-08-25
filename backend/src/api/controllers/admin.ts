@@ -63,16 +63,16 @@ export async function getDau(
   _req: TypeUZRequest,
 ): Promise<TypeUZResponse<Array<{ date: string; count: number }>>> {
   const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-  const log = (
-    devGet<Array<{ uid: string; timestamp: number }>>("login_log") ?? []
-  ).filter((e) => e.timestamp >= thirtyDaysAgo);
-  const dayMap = new Map<string, number>();
+  const allLogs = await getLoginLogCtrl();
+  const log = allLogs.filter((e) => e.timestamp >= thirtyDaysAgo);
+  const dayMap = new Map<string, Set<string>>();
   for (const e of log) {
     const d = new Date(e.timestamp).toISOString().slice(0, 10);
-    dayMap.set(d, (dayMap.get(d) ?? 0) + 1);
+    if (!dayMap.has(d)) dayMap.set(d, new Set());
+    dayMap.get(d)!.add(e.uid);
   }
   const data = Array.from(dayMap.entries())
-    .map(([date, count]) => ({ date, count }))
+    .map(([date, uids]) => ({ date, count: uids.size }))
     .sort((a, b) => a.date.localeCompare(b.date));
   return new TypeUZResponse("DAU data", data);
 }
