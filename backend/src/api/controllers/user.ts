@@ -1775,7 +1775,7 @@ export async function getTestAnalysis(req: TypeUZRequest<undefined, {wpm: number
   }
 
   try {
-    const prompt = `Foydalanuvchi hozirgina TypeUZ da test topshirdi. Natijasi: WPM: ${wpm}, Aniqlik: ${acc}%. Test davomiyligi: ${duration} sek. Testda qilingan xatolar soni: ${errors ?? `Noma'lum`}. Ushbu test natijasini juda qisqa (2-3 gap) qilib o'zbek tilida tahlil qilib bering. Unga testdagi yutuq va kamchiligini ayting. Matn Markdown ko'rinishida bo'lsin.`;
+    const prompt = `Foydalanuvchi hozirgina TypeUZ da test topshirdi. Natijasi: WPM: ${wpm}, Aniqlik: ${acc}%. Test davomiyligi: ${duration} sek. Testda qilingan xatolar soni: ${errors ?? "Noma'lum"}. Ushbu test natijasini juda qisqa (2-3 gap) qilib o'zbek tilida tahlil qilib bering. Unga testdagi yutuq va kamchiligini ayting. Matn Markdown ko'rinishida bo'lsin.`;
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiConfig.apiKey}`, {
       method: `POST`,
       headers: { 'Content-Type': `application/json` },
