@@ -45,38 +45,7 @@ function StatCard(props: {
   );
 }
 
-function ChartBars(props: {
-  data: Array<Record<string, unknown>>;
-  labelKey: string;
-  valueKey: string;
-  color: string;
-}): JSXElement {
-  const maxVal = () =>
-    Math.max(1, ...props.data.map((d) => (d[props.valueKey] as number) ?? 0));
-  return (
-    <div class="flex items-end gap-0.5" style={{ height: "100px" }}>
-      <For each={props.data}>
-        {(d) => {
-          const val = (d[props.valueKey] as number) ?? 0;
-          const h = `${Math.max(3, (val / maxVal()) * 100)}%`;
-          const label = ((d[props.labelKey] as string) ?? "").slice(5);
-          return (
-            <div class="group relative flex flex-1 flex-col items-center">
-              <span class="mb-0.5 text-[8px] text-sub opacity-0 group-hover:opacity-100">
-                {val}
-              </span>
-              <div
-                class="w-full rounded-sm transition-all"
-                style={{ height: h, background: props.color }}
-              ></div>
-              <span class="mt-0.5 text-[7px] text-sub/40">{label}</span>
-            </div>
-          );
-        }}
-      </For>
-    </div>
-  );
-}
+import { LineChart } from "../../common/LineChart";
 
 export function AdminDashboardPage(): JSXElement {
   const analyticsQuery = createQuery(() => ({
@@ -216,7 +185,7 @@ export function AdminDashboardPage(): JSXElement {
           <h2 class="mb-4 text-sm font-bold text-text">
             Ro'yxatdan o'tishlar (30 kun)
           </h2>
-          <ChartBars
+          <LineChart
             data={signupsQuery.data ?? []}
             labelKey="date"
             valueKey="count"
@@ -227,7 +196,7 @@ export function AdminDashboardPage(): JSXElement {
           <h2 class="mb-4 text-sm font-bold text-text">
             Kunlik faol foydalanuvchilar (30 kun)
           </h2>
-          <ChartBars
+          <LineChart
             data={dauQuery.data ?? []}
             labelKey="date"
             valueKey="count"

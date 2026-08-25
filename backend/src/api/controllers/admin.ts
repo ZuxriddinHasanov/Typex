@@ -506,7 +506,8 @@ export async function getAnalytics(
     totalTestsStarted = Math.round(totalTestsCompleted * 1.2);
     totalTimeTyping = Number(testStatsResult?.time_typing ?? 0);
     activeUsersLast24h = activeUsersResult?.count ?? 0;
-  } catch {
+  } catch (e) {
+    Logger.error(`getAnalytics error: ${e}`);
     const cached = devGet<AdminAnalyticsResponse["data"]>("admin_analytics");
     if (cached !== null) {
       return new TypeUZResponse("Analytics retrieved", cached);
@@ -912,14 +913,16 @@ export async function addCreative(
     id: string;
     imageUrl: string;
     targetUrl: string;
+    size?: string;
     enabled?: boolean;
   }>
 > {
-  const { imageUrl, targetUrl } = req.body;
+  const { imageUrl, targetUrl, size } = req.body;
   const newCreative = {
     id: crypto.randomUUID(),
     imageUrl,
     targetUrl: targetUrl ?? "",
+    size,
     enabled: true,
   };
 

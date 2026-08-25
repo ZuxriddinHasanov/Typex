@@ -4,7 +4,7 @@ import { contract } from "@typeuz/contracts";
 
 const BASE_URL = envConfig.backendUrl;
 
-const tsRestClient = buildClient(contract, BASE_URL, 10_000);
+const tsRestClient = buildClient(contract, BASE_URL, 30_000);
 
 // API Endpoints
 const Ape = {

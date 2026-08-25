@@ -302,6 +302,7 @@ export const AdminCreativeSchema = z.object({
   id: z.string(),
   imageUrl: z.string(),
   targetUrl: z.string(),
+  size: z.string().optional(),
   enabled: z.boolean().optional(),
 });
 export type AdminCreative = z.infer<typeof AdminCreativeSchema>;
@@ -345,6 +346,7 @@ export const AddCreativeRequestSchema = z
   .object({
     imageUrl: z.string().min(1),
     targetUrl: z.string().optional().or(z.literal("")),
+    size: z.string().optional(),
   })
   .strict();
 export type AddCreativeRequest = z.infer<typeof AddCreativeRequestSchema>;

@@ -4,48 +4,7 @@ import { JSXElement, Show, For } from "solid-js";
 
 import Ape from "../../../ape";
 import { AdminLayout } from "./AdminLayout";
-
-function BarChart(props: {
-  data: any[] | undefined;
-  labelKey: string;
-  valueKey: string;
-  color?: string;
-}): JSXElement {
-  const resolved = () => props.data ?? [];
-  const maxVal = () =>
-    Math.max(1, ...resolved().map((d) => d[props.valueKey] ?? 0));
-  return (
-    <Show
-      when={resolved().length > 0}
-      fallback={<p class="text-xs text-sub">Ma'lumot yo'q</p>}
-    >
-      <div class="flex items-end gap-0.5" style={{ height: "120px" }}>
-        <For each={resolved()}>
-          {(d) => {
-            const v = d[props.valueKey] ?? 0;
-            return (
-              <div class="group relative flex flex-1 flex-col items-center">
-                <span class="mb-0.5 text-[8px] text-sub opacity-0 group-hover:opacity-100">
-                  {v}
-                </span>
-                <div
-                  class="w-full rounded-sm transition-all"
-                  style={{
-                    height: `${Math.max(3, (v / maxVal()) * 100)}%`,
-                    background: props.color ?? "var(--main-color)",
-                  }}
-                ></div>
-                <span class="mt-0.5 text-[7px] text-sub/40">
-                  {((d[props.labelKey] as string) ?? "").slice(5)}
-                </span>
-              </div>
-            );
-          }}
-        </For>
-      </div>
-    </Show>
-  );
-}
+import { LineChart } from "../../common/LineChart";
 
 export function AdminAnalyticsPage(): JSXElement {
   const signupsQuery = createQuery(() => ({
@@ -130,7 +89,7 @@ export function AdminAnalyticsPage(): JSXElement {
       <div class="grid gap-6 lg:grid-cols-2">
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
           <h2 class="mb-4 text-sm font-bold text-text">Ro'yxatdan o'tishlar</h2>
-          <BarChart
+          <LineChart
             data={signupsQuery.data}
             labelKey="date"
             valueKey="count"
@@ -139,7 +98,7 @@ export function AdminAnalyticsPage(): JSXElement {
         </div>
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
           <h2 class="mb-4 text-sm font-bold text-text">Kirishlar</h2>
-          <BarChart
+          <LineChart
             data={loginsQuery.data}
             labelKey="date"
             valueKey="count"
@@ -148,7 +107,7 @@ export function AdminAnalyticsPage(): JSXElement {
         </div>
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
           <h2 class="mb-4 text-sm font-bold text-text">DAU (kunlik faol)</h2>
-          <BarChart
+          <LineChart
             data={dauQuery.data}
             labelKey="date"
             valueKey="count"
@@ -159,7 +118,7 @@ export function AdminAnalyticsPage(): JSXElement {
           <h2 class="mb-4 text-sm font-bold text-text">
             Foydalanuvchi o'sishi
           </h2>
-          <BarChart
+          <LineChart
             data={growthQuery.data}
             labelKey="date"
             valueKey="newUsers"

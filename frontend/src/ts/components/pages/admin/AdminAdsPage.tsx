@@ -38,7 +38,7 @@ export function AdminAdsPage(): JSXElement {
   };
 
   const creativeForm = createForm(() => ({
-    defaultValues: { imageUrl: "", targetUrl: "" },
+    defaultValues: { imageUrl: "", targetUrl: "", size: "" },
     onSubmit: async ({ value }) => {
       try {
         const r = await Ape.admin.addCreative({ body: value });
@@ -168,6 +168,21 @@ export function AdminAdsPage(): JSXElement {
                 />
               )}
             </creativeForm.Field>
+            <creativeForm.Field name="size">
+              {(f) => (
+                <select
+                  value={f().state.value}
+                  onInput={(e) => f().handleChange(e.currentTarget.value)}
+                  class="w-full rounded-xl bg-sub-alt p-3 text-sm text-text ring-1 ring-sub/20 outline-none focus:ring-main"
+                >
+                  <option value="">O'lchamni tanlang (Ixtiyoriy)</option>
+                  <option value="leaderboard">Leaderboard (728x90)</option>
+                  <option value="banner">Banner (468x60)</option>
+                  <option value="medium">Medium Rectangle (300x250)</option>
+                  <option value="skyscraper">Skyscraper (120x600)</option>
+                </select>
+              )}
+            </creativeForm.Field>
             <button
               type="submit"
               class="rounded-xl bg-main px-4 py-2.5 text-sm font-medium text-bg hover:opacity-90"
@@ -250,10 +265,11 @@ export function AdminAdsPage(): JSXElement {
                       </div>
                       <div class="flex items-start gap-3">
                         <img src={cr.imageUrl} class="h-12 w-12 rounded object-cover" />
-                        <div class="flex flex-col gap-1 overflow-hidden">
-                            <span class="truncate text-text">Rasm: {cr.imageUrl}</span>
-                            <span class="truncate text-main">Havola: {cr.targetUrl}</span>
-                        </div>
+                          <div class="flex flex-col gap-1 overflow-hidden text-xs">
+                              <span class="truncate text-text">Rasm: {cr.imageUrl}</span>
+                              <span class="truncate text-main">Havola: {cr.targetUrl || 'Yo\'q'}</span>
+                              <Show when={cr.size}><span class="truncate text-sub">O'lcham: {cr.size}</span></Show>
+                          </div>
                       </div>
                     </div>
                   )}
