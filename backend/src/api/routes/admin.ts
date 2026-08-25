@@ -105,6 +105,6 @@ export default s.router(adminContract, {
     handler: async (r) => callController(AdminController.listUsers)(r),
   },
   getUserTests: {
-    handler: async (r) => callController(AdminController.getUserTests)(r),
+    handler: async (r: any) => AdminController.getUserTests(r).then((body) => ({ status: 200, body })),
   },
 });

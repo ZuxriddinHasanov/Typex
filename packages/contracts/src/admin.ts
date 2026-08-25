@@ -713,6 +713,7 @@ export const adminContract = c.router(
       summary: "get latest tests for a specific user",
       method: "GET",
       path: "/users/:uid/tests",
+      pathParams: z.object({ uid: z.string() }),
       responses: {
         200: AdminUserTestsResponseSchema,
       },

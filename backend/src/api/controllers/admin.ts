@@ -232,9 +232,9 @@ export async function getUserGrowth(
 }
 
 export async function getUserTests(
-  req: TypeUZRequest,
+  req: any,
 ): Promise<TypeUZResponse<any[]>> {
-  const uid = req.params["uid"];
+  const uid = req.params?.uid;
   const { getResults } = await import("../../dal/result.js");
   const tests = await getResults(uid ?? "", { limit: 100 });
   return new TypeUZResponse("User tests", tests);
