@@ -12,14 +12,14 @@ export const ToggleBanRequestSchema = z
   .object({
     uid: IdSchema,
   })
-  .strict();
+  ;
 export type ToggleBanRequest = z.infer<typeof ToggleBanRequestSchema>;
 
 export const ClearStreakHourOffsetRequestSchema = z
   .object({
     uid: IdSchema,
   })
-  .strict();
+  ;
 export type ClearStreakHourOffsetRequest = z.infer<
   typeof ClearStreakHourOffsetRequestSchema
 >;
@@ -28,21 +28,21 @@ export const ToggleBanResponseSchema = responseWithData(
   z.object({
     banned: z.boolean(),
   }),
-).strict();
+);
 export type ToggleBanResponse = z.infer<typeof ToggleBanResponseSchema>;
 
 export const DeleteUserRequestSchema = z
   .object({
     uid: IdSchema,
   })
-  .strict();
+  ;
 export type DeleteUserRequest = z.infer<typeof DeleteUserRequestSchema>;
 
 export const AcceptReportsRequestSchema = z
   .object({
     reports: z.array(z.object({ reportId: z.string() }).strict()).nonempty(),
   })
-  .strict();
+  ;
 export type AcceptReportsRequest = z.infer<typeof AcceptReportsRequestSchema>;
 
 export const RejectReportsRequestSchema = z
@@ -55,14 +55,14 @@ export const RejectReportsRequestSchema = z
       )
       .nonempty(),
   })
-  .strict();
+  ;
 export type RejectReportsRequest = z.infer<typeof RejectReportsRequestSchema>;
 
 export const SendForgotPasswordEmailRequestSchema = z
   .object({
     email: z.string().email(),
   })
-  .strict();
+  ;
 export type SendForgotPasswordEmailRequest = z.infer<
   typeof SendForgotPasswordEmailRequestSchema
 >;
@@ -90,7 +90,7 @@ export const AdminSearchUsersQuerySchema = z
   .object({
     q: z.string().min(1).max(100),
   })
-  .strict();
+  ;
 export type AdminSearchUsersQuery = z.infer<typeof AdminSearchUsersQuerySchema>;
 
 export const AdminUserSchema = z.object({
@@ -292,7 +292,7 @@ export const SendNotificationRequestSchema = z
     subject: z.string().min(1).max(200),
     body: z.string().min(1).max(2000),
   })
-  .strict();
+  ;
 export type SendNotificationRequest = z.infer<
   typeof SendNotificationRequestSchema
 >;
@@ -338,7 +338,7 @@ export const UpdateAdConfigRequestSchema = z
     slots: z.array(AdminAdSlotSchema),
     creatives: z.array(AdminCreativeSchema),
   })
-  .strict();
+  ;
 export type UpdateAdConfigRequest = z.infer<typeof UpdateAdConfigRequestSchema>;
 
 // --- Add Creative ---
@@ -348,7 +348,7 @@ export const AddCreativeRequestSchema = z
     targetUrl: z.string().optional().or(z.literal("")),
     size: z.string().optional(),
   })
-  .strict();
+  ;
 export type AddCreativeRequest = z.infer<typeof AddCreativeRequestSchema>;
 
 export const AddCreativeResponseSchema = responseWithData(AdminCreativeSchema);
@@ -359,7 +359,7 @@ export const DeleteCreativeParamsSchema = z
   .object({
     id: z.string(),
   })
-  .strict();
+  ;
 export type DeleteCreativeParams = z.infer<typeof DeleteCreativeParamsSchema>;
 
 const c = initContract();
