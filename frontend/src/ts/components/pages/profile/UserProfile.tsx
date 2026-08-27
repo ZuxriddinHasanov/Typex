@@ -5,7 +5,14 @@ import {
   UserProfile as UserProfileType,
 } from "@typeuz/schemas/users";
 import { formatDate } from "date-fns/format";
-import { createMemo, createResource, createSignal, For, JSXElement, Show } from "solid-js";
+import {
+  createMemo,
+  createResource,
+  createSignal,
+  For,
+  JSXElement,
+  Show,
+} from "solid-js";
 
 import Ape from "../../../ape";
 import * as PbTablesModal from "../../../modals/pb-tables";
@@ -65,12 +72,13 @@ function StatsOverview(props: { profile: UserProfileType }): JSXElement {
 }
 
 function WeeklyAnalysis(): JSXElement {
+  const [trigger, setTrigger] = createSignal(false);
   const [analysis] = createResource(
-    () => (isAuthenticated() ? "fetch" : null),
+    () => (trigger() && isAuthenticated() ? "fetch" : null),
     async () => {
       try {
         const res = await Ape.users.getWeeklyAnalysis();
-        if (res.status !== 200) throw new Error("Failed to fetch analysis");
+        if (res.status !== 200) throw new Error("Failed");
         return res.body.data;
       } catch (e) {
         throw e;
@@ -79,146 +87,91 @@ function WeeklyAnalysis(): JSXElement {
   );
 
   return (
-    <div class="relative overflow-hidden rounded-md border-2 border-sub-alt/50 bg-bg p-8 shadow-sm">
-      <Show when={analysis.error !== undefined}>
-        <div class="bg-red-500/10 border-red-500/20 mb-4 rounded-xl border p-4 text-center">
-          <span class="text-red-400 text-sm font-medium">
-            Tahlilni yuklashda xatolik yuz berdi.
-          </span>
-        </div>
+    <div class="relative overflow-hidden rounded-md border-2 border-sub-alt/50 bg-bg p-8 text-center shadow-sm">
+      <Show when={!trigger()}>
+        <button
+          type="button"
+          class="w-full rounded-xl bg-gradient-to-r from-main to-main/80 px-6 py-4 text-lg font-bold text-bg transition-all hover:scale-[1.01] hover:shadow-lg active:scale-95"
+          onClick={() => setTrigger(true)}
+        >
+          <Fa icon="fa-robot" class="mr-2" /> AI Tahlilni Boshlash (Haftalik)
+        </button>
       </Show>
-      <Show
-        when={
-          !analysis.loading &&
-          analysis.error === undefined &&
-          analysis() === null
-        }
-      >
-        <span class="text-sm font-medium text-sub">
-          Tahlil uchun profilingizga kiring yoki ko&apos;proq test topshiring.
-        </span>
-      </Show>
-      <Show when={analysis.loading}>
-        <div class="flex flex-col gap-4">
-          <div class="h-6 w-48 animate-pulse rounded-lg bg-text/5"></div>
-          <div class="h-4 w-72 animate-pulse rounded-lg bg-text/5"></div>
-          <div class="h-4 w-56 animate-pulse rounded-lg bg-text/5"></div>
-        </div>
-      </Show>
-      <Show when={analysis() !== undefined && analysis() !== null}>
-        <div class="relative z-10 flex flex-col gap-6">
-          <div class="flex items-center gap-3">
-            <span class="text-xl font-bold tracking-tight text-text">
-              Haftalik AI tahlili
-            </span>
-          </div>
 
-          <div class="grid grid-cols-2 gap-6 sm:grid-cols-4">
-            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
-              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
-                O&apos;rtacha WPM
+      <Show when={trigger()}>
+        <>
+          <Show when={analysis.error !== undefined}>
+            <div class="bg-red-500/10 border-red-500/20 mb-4 rounded-xl border p-4 text-center">
+              <span class="text-red-400 text-sm font-medium">
+                Tahlilni yuklashda xatolik yuz berdi.
               </span>
-              <div class="text-2xl font-black text-text">
-                {(analysis()?.avgWpm ?? 0).toFixed(1)}
-              </div>
-            </div>
-            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
-              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
-                O&apos;rtacha aniqlik
-              </span>
-              <div class="text-2xl font-black text-text">
-                {(analysis()?.avgAccuracy ?? 0).toFixed(1)}%
-              </div>
-            </div>
-            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
-              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
-                Jami testlar
-              </span>
-              <div class="text-2xl font-black text-text">
-                {analysis()?.totalTests}
-              </div>
-            </div>
-            <div class="flex flex-col gap-1 border-l-[3px] border-main pl-4">
-              <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
-                Eng yaxshi WPM
-              </span>
-              <div class="text-2xl font-black text-text">
-                {analysis()?.bestWpm}
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-2 flex flex-wrap items-center gap-6">
-            <Show when={analysis()?.trend === "improving"}>
-              <div class="bg-green-500/10 text-green-500 flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold">
-                <Fa icon="fa-arrow-up" /> O&apos;sish kuzatilmoqda
-              </div>
-            </Show>
-            <Show when={analysis()?.trend === "declining"}>
-              <div class="bg-red-500/10 text-red-500 flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold">
-                <Fa icon="fa-arrow-down" /> Pasayish
-              </div>
-            </Show>
-            <Show when={analysis()?.trend === "stable"}>
-              <div class="flex items-center gap-2 rounded-full bg-sub/10 px-4 py-1.5 text-sm font-bold text-sub">
-                <Fa icon="fa-minus" /> Barqaror
-              </div>
-            </Show>
-            <Show when={analysis()?.bestDay}>
-              <div class="text-sm font-medium text-sub">
-                Haftaning eng zo&apos;r kuni:{" "}
-                <span class="font-bold text-text">{analysis()?.bestDay}</span>
-              </div>
-            </Show>
-          </div>
-
-          <Show when={(analysis()?.dailyBreakdown.length ?? 0) > 0}>
-            <div class="mt-4 flex h-32 items-end justify-between gap-2 rounded-md border-2 border-sub-alt/50 bg-bg p-4">
-              <For each={analysis()?.dailyBreakdown ?? []}>
-                {(day) => (
-                  <div class="group relative flex h-full flex-1 flex-col items-center justify-end gap-2">
-                    <div class="absolute -top-8 hidden rounded bg-text px-2 py-1 text-xs font-bold whitespace-nowrap text-bg opacity-0 transition-opacity group-hover:block group-hover:opacity-100">
-                      {day.wpm} wpm
-                    </div>
-                    <div
-                      class="w-full max-w-[40px] rounded-t-sm bg-sub-alt transition-all group-hover:bg-main"
-                      style={{
-                        height: `${Math.max(
-                          4,
-                          (day.wpm /
-                            Math.max(
-                              1,
-                              ...(analysis()?.dailyBreakdown ?? []).map(
-                                (d) => d.wpm,
-                              ),
-                            )) *
-                            100,
-                        )}%`,
-                      }}
-                    ></div>
-                    <span class="text-[10px] font-bold text-sub uppercase">
-                      {day.date.slice(5)}
-                    </span>
-                  </div>
-                )}
-              </For>
             </div>
           </Show>
-
           <Show
             when={
-              analysis()?.recommendation !== undefined &&
-              analysis()?.recommendation !== ""
+              !analysis.loading &&
+              analysis.error === undefined &&
+              analysis() === null
             }
           >
-            <div class="mt-2 flex items-start gap-3 rounded-md border-l-4 border-main bg-main/5 p-4">
-              <p class="text-sm leading-relaxed font-medium text-text">
-                <span class="mr-2 font-bold text-main">Tavsiya:</span>
-                {analysis()?.recommendation}
-              </p>
+            <span class="text-sm font-medium text-sub">
+              Tahlil uchun profilingizga kiring.
+            </span>
+          </Show>
+          <Show when={analysis.loading}>
+            <div class="flex flex-col gap-4 text-left">
+              <div class="h-6 w-32 animate-pulse rounded-md bg-sub-alt/50"></div>
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div class="h-20 animate-pulse rounded-md bg-sub-alt/50"></div>
+                <div class="h-20 animate-pulse rounded-md bg-sub-alt/50"></div>
+              </div>
             </div>
           </Show>
-        </div>
+          <Show
+            when={!analysis.loading && analysis() !== null ? analysis() : false}
+          >
+            {(data) => (
+              <div class="flex flex-col gap-6 text-left">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-xl font-bold tracking-tight text-text">
+                    Haftalik AI Tahlil
+                  </h3>
+                  <span class="rounded-full bg-main/10 px-3 py-1 text-xs font-bold text-main">
+                    AI Beta
+                  </span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                  <div class="flex flex-col gap-1 rounded-md bg-sub-alt/20 p-4">
+                    <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
+                      O'rtacha WPM
+                    </span>
+                    <span class="text-xl font-black text-text">
+                      {data().avgWpm.toFixed(1)}
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-1 rounded-md bg-sub-alt/20 p-4">
+                    <span class="text-[10px] font-bold tracking-wider text-sub uppercase">
+                      Aniqlik
+                    </span>
+                    <span class="text-xl font-black text-text">
+                      {data().avgAccuracy.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+                <Show when={data().recommendation}>
+                  <div class="rounded-xl border border-main/20 bg-main/5 p-5">
+                    <h4 class="mb-2 flex items-center gap-2 text-sm font-bold text-main">
+                      <Fa icon="fa-bolt" /> AI Maslahati
+                    </h4>
+                    <p class="text-sm leading-relaxed text-text/90 italic">
+                      {data().recommendation}
+                    </p>
+                  </div>
+                </Show>
+              </div>
+            )}
+          </Show>
+        </>
       </Show>
     </div>
   );
@@ -231,8 +184,9 @@ export function UserProfile(props: {
   isAccountPage?: true;
 }): JSXElement {
   const isUsersProfile = () =>
-    props.profile.uid !== undefined &&
-    props.profile.uid === (getUserId() ?? "");
+    (props.profile.uid !== undefined &&
+      props.profile.uid === (getUserId() ?? "")) ||
+    props.isAccountPage === true;
 
   return (
     <div class="animate-fade-in-up mx-auto grid w-full max-w-[1200px] gap-8">
@@ -463,7 +417,9 @@ function LastTestCard(props: {
             <Fa icon="fa-chart-line" class="text-lg" />
           </div>
           <div>
-            <h3 class="text-base font-bold text-text">So&apos;nggi test natijasi</h3>
+            <h3 class="text-base font-bold text-text">
+              So&apos;nggi test natijasi
+            </h3>
             <span class="text-xs text-sub">
               {lr().timestamp
                 ? formatDate(lr().timestamp, "dd MMM yyyy, HH:mm")
@@ -513,7 +469,7 @@ function LastTestCard(props: {
       </div>
 
       <Show when={expanded()}>
-        <div class="mt-4 animate-in fade-in slide-in-from-top-2 rounded-xl border border-sub/10 bg-bg/70 p-4 text-xs">
+        <div class="animate-in fade-in slide-in-from-top-2 mt-4 rounded-xl border border-sub/10 bg-bg/70 p-4 text-xs">
           <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <div>
               <span class="text-sub">Rejim: </span>
@@ -523,7 +479,9 @@ function LastTestCard(props: {
             </div>
             <div>
               <span class="text-sub">Til: </span>
-              <span class="font-bold text-text">{lr().language ?? "english"}</span>
+              <span class="font-bold text-text">
+                {lr().language ?? "english"}
+              </span>
             </div>
             <div>
               <span class="text-sub">Davomiylik: </span>

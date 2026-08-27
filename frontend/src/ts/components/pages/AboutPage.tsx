@@ -13,10 +13,10 @@ export function AboutPage(): JSXElement {
         </h1>
         <p class="mx-auto max-w-2xl text-lg leading-relaxed text-sub">
           <span class="font-semibold text-text">TypeX.uz</span> &mdash;
-          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. Ushbu platformada
-          O&apos;zbek, Ingliz va Rus tillarida yozish tezligingizni sinab
-          ko&apos;ring, natijalaringizni AI yordamida tahlil qiling va reytingda
-          yuksaling.
+          O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. Ushbu
+          platformada O&apos;zbek, Ingliz va Rus tillarida yozish tezligingizni
+          sinab ko&apos;ring, natijalaringizni AI yordamida tahlil qiling va
+          reytingda yuksaling.
         </p>
       </section>
 
@@ -280,11 +280,11 @@ export function AboutPage(): JSXElement {
             each={[
               {
                 q: "TypeX.uz kimniki va uning asoschisi kim?",
-                a: "TypeX.uz platformasi o'zbek dasturchisi Zuxriddin Hasanov tomonidan asos solingan. Sayt butunlay mustaqil va notijorat loyiha hisoblanadi.",
+                a: "TypeX.uz platformasining asoschisi va dasturchisi Zuxriddin Hasanov hamda dasturchisi Yaxyo Jabborov hisoblanadi. Sayt butunlay mustaqil va notijorat loyiha hisoblanadi.",
               },
               {
                 q: "TypeX.uz nima?",
-                a: "TypeX.uz — Zuxriddin Hasanov tomonidan yaratilgan bepul yozuv tezligi testi. O'zbek, Ingliz va Rus tillarida yozish tezligi va aniqligini o'lchash imkonini beradi.",
+                a: "TypeX.uz — Zuxriddin Hasanov va Yaxyo Jabborov tomonidan yaratilgan bepul yozuv tezligi testi. O'zbek, Ingliz va Rus tillarida yozish tezligi va aniqligini o'lchash imkonini beradi.",
               },
               {
                 q: "TypeX.uz bepulmi?",
