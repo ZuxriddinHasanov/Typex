@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { VirtualKeyboard } from "./VirtualKeyboard";
-import { HandIndicator } from "./HandIndicator";
+
+import { KeyboardAndHands } from "./KeyboardAndHands";
 import { useProgressStore } from "../../store/progressStore";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/Button";
@@ -157,8 +157,8 @@ export const TypingEngine: React.FC<TypingEngineProps> = ({ lessonId, text }) =>
       </motion.div>
 
       <div className="flex flex-col items-center gap-4">
-        <HandIndicator expectedChar={expectedChar} />
-        <VirtualKeyboard expectedChar={expectedChar} pressedChar={pressedChar} isError={isErrorShake} />
+        
+        <KeyboardAndHands expectedChar={expectedChar} pressedChar={pressedChar} isError={isErrorShake} />
       </div>
     </div>
   );
