@@ -14,6 +14,7 @@ import webhooks from "./webhooks";
 import configs from "./configs";
 import configuration from "./configuration";
 import authRoutes from "./auth";
+import clubRoutes from "./club";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import connections from "./connections";
@@ -47,6 +48,7 @@ const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
   "/docs": docs,
+  "/club": clubRoutes,
 };
 
 const s = initServer();
