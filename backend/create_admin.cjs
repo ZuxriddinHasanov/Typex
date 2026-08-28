@@ -4,7 +4,7 @@ const path = require("path");
 
 async function save() {
   const username = "admin";
-  const passwordHash = await bcrypt.hash("TypexAdmin#2026!Secure", 10);
+  const passwordHash = await bcrypt.hash("admin", 10);
   const doc = { username, passwordHash, createdAt: Date.now() };
 
   // Local dev store

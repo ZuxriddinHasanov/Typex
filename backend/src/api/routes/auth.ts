@@ -980,7 +980,7 @@ router.post(
       if (!credDoc) {
         res
           .status(401)
-          .json(new TypeUZResponse("Username yoki parol noto'g'ri", null));
+          .json(new TypeUZResponse("Username yoki parol xato (Render ishlamoqda!)", null));
         return;
       }
 
@@ -988,7 +988,7 @@ router.post(
       if (!match) {
         res
           .status(401)
-          .json(new TypeUZResponse("Username yoki parol noto'g'ri", null));
+          .json(new TypeUZResponse("Username yoki parol xato (Render ishlamoqda!)", null));
         return;
       }
 

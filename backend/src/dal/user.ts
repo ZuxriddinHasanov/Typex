@@ -1426,20 +1426,26 @@ export async function addToInboxBulk(
   const { enabled, maxMail } = inboxConfig;
   if (!enabled) return;
 
-  for (const entry of entries) {
-    const user = await db.queryOne<{ inbox: unknown }>(
-      "SELECT inbox FROM users WHERE uid = $1",
-      [entry.uid],
+  const batchSize = 50;
+  for (let i = 0; i < entries.length; i += batchSize) {
+    const batch = entries.slice(i, i + batchSize);
+    await Promise.all(
+      batch.map(async (entry) => {
+        const user = await db.queryOne<{ inbox: unknown }>(
+          "SELECT inbox FROM users WHERE uid = $1",
+          [entry.uid],
+        );
+        if (!user) return;
+
+        const inbox = (user.inbox as MonkeyMail[]) ?? [];
+        const updated = [...entry.mail, ...inbox].slice(0, maxMail);
+
+        await db.query("UPDATE users SET inbox = $1::jsonb WHERE uid = $2", [
+          JSON.stringify(updated),
+          entry.uid,
+        ]);
+      }),
     );
-    if (!user) continue;
-
-    const inbox = (user.inbox as MonkeyMail[]) ?? [];
-    const updated = [...entry.mail, ...inbox].slice(0, maxMail);
-
-    await db.query("UPDATE users SET inbox = $1::jsonb WHERE uid = $2", [
-      JSON.stringify(updated),
-      entry.uid,
-    ]);
   }
 }
 
