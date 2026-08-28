@@ -25,7 +25,6 @@ kbd {
 
 .pageAbout .typeuz-gradient {
   background: linear-gradient(135deg, #f97316, #fdba74);
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
