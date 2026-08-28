@@ -87,6 +87,7 @@ export async function connect(): Promise<void> {
     maxRetriesPerRequest: null, // These options are required for BullMQ
     enableReadyCheck: false,
     lazyConnect: true,
+    connectTimeout: 5000,
     retryStrategy: () => null,
   });
 
