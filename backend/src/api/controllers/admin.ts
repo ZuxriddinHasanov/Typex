@@ -1023,7 +1023,7 @@ export async function deleteCreative(
       }
     }
     safeImportantLog("admin_creative_deleted", { id }, req.ctx.decodedToken?.uid ?? "");
-    return new TypeUZResponse("Creative deleted");
+    return new TypeUZResponse("Creative deleted", null as never);
   } catch {
     throw new TypeUZError(500, "Failed to delete creative");
   }
