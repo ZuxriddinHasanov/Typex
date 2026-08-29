@@ -836,7 +836,7 @@ export async function getAdConfig(_req: TypeUZRequest): Promise<
         creatives: [],
       });
     }
-    const ads = row.data as {
+    const rawAds = row.data as any; const ads = { enabled: false, masterToggle: false, slots: [], creatives: [], ...rawAds } as {
       enabled: boolean;
       masterToggle: boolean;
       slots: Array<{
@@ -967,7 +967,7 @@ export async function addCreative(
 
   try {
     const row = await db.queryOne<{ data: unknown }>("SELECT data FROM configuration WHERE _id = 'ad_config'");
-    const ads = (row?.data ?? { enabled: false, masterToggle: false, slots: [], creatives: [] }) as any;
+    const ads = { enabled: false, masterToggle: false, slots: [], creatives: [], ...(row?.data || {}) } as any;
     if (!ads.creatives) ads.creatives = [];
     ads.creatives.push(newCreative);
     await db.query("INSERT INTO configuration (_id, data) VALUES ('ad_config', $1::jsonb) ON CONFLICT (_id) DO UPDATE SET data = $1::jsonb", [JSON.stringify(ads)]);
@@ -1016,7 +1016,7 @@ export async function deleteCreative(
   try {
     const row = await db.queryOne<{ data: unknown }>("SELECT data FROM configuration WHERE _id = 'ad_config'");
     if (row?.data) {
-      const ads = row.data as any;
+      const ads = { enabled: false, masterToggle: false, slots: [], creatives: [], ...(row.data as any) };
       if (ads.creatives) {
         ads.creatives = ads.creatives.filter((c: any) => c.id !== id);
         await db.query("UPDATE configuration SET data = $1::jsonb WHERE _id = 'ad_config'", [JSON.stringify(ads)]);
