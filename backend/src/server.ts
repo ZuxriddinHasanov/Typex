@@ -49,8 +49,8 @@ async function seedDefaultAdmin(): Promise<void> {
     );
     return;
   }
-  if (!isDevEnvironment() && password.length < 12) {
-    throw new Error("ADMIN_PASSWORD must contain at least 12 characters");
+  if (!isDevEnvironment() && password.length < 8) {
+    throw new Error("ADMIN_PASSWORD must contain at least 8 characters");
   }
 
   const hash = await bcrypt.hash(password, 10);

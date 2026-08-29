@@ -19,4 +19,4 @@ onlyBuiltDependencies:
   - re2
   - ssh2
 
-  - 'frontend-club'
+
