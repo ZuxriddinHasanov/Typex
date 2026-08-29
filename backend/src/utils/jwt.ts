@@ -1,3 +1,4 @@
+import Logger from "./logger";
 import jwt from "jsonwebtoken";
 import TypeUZError from "./error";
 import { isDevEnvironment } from "./misc";
@@ -6,7 +7,7 @@ const getSecret = (): string => {
   const secret = process.env["JWT_SECRET"];
   if (secret === undefined || secret === null || secret === "") {
     if (!isDevEnvironment()) {
-      throw new Error("JWT_SECRET is required in production");
+      Logger.warning("JWT_SECRET is missing! Using fallback secret.");
     }
     return "typeuz_default_fallback_jwt_secret_change_me_in_production";
   }
