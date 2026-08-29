@@ -35,7 +35,7 @@ export async function getPublicAdConfig(
 
   if (isDevEnvironment()) {
     const ads = devGet<any>("ad_config");
-    if (!ads || !ads.enabled || !ads.masterToggle) {
+    if (!ads || !ads.enabled) {
       return new TypeUZResponse("OK", defaultEmpty);
     }
     return new TypeUZResponse("OK", {
@@ -66,7 +66,7 @@ export async function getPublicAdConfig(
 
     const ads = res.rows[0].data;
     console.log("DB_ADS_OBJ:", JSON.stringify(ads));
-    if (!ads || !ads.enabled || !ads.masterToggle) {
+    if (!ads || !ads.enabled) {
       console.log("DB_ADS_DISABLED");
       return new TypeUZResponse("OK", defaultEmpty);
     }
