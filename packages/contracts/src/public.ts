@@ -34,6 +34,7 @@ export const PublicAdSlotInfoSchema = z.object({
   slotId: z.string(),
   imageUrl: z.string().optional(),
   targetUrl: z.string().optional(),
+  size: z.string().optional(),
 });
 export const PublicAdConfigResponseSchema = responseWithData(
   z.object({

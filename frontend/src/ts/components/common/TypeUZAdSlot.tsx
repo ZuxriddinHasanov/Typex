@@ -5,6 +5,13 @@ import { cn } from "../../utils/cn";
 
 type SlotId = "ad-result" | "ad-about-1" | "ad-about-2" | "ad-account-1" | "ad-account-2" | "ad-landing-hero" | "ad-leaderboard";
 
+const sizeStyles: Record<string, string> = {
+  leaderboard: "max-w-[728px] max-h-[90px]",
+  banner: "max-w-[468px] max-h-[60px]",
+  medium: "max-w-[300px] max-h-[250px]",
+  skyscraper: "max-w-[120px] max-h-[600px]",
+};
+
 export function TypeUZAdSlot(props: {
   slotId: SlotId;
   class?: string;
@@ -24,7 +31,7 @@ export function TypeUZAdSlot(props: {
     retry: false,
   }));
 
-  const config = () => { console.log('Ad config in frontend:', adQuery.data); return adQuery.data; };
+  const config = () => adQuery.data;
 
   const slot = () => {
     const c = config();
@@ -41,13 +48,14 @@ export function TypeUZAdSlot(props: {
           rel="noreferrer noopener"
           class={cn(
             "block overflow-hidden rounded-xl border border-sub/10 bg-sub-alt/30 transition-opacity hover:opacity-90",
+            s().size ? sizeStyles[s().size!] : "",
             props.class,
           )}
         >
           <img
             src={s().imageUrl}
             alt=""
-            class="w-full object-contain"
+            class="h-full w-full object-contain"
             loading="lazy"
           />
         </a>

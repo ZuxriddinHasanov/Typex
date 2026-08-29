@@ -44,7 +44,7 @@ export async function getPublicAdConfig(
         .filter((s: any) => s.enabled && s.creativeId)
         .map((s: any) => {
           const cr = ads.creatives.find((c: any) => c.id === s.creativeId);
-          return { slotId: s.slotId, imageUrl: cr?.imageUrl, targetUrl: cr?.targetUrl };
+          return { slotId: s.slotId, imageUrl: cr?.imageUrl, targetUrl: cr?.targetUrl, size: cr?.size };
         })
         .filter((s: any) => s.imageUrl && s.targetUrl !== undefined),
     });
@@ -75,7 +75,7 @@ export async function getPublicAdConfig(
       .filter((s: any) => s.enabled && s.creativeId)
       .map((s: any) => {
         const cr = (ads.creatives || []).find((c: any) => c.id === s.creativeId);
-        return { slotId: s.slotId, imageUrl: cr?.imageUrl, targetUrl: cr?.targetUrl };
+        return { slotId: s.slotId, imageUrl: cr?.imageUrl, targetUrl: cr?.targetUrl, size: cr?.size };
       })
       .filter((s: any) => s.imageUrl && s.targetUrl !== undefined);
 
