@@ -826,7 +826,7 @@ export async function getAdConfig(_req: TypeUZRequest): Promise<
 
   try {
     const row = await db.queryOne<{ data: unknown }>(
-      "SELECT data FROM configuration WHERE _id = 'ads'",
+      "SELECT data FROM configuration WHERE _id = 'ad_config'",
     );
     if (row?.data === undefined || row.data === null) {
       return new TypeUZResponse("Ad config retrieved", {
@@ -900,7 +900,7 @@ export async function updateAdConfig(
   try {
     await db
       .collection("configuration")
-      .replaceOne({ _id: "ads" }, { _id: "ads", ...config }, { upsert: true });
+      .replaceOne({ _id: "ad_config" }, { _id: "ad_config", ...config }, { upsert: true });
     safeImportantLog(
       "admin_ad_config_updated",
       {},
@@ -966,18 +966,12 @@ export async function addCreative(
   }
 
   try {
-    await db.collection("configuration").updateOne(
-      { _id: "ads" },
-      {
-        $push: { creatives: newCreative },
-      },
-      { upsert: true },
-    );
-    safeImportantLog(
-      "admin_creative_added",
-      { id: newCreative.id },
-      req.ctx.decodedToken?.uid ?? "",
-    );
+    const row = await db.queryOne<{ data: unknown }>("SELECT data FROM configuration WHERE _id = 'ad_config'");
+    const ads = (row?.data ?? { enabled: false, masterToggle: false, slots: [], creatives: [] }) as any;
+    if (!ads.creatives) ads.creatives = [];
+    ads.creatives.push(newCreative);
+    await db.query("INSERT INTO configuration (_id, data) VALUES ('ad_config', $1::jsonb) ON CONFLICT (_id) DO UPDATE SET data = $1::jsonb", [JSON.stringify(ads)]);
+    safeImportantLog("admin_creative_added", { id: newCreative.id }, req.ctx.decodedToken?.uid ?? "");
     return new TypeUZResponse("Creative added", newCreative);
   } catch {
     throw new TypeUZError(500, "Failed to add creative");
@@ -1020,15 +1014,16 @@ export async function deleteCreative(
   }
 
   try {
-    await db
-      .collection("configuration")
-      .updateOne({ _id: "ads" }, { $pull: { creatives: { id } } });
-    safeImportantLog(
-      "admin_creative_deleted",
-      { id },
-      req.ctx.decodedToken?.uid ?? "",
-    );
-    return new TypeUZResponse("Creative deleted", null);
+    const row = await db.queryOne<{ data: unknown }>("SELECT data FROM configuration WHERE _id = 'ad_config'");
+    if (row?.data) {
+      const ads = row.data as any;
+      if (ads.creatives) {
+        ads.creatives = ads.creatives.filter((c: any) => c.id !== id);
+        await db.query("UPDATE configuration SET data = $1::jsonb WHERE _id = 'ad_config'", [JSON.stringify(ads)]);
+      }
+    }
+    safeImportantLog("admin_creative_deleted", { id }, req.ctx.decodedToken?.uid ?? "");
+    return new TypeUZResponse("Creative deleted");
   } catch {
     throw new TypeUZError(500, "Failed to delete creative");
   }

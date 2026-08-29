@@ -24,7 +24,7 @@ export function TypeUZAdSlot(props: {
     retry: false,
   }));
 
-  const config = () => adQuery.data;
+  const config = () => { console.log('Ad config in frontend:', adQuery.data); return adQuery.data; };
 
   const slot = () => {
     const c = config();
