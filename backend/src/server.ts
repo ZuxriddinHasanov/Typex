@@ -195,5 +195,5 @@ async function bootServer(port: number): Promise<Server> {
 const PORT = parseInt(process.env["PORT"] ?? "5005", 10);
 
 void bootServer(PORT).catch(() => {
-  process.exitCode = 1;
+  process.exit(1);
 });
