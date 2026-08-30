@@ -1,3 +1,4 @@
+import { contract } from "@typeuz/contracts";
 
 import { isDevEnvironment } from "../../utils/misc";
 import { devGet } from "../../utils/dev-store";
@@ -185,18 +186,74 @@ export async function getSiteContent(_req: any) {
   }
 }
 
-export async function submitFeedback(req: any) {
+
+export async function submitFeedback(req: TypeUZRequest<typeof contract.public.submitFeedback>) {
   if (isDevEnvironment()) {
     return new TypeUZResponse("Fikr yuborildi (Dev Mode)", {});
   }
   
-  const { text } = req.body;
-  if (!text || text.length < 5) {
-    return new TypeUZResponse("Matn juda qisqa", {});
+  const { title, description, imageBase64 } = req.body;
+  
+  const token =
+    process.env["TELEGRAM_BOT_TOKEN"] ??
+    "8795683362:AAF3aOEI11aSlj9jXKo1Czc0z8P8iEgttEg";
+  const chatIdEnv = process.env["TELEGRAM_CHAT_ID"];
+  const chat1 = process.env["TELEGRAM_CHAT_ID_1"] ?? "5594075164";
+  const chat2 = process.env["TELEGRAM_CHAT_ID_2"] ?? "5860578943";
+  const chat3 = process.env["TELEGRAM_CHAT_ID_3"] ?? "7454746576";
+
+  const chatIds = new Set<string>();
+  if (chatIdEnv !== undefined && chatIdEnv !== "") {
+    chatIdEnv.split(",").forEach(id => chatIds.add(id.trim()));
   }
-  
-  Logger.info(`Feedback received: ${text.substring(0, 50)}...`);
-  
-  // Here we would typically save to DB or send email/telegram
+  if (chat1 !== "") chatIds.add(chat1.trim());
+  if (chat2 !== "") chatIds.add(chat2.trim());
+  if (chat3 !== "") chatIds.add(chat3.trim());
+
+  if (token !== "" && chatIds.size > 0) {
+    const userDisplay = req.ctx.user ? `${req.ctx.user.name} (${req.ctx.user.email ?? "Noma'lum"})` : "Mehmon";
+    const msg = `?? *Yangi Fikr / Shikoyat*\n\n*Kimdan:* ${userDisplay}\n*Mavzu:* ${title}\n*Tafsilot:* ${description}`;
+    
+    for (const chatId of chatIds) {
+      if (!chatId) continue;
+      
+      try {
+        if (imageBase64 && imageBase64.startsWith("data:image")) {
+          const b64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+          const buffer = Buffer.from(b64Data, "base64");
+          
+          const formData = new FormData();
+          formData.append("chat_id", chatId);
+          formData.append("caption", msg);
+          formData.append("parse_mode", "Markdown");
+          
+          const blob = new Blob([buffer], { type: "image/png" });
+          formData.append("photo", blob, "screenshot.png");
+          
+          await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+            method: "POST",
+            body: formData,
+          });
+        } else {
+          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: msg,
+              parse_mode: "Markdown",
+            }),
+          });
+        }
+      } catch (e) {
+        Logger.error(`Error sending feedback to TG: ${e}`);
+      }
+    }
+  }
+
   return new TypeUZResponse("Fikr muvaffaqiyatli yuborildi. Rahmat!", {});
 }
+
+
+
+
