@@ -675,7 +675,7 @@ router.post("/github", authLimiter, async (req: Request, res: Response) => {
 router.get("/github/login", (_req: Request, res: Response) => {
   const clientId = process.env["GITHUB_CLIENT_ID"];
   const feUrl = (): string =>
-    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://www.typex.uz")}/auth-callback.html`;
+    `${isDevEnvironment() ? "http://localhost:3000" : "https://www.typex.uz"}/auth-callback.html`;
 
   if (clientId === undefined || clientId === "") {
     if (isDevEnvironment()) {
@@ -753,7 +753,7 @@ router.get("/github/login", (_req: Request, res: Response) => {
     path: "/auth/github/callback",
   });
   const callbackUrl =
-    process.env["GITHUB_REDIRECT_URI"] ??
+    
     `${_req.protocol}://${_req.get("host") ?? _req.hostname}/auth/github/callback`;
   const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=user:email&state=${state}`;
   res.redirect(url);
@@ -761,7 +761,7 @@ router.get("/github/login", (_req: Request, res: Response) => {
 
 router.get("/github/callback", async (req: Request, res: Response) => {
   const feUrl = (): string =>
-    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://www.typex.uz")}/auth-callback.html`;
+    `${isDevEnvironment() ? "http://localhost:3000" : "https://www.typex.uz"}/auth-callback.html`;
 
   try {
     const { code, state } = req.query as { code?: string; state?: string };
@@ -1097,4 +1097,6 @@ router.post("/admin/change-password", async (req: Request, res: Response) => {
 });
 
 export default router;
+
+
 
