@@ -370,9 +370,7 @@ export async function verifyGoogleToken(token: string): Promise<{
     if (resp.ok) {
       payload = (await resp.json()) as Record<string, unknown>;
     } else {
-      resp = await fetch(
-        `https://oauth2.googleapis.com/tokeninfo?access_token=${token}`,
-      );
+      resp = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: `Bearer ${token}` } });
       if (!resp.ok) return null;
       payload = (await resp.json()) as Record<string, unknown>;
     }
@@ -677,7 +675,7 @@ router.post("/github", authLimiter, async (req: Request, res: Response) => {
 router.get("/github/login", (_req: Request, res: Response) => {
   const clientId = process.env["GITHUB_CLIENT_ID"];
   const feUrl = (): string =>
-    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://typeuz.uz")}/auth-callback.html`;
+    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://www.typex.uz")}/auth-callback.html`;
 
   if (clientId === undefined || clientId === "") {
     if (isDevEnvironment()) {
@@ -763,7 +761,7 @@ router.get("/github/login", (_req: Request, res: Response) => {
 
 router.get("/github/callback", async (req: Request, res: Response) => {
   const feUrl = (): string =>
-    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://typeuz.uz")}/auth-callback.html`;
+    `${process.env["FRONTEND_URL"] ?? (isDevEnvironment() ? "http://localhost:3000" : "https://www.typex.uz")}/auth-callback.html`;
 
   try {
     const { code, state } = req.query as { code?: string; state?: string };
@@ -1099,3 +1097,4 @@ router.post("/admin/change-password", async (req: Request, res: Response) => {
 });
 
 export default router;
+

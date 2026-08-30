@@ -181,7 +181,7 @@ export function isDevEnvironment(): boolean {
 }
 
 export function getFrontendUrl(): string {
-  return process.env["FRONTEND_URL"] ?? "https://typeuz.uz";
+  return process.env["FRONTEND_URL"] ?? "https://www.typex.uz";
 }
 
 export function replaceObjectId<T extends { _id: string }>(data: T): T {
@@ -211,3 +211,4 @@ export function isPlainObject(value: unknown): boolean {
     Object.getPrototypeOf(value) === Object.prototype
   );
 }
+
