@@ -187,7 +187,7 @@ export async function getSiteContent(_req: any) {
 }
 
 
-export async function submitFeedback(req: TypeUZRequest<typeof contract.public.submitFeedback>) {
+export async function submitFeedback(req: any) {
   if (isDevEnvironment()) {
     return new TypeUZResponse("Fikr yuborildi (Dev Mode)", {});
   }
@@ -211,7 +211,7 @@ export async function submitFeedback(req: TypeUZRequest<typeof contract.public.s
   if (chat3 !== "") chatIds.add(chat3.trim());
 
   if (token !== "" && chatIds.size > 0) {
-    const userDisplay = req.ctx.user ? `${req.ctx.user.name} (${req.ctx.user.email ?? "Noma'lum"})` : "Mehmon";
+    const userDisplay = req.ctx?.user ? `${req.ctx?.user.name} (${req.ctx?.user.email ?? "Noma'lum"})` : "Mehmon";
     const msg = `?? *Yangi Fikr / Shikoyat*\n\n*Kimdan:* ${userDisplay}\n*Mavzu:* ${title}\n*Tafsilot:* ${description}`;
     
     for (const chatId of chatIds) {
@@ -253,6 +253,7 @@ export async function submitFeedback(req: TypeUZRequest<typeof contract.public.s
 
   return new TypeUZResponse("Fikr muvaffaqiyatli yuborildi. Rahmat!", {});
 }
+
 
 
 
