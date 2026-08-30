@@ -544,6 +544,22 @@ router.post("/google", authLimiter, async (req: Request, res: Response) => {
   }
 });
 
+
+async function getGithubSecrets(): Promise<{ clientId: string; clientSecret: string }> {
+  try {
+    const row = await db.queryOne<{ github_client_id: string; github_client_secret: string }>(
+      "SELECT github_client_id, github_client_secret FROM app_secrets LIMIT 1"
+    );
+    if (row) {
+      return { clientId: row.github_client_id, clientSecret: row.github_client_secret };
+    }
+  } catch (e) {}
+  return {
+    clientId: process.env["GITHUB_CLIENT_ID"] ?? "",
+    clientSecret: process.env["GITHUB_CLIENT_SECRET"] ?? ""
+  };
+}
+
 router.post("/github", authLimiter, async (req: Request, res: Response) => {
   try {
     const { code } = req.body as { code?: string };
@@ -555,8 +571,9 @@ router.post("/github", authLimiter, async (req: Request, res: Response) => {
       return;
     }
 
-    const GITHUB_CLIENT_ID = process.env["GITHUB_CLIENT_ID"];
-    const GITHUB_CLIENT_SECRET = process.env["GITHUB_CLIENT_SECRET"];
+    const _secrets = await getGithubSecrets();
+      const GITHUB_CLIENT_ID = _secrets.clientId;
+      const GITHUB_CLIENT_SECRET = _secrets.clientSecret;
     if (
       GITHUB_CLIENT_ID === undefined ||
       GITHUB_CLIENT_ID === "" ||
@@ -672,8 +689,8 @@ router.post("/github", authLimiter, async (req: Request, res: Response) => {
   }
 });
 
-router.get("/github/login", (_req: Request, res: Response) => {
-  const clientId = process.env["GITHUB_CLIENT_ID"];
+router.get("/github/login", async (_req: Request, res: Response) => {
+  const clientId = (await getGithubSecrets()).clientId;
   const feUrl = (): string =>
     `${isDevEnvironment() ? "http://localhost:3000" : "https://www.typex.uz"}/auth-callback.html`;
 
@@ -797,8 +814,9 @@ router.get("/github/callback", async (req: Request, res: Response) => {
       return;
     }
 
-    const GITHUB_CLIENT_ID = process.env["GITHUB_CLIENT_ID"];
-    const GITHUB_CLIENT_SECRET = process.env["GITHUB_CLIENT_SECRET"];
+    const _secrets = await getGithubSecrets();
+      const GITHUB_CLIENT_ID = _secrets.clientId;
+      const GITHUB_CLIENT_SECRET = _secrets.clientSecret;
     if (
       GITHUB_CLIENT_ID === undefined ||
       GITHUB_CLIENT_ID === "" ||
