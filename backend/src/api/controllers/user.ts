@@ -1676,7 +1676,7 @@ export async function getWeeklyAnalysis(
       const prompt = `Men "TypeUZ (typeuz.uz)" foydalanuvchisiman. Mening haftalik yozish o'rtacha tezligim ${avgWpm} WPM, aniqligim ${avgAccuracy}%. Men 7 kun ichida jami ${results.length} ta test topshirdim va ${Math.round(totalTimeSeconds)} soniya sarfladim. Trendim: ${trend}. Eng zo'r tezligim: ${bestWpm} WPM bo'ldi. Menga shu natijalarim asosida o'zbek tilida motivatsion va foydali maslahat ber. Matn ichida natija raqamlarim ham ishtirok etsin va u juda ham qisqa bo'lsin.`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiConfig.apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${aiConfig.apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1776,7 +1776,7 @@ export async function getTestAnalysis(req: TypeUZRequest<undefined, {wpm: number
 
   try {
     const prompt = `Foydalanuvchi hozirgina TypeUZ da test topshirdi. Natijasi: WPM: ${wpm}, Aniqlik: ${acc}%. Test davomiyligi: ${duration} sek. Testda qilingan xatolar soni: ${errors ?? "Noma'lum"}. Ushbu test natijasini juda qisqa (2-3 gap) qilib o'zbek tilida tahlil qilib bering. Unga testdagi yutuq va kamchiligini ayting. Matn Markdown ko'rinishida bo'lsin.`;
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiConfig.apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${aiConfig.apiKey}`, {
       method: `POST`,
       headers: { 'Content-Type': `application/json` },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
@@ -1791,3 +1791,5 @@ export async function getTestAnalysis(req: TypeUZRequest<undefined, {wpm: number
     return new TypeUZResponse(`Error`, `AI tahlil vaqtinchalik ishlamayapti.`);
   }
 }
+
+
