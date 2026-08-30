@@ -752,15 +752,18 @@
 
   .wrapper {
     display: grid;
-    // height: 200px;
-    gap: 1rem;
-    // grid-template-columns: auto 1fr;
-    // justify-content: center;
+    gap: 1.5rem;
     align-items: center;
     grid-template-columns: auto 1fr;
     grid-template-areas:
       "stats chart"
       "morestats morestats";
+    background: var(--bg-color);
+    border-radius: 2rem;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--sub-alt-color);
+    position: relative;
     // "wordsHistory wordsHistory"
     // "buttons buttons"
     // "login login"
@@ -1076,6 +1079,17 @@
 
       .group {
         // margin-bottom: 0.5rem;
+        background: var(--sub-alt-color);
+        border-radius: 1rem;
+        padding: 1rem 1.5rem;
+        border: 1px solid var(--sub-color);
+        opacity: 0.8;
+        transition: transform 0.2s, opacity 0.2s;
+        
+        &:hover {
+          opacity: 1;
+          transform: translateY(-2px);
+        }
 
         .top {
           color: var(--sub-color);

@@ -164,3 +164,11 @@ main.focus #typingTest {
 }
 
 
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, var(--main-color), #fdba74) !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+  }
+}
+
