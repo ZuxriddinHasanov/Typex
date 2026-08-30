@@ -1,6 +1,8 @@
 import type { ThemeName } from "@typeuz/schemas/configs";
 
 import { JSXElement, Show } from "solid-js";
+import { NotificationBubble } from "../../common/NotificationBubble";
+import { hasUnreadInbox } from "../../../collections/inbox";
 
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
@@ -113,7 +115,7 @@ export function Nav(): JSXElement {
       >
         <a
           href="/account"
-          class={cn(
+          class={cn("relative",
             "ml-2 flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all hover:scale-105",
             getActivePage() === "account"
               ? "bg-main text-bg"
@@ -123,8 +125,11 @@ export function Nav(): JSXElement {
         >
           <Fa icon="fa-user" />
           Profil
+          <NotificationBubble show={hasUnreadInbox()} variant="corner" />
         </a>
       </Show>
     </nav>
   );
 }
+
+

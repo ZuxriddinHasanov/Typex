@@ -10,6 +10,7 @@ import {
 } from "@tanstack/solid-db";
 import { Accessor, createSignal } from "solid-js";
 import Ape from "../ape";
+import { navigate } from "../controllers/route-controller";
 import { queryClient } from "../queries";
 import { baseKey } from "../queries/utils/keys";
 import { isAuthenticated } from "../states/core";
@@ -33,6 +34,7 @@ const queryKeys = {
 const [maxMailboxSize, setMaxMailboxSize] = createSignal(0);
 
 export { maxMailboxSize };
+export const [hasUnreadInbox, setHasUnreadInbox] = createSignal(false);
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
 };
@@ -78,6 +80,7 @@ const inboxCollection = createCollection(
               customTitle: "Yangi xabar",
               customIcon: "envelope",
               durationMs: 8000,
+              onDismiss: (reason) => { if (reason === 'click') { void navigate('/notifications'); } },
             },
           );
           if ("Notification" in window) {
@@ -101,6 +104,7 @@ const inboxCollection = createCollection(
       data.forEach((item) => lastKnownInboxIds.add(item.id));
 
       setMaxMailboxSize(response.body.data.maxMail);
+    setHasUnreadInbox(data.some(it => it.status === 'unread' || it.status === 'unclaimed'));
       return data;
     },
     queryClient,
@@ -233,3 +237,5 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
+
