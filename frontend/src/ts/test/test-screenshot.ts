@@ -28,7 +28,7 @@ function revert(): void {
   qs("#ad-result-wrapper")?.show();
   qs("#ad-result-small-wrapper")?.show();
   qs(".pageTest .ssWatermark")?.hide();
-  qs(".pageTest .ssWatermark")?.setText("typeuz.uz");
+  qs(".pageTest .ssWatermark")?.setText("typex.uz");
   qs(".pageTest .buttons")?.show();
   qs("noscript")?.show();
   qs("#nocss")?.show();
@@ -67,7 +67,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   qs(".pageTest .ssWatermark")?.show();
 
   const snapshot = DB.getSnapshot();
-  const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "typeuz.uz"];
+  const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "typex.uz"];
   if (snapshot?.name !== undefined) {
     const userText = `${snapshot?.name}${getHtmlByUserFlags(snapshot, {
       iconsOnly: true,

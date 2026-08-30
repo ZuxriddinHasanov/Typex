@@ -11,10 +11,10 @@ const sections = [
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>
-          typeuz.uz saytiga kirish orqali siz ushbu Foydalanish shartlariga
-          rioya qilishga rozilik bildirasiz. Ushbu shartlar O'zbekiston
-          Respublikasi Fuqarolik Kodeksi va O'zbekiston Respublikasining
-          "Axborotlashtirish to'g'risida"gi Qonuniga muvofiq ishlab chiqilgan.
+          typex.uz saytiga kirish orqali siz ushbu Foydalanish shartlariga rioya
+          qilishga rozilik bildirasiz. Ushbu shartlar O'zbekiston Respublikasi
+          Fuqarolik Kodeksi va O'zbekiston Respublikasining "Axborotlashtirish
+          to'g'risida"gi Qonuniga muvofiq ishlab chiqilgan.
         </p>
         <p class="font-semibold text-text">
           AGAR USHBU SHARTLARNING BARCHASIGA ROZI BO'LMASANGIZ, XIZMATLARIMIZDAN

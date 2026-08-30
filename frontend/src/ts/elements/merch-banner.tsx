@@ -17,8 +17,8 @@ export function showIfNotClosedBefore(): void {
       customContent: (
         <>
           Check out our merch store!{" "}
-          <a target="_blank" rel="noopener" href="https://typeuz.uz">
-            typeuz.uz
+          <a target="_blank" rel="noopener" href="https://typex.uz">
+            typex.uz
           </a>
         </>
       ),

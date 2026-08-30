@@ -12,7 +12,7 @@ export type SeoConfig = {
   jsonLd?: Record<string, unknown>[];
 };
 
-const BASE_URL = "https://typeuz.uz";
+const BASE_URL = "https://typex.uz";
 const DEFAULT_OG_IMAGE = `${BASE_URL}/images/typeuzsocial.png`;
 
 function u(path: string): string {
@@ -21,7 +21,8 @@ function u(path: string): string {
 
 export const seoConfig: Record<string, SeoConfig> = {
   landing: {
-    title: "TypeUZ | O'zbek tilidagi yozuv tezligi testi — bepul onlayn typing test",
+    title:
+      "TypeUZ | O'zbek tilidagi yozuv tezligi testi — bepul onlayn typing test",
     description:
       "O'zbek tilidagi eng zamonaviy yozuv tezligi testi. WPM va aniqlikni o'lchang, reytingda yuksaling, do'stlaringiz bilan bellashing. Bepul, ro'yxatsiz sinab ko'ring! Klaviaturada tez yozishni o'rganing.",
     canonical: u("/"),
@@ -52,9 +53,24 @@ export const seoConfig: Record<string, SeoConfig> = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Bosh sahifa", item: u("/") },
-          { "@type": "ListItem", position: 2, name: "Yozuv tezligi testi", item: u("/test") },
-          { "@type": "ListItem", position: 3, name: "Reyting", item: u("/leaderboards") },
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Bosh sahifa",
+            item: u("/"),
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Yozuv tezligi testi",
+            item: u("/test"),
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Reyting",
+            item: u("/leaderboards"),
+          },
         ],
       },
       {
@@ -204,20 +220,30 @@ export function getSeoConfig(pageName: PageName): SeoConfig {
   );
 }
 
-export function updateSeo(pageName: PageName, params?: Record<string, string>): void {
+export function updateSeo(
+  pageName: PageName,
+  params?: Record<string, string>,
+): void {
   const cfg = getSeoConfig(pageName);
   const url = window.location.href;
 
   let title = cfg.title;
   const profileName = params?.["uidOrName"];
-  if (pageName === "profile" && profileName !== undefined && profileName !== "") {
+  if (
+    pageName === "profile" &&
+    profileName !== undefined &&
+    profileName !== ""
+  ) {
     title = `${profileName} | TypeUZ — Foydalanuvchi profili`;
   }
 
   document.title = title;
 
   setMeta("description", cfg.description);
-  setMeta("robots", cfg.noindex ? "noindex, nofollow" : cfg.robots ?? "index, follow");
+  setMeta(
+    "robots",
+    cfg.noindex ? "noindex, nofollow" : (cfg.robots ?? "index, follow"),
+  );
   setMeta("keywords", buildKeywords(pageName));
 
   setMeta("og:title", cfg.ogTitle ?? cfg.title);
@@ -267,8 +293,8 @@ function setCanonical(href: string): void {
 function setHreflang(canonical: string): void {
   const langs = [
     { hreflang: "uz", href: canonical },
-    { hreflang: "en", href: canonical.replace("typeuz.uz", "en.typeuz.uz") },
-    { hreflang: "ru", href: canonical.replace("typeuz.uz", "ru.typeuz.uz") },
+    { hreflang: "en", href: canonical.replace("typex.uz", "en.typex.uz") },
+    { hreflang: "ru", href: canonical.replace("typex.uz", "ru.typex.uz") },
     { hreflang: "x-default", href: canonical },
   ];
   for (const link of qsa('link[rel="alternate"][hreflang]')) {
@@ -299,12 +325,16 @@ function setJsonLd(data: Record<string, unknown>[] | undefined): void {
 }
 
 function buildKeywords(pageName: string): string {
-  const base = "typeuz, yozuv tezligi testi, typing test, klaviaturada tez yozish, wpm test, tez yozish, o'zbekcha typing, onlayn test, bepul";
+  const base =
+    "typeuz, yozuv tezligi testi, typing test, klaviaturada tez yozish, wpm test, tez yozish, o'zbekcha typing, onlayn test, bepul";
   const specific: Record<string, string> = {
-    landing: "yozuv tezligi testi o'zbek, typing test uzbek, klaviatura tezligi, matn terish tezligi, 10 barmoq yozish, tez yozishni o'rganish",
+    landing:
+      "yozuv tezligi testi o'zbek, typing test uzbek, klaviatura tezligi, matn terish tezligi, 10 barmoq yozish, tez yozishni o'rganish",
     test: "wpm test o'zbek, yozuv tezligini o'lchash, typing speed test, tez yozish testi online, so'z/minut hisoblash",
-    about: "typeuz haqida, loyiha, it o'quv markazi, yozuv tezligi platformasi, o'zbek typing sayti",
-    leaderboards: "reyting, eng tez yozuvchilar, leaderboard, typing reytingi, eng yaxshi natijalar",
+    about:
+      "typeuz haqida, loyiha, it o'quv markazi, yozuv tezligi platformasi, o'zbek typing sayti",
+    leaderboards:
+      "reyting, eng tez yozuvchilar, leaderboard, typing reytingi, eng yaxshi natijalar",
   };
   return `${specific[pageName] ?? ""}, ${base}`;
 }

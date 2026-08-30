@@ -156,8 +156,8 @@ const sections = [
           </li>
         </ul>
         <p class="mt-4">
-          Huquqlaringizni amalga oshirish uchun TypexUz@gmail.com ga
-          murojaat qiling. So'rovlar 30 kun ichida ko'rib chiqiladi.
+          Huquqlaringizni amalga oshirish uchun TypexUz@gmail.com ga murojaat
+          qiling. So'rovlar 30 kun ichida ko'rib chiqiladi.
         </p>
       </div>
     ),
@@ -222,7 +222,7 @@ const sections = [
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>TypeUZ boshqa veb-saytlarga havolalarni o'z ichiga olishi mumkin.</p>
         <p class="font-semibold text-text">
-          Bizning maxfiylik siyosatimiz faqat typeuz.uz ga taalluqlidir. Boshqa
+          Bizning maxfiylik siyosatimiz faqat typex.uz ga taalluqlidir. Boshqa
           saytlarga o'tganingizda, ularning siyosatini o'qing.
         </p>
       </div>
