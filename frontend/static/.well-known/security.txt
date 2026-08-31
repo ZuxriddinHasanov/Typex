@@ -1,6 +1,6 @@
-Contact: https://t.me/typeuz
+Contact: https://t.me/typex
 Expires: 2027-01-01T00:00:00.000Z
 Preferred-Languages: uz, en, ru
-Canonical: https://typeuz.uz/.well-known/security.txt
-Policy: https://typeuz.uz/security-policy
-Acknowledgments: https://typeuz.uz/security-policy#acknowledgments
+Canonical: https://typex.uz/.well-known/security.txt
+Policy: https://typex.uz/security-policy
+Acknowledgments: https://typex.uz/security-policy#acknowledgments
