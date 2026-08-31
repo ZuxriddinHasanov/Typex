@@ -329,10 +329,11 @@ function animateNumber(
   duration: number,
   onUpdate: (val: number) => void,
 ): void {
-  const startTime = performance.now();
+  let startTime: number | null = null;
   const easeOutExpo = (t: number): number =>
     t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
   function update(time: number): void {
+    startTime ??= time;
     let elapsed = time - startTime;
     if (elapsed < 0) elapsed = 0;
     let progress = elapsed / duration;
