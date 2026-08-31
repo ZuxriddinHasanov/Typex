@@ -1,3 +1,4 @@
+import { animate } from "animejs";
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
 
@@ -336,12 +337,40 @@ function updateWpmAndAcc(): void {
   if (inf) {
     qs("#result .stats .wpm .bottom")?.setText("Infinite");
   } else {
-    qs("#result .stats .wpm .bottom")?.setText(Format.typingSpeed(result.wpm));
+    const wpmEl = qs("#result .stats .wpm .bottom");
+    if (wpmEl) {
+      const obj = { value: 0 };
+      animate(obj, {
+        value: result.wpm,
+        easing: "easeOutExpo",
+        duration: 1500,
+        update: () => wpmEl.setText(Format.typingSpeed(obj.value)),
+      });
+    }
   }
-  qs("#result .stats .raw .bottom")?.setText(Format.typingSpeed(result.rawWpm));
-  qs("#result .stats .acc .bottom")?.setText(
-    result.acc === 100 ? "100%" : Format.accuracy(result.acc),
-  );
+
+  const rawEl = qs("#result .stats .raw .bottom");
+  if (rawEl) {
+    const obj = { value: 0 };
+    animate(obj, {
+      value: result.rawWpm,
+      easing: "easeOutExpo",
+      duration: 1500,
+      update: () => rawEl.setText(Format.typingSpeed(obj.value)),
+    });
+  }
+
+  const accEl = qs("#result .stats .acc .bottom");
+  if (accEl) {
+    const obj = { value: 0 };
+    animate(obj, {
+      value: result.acc,
+      easing: "easeOutExpo",
+      duration: 1500,
+      update: () =>
+        accEl.setText(obj.value === 100 ? "100%" : Format.accuracy(obj.value)),
+    });
+  }
 
   if (TestState.lastEventLog !== null) {
     const acc = getAccuracy(TestState.lastEventLog);
@@ -406,9 +435,16 @@ function updateWpmAndAcc(): void {
 }
 
 function updateConsistency(): void {
-  qs("#result .stats .consistency .bottom")?.setText(
-    Format.percentage(result.consistency),
-  );
+  const consEl = qs("#result .stats .consistency .bottom");
+  if (consEl) {
+    const obj = { value: 0 };
+    animate(obj, {
+      value: result.consistency,
+      easing: "easeOutExpo",
+      duration: 1500,
+      update: () => consEl.setText(Format.percentage(obj.value)),
+    });
+  }
   if (Config.alwaysShowDecimalPlaces) {
     qs("#result .stats .consistency .bottom")?.setAttribute(
       "aria-label",
@@ -1197,12 +1233,12 @@ export async function update(
   });
 
   await Misc.promiseAnimate("#result", {
-      opacity: [0, 1],
-      translateY: [40, 0],
-      scale: [0.98, 1],
-      easing: "easeOutExpo",
-      duration: Misc.applyReducedMotion(1000),
-    });
+    opacity: [0, 1],
+    translateY: [40, 0],
+    scale: [0.98, 1],
+    easing: "easeOutExpo",
+    duration: Misc.applyReducedMotion(1000),
+  });
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   TestState.setResultCalculating(false);
@@ -1506,4 +1542,3 @@ configEvent.subscribe(async ({ key }) => {
     ChartController.result.resize();
   }
 });
-
