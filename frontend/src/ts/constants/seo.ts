@@ -13,7 +13,7 @@ export type SeoConfig = {
 };
 
 const BASE_URL = "https://typex.uz";
-const DEFAULT_OG_IMAGE = `${BASE_URL}/images/typeuzsocial.png`;
+const DEFAULT_OG_IMAGE = `${BASE_URL}/images/TypeXsocial.png`;
 
 function u(path: string): string {
   return `${BASE_URL}${path}`;
@@ -22,7 +22,7 @@ function u(path: string): string {
 export const seoConfig: Record<string, SeoConfig> = {
   landing: {
     title:
-      "TypeUZ | O'zbek tilidagi yozuv tezligi testi — bepul onlayn typing test",
+      "TypeX | O'zbek tilidagi yozuv tezligi testi — bepul onlayn typing test",
     description:
       "O'zbek tilidagi eng zamonaviy yozuv tezligi testi. WPM va aniqlikni o'lchang, reytingda yuksaling, do'stlaringiz bilan bellashing. Bepul, ro'yxatsiz sinab ko'ring! Klaviaturada tez yozishni o'rganing.",
     canonical: u("/"),
@@ -30,7 +30,7 @@ export const seoConfig: Record<string, SeoConfig> = {
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        name: "TypeUZ",
+        name: "TypeX",
         url: BASE_URL,
         description:
           "O'zbek tilidagi eng zamonaviy yozuv tezligi testi. Bepul onlayn typing test.",
@@ -79,10 +79,10 @@ export const seoConfig: Record<string, SeoConfig> = {
         mainEntity: [
           {
             "@type": "Question",
-            name: "TypeUZ bepulmi?",
+            name: "TypeX bepulmi?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Ha, TypeUZ butunlay bepul. Ro'yxatdan o'tish va barcha funksiyalardan foydalanish uchun hech qanday to'lov talab qilinmaydi.",
+              text: "Ha, TypeX butunlay bepul. Ro'yxatdan o'tish va barcha funksiyalardan foydalanish uchun hech qanday to'lov talab qilinmaydi.",
             },
           },
           {
@@ -115,95 +115,95 @@ export const seoConfig: Record<string, SeoConfig> = {
   },
 
   test: {
-    title: "TypeUZ | Yozuv tezligi testi — WPM va aniqlikni o'lchang",
+    title: "TypeX | Yozuv tezligi testi — WPM va aniqlikni o'lchang",
     description:
       "Bepul onlayn yozuv tezligi testi. O'zbek, ingliz va rus tillarida WPM (so'z/minut) va aniqlik foizini o'lchang. 15 soniyadan 30 daqiqagacha bo'lgan testlar. Klaviaturada tez yozishni sinab ko'ring.",
     canonical: u("/test"),
   },
 
   about: {
-    title: "TypeUZ | Loyiha haqida — O'zbek tilidagi typing test platformasi",
+    title: "TypeX | Loyiha haqida — O'zbek tilidagi typing test platformasi",
     description:
-      "TypeUZ — O'zbekistonning eng zamonaviy yozuv tezligi testi platformasi. IT O'quv Markazi tomonidan yaratilgan. Bepul typing test, AI tahlil, reyting va statistika.",
+      "TypeX — O'zbekistonning eng zamonaviy yozuv tezligi testi platformasi. IT O'quv Markazi tomonidan yaratilgan. Bepul typing test, AI tahlil, reyting va statistika.",
     canonical: u("/about"),
   },
 
   leaderboards: {
-    title: "TypeUZ | Reyting — Eng tez yozuvchilar",
+    title: "TypeX | Reyting — Eng tez yozuvchilar",
     description:
-      "TypeUZ reyting jadvali. O'zbek, ingliz va rus tillarida eng tez yozuvchilar bilan bellashing. O'z WPM ko'rsatkichingizni butun O'zbekiston bo'ylab solishtiring.",
+      "TypeX reyting jadvali. O'zbek, ingliz va rus tillarida eng tez yozuvchilar bilan bellashing. O'z WPM ko'rsatkichingizni butun O'zbekiston bo'ylab solishtiring.",
     canonical: u("/leaderboards"),
   },
 
   privacy: {
-    title: "TypeUZ | Maxfiylik siyosati",
+    title: "TypeX | Maxfiylik siyosati",
     description:
-      "TypeUZ maxfiylik siyosati. Shaxsiy ma'lumotlarni qayta ishlash va himoya qilish tartibi. O'zbekiston Respublikasi qonunchiligiga muvofiq.",
+      "TypeX maxfiylik siyosati. Shaxsiy ma'lumotlarni qayta ishlash va himoya qilish tartibi. O'zbekiston Respublikasi qonunchiligiga muvofiq.",
     canonical: u("/privacy-policy"),
     robots: "index, follow",
   },
 
   terms: {
-    title: "TypeUZ | Foydalanish shartlari",
+    title: "TypeX | Foydalanish shartlari",
     description:
-      "TypeUZ platformasidan foydalanish shartlari. Foydalanuvchi huquq va majburiyatlari. O'zbekiston Respublikasi qonunchiligiga muvofiq.",
+      "TypeX platformasidan foydalanish shartlari. Foydalanuvchi huquq va majburiyatlari. O'zbekiston Respublikasi qonunchiligiga muvofiq.",
     canonical: u("/terms-of-service"),
     robots: "index, follow",
   },
 
   security: {
-    title: "TypeUZ | Xavfsizlik siyosati",
+    title: "TypeX | Xavfsizlik siyosati",
     description:
-      "TypeUZ xavfsizlik siyosati. Ma'lumotlar xavfsizligi va himoyasi bo'yicha talablar. O'zbekiston Respublikasi qonunchiligiga muvofiq.",
+      "TypeX xavfsizlik siyosati. Ma'lumotlar xavfsizligi va himoyasi bo'yicha talablar. O'zbekiston Respublikasi qonunchiligiga muvofiq.",
     canonical: u("/security-policy"),
     robots: "index, follow",
   },
 
   login: {
-    title: "TypeUZ | Kirish — Ro'yxatdan o'tish",
+    title: "TypeX | Kirish — Ro'yxatdan o'tish",
     description:
-      "TypeUZ ga kirish yoki ro'yxatdan o'tish. Natijalaringizni saqlang, reytingda qatnashing va shaxsiy profilingizni boshqaring.",
+      "TypeX ga kirish yoki ro'yxatdan o'tish. Natijalaringizni saqlang, reytingda qatnashing va shaxsiy profilingizni boshqaring.",
     canonical: u("/login"),
     robots: "noindex, follow",
   },
 
   account: {
-    title: "TypeUZ | Mening profilim",
+    title: "TypeX | Mening profilim",
     description: "Shaxsiy profilingiz, natijalaringiz va statistika.",
     canonical: u("/account"),
     robots: "noindex, follow",
   },
 
   adminLogin: {
-    title: "TypeUZ | Admin panel — Kirish",
+    title: "TypeX | Admin panel — Kirish",
     description: "Admin panelga kirish.",
-    canonical: u("/typeuz-hq"),
+    canonical: u("/TypeX-hq"),
     robots: "noindex, nofollow",
   },
 
   adminDashboard: {
-    title: "TypeUZ | Admin panel",
+    title: "TypeX | Admin panel",
     description: "Admin panel boshqaruvi.",
-    canonical: u("/typeuz-hq/dashboard"),
+    canonical: u("/TypeX-hq/dashboard"),
     robots: "noindex, nofollow",
   },
 
   onboarding: {
-    title: "TypeUZ | Kirish — Sozlamalar",
-    description: "TypeUZ platformasiga xush kelibsiz! Profilingizni sozlang.",
+    title: "TypeX | Kirish — Sozlamalar",
+    description: "TypeX platformasiga xush kelibsiz! Profilingizni sozlang.",
     canonical: u("/onboarding"),
     robots: "noindex, follow",
   },
 
   profile: {
-    title: "TypeUZ | Foydalanuvchi profili",
+    title: "TypeX | Foydalanuvchi profili",
     description: "Foydalanuvchi profili va statistika.",
     canonical: u("/profile"),
     robots: "noindex, follow",
   },
 
   "404": {
-    title: "TypeUZ | Sahifa topilmadi (404)",
+    title: "TypeX | Sahifa topilmadi (404)",
     description: "Qidirilayotgan sahifa topilmadi. Bosh sahifaga qaytish.",
     canonical: u("/404"),
     robots: "noindex, follow",
@@ -213,7 +213,7 @@ export const seoConfig: Record<string, SeoConfig> = {
 export function getSeoConfig(pageName: PageName): SeoConfig {
   return (
     seoConfig[pageName] ?? {
-      title: "TypeUZ | Yozuv tezligi testi",
+      title: "TypeX | Yozuv tezligi testi",
       description: "O'zbek tilidagi bepul yozuv tezligi testi.",
       canonical: u("/"),
     }
@@ -234,7 +234,7 @@ export function updateSeo(
     profileName !== undefined &&
     profileName !== ""
   ) {
-    title = `${profileName} | TypeUZ — Foydalanuvchi profili`;
+    title = `${profileName} | TypeX — Foydalanuvchi profili`;
   }
 
   document.title = title;
@@ -251,7 +251,7 @@ export function updateSeo(
   setMeta("og:url", url);
   setMeta("og:image", cfg.ogImage ?? DEFAULT_OG_IMAGE);
   setMeta("og:type", "website");
-  setMeta("og:site_name", "TypeUZ");
+  setMeta("og:site_name", "TypeX");
   setMeta("og:locale", "uz_UZ");
 
   setMeta("twitter:title", cfg.ogTitle ?? cfg.title);
@@ -326,13 +326,13 @@ function setJsonLd(data: Record<string, unknown>[] | undefined): void {
 
 function buildKeywords(pageName: string): string {
   const base =
-    "typeuz, yozuv tezligi testi, typing test, klaviaturada tez yozish, wpm test, tez yozish, o'zbekcha typing, onlayn test, bepul";
+    "TypeX, yozuv tezligi testi, typing test, klaviaturada tez yozish, wpm test, tez yozish, o'zbekcha typing, onlayn test, bepul";
   const specific: Record<string, string> = {
     landing:
       "yozuv tezligi testi o'zbek, typing test uzbek, klaviatura tezligi, matn terish tezligi, 10 barmoq yozish, tez yozishni o'rganish",
     test: "wpm test o'zbek, yozuv tezligini o'lchash, typing speed test, tez yozish testi online, so'z/minut hisoblash",
     about:
-      "typeuz haqida, loyiha, it o'quv markazi, yozuv tezligi platformasi, o'zbek typing sayti",
+      "TypeX haqida, loyiha, it o'quv markazi, yozuv tezligi platformasi, o'zbek typing sayti",
     leaderboards:
       "reyting, eng tez yozuvchilar, leaderboard, typing reytingi, eng yaxshi natijalar",
   };
