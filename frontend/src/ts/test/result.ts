@@ -1,4 +1,3 @@
-import { animate } from "animejs";
 //TODO: use Format
 import { Chart, type PluginChartOptions } from "chart.js";
 
@@ -324,6 +323,27 @@ export async function updateChartPBLine(): Promise<void> {
   });
 }
 
+function animateNumber(
+  start: number,
+  end: number,
+  duration: number,
+  onUpdate: (val: number) => void,
+): void {
+  const startTime = performance.now();
+  const easeOutExpo = (t: number): number =>
+    t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  function update(time: number): void {
+    let elapsed = time - startTime;
+    if (elapsed < 0) elapsed = 0;
+    let progress = elapsed / duration;
+    if (progress > 1) progress = 1;
+    const current = start + (end - start) * easeOutExpo(progress);
+    onUpdate(current);
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
 function updateWpmAndAcc(): void {
   let inf = false;
   if (result.wpm >= 1000) {
@@ -339,36 +359,24 @@ function updateWpmAndAcc(): void {
   } else {
     const wpmEl = qs("#result .stats .wpm .bottom");
     if (wpmEl) {
-      const obj = { value: 0 };
-      animate(obj, {
-        value: result.wpm,
-        easing: "easeOutExpo",
-        duration: 1500,
-        update: () => wpmEl.setText(Format.typingSpeed(obj.value)),
-      });
+      animateNumber(0, result.wpm, 1500, (val) =>
+        wpmEl.setText(Format.typingSpeed(val)),
+      );
     }
   }
 
   const rawEl = qs("#result .stats .raw .bottom");
   if (rawEl) {
-    const obj = { value: 0 };
-    animate(obj, {
-      value: result.rawWpm,
-      easing: "easeOutExpo",
-      duration: 1500,
-      update: () => rawEl.setText(Format.typingSpeed(obj.value)),
-    });
+    animateNumber(0, result.rawWpm, 1500, (val) =>
+      rawEl.setText(Format.typingSpeed(val)),
+    );
   }
 
   const accEl = qs("#result .stats .acc .bottom");
   if (accEl) {
-    const obj = { value: 0 };
-    animate(obj, {
-      value: result.acc,
-      easing: "easeOutExpo",
-      duration: 1500,
-      update: () =>
-        accEl.setText(obj.value === 100 ? "100%" : Format.accuracy(obj.value)),
+    animateNumber(0, result.acc, 1500, (val) => {
+      const roundVal = Math.round(val);
+      accEl.setText(roundVal === 100 ? "100%" : Format.accuracy(val));
     });
   }
 
@@ -437,13 +445,9 @@ function updateWpmAndAcc(): void {
 function updateConsistency(): void {
   const consEl = qs("#result .stats .consistency .bottom");
   if (consEl) {
-    const obj = { value: 0 };
-    animate(obj, {
-      value: result.consistency,
-      easing: "easeOutExpo",
-      duration: 1500,
-      update: () => consEl.setText(Format.percentage(obj.value)),
-    });
+    animateNumber(0, result.consistency, 1500, (val) =>
+      consEl.setText(Format.percentage(val)),
+    );
   }
   if (Config.alwaysShowDecimalPlaces) {
     qs("#result .stats .consistency .bottom")?.setAttribute(
@@ -476,24 +480,31 @@ function updateTime(): void {
     `${result.afkDuration}s afk ${afkSecondsPercent}%`,
   );
 
-  if (Config.alwaysShowDecimalPlaces) {
-    let time = `${Numbers.roundTo2(result.testDuration).toFixed(2)}s`;
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Numbers.roundTo2(result.testDuration));
+  const timeEl = qs("#result .stats .time .bottom .text");
+  if (timeEl) {
+    if (Config.alwaysShowDecimalPlaces) {
+      animateNumber(0, result.testDuration, 1500, (val) => {
+        let time = `${Numbers.roundTo2(val).toFixed(2)}s`;
+        if (val > 61) {
+          time = DateTime.secondsToString(Numbers.roundTo2(val));
+        }
+        timeEl.setText(time);
+      });
+    } else {
+      animateNumber(0, result.testDuration, 1500, (val) => {
+        let time = `${Math.round(val)}s`;
+        if (val > 61) {
+          time = DateTime.secondsToString(Math.round(val));
+        }
+        timeEl.setText(time);
+      });
+      qs("#result .stats .time .bottom")?.setAttribute(
+        "aria-label",
+        `${Numbers.roundTo2(result.testDuration)}s (${
+          result.afkDuration
+        }s afk ${afkSecondsPercent}%)`,
+      );
     }
-    qs("#result .stats .time .bottom .text")?.setText(time);
-  } else {
-    let time = `${Math.round(result.testDuration)}s`;
-    if (result.testDuration > 61) {
-      time = DateTime.secondsToString(Math.round(result.testDuration));
-    }
-    qs("#result .stats .time .bottom .text")?.setText(time);
-    qs("#result .stats .time .bottom")?.setAttribute(
-      "aria-label",
-      `${Numbers.roundTo2(result.testDuration)}s (${
-        result.afkDuration
-      }s afk ${afkSecondsPercent}%)`,
-    );
   }
 }
 

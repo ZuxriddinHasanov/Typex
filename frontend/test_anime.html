@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <body>
+    <script type="module">
+      import { animate } from "https://cdn.jsdelivr.net/npm/animejs@4.2.2/+esm";
+      const obj = { value: 0 };
+      animate(obj, {
+        value: 100,
+        duration: 1000,
+        update: () => console.log(obj.value),
+      });
+    </script>
+  </body>
+</html>
