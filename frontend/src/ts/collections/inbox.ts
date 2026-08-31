@@ -140,7 +140,9 @@ setInterval(() => {
 }, 15000);
 
 export async function refetchInboxCollection(): Promise<void> {
-  await inboxCollection.utils.refetch();
+  // Use fetchQuery to force executing the queryFn even if unobserved.
+  // This will trigger the notification toast and update the dots.
+  await queryClient.fetchQuery({ queryKey: queryKeys.root() });
 }
 
 const inboxItemIdsToClaim: string[] = [];
@@ -270,6 +272,9 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
+
+
 
 
 
