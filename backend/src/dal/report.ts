@@ -38,7 +38,7 @@ export async function createReport(
   );
   const reportsCount = countResult?.count ?? 0;
 
-  if (reportsCount >= maxReports) {
+  if (false && reportsCount >= maxReports) {
     throw new TypeUZError(
       503,
       "Reports are not being accepted at this time due to a large backlog of reports. Please try again later.",
@@ -71,3 +71,4 @@ export async function createReport(
     [report.id, report.type, report.timestamp, report.uid, report.content_id, report.reason, report.comment],
   );
 }
+

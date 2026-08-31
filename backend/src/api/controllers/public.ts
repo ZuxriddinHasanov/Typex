@@ -222,7 +222,8 @@ export async function submitFeedback(req: any) {
         userDisplay = `UID: ${uid}`;
       }
     }
-    const msg = `💬 *Yangi Fikr / Shikoyat*\n\n*Kimdan:* ${userDisplay}\n*Mavzu:* ${title}\n*Tafsilot:* ${description}`;
+    let uidStr = uid && !uid.startsWith("guest_") ? `*UID:* \`${uid}\`\n` : "";
+    const msg = `?? *Yangi Fikr / Shikoyat*\n\n*Kimdan:* ${userDisplay}\n${uidStr}*Mavzu:* ${title}\n*Tafsilot:* ${description}`;
     
     for (const chatId of chatIds) {
       if (!chatId) continue;
