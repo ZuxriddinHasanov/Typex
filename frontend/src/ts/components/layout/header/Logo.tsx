@@ -1,13 +1,9 @@
-import { JSXElement, createMemo } from "solid-js";
+import { JSXElement } from "solid-js";
 
 import { restartTestEvent } from "../../../events/test";
 import { getActivePage } from "../../../states/core";
-import { getTheme } from "../../../states/theme";
-import { isColorDark } from "../../../utils/colors";
 
 export function Logo(): JSXElement {
-  const isDark = createMemo(() => isColorDark(getTheme().bg));
-
   return (
     <a
       href="/"
@@ -20,10 +16,11 @@ export function Logo(): JSXElement {
       }}
     >
       <img
-        src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
+        src="/images/favicon.svg"
         alt="TypeX Logo"
-        class="h-14 w-auto object-contain sm:h-16"
+        class="mr-3 h-8 w-auto object-contain sm:h-10"
       />
+      <span class="text-2xl font-bold text-text">TypeX</span>
     </a>
   );
 }
