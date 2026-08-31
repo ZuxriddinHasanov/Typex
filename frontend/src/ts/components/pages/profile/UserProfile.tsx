@@ -1,3 +1,4 @@
+import { TypewriterText } from "../../common/TypewriterText";
 // oxlint-disable typescript/no-explicit-any, react/no-unescaped-entities
 import { PersonalBest, PersonalBests } from "@typeuz/schemas/shared";
 import {
@@ -163,9 +164,7 @@ function WeeklyAnalysis(): JSXElement {
                     <h4 class="mb-2 flex items-center gap-2 text-sm font-bold text-main">
                       <Fa icon="fa-bolt" /> AI Maslahati
                     </h4>
-                    <p class="text-sm leading-relaxed text-text/90 italic">
-                      {data().recommendation}
-                    </p>
+                    <div class="text-sm leading-relaxed text-text/90"><TypewriterText text={data().recommendation} speed={10} /></div>
                   </div>
                 </Show>
               </div>
@@ -497,3 +496,5 @@ function LastTestCard(props: {
     </div>
   );
 }
+
+
