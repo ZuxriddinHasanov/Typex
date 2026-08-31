@@ -1,3 +1,4 @@
+import { notifyUserInbox } from "../init/websocket";
 import { canFunboxGetPb, checkAndUpdatePb, LbPersonalBests } from "../utils/pb";
 import * as db from "../init/db";
 import TypeUZError from "../utils/error";
@@ -1739,4 +1740,5 @@ export async function updateAiUses(
     uid,
   ]);
 }
+
 
