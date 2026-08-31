@@ -49,13 +49,13 @@ function initWs() {
     try {
       const data = JSON.parse(e.data);
       if (data.type === 'NEW_INBOX') {
-        queryClient.invalidateQueries(queryKeys.inbox());
+        refetchInboxCollection().catch(console.error);
       }
     } catch(e) {}
   };
   ws.onclose = () => { ws = null; setTimeout(initWs, 5000); };
 }
-if (typeof window !== 'undefined') { initWs(); }
+if (typeof window !== 'undefined') { initWs(); setTimeout(() => { if (isAuthenticated()) refetchInboxCollection().catch(console.error); }, 1000); }
 export const [unreadInboxCount, setUnreadInboxCount] = createSignal(0);
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
@@ -270,6 +270,9 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
+
+
 
 
 
