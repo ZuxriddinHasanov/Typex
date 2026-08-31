@@ -280,7 +280,7 @@ export function AboutPage(): JSXElement {
             each={[
               {
                 q: "TypeX.uz kimniki va uning asoschisi kim?",
-                a: "TypeX.uz platformasining asoschilari va dasturchilari Zuxriddin Hasanov hamda Yaxyo Jabborov hisoblanadi. Sayt butunlay mustaqil va notijorat loyiha hisoblanadi.",
+                a: "TypeX.uz platformasining asoschisi va dasturchisi Zuxriddin Hasanov hamda dasturchisi Yaxyo Jabborov hisoblanadi. Sayt butunlay mustaqil va notijorat loyiha hisoblanadi.",
               },
               {
                 q: "TypeX.uz nima?",

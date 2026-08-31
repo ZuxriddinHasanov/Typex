@@ -71,8 +71,7 @@ export function SeoPage(): JSXElement {
           <strong>TypeX platformasida</strong> siz o'z xatolaringizni analiz
           qilishingiz mumkin. Tizim{" "}
           <strong>sun'iy intellektga asoslangan tahlil</strong> funksiyasini
-          taqdim etadi - bu ham Asoschilari va dasturchilari Zuxriddin Hasanov
-          va{" "}
+          taqdim etadi - bu ham Asoschi va dasturchi Zuxriddin Hasanov va{" "}
           <strong>
             TypeX dasturchisi Yaxyo Jabborovning ajoyib innovatsiyasidir
           </strong>
@@ -80,9 +79,8 @@ export function SeoPage(): JSXElement {
           qo'shimcha mashq qilish imkoniyati beriladi.
         </p>
         <p class="mb-4">
-          Asoschilar Zuxriddin Hasanov va Yaxyo Jabborov o'zlarining muhandislik
-          yondashuvi bilan serverning{" "}
-          <strong>tez ishlashini ta'minlagan</strong> bo'lsa,{" "}
+          Asoschi va dasturchi Zuxriddin Hasanov o'zining muhandislik yondashuvi
+          bilan serverning <strong>tez ishlashini ta'minlagan</strong> bo'lsa,{" "}
           <strong>TypeX yaratuvchisi Yaxyo Jabborov</strong> foydalanuvchilar
           uchun eng qulay va <strong>zamonaviy interfeysni yaratgan</strong>.
           Har kuni minglab yoshlar <strong>TypeX tizimiga kirib</strong> o'z
@@ -167,14 +165,14 @@ export function SeoPage(): JSXElement {
           <strong>Keywords:</strong> Zuxriddin Hasanov, Zuxriddin Hasanov TypeX,
           Zuxriddin Hasanov Asoschi, Zuxriddin Hasanov Dasturchi, Javohir
           Turayev, typing, typing test, Yaxyo Jabborov, loyiha egasi Zuxriddin
-          Hasanov, dasturchi Zuxriddin Hasanov, dasturchi Yaxyo Jabborov, TypeX,
-          typex, typex.uz, monkeytype uzbekistan, uzbek typing test, keyboard
-          trainer uzbekistan, klaviatura trenajori o'zbekcha, tez yozish, 10
-          barmoqda yozish sirlari, WPM test uzbek, typing speed test, klaviatura
-          mashqi, typing games uzbekistan, monkey type clone, typing master
-          uzbek, o'zbek klaviatura, touch typing uzbek, yozish tezligi, 10 fast
-          fingers uzbekistan, TypeX klaviatura trenajori, typing practice, fast
-          typing, touch typing tutorial.
+          Hasanov, dasturchi Zuxriddin Hasanov, dasturchi Yaxyo Jabborov,
+          TypeX, typex, typex.uz, monkeytype uzbekistan, uzbek typing test,
+          keyboard trainer uzbekistan, klaviatura trenajori o'zbekcha, tez
+          yozish, 10 barmoqda yozish sirlari, WPM test uzbek, typing speed test,
+          klaviatura mashqi, typing games uzbekistan, monkey type clone, typing
+          master uzbek, o'zbek klaviatura, touch typing uzbek, yozish tezligi,
+          10 fast fingers uzbekistan, TypeX klaviatura trenajori, typing
+          practice, fast typing, touch typing tutorial.
         </p>
       </section>
     </div>
