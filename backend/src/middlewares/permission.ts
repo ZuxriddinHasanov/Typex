@@ -151,16 +151,7 @@ function getRequiredPermissionIds(
 
 import Logger from "../utils/logger";
 
-async function checkIfUserIsAdmin(
-  decodedToken: DecodedToken | undefined,
-  options: RequestAuthenticationOptions | undefined,
-): Promise<boolean> {
-  console.log(">>>>>>>> CHECK_ADMIN CALLED <<<<<<<<");
-  console.log("Decoded Token:", decodedToken);
-  
-  // BYPASS: allow all access to admin routes on local testing
-  return true;
-}
+async function checkIfUserIsAdmin(decodedToken: DecodedToken | undefined, options: RequestAuthenticationOptions | undefined): Promise<boolean> { if (!decodedToken || !decodedToken.uid) return false; return await isAdmin(decodedToken.uid); }
 
 type CheckResult =
   | {
@@ -206,3 +197,4 @@ async function checkUserPermissions(
     passed: true,
   };
 }
+
