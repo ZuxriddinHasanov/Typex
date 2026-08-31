@@ -211,8 +211,18 @@ export async function submitFeedback(req: any) {
   if (chat3 !== "") chatIds.add(chat3.trim());
 
   if (token !== "" && chatIds.size > 0) {
-    const userDisplay = req.ctx?.user ? `${req.ctx?.user.name} (${req.ctx?.user.email ?? "Noma'lum"})` : "Mehmon";
-    const msg = `?? *Yangi Fikr / Shikoyat*\n\n*Kimdan:* ${userDisplay}\n*Mavzu:* ${title}\n*Tafsilot:* ${description}`;
+        let userDisplay = "Mehmon";
+    const uid = req.ctx?.decodedToken?.uid;
+    if (uid && uid !== "" && !uid.startsWith("guest_")) {
+      try {
+        const UserDAL = require("../../dal/user");
+        const reporter = await UserDAL.getUser(uid, "submitFeedback");
+        userDisplay = `${reporter.name} (${reporter.email ?? "Noma'lum"})`;
+      } catch (e) {
+        userDisplay = `UID: ${uid}`;
+      }
+    }
+    const msg = `💬 *Yangi Fikr / Shikoyat*\n\n*Kimdan:* ${userDisplay}\n*Mavzu:* ${title}\n*Tafsilot:* ${description}`;
     
     for (const chatId of chatIds) {
       if (!chatId) continue;
@@ -253,6 +263,9 @@ export async function submitFeedback(req: any) {
 
   return new TypeUZResponse("Fikr muvaffaqiyatli yuborildi. Rahmat!", {});
 }
+
+
+
 
 
 
