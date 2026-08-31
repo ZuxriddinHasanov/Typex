@@ -21,11 +21,7 @@ export function Title(props: {
   onPreviousSelect: () => void;
 }): JSXElement {
   const title = createMemo(() => {
-    const type =
-      props.selection.type === "allTime" ? "Barcha vaqtlar" : props.selection.type === "weekly" ? "Haftalik" : "Kunlik"
-        : props.selection.type === "weekly"
-          ? "Weekly XP"
-          : "Daily";
+    const type = props.selection.type === "allTime" ? "Barcha vaqtlar" : props.selection.type === "weekly" ? "Haftalik" : "Kunlik";
 
     const friend = props.selection.friendsOnly ? "Do`stlar " : "";
 
@@ -111,4 +107,3 @@ export function Title(props: {
 function utcToLocalDate(timestamp: UTCDateMini): Date {
   return subMinutes(timestamp, new Date().getTimezoneOffset());
 }
-

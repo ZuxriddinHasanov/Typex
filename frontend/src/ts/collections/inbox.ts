@@ -157,9 +157,46 @@ setInterval(() => {
 }, 15000);
 
 export async function refetchInboxCollection(): Promise<void> {
-  // Use fetchQuery to force executing the queryFn even if unobserved.
-  // This will trigger the notification toast and update the dots.
-  await queryClient.fetchQuery({ queryKey: queryKeys.root() });
+  try {
+    const response = await Ape.users.getInbox();
+    if (response.status === 200) {
+      const rawData = response.body.data.inbox;
+      
+      const addStatus = (item) => ({
+        ...item,
+        status: item.rewards.length > 0 && !item.read ? "unclaimed" : item.read ? "read" : "unread",
+      });
+      const data = rawData.map(addStatus);
+      
+      const hasUnread = data.some(it => it.status === "unread" || it.status === "unclaimed");
+      const unreadCount = data.filter(it => it.status === "unread" || it.status === "unclaimed").length;
+      
+      setHasUnreadInbox(hasUnread);
+      setUnreadInboxCount(unreadCount);
+      
+      queryClient.setQueryData(queryKeys.root(), data);
+      
+      if (lastKnownInboxIds.size > 0) {
+        let hasNew = false;
+        for (const item of data) {
+          if (!lastKnownInboxIds.has(item.id)) {
+            hasNew = true;
+          }
+        }
+        if (hasNew) {
+          showSuccessNotification("Sizga yangi xabar keldi! Inboxni tekshiring.", {
+            customTitle: "Yangi xabar", customIcon: "envelope", durationMs: 8000, important: true,
+            onDismiss: (reason) => { if (reason === 'click') { void navigate('/notifications'); } },
+          });
+        }
+      }
+      
+      lastKnownInboxIds.clear();
+      data.forEach((item) => lastKnownInboxIds.add(item.id));
+    }
+  } catch (e) {
+    console.error("Failed to fetch inbox manually:", e);
+  }
 }
 
 const inboxItemIdsToClaim: string[] = [];
