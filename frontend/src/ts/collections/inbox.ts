@@ -8,7 +8,7 @@ import {
   not,
   useLiveQuery,
 } from "@tanstack/solid-db";
-import { Accessor, createSignal } from "solid-js";
+import { Accessor, createSignal, createRoot, createEffect } from "solid-js";
 import Ape from "../ape";
 import { navigate } from "../controllers/route-controller";
 import { queryClient } from "../queries";
@@ -45,17 +45,34 @@ function initWs() {
   if (!token) return;
   const backendWsUrl = envConfig.backendUrl.replace('http', 'ws');
   ws = new WebSocket(backendWsUrl + '?token=' + token);
+    console.log('WS connecting...');
   ws.onmessage = (e) => {
     try {
       const data = JSON.parse(e.data);
       if (data.type === 'NEW_INBOX') {
+          console.log('WS received NEW_INBOX');
         refetchInboxCollection().catch(console.error);
       }
     } catch(e) {}
   };
-  ws.onclose = () => { ws = null; setTimeout(initWs, 5000); };
+  ws.onclose = () => { ws = null; setTimeout(() => { if (isAuthenticated()) initWs(); }, 5000); };
 }
-if (typeof window !== 'undefined') { initWs(); setTimeout(() => { if (isAuthenticated()) refetchInboxCollection().catch(console.error); }, 1000); }
+
+if (typeof window !== 'undefined') {
+  createRoot(() => {
+    createEffect(() => {
+      if (isAuthenticated()) {
+        initWs();
+        refetchInboxCollection().catch(console.error);
+      } else {
+        if (ws) {
+          ws.close();
+          ws = null;
+        }
+      }
+    });
+  });
+}
 export const [unreadInboxCount, setUnreadInboxCount] = createSignal(0);
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
@@ -272,6 +289,8 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
+
 
 
 

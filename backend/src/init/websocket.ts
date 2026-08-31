@@ -9,6 +9,7 @@ export function initWebSocket(server: Server) {
   const wss = new WebSocketServer({ server });
 
   wss.on("connection", (ws, req) => {
+    Logger.info("WS connection attempt: " + req.url);
     let uid: string | null = null;
     const url = new URL(req.url || "", `http://${req.headers.host}`);
     const token = url.searchParams.get("token");
@@ -21,6 +22,7 @@ export function initWebSocket(server: Server) {
           clients.set(uid, new Set());
         }
         clients.get(uid)!.add(ws);
+        Logger.info("WS authenticated for " + uid);
       } catch (e) {
         // invalid token
       }
@@ -49,3 +51,4 @@ export function notifyUserInbox(uid: string) {
     }
   }
 }
+
