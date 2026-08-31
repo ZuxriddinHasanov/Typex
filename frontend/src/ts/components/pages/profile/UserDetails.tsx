@@ -20,6 +20,8 @@ import { bp } from "../../../states/breakpoints";
 import { getUserId, isAuthenticated } from "../../../states/core";
 import { showModal } from "../../../states/modals";
 import { showNoticeNotification } from "../../../states/notifications";
+import { NotificationBubble } from "../../common/NotificationBubble";
+import { hasUnreadInbox, unreadInboxCount } from "../../../collections/inbox";
 import { getLastResult } from "../../../states/snapshot";
 import { t } from "../../../states/ui-language";
 import { setUserToReport } from "../../../states/user-report";
@@ -157,13 +159,12 @@ function ActionButtons(props: {
         }
       >
         <a
-          href="/notifications"
-          router-link
-          class="group flex items-center gap-2 rounded-md bg-main/10 px-6 py-2.5 text-sm font-bold text-main transition-colors hover:bg-main/20 hover:scale-[1.02]"
+          href="/notifications" router-link class="relative group flex items-center gap-2 rounded-md bg-main/10 px-6 py-2.5 text-sm font-bold text-main transition-colors hover:bg-main/20 hover:scale-[1.02]"
         >
           <Fa icon="fa-bell" />
           <span>Bildirishnomalar</span>
-        </a>
+<NotificationBubble show={hasUnreadInbox()} count={unreadInboxCount()} variant="fromCorner" />
+</a>
         <button
           type="button"
           onClick={() => {
@@ -616,3 +617,4 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
     </div>
   );
 }
+

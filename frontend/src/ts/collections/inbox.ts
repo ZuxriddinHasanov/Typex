@@ -184,6 +184,14 @@ export function claimAllInboxItems(): void {
   });
 }
 
+export function readAllInboxItems(): void {
+  inboxCollection.forEach((it) => {
+    if (it.status === "unread" || it.status === "unclaimed") {
+      mutateInboxItem({ id: it.id, status: "read" });
+    }
+  });
+}
+
 export function deleteAllInboxItems(): void {
   inboxCollection.forEach((it) => {
     if (it.status === "unread" || it.status === "read") {
@@ -237,6 +245,7 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
 
 
 

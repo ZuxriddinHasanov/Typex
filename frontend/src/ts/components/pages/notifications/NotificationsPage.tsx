@@ -1,10 +1,10 @@
-import { JSXElement, onCleanup } from "solid-js";
+import { JSXElement, onCleanup, Show } from "solid-js";
 import { Page } from "../../common/Page";
 import { Fa } from "../../common/Fa";
 import { Inbox } from "../../popups/alerts/Inbox";
 import { Psas } from "../../popups/alerts/Psas";
 import { NotificationHistory } from "../../popups/alerts/NotificationHistory";
-import { applyPendingInboxActions } from "../../../collections/inbox";
+import { applyPendingInboxActions, readAllInboxItems, hasUnreadInbox } from "../../../collections/inbox";
 
 function Separator(): JSXElement {
   return <div class="h-1 rounded bg-sub-alt my-4"></div>;
@@ -27,9 +27,12 @@ export function NotificationsPage(): JSXElement {
             <Fa icon="fa-arrow-left" />
             Orqaga
           </a>
-          <h1 class="text-3xl font-black tracking-tight text-text">
-            Bildirishnomalar
-          </h1>
+          <h1 class="text-3xl font-black tracking-tight text-text">Bildirishnomalar</h1>
+          <Show when={hasUnreadInbox()}>
+            <button type="button" onClick={() => readAllInboxItems()} class="ml-auto flex items-center gap-2 rounded-full bg-main/10 px-4 py-2 text-sm font-bold text-main transition-colors hover:bg-main/20">
+              <Fa icon="fa-check-double" /> Barchasini o`qilgan qilish
+            </button>
+          </Show>
         </div>
 
         <div class="rounded-2xl border border-sub/5 bg-gradient-to-b from-sub-alt/40 to-bg p-6 shadow-sm backdrop-blur-sm">
@@ -43,3 +46,6 @@ export function NotificationsPage(): JSXElement {
     </Page>
   );
 }
+
+
+

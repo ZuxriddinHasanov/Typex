@@ -125,12 +125,13 @@ export function Nav(): JSXElement {
         >
           <Fa icon="fa-user" />
           Profil
-          <NotificationBubble show={hasUnreadInbox()} count={unreadInboxCount()} variant="corner" />
+          
         </a>
       </Show>
     </nav>
   );
 }
+
 
 
 
