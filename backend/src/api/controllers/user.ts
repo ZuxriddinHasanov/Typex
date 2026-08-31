@@ -1673,35 +1673,64 @@ export async function getWeeklyAnalysis(
     aiUses.count < aiConfig.maxDailyUses
   ) {
     try {
-      const prompt = `Men "TypeUZ (typeuz.uz)" foydalanuvchisiman. Mening haftalik yozish o'rtacha tezligim ${avgWpm} WPM, aniqligim ${avgAccuracy}%. Men 7 kun ichida jami ${results.length} ta test topshirdim va ${Math.round(totalTimeSeconds)} soniya sarfladim. Trendim: ${trend}. Eng zo'r tezligim: ${bestWpm} WPM bo'ldi. Menga shu natijalarim asosida o'zbek tilida motivatsion va foydali maslahat ber. Matn ichida natija raqamlarim ham ishtirok etsin va u juda ham qisqa bo'lsin.`;
+              if (results.length > 50) {
+          // Complex analysis using real AI for active users
+          const prompt = `Men "TypeUZ" platformasi foydalanuvchisiman. Mening haftalik yozish o'rtacha tezligim ${avgWpm} WPM, aniqligim ${avgAccuracy}%. Men 7 kun ichida jami ${results.length} ta test topshirdim va ${Math.round(totalTimeSeconds)} soniya sarfladim. Trendim: ${trend}. Eng zo'r tezligim: ${bestWpm} WPM bo'ldi (${bestDay} kuni). Shu natijalarim asosida o'zbek tilida juda batafsil, chiroyli formatda va motivatsion AI tahlil xulosasini yozib ber. Matnda natijalarimni maqta va kamchiliklarimga maslahat ber.`;
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${aiConfig.apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-          }),
-        },
-      );
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiConfig.apiKey}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+              }),
+            },
+          );
 
-      if (!response.ok) {
-        throw new Error(`Gemini API error: ${response.status}`);
-      }
-      const data = (await response.json()) as {
-        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-      };
-      if (
-        data?.candidates?.[0]?.content?.parts?.[0]?.text !== undefined &&
-        data?.candidates?.[0]?.content?.parts?.[0]?.text !== ""
-      ) {
-        recommendation = data.candidates[0].content.parts[0].text.trim();
-        aiUses.count++;
-        await UserDAL.updateAiUses(uid, aiUses);
-      } else {
-        throw new Error("Invalid AI response");
-      }
+          if (!response.ok) {
+            throw new Error(`Gemini API error: ${response.status}`);
+          }
+          const data = (await response.json()) as {
+            candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+          };
+          if (
+            data?.candidates?.[0]?.content?.parts?.[0]?.text !== undefined &&
+            data?.candidates?.[0]?.content?.parts?.[0]?.text !== ""
+          ) {
+            recommendation = data.candidates[0].content.parts[0].text.trim();
+            aiUses.count++;
+            await UserDAL.updateAiUses(uid, aiUses);
+          } else {
+            throw new Error("Invalid AI response");
+          }
+        } else {
+          // Fast deterministic mock for standard users to save AI calls
+          let mockAI = `Hurmatli foydalanuvchi! Ushbu hafta siz jami **${results.length} ta** test topshirgansiz va **${Math.round(totalTimeSeconds / 60)} daqiqa** vaqtingizni mashg'ulotlarga sarfladingiz.\n\n`;
+          if (bestDay && bestWpm > 0) {
+            mockAI += `🚀 **Sizning eng zo'r natijangiz:** Haftaning eng yaxshi kuni bu **${bestDay}** bo'ldi, o'sha kuni siz rekord darajada **${bestWpm} WPM** tezlikka erisha oldingiz!\n\n`;
+          }
+          if (avgAccuracy >= 95) {
+            mockAI += `🎯 **Aniqlik ajoyib:** Sizning o'rtacha aniqligingiz **${avgAccuracy}%** ni tashkil qildi. Siz tezlik bilan bir qatorda to'g'ri yozishga ham juda katta e'tibor qaratmoqdasiz, bu haqiqiy professionallik belgisi!\n\n`;
+          } else if (avgAccuracy >= 90) {
+            mockAI += `👍 **Aniqlik yaxshi:** Sizning o'rtacha aniqligingiz **${avgAccuracy}%**. Natija yomon emas, lekin tezlikni biroz ushlab, aniqlikni yanada oshirsangiz, yozishingiz mukammal bo'ladi.\n\n`;
+          } else {
+            mockAI += `⚠️ **Aniqlikka e'tibor bering:** Sizning o'rtacha aniqligingiz **${avgAccuracy}%** ga teng. AI maslahati: hozircha tezlikni biroz pasaytirib bo'lsa ham xatolarsiz yozishga harakat qiling. Shoshilmang!\n\n`;
+          }
+
+          if (trend === "improving") {
+            mockAI += `📈 **O'sish kuzatilmoqda:** Hafta boshidan beri sizning yozish tezligingiz va mahoratingiz o'sib boryapti. Mehnatlaringiz o'z samarasini bermoqda. Shu ruhda davom eting!\n\n`;
+          } else if (trend === "declining") {
+            mockAI += `📉 **Biroz pasayish:** O'tgan kunlarga nisbatan tezligingiz biroz pasaygan. Balki siz charchagandirsiz? Ko'proq dam oling va yana to'liq kuch bilan urinib ko'ring.\n\n`;
+          } else {
+            mockAI += `⚖️ **Barqaror natija:** Yozish tezligingiz hafta davomida bir xil barqarorlikni saqlab qoldi. Endi komfort zonadan chiqib, yana qattiqroq mashq qilib natijani yaxshilash vaqti keldi!\n\n`;
+          }
+          mockAI += `✨ **Xulosa:** Tahlil xulosasiga ko'ra, siz keyingi haftada har kuni qat'iyat bilan kamida 10-15 daqiqa mashq qilsangiz, bemalol **${Math.round(avgWpm + 10)} WPM** marrasini zabt eta olasiz! Omad!`;
+
+          recommendation = mockAI;
+          aiUses.count++;
+          await UserDAL.updateAiUses(uid, aiUses);
+        }
     } catch (e) {
       recommendation =
         "AI tahlil vaqtinchalik ishlamayapti. O'z ustingizda ishlashda davom eting!";
@@ -1791,5 +1820,7 @@ export async function getTestAnalysis(req: TypeUZRequest<undefined, {wpm: number
     return new TypeUZResponse(`Error`, `AI tahlil vaqtinchalik ishlamayapti.`);
   }
 }
+
+
 
 
