@@ -34,7 +34,28 @@ const queryKeys = {
 const [maxMailboxSize, setMaxMailboxSize] = createSignal(0);
 
 export { maxMailboxSize };
+import { getStoredToken } from "../utils/custom-auth";
+import { envConfig } from "virtual:env-config";
 export const [hasUnreadInbox, setHasUnreadInbox] = createSignal(false);
+
+let ws: WebSocket | null = null;
+function initWs() {
+  if (ws) return;
+  const token = getStoredToken();
+  if (!token) return;
+  const backendWsUrl = envConfig.backendUrl.replace('http', 'ws');
+  ws = new WebSocket(backendWsUrl + '?token=' + token);
+  ws.onmessage = (e) => {
+    try {
+      const data = JSON.parse(e.data);
+      if (data.type === 'NEW_INBOX') {
+        queryClient.invalidateQueries(queryKeys.inbox());
+      }
+    } catch(e) {}
+  };
+  ws.onclose = () => { ws = null; setTimeout(initWs, 5000); };
+}
+if (typeof window !== 'undefined') { initWs(); }
 export const [unreadInboxCount, setUnreadInboxCount] = createSignal(0);
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
@@ -177,6 +198,8 @@ function claimRewards(pendingRewards: AllRewards[]): void {
 }
 
 export function claimAllInboxItems(): void {
+  setHasUnreadInbox(false);
+  setUnreadInboxCount(0);
   inboxCollection.forEach((it) => {
     if (it.status === "unclaimed") {
       mutateInboxItem({ id: it.id, status: "read" });
@@ -185,6 +208,8 @@ export function claimAllInboxItems(): void {
 }
 
 export function readAllInboxItems(): void {
+  setHasUnreadInbox(false);
+  setUnreadInboxCount(0);
   inboxCollection.forEach((it) => {
     if (it.status === "unread" || it.status === "unclaimed") {
       mutateInboxItem({ id: it.id, status: "read" });
@@ -245,6 +270,9 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
+
+
 
 
 

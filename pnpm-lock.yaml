@@ -201,6 +201,9 @@ importers:
       winston:
         specifier: 3.6.0
         version: 3.6.0
+      ws:
+        specifier: 8.21.3
+        version: 8.21.3
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -265,6 +268,9 @@ importers:
       '@types/uuid':
         specifier: 10.0.0
         version: 10.0.0
+      '@types/ws':
+        specifier: 8.18.1
+        version: 8.18.1
       '@typeuz/oxlint-config':
         specifier: workspace:*
         version: link:../packages/oxlint-config
@@ -12459,18 +12465,6 @@ packages:
     resolution: {integrity: sha512-OTIk8iR8/aCRWBqvxrzxR0hgxWpnYBblY1S5hDWBQfk/VFmJwzmJgQFN3WsoUKHISv2eAwe+PpbUzyL1CKTLXg==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
-  ws@7.5.10:
-    resolution: {integrity: sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==}
-    engines: {node: '>=8.3.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-
   ws@7.5.11:
     resolution: {integrity: sha512-zS54Oen9bITtp7kp2XM3AydrCIq1D+HwJOuH+c+e4LfpL/lotP5osijd+UoMnxwAam1GN8R4KtLAyIrIcBNpiA==}
     engines: {node: '>=8.3.0'}
@@ -12483,8 +12477,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.19.0:
-    resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
+  ws@8.21.0:
+    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -12495,8 +12489,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.21.0:
-    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -20014,7 +20008,7 @@ snapshots:
       uuid: 8.3.2
       winston: 3.6.0
       winston-transport: 4.7.1
-      ws: 7.5.10
+      ws: 7.5.11
       yaml: 2.8.2
     transitivePeerDependencies:
       - bufferutil
@@ -24261,7 +24255,7 @@ snapshots:
       recast: 0.23.11
       semver: 7.7.3
       use-sync-external-store: 1.6.0(react@18.3.1)
-      ws: 8.19.0
+      ws: 8.21.0
     optionalDependencies:
       prettier: 3.7.1
     transitivePeerDependencies:
@@ -25888,13 +25882,11 @@ snapshots:
     dependencies:
       signal-exit: 4.1.0
 
-  ws@7.5.10: {}
-
   ws@7.5.11: {}
 
-  ws@8.19.0: {}
-
   ws@8.21.0: {}
+
+  ws@8.21.3: {}
 
   wsl-utils@0.1.0:
     dependencies:

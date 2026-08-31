@@ -39,8 +39,8 @@ const levelConfig = {
   },
 } as const;
 
-const enterInitial = { opacity: 0 } as Partial<AnimationParams>;
-const enterAnimate = { opacity: 1, duration: 125 } as AnimationParams;
+const enterInitial = { opacity: 0, translateY: -50 } as Partial<AnimationParams>;
+const enterAnimate = { opacity: 1, translateY: 0, duration: 250, easing: "easeOutCubic" } as AnimationParams;
 const exitAnimation = {
   opacity: 0,
   height: 0,
@@ -144,4 +144,5 @@ export function Notifications(): JSXElement {
     </div>
   );
 }
+
 

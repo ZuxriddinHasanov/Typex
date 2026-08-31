@@ -61,6 +61,7 @@
     "ua-parser-js": "0.7.33",
     "uuid": "14.0.0",
     "winston": "3.6.0",
+    "ws": "8.21.3",
     "zod": "3.23.8"
   },
   "devDependencies": {
@@ -84,6 +85,7 @@
     "@types/swagger-stats": "0.95.11",
     "@types/ua-parser-js": "0.7.36",
     "@types/uuid": "10.0.0",
+    "@types/ws": "8.18.1",
     "@typeuz/oxlint-config": "workspace:*",
     "@typeuz/typescript-config": "workspace:*",
     "@vitest/coverage-v8": "4.1.5",

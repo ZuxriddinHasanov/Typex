@@ -1444,6 +1444,7 @@ export async function addToInboxBulk(
           JSON.stringify(updated),
           entry.uid,
         ]);
+        notifyUserInbox(entry.uid);
       }),
     );
   }
@@ -1467,9 +1468,11 @@ export async function addToInbox(
   const updated = [...mail, ...inbox].slice(0, maxMail);
 
   await db.query("UPDATE users SET inbox = $1::jsonb WHERE uid = $2", [
-    JSON.stringify(updated),
-    uid,
-  ]);
+      JSON.stringify(updated),
+      uid,
+    ]);
+
+  notifyUserInbox(uid);
 }
 
 export async function updateInbox(
@@ -1736,3 +1739,4 @@ export async function updateAiUses(
     uid,
   ]);
 }
+

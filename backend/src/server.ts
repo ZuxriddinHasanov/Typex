@@ -28,6 +28,7 @@ import { createIndicies as blocklistDbSetup } from "./dal/blocklist";
 import { createIndicies as connectionsDbSetup } from "./dal/connections";
 import { getErrorMessage } from "./utils/error";
 import bcrypt from "bcrypt";
+import { initWebSocket } from "./init/websocket";
 import { devGet, devSet } from "./utils/dev-store";
 import { isDevEnvironment } from "./utils/misc";
 import { assertJwtConfigured } from "./utils/jwt";
@@ -150,7 +151,8 @@ async function bootServer(port: number): Promise<Server> {
     const server = await new Promise<Server>((resolve, reject) => {
       const s = app.listen(port, "0.0.0.0", () => {
         Logger.success(`API server listening on port ${port}`);
-        resolve(s);
+        initWebSocket(s);
+          resolve(s);
       });
       s.on("error", reject);
     });
@@ -197,3 +199,4 @@ const PORT = parseInt(process.env["PORT"] ?? "5005", 10);
 void bootServer(PORT).catch(() => {
   process.exit(1);
 });
+
