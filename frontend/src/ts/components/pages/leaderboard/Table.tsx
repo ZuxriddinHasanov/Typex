@@ -171,7 +171,7 @@ const userColumn = ({
   userOverride?: Accessor<JSXElement>;
 }) =>
   createColumnHelper<SpeedEntry | XpEntry>().accessor("uid", {
-    header: "name",
+    header: "Ism",
     cell: (info) =>
       userOverride?.() ?? (
         <User
@@ -283,7 +283,7 @@ function getSpeedColumns({
         },
         {
           path: "acc",
-          header: "accuracy",
+          header: "Aniqlik",
           format: (v) => format.percentage(v, { showDecimalPlaces: true }),
         },
       ],
@@ -294,7 +294,7 @@ function getSpeedColumns({
       columns: [
         {
           path: "raw",
-          header: "raw",
+          header: "Raw",
           format: (v) => format.typingSpeed(v, { showDecimalPlaces: true }),
         },
         {
@@ -308,13 +308,13 @@ function getSpeedColumns({
       mergedMeta: { breakpoint: "xs" },
     }),
     defineColumn("timestamp", {
-      header: "date",
+      header: "Sana",
       cell: (info) =>
         info.getValue() !== undefined ? (
           addHeader ? (
             wrapWithHeader({
               value: dateFormat(info.getValue(), "dd MMM yyyy HH:mm"),
-              header: "date",
+              header: "Sana",
               enabled: true,
             })
           ) : (
@@ -364,7 +364,7 @@ function getXpColumns({
         },
         {
           path: "timeTypedSeconds",
-          header: "time typed",
+          header: "Yozgan vaqti",
           format: (v) => secondsToString(Math.round(v), true, true, ":"),
         },
       ],
@@ -374,7 +374,7 @@ function getXpColumns({
     }),
 
     defineColumn("lastActivityTimestamp", {
-      header: "date",
+      header: "Sana",
       cell: (info) =>
         info.getValue() !== undefined ? (
           addHeader ? (
@@ -433,3 +433,4 @@ function wrapWithHeader(options: {
     options.value
   );
 }
+

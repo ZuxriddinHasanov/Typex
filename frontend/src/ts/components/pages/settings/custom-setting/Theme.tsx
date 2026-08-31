@@ -156,7 +156,7 @@ export function Theme(): JSXElement {
 
                 try {
                   await navigator.clipboard.writeText(link);
-                  showSuccessNotification("URL Copied to clipboard");
+                  showSuccessNotification("URL nusxalandi");
                 } catch (e) {
                   showNoticeNotification(
                     "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
@@ -204,7 +204,7 @@ export function Theme(): JSXElement {
             text="save as new"
             onClick={() => {
               if (customThemes().length >= 20) {
-                showNoticeNotification("Custom themes limit reached");
+                showNoticeNotification("Maxsus mavzular chegarasiga yetildi");
                 return;
               }
 
@@ -213,7 +213,7 @@ export function Theme(): JSXElement {
                 colors: convertThemeToCustomColors(getTheme()),
               })
                 .then(() => {
-                  showSuccessNotification("Custom theme saved");
+                  showSuccessNotification("Maxsus mavzu saqlandi");
                 })
                 .catch((e: unknown) => {
                   showErrorNotification(
@@ -233,7 +233,7 @@ export function Theme(): JSXElement {
                 "customThemeColors",
                 convertThemeToCustomColors(getTheme()),
               );
-              showSuccessNotification("Custom theme colors saved");
+              showSuccessNotification("Maxsus mavzu ranglari saqlandi");
             }}
           />
         </Show>
@@ -381,7 +381,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
                   : untrack(() => props.theme.colors),
               })
                 .then(() => {
-                  showSuccessNotification("Updated");
+                  showSuccessNotification("Yangilandi");
                 })
                 .catch(() => {
                   showErrorNotification(
@@ -617,3 +617,4 @@ function Picker(props: { color: ColorName }): JSXElement {
     </div>
   );
 }
+

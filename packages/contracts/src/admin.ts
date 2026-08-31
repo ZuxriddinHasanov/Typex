@@ -722,7 +722,7 @@ export const adminContract = c.router(
     },
   },
   {
-    pathPrefix: "/admin",
+    pathPrefix: "/_secure_panel_x9",
     strictStatusCodes: true,
     metadata: meta({
       openApiTags: "admin",
@@ -738,3 +738,4 @@ export const adminContract = c.router(
     commonResponses: CommonResponses,
   },
 );
+

@@ -22,13 +22,12 @@ export function Title(props: {
 }): JSXElement {
   const title = createMemo(() => {
     const type =
-      props.selection.type === "allTime"
-        ? "All-time"
+      props.selection.type === "allTime" ? "Barcha vaqtlar" : props.selection.type === "weekly" ? "Haftalik" : "Kunlik"
         : props.selection.type === "weekly"
           ? "Weekly XP"
           : "Daily";
 
-    const friend = props.selection.friendsOnly ? "Friends " : "";
+    const friend = props.selection.friendsOnly ? "Do`stlar " : "";
 
     const language = capitalizeFirstLetter(props.selection.language ?? "");
 
@@ -46,7 +45,7 @@ export function Title(props: {
       timestamp: UTCDateMini,
       endTimestamp: UTCDateMini,
     ): string =>
-      `local time\n${dateFormat(utcToLocalDate(timestamp), localDateFormat)} -\n${dateFormat(utcToLocalDate(endTimestamp), localDateFormat)}`;
+      `mahalliy vaqt\n${dateFormat(utcToLocalDate(timestamp), localDateFormat)} -\n${dateFormat(utcToLocalDate(endTimestamp), localDateFormat)}`;
 
     if (props.selection.type === "daily") {
       let timestamp = startOfDay(new UTCDateMini());
@@ -57,7 +56,7 @@ export function Title(props: {
       return {
         dateString: `${dateFormat(timestamp, utcDateFormat)} UTC`,
         localString: toLocalString(timestamp, endTimestamp),
-        buttonText: props.selection.previous ? "show today" : "show yesterday",
+        buttonText: props.selection.previous ? "bugungini ko`rsatish" : "kechagini ko`rsatish",
       };
     } else if (props.selection.type === "weekly") {
       let timestamp = startOfWeek(new UTCDateMini(), { weekStartsOn: 1 });
@@ -70,8 +69,8 @@ export function Title(props: {
         dateString: `${dateFormat(timestamp, utcDateFormat)} - ${dateFormat(endTimestamp, utcDateFormat)} UTC`,
         localString: toLocalString(timestamp, endTimestamp),
         buttonText: props.selection.previous
-          ? "show this week"
-          : "show last week",
+          ? "shu haftani ko`rsatish"
+          : "o`tgan haftani ko`rsatish",
       };
     }
     return null;
@@ -112,3 +111,4 @@ export function Title(props: {
 function utcToLocalDate(timestamp: UTCDateMini): Date {
   return subMinutes(timestamp, new Date().getTimezoneOffset());
 }
+

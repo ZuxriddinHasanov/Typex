@@ -35,6 +35,7 @@ const [maxMailboxSize, setMaxMailboxSize] = createSignal(0);
 
 export { maxMailboxSize };
 export const [hasUnreadInbox, setHasUnreadInbox] = createSignal(false);
+export const [unreadInboxCount, setUnreadInboxCount] = createSignal(0);
 export type InboxItem = Omit<MonkeyMail, "read"> & {
   status: "unclaimed" | "unread" | "read" | "deleted";
 };
@@ -77,9 +78,7 @@ const inboxCollection = createCollection(
           showSuccessNotification(
             "Sizga yangi xabar keldi! Inboxni tekshiring.",
             {
-              customTitle: "Yangi xabar",
-              customIcon: "envelope",
-              durationMs: 8000,
+              customTitle: "Yangi xabar", customIcon: "envelope", durationMs: 8000, important: true,
               onDismiss: (reason) => { if (reason === 'click') { void navigate('/notifications'); } },
             },
           );
@@ -105,6 +104,7 @@ const inboxCollection = createCollection(
 
       setMaxMailboxSize(response.body.data.maxMail);
     setHasUnreadInbox(data.some(it => it.status === 'unread' || it.status === 'unclaimed'));
+      setUnreadInboxCount(data.filter(it => it.status === 'unread' || it.status === 'unclaimed').length);
       return data;
     },
     queryClient,
@@ -237,5 +237,6 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
 
 

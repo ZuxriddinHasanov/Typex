@@ -133,7 +133,7 @@ export function Notifications(): JSXElement {
           onClick={() => clearAllNotifications()}
         >
           <Fa icon="fa-times" class="mr-1" />
-          Clear all
+          Barchasini tozalash
         </button>
       </AnimeShow>
       <AnimePresence mode="list">
@@ -144,3 +144,4 @@ export function Notifications(): JSXElement {
     </div>
   );
 }
+

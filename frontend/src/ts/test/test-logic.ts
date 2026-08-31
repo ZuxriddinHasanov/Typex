@@ -928,7 +928,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const mode2Number = parseInt(completedEvent.mode2);
 
   const isGuest = !isAuthenticated();
-  const minLimit = isGuest ? 2 : 0.5;
+  const minLimit = 2;
 
   let tooShort = false;
   //fail checks
@@ -939,12 +939,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (ce.testDuration < dateDur - 0.1 || ce.testDuration > dateDur + 0.1) &&
     ce.testDuration <= 120
   ) {
-    showNoticeNotification("Test invalid - inconsistent test duration");
+    showNoticeNotification("Haqiqiy bo'lmagan test - vaqtda xatolik");
     console.error("Test duration inconsistent", ce.testDuration, dateDur);
     setIsTestInvalid(true);
     dontSave = true;
   } else if (difficultyFailed) {
-    showNoticeNotification(`Test failed - ${failReason}`, {
+    showNoticeNotification(`Test tugatilmadi - ${failReason}`, {
       durationMs: 1000,
     });
     dontSave = true;
@@ -968,16 +968,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.getLimitValue() < minLimit) ||
     (Config.mode === "zen" && completedEvent.testDuration < minLimit)
   ) {
-    showNoticeNotification("Test invalid - too short");
+    showNoticeNotification("Haqiqiy bo'lmagan test - juda qisqa (kamida 2 soniya bo'lishi kerak)");
     setIsTestInvalid(true);
     tooShort = true;
     dontSave = true;
   } else if (afkDetected) {
-    showNoticeNotification("Test invalid - AFK detected");
+    showNoticeNotification("Haqiqiy bo'lmagan test - harakatsizlik (AFK) aniqlandi");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (isRepeated()) {
-    showNoticeNotification("Test invalid - repeated");
+    showNoticeNotification("Haqiqiy bo'lmagan test - oldin yozilgan matn takrorlandi");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -989,7 +989,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    showNoticeNotification("Test invalid - wpm");
+    showNoticeNotification("Haqiqiy bo'lmagan test - WPM tezligi juda yuqori");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -1001,7 +1001,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    showNoticeNotification("Test invalid - raw");
+    showNoticeNotification("Haqiqiy bo'lmagan test - xom tezlik (Raw) juda yuqori");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -1010,7 +1010,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (DB.getSnapshot()?.lbOptOut === true &&
       (completedEvent.acc < 50 || completedEvent.acc > 100))
   ) {
-    showNoticeNotification("Test invalid - accuracy");
+    showNoticeNotification("Haqiqiy bo'lmagan test - yozish aniqligi (Accuracy) past");
     setIsTestInvalid(true);
     dontSave = true;
   }

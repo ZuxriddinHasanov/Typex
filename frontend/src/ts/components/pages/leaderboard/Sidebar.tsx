@@ -59,11 +59,11 @@ export function Sidebar(props: {
         items={[
           {
             id: "allTime",
-            text: "all-time english",
+            text: "Barcha vaqtlarda",
             icon: "fa-globe-americas",
           },
           { id: "weekly", text: "weekly xp", icon: "fa-calendar-day" },
-          { id: "daily", text: "daily", icon: "fa-sun" },
+          { id: "daily", text: "Kunlik", icon: "fa-sun" },
         ]}
       />
       <Show when={isAuthenticated() && props.connectionsEnabled}>
@@ -71,8 +71,8 @@ export function Sidebar(props: {
           selected={props.selection().friendsOnly}
           onSelect={selectFriendsOnly}
           items={[
-            { id: false, text: "everyone", icon: "fa-users" },
-            { id: true, text: "friends only", icon: "fa-user-friends" },
+            { id: false, text: "Barcha", icon: "fa-users" },
+            { id: true, text: "Do`stlar", icon: "fa-user-friends" },
           ]}
         />
       </Show>
@@ -250,3 +250,4 @@ function getValidLeaderboards(
 function convertRuleOption(rule: string): string[] {
   return rule.startsWith("(") ? rule.slice(1, -1).split("|") : [rule];
 }
+

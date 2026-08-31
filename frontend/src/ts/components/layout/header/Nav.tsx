@@ -2,7 +2,7 @@ import type { ThemeName } from "@typeuz/schemas/configs";
 
 import { JSXElement, Show } from "solid-js";
 import { NotificationBubble } from "../../common/NotificationBubble";
-import { hasUnreadInbox } from "../../../collections/inbox";
+import { hasUnreadInbox, unreadInboxCount } from "../../../collections/inbox";
 
 import { setConfig } from "../../../config/setters";
 import { getConfig } from "../../../config/store";
@@ -125,11 +125,12 @@ export function Nav(): JSXElement {
         >
           <Fa icon="fa-user" />
           Profil
-          <NotificationBubble show={hasUnreadInbox()} variant="corner" />
+          <NotificationBubble show={hasUnreadInbox()} count={unreadInboxCount()} variant="corner" />
         </a>
       </Show>
     </nav>
   );
 }
+
 
 

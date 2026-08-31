@@ -49,7 +49,7 @@ export function ImportExport(): JSXElement {
               navigator.clipboard
                 .writeText(JSON.stringify(getConfig))
                 .then(() => {
-                  showSuccessNotification("Settings JSON copied to clipboard");
+                  showSuccessNotification("Sozlamalar nuxsalandi");
                 })
                 .catch(() => {
                   showNoticeNotification(
@@ -93,3 +93,4 @@ export function ImportExport(): JSXElement {
     />
   );
 }
+
