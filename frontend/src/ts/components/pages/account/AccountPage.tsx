@@ -15,7 +15,7 @@ import { downloadResultsCSV } from "../../../utils/misc";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Page } from "../../common/Page";
-import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
+import { TypeXAdSlot } from "../../common/TypeXAdSlot";
 import { Charts } from "./Charts";
 import { Filters } from "./Filters";
 import { MyProfile } from "./MyProfile";
@@ -55,7 +55,7 @@ export function AccountPage(): JSXElement {
       <div class="flex flex-col gap-8">
         <MyProfile />
 
-        <TypeUZAdSlot slotId="ad-account-1" class="mx-auto w-full max-w-3xl" />
+        <TypeXAdSlot slotId="ad-account-1" class="mx-auto w-full max-w-3xl" />
 
         <Filters filters={filters} onChangeFilters={setFilters} />
 
@@ -124,7 +124,7 @@ export function AccountPage(): JSXElement {
               />
             </div>
 
-            <TypeUZAdSlot
+            <TypeXAdSlot
               slotId="ad-account-2"
               class="mx-auto w-full max-w-3xl"
             />

@@ -318,7 +318,7 @@ export async function download(): Promise<void> {
       return;
     }
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const filename = `typeuz-result-${timestamp}.png`;
+    const filename = `TypeX-result-${timestamp}.png`;
 
     downloadFile({ data, filename });
 

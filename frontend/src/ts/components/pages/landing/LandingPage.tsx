@@ -16,7 +16,7 @@ import type { FaSolidIcon } from "../../../types/font-awesome";
 import { cn } from "../../../utils/cn";
 import { AnimatedSection } from "../../common/AnimatedSection";
 import { Fa } from "../../common/Fa";
-import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
+import { TypeXAdSlot } from "../../common/TypeXAdSlot";
 
 function FeatureCard(props: {
   icon: FaSolidIcon;
@@ -368,7 +368,7 @@ export function LandingPage(): JSXElement {
           </div>
         </div>
         <div class="z-10 mt-20 flex w-full max-w-4xl flex-col items-center empty:hidden">
-          <TypeUZAdSlot slotId="ad-landing-hero" class="mx-auto w-full" />
+          <TypeXAdSlot slotId="ad-landing-hero" class="mx-auto w-full" />
         </div>
       </section>
 

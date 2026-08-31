@@ -12,7 +12,7 @@ const sizeStyles: Record<string, string> = {
   skyscraper: "max-w-[120px] max-h-[600px]",
 };
 
-export function TypeUZAdSlot(props: {
+export function TypeXAdSlot(props: {
   slotId: SlotId;
   class?: string;
 }): JSXElement {

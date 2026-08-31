@@ -10,7 +10,7 @@ const sections = [
     title: "Qanday ma'lumotlarni yig'amiz?",
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
-        <p>TypeUZ quyidagi shaxsiy ma'lumotlarni yig'adi:</p>
+        <p>TypeX quyidagi shaxsiy ma'lumotlarni yig'adi:</p>
         <ul class="list-inside list-disc space-y-1.5 pl-2">
           <li>Elektron pochta manzili</li>
           <li>Foydalanuvchi nomi</li>
@@ -22,7 +22,7 @@ const sections = [
           <li>Saytda o'tkazilgan umumiy vaqt</li>
         </ul>
         <p class="mt-4 font-semibold text-text">
-          TypeUZ QUYIDAGILARNI yig'MAYDI:
+          TypeX QUYIDAGILARNI yig'MAYDI:
         </p>
         <ul class="list-inside list-disc space-y-1.5 pl-2">
           <li>
@@ -66,7 +66,7 @@ const sections = [
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>
-          TypeUZ ma'lumotlaringizni O'zbekiston Respublikasi qonunchiligiga
+          TypeX ma'lumotlaringizni O'zbekiston Respublikasi qonunchiligiga
           muvofiq quyidagilar uchun qayta ishlaydi:
         </p>
         <ul class="list-inside list-disc space-y-1.5 pl-2">
@@ -94,7 +94,7 @@ const sections = [
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>
-          TypeUZ ma'lumotlaringizni PostgreSQL ma'lumotlar bazasida xavfsiz
+          TypeX ma'lumotlaringizni PostgreSQL ma'lumotlar bazasida xavfsiz
           saqlaydi. Tizim yozish tezligi, test tarixi, XP va tangalarni (🍌)
           shifrlangan holda saqlaydi. Barcha to'lov va maxfiy ma'lumotlar
           (masalan, parollar) hash qilingan holatda saqlanadi.
@@ -200,7 +200,7 @@ const sections = [
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>
           Cookie-fayllar – bu brauzeringizga joylashtiriladigan kichik matnli
-          fayllar. TypeUZ cookie-fayllardan quyidagi maqsadlarda foydalanadi:
+          fayllar. TypeX cookie-fayllardan quyidagi maqsadlarda foydalanadi:
         </p>
         <ul class="list-inside list-disc space-y-1.5 pl-2">
           <li>Tizimga kirgan holatingizni saqlash</li>
@@ -220,7 +220,7 @@ const sections = [
     title: "Boshqa veb-saytlar",
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
-        <p>TypeUZ boshqa veb-saytlarga havolalarni o'z ichiga olishi mumkin.</p>
+        <p>TypeX boshqa veb-saytlarga havolalarni o'z ichiga olishi mumkin.</p>
         <p class="font-semibold text-text">
           Bizning maxfiylik siyosatimiz faqat typex.uz ga taalluqlidir. Boshqa
           saytlarga o'tganingizda, ularning siyosatini o'qing.
@@ -234,7 +234,7 @@ const sections = [
     title: "O'zgartirishlar",
     content: (
       <p class="text-base leading-relaxed text-sub">
-        TypeUZ maxfiylik siyosatini O'zbekiston Respublikasi qonunchiligidagi
+        TypeX maxfiylik siyosatini O'zbekiston Respublikasi qonunchiligidagi
         o'zgarishlarga muvofiq yangilab boradi. Barcha o'zgarishlar ushbu
         sahifada e'lon qilinadi. Muhim o'zgarishlar haqida foydalanuvchilar
         email orqali xabardor qilinadi.
@@ -266,7 +266,7 @@ export function PrivacyPolicyPage(): JSXElement {
           15-iyul, 2026
         </p>
         <p class="mx-auto max-w-3xl text-sm leading-relaxed text-sub/70">
-          TypeUZ (keyingi o'rinlarda "TypeUZ", "biz", "bizni") — IT o'quv
+          TypeX (keyingi o'rinlarda "TypeX", "biz", "bizni") — IT o'quv
           markazi tomonidan boshqariladigan yozuv tezligi testi platformasi.
           Xizmatlarimizga ishonch bildirganingiz uchun tashakkur! Shaxsiy
           ma'lumotlaringizni himoya qilish mas'uliyatini jiddiy qabul qilamiz.

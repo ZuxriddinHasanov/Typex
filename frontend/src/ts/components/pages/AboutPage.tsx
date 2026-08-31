@@ -1,7 +1,7 @@
 import { For, JSXElement } from "solid-js";
 
 import { Fa } from "../common/Fa";
-import { TypeUZAdSlot } from "../common/TypeUZAdSlot";
+import { TypeXAdSlot } from "../common/TypeXAdSlot";
 
 export function AboutPage(): JSXElement {
   return (
@@ -42,7 +42,7 @@ export function AboutPage(): JSXElement {
         </For>
       </section>
 
-      <TypeUZAdSlot slotId="ad-about-1" class="mx-auto w-full max-w-3xl" />
+      <TypeXAdSlot slotId="ad-about-1" class="mx-auto w-full max-w-3xl" />
 
       {/* How it works */}
       <section
@@ -203,7 +203,7 @@ export function AboutPage(): JSXElement {
         </div>
       </section>
 
-      <TypeUZAdSlot slotId="ad-about-2" class="mx-auto w-full max-w-3xl" />
+      <TypeXAdSlot slotId="ad-about-2" class="mx-auto w-full max-w-3xl" />
 
       {/* AI Weekly Analysis */}
       <section

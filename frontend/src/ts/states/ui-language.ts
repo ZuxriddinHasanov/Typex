@@ -22,7 +22,7 @@ const dictionary: Record<UILanguage, Record<string, string>> = {
     "nav.login": "Kirish",
     "nav.profile": "Profil",
 
-    "landing.title": "TypeUZ bilan o'z yozish tezligingizni oshiring",
+    "landing.title": "TypeX bilan o'z yozish tezligingizni oshiring",
     "landing.subtitle":
       "Sodda, chiroyli va qulay bo'lgan onlayn yozish testi. O'zbekistondagi eng yaxshilar qatoriga qo'shiling.",
     "landing.start": "Testni boshlash",
@@ -76,7 +76,7 @@ const dictionary: Record<UILanguage, Record<string, string>> = {
     "nav.login": "Login",
     "nav.profile": "Profile",
 
-    "landing.title": "Improve your typing speed with TypeUZ",
+    "landing.title": "Improve your typing speed with TypeX",
     "landing.subtitle":
       "A simple, beautiful and convenient online typing test. Join the best in Uzbekistan.",
     "landing.start": "Start Test",
@@ -130,7 +130,7 @@ const dictionary: Record<UILanguage, Record<string, string>> = {
     "nav.login": "Войти",
     "nav.profile": "Профиль",
 
-    "landing.title": "Улучшите скорость печати с TypeUZ",
+    "landing.title": "Улучшите скорость печати с TypeX",
     "landing.subtitle":
       "Простой, красивый и удобный онлайн тест скорости печати. Присоединяйтесь к лучшим в Узбекистане.",
     "landing.start": "Начать тест",

@@ -176,7 +176,7 @@ function WeeklyAnalysis(): JSXElement {
   );
 }
 
-import { TypeUZAdSlot } from "../../common/TypeUZAdSlot";
+import { TypeXAdSlot } from "../../common/TypeXAdSlot";
 
 export function UserProfile(props: {
   profile: UserProfileType;
@@ -189,7 +189,7 @@ export function UserProfile(props: {
 
   return (
     <div class="animate-fade-in-up mx-auto grid w-full max-w-[1200px] gap-8">
-      <TypeUZAdSlot slotId="ad-account-1" class="w-full" />
+      <TypeXAdSlot slotId="ad-account-1" class="w-full" />
 
       <UserDetails
         profile={props.profile}
@@ -260,7 +260,7 @@ export function UserProfile(props: {
         />
       </div>
 
-      <TypeUZAdSlot slotId="ad-account-2" class="w-full" />
+      <TypeXAdSlot slotId="ad-account-2" class="w-full" />
     </div>
   );
 }

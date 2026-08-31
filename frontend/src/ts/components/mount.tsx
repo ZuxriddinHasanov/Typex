@@ -4,7 +4,7 @@ import { render } from "solid-js/web";
 
 import { queryClient } from "../queries";
 import { qsa } from "../utils/dom";
-import { TypeUZAdSlot } from "./common/TypeUZAdSlot";
+import { TypeXAdSlot } from "./common/TypeXAdSlot";
 import { Theme } from "./core/Theme";
 import { CommandlineHotkey } from "./hotkeys/CommandlineHotkey";
 import { Footer } from "./layout/footer/Footer";
@@ -91,7 +91,7 @@ const components: Record<string, () => JSXElement> = {
   privacypolicypage: () => <PrivacyPolicyPage />,
   termsofservicepage: () => <TermsOfServicePage />,
   securitypolicypage: () => <SecurityPolicyPage />,
-  "ad-result": () => <TypeUZAdSlot slotId="ad-result" class="mt-4" />,
+  "ad-result": () => <TypeXAdSlot slotId="ad-result" class="mt-4" />,
 };
 
 function mountToMountpoint(name: string, component: () => JSXElement): void {

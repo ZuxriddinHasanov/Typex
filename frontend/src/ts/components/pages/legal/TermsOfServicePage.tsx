@@ -33,7 +33,7 @@ const sections = [
           mas'ulsiz. Parolingizni maxfiy saqlashingiz shart. Hisobingizdan
           ruxsatsiz foydalanilganligini aniqlasangiz, darhol bizga xabar bering.
         </p>
-        <p>TypeUZ hisobingizdagi ruxsatsiz harakatlar uchun javobgar emas.</p>
+        <p>TypeX hisobingizdagi ruxsatsiz harakatlar uchun javobgar emas.</p>
       </div>
     ),
   },
@@ -79,8 +79,8 @@ const sections = [
     title: "4. Intellektual mulk",
     content: (
       <p class="text-base leading-relaxed text-sub">
-        TypeUZ platformasi, uning dizayni, logotipi va kontenti mualliflik
-        huquqi bilan himoyalangan. TypeUZ nomi va logotipidan oldindan yozma
+        TypeX platformasi, uning dizayni, logotipi va kontenti mualliflik
+        huquqi bilan himoyalangan. TypeX nomi va logotipidan oldindan yozma
         ruxsatsiz foydalanish taqiqlanadi.
       </p>
     ),
@@ -91,7 +91,7 @@ const sections = [
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>
-          TypeUZ quyidagi hollarda hisobingizni oldindan ogohlantirmasdan
+          TypeX quyidagi hollarda hisobingizni oldindan ogohlantirmasdan
           o'chirish yoki bloklash huquqiga ega:
         </p>
         <ul class="list-inside list-disc space-y-1.5 pl-2">
@@ -131,8 +131,8 @@ const sections = [
     title: "7. Kafolatlar rad etilishi",
     content: (
       <p class="text-base leading-relaxed text-sub">
-        TYPEUZ XIZMATLARNI "MAVJUD HOLATDA" TAQDIM ETADI. QONUN TOMONIDAN RUXSAT
-        ETILGAN MAKSIMAL DARAJADA, TYPEUZ HAR QANDAY KAFOLATLARNI, SHU JUMLADAN
+        TypeX XIZMATLARNI "MAVJUD HOLATDA" TAQDIM ETADI. QONUN TOMONIDAN RUXSAT
+        ETILGAN MAKSIMAL DARAJADA, TypeX HAR QANDAY KAFOLATLARNI, SHU JUMLADAN
         SOTISHGA YAROQLILIK VA MUAYYAN MAQSADGA MUVOFIQLIK KAFOLATLARINI RAD
         ETADI. USHBU RAD ETISH O'ZBEKISTON RESPUBLIKASI FUQAROLIK KODEKSIGA
         MUVOFIQ AMALGA OSHIRILADI.
@@ -144,7 +144,7 @@ const sections = [
     title: "8. Havolalar",
     content: (
       <p class="text-base leading-relaxed text-sub">
-        TypeUZ boshqa veb-saytlarga havolalarni o'z ichiga olishi mumkin. Biz
+        TypeX boshqa veb-saytlarga havolalarni o'z ichiga olishi mumkin. Biz
         bog'langan saytlarning mazmuni va xavfsizligi uchun javobgar emasmiz.
       </p>
     ),
@@ -154,7 +154,7 @@ const sections = [
     title: "9. O'zgartirishlar",
     content: (
       <p class="text-base leading-relaxed text-sub">
-        TypeUZ ushbu Foydalanish shartlarini O'zbekiston Respublikasi
+        TypeX ushbu Foydalanish shartlarini O'zbekiston Respublikasi
         qonunchiligidagi o'zgarishlarga muvofiq yangilab boradi. Muhim
         o'zgarishlar haqida foydalanuvchilar email orqali xabardor qilinadi.
       </p>

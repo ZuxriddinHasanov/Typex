@@ -481,7 +481,7 @@ export function reloadAfter(seconds: number): void {
 
 export function updateTitle(title?: string): void {
   if (title === undefined || title === "") {
-    document.title = "TypeUZ | IT zamonaviy yozuv tezligi testi";
+    document.title = "TypeX | IT zamonaviy yozuv tezligi testi";
   } else {
     document.title = title;
   }

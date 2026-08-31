@@ -10,7 +10,7 @@ const sections = [
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p>
-          TypeUZ xavfsizligi va yaxlitligini juda jiddiy qabul qilamiz. Agar
+          TypeX xavfsizligi va yaxlitligini juda jiddiy qabul qilamiz. Agar
           platformamizda zaiflik topgan bo'lsangiz, iltimos, uni imkon qadar
           tezroq bizga xabar qiling. Sizning hisobotingiz platformamizni
           xavfsizroq qilishga yordam beradi.
@@ -131,7 +131,7 @@ const sections = [
     content: (
       <div class="space-y-4 text-base leading-relaxed text-sub">
         <p class="font-semibold text-text">
-          TypeUZ quyidagi xavfsizlik choralarini amalga oshiradi:
+          TypeX quyidagi xavfsizlik choralarini amalga oshiradi:
         </p>
         <ul class="list-inside list-disc space-y-1.5 pl-2">
           <li>
@@ -183,7 +183,7 @@ export function SecurityPolicyPage(): JSXElement {
           Xavfsizlik <span class="text-main">siyosati</span>
         </h1>
         <p class="mx-auto max-w-2xl text-base text-sub">
-          TypeUZ xavfsizlik siyosati — zaifliklarni qanday hisobot qilish va
+          TypeX xavfsizlik siyosati — zaifliklarni qanday hisobot qilish va
           xavfsizlik masalalari.
         </p>
         <p class="mx-auto max-w-3xl text-sm leading-relaxed text-sub/70">
