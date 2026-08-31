@@ -4,7 +4,7 @@ export type UILanguage = "uzbek" | "english" | "russian";
 
 const stored = localStorage.getItem("uiLanguage") as UILanguage | null;
 const initial: UILanguage =
-  stored && ["uzbek", "english", "russian"].includes(stored) ? stored : "english";
+  stored && ["uzbek", "english", "russian"].includes(stored) ? stored : "uzbek";
 
 export const [getUiLanguage, setUiLanguage] = createSignal<UILanguage>(initial);
 
@@ -49,9 +49,9 @@ const dictionary: Record<UILanguage, Record<string, string>> = {
     "profile.seconds": "soniya",
     "profile.words": "so'z",
 
-    "test.wpm": "wpm",
+    "test.wpm": "tezlik",
     "test.acc": "aniqlik",
-    "test.raw": "raw",
+    "test.raw": "sof",
     "test.characters": "belgilar",
     "test.consistency": "barqarorlik",
     "test.time": "vaqt",
@@ -103,9 +103,9 @@ const dictionary: Record<UILanguage, Record<string, string>> = {
     "profile.seconds": "seconds",
     "profile.words": "words",
 
-    "test.wpm": "wpm",
+    "test.wpm": "tezlik",
     "test.acc": "acc",
-    "test.raw": "raw",
+    "test.raw": "sof",
     "test.characters": "characters",
     "test.consistency": "consistency",
     "test.time": "time",
@@ -157,9 +157,9 @@ const dictionary: Record<UILanguage, Record<string, string>> = {
     "profile.seconds": "секунд",
     "profile.words": "слов",
 
-    "test.wpm": "wpm",
+    "test.wpm": "tezlik",
     "test.acc": "точн",
-    "test.raw": "raw",
+    "test.raw": "sof",
     "test.characters": "символы",
     "test.consistency": "стабильность",
     "test.time": "время",
@@ -181,3 +181,4 @@ export function t(key: string): string {
   const lang = getUiLanguage();
   return dictionary[lang]?.[key] ?? dictionary["english"]?.[key] ?? key;
 }
+

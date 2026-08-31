@@ -1197,11 +1197,12 @@ export async function update(
   });
 
   await Misc.promiseAnimate("#result", {
-    opacity: [0, 1],
-    translateY: [30, 0],
-    easing: "easeOutCubic",
-    duration: Misc.applyReducedMotion(500),
-  });
+      opacity: [0, 1],
+      translateY: [40, 0],
+      scale: [0.98, 1],
+      easing: "easeOutExpo",
+      duration: Misc.applyReducedMotion(1000),
+    });
 
   Misc.scrollToCenterOrTop(resultEl?.native ?? null);
   TestState.setResultCalculating(false);
@@ -1505,3 +1506,4 @@ configEvent.subscribe(async ({ key }) => {
     ChartController.result.resize();
   }
 });
+

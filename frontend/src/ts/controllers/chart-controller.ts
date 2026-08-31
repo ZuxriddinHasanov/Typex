@@ -124,6 +124,8 @@ export const result = new ChartWithUpdateColors<
         data: [],
         borderColor: "rgba(125, 125, 125, 1)",
         borderWidth: 3,
+        fill: true,
+        tension: 0.4,
         yAxisID: "wpm",
         order: 2,
         pointRadius: 1,
@@ -179,6 +181,10 @@ export const result = new ChartWithUpdateColors<
   options: {
     responsive: true,
     maintainAspectRatio: false,
+    animation: {
+      duration: 1500,
+      easing: 'easeOutQuart',
+    },
     scales: {
       x: {
         axis: "x",
@@ -335,7 +341,7 @@ async function updateColors<
     const c = chart as unknown as typeof result;
 
     const wpm = c.getDataset("wpm");
-    wpm.backgroundColor = "transparent";
+    wpm.backgroundColor = colors.main + "20";
     wpm.borderColor = colors.main;
     wpm.pointBackgroundColor = colors.main;
     wpm.pointBorderColor = colors.main;

@@ -1675,7 +1675,7 @@ export async function getWeeklyAnalysis(
     try {
               if (results.length > 50) {
           // Complex analysis using real AI for active users
-          const prompt = `Men "TypeUZ" platformasi foydalanuvchisiman. Mening haftalik yozish o'rtacha tezligim ${avgWpm} WPM, aniqligim ${avgAccuracy}%. Men 7 kun ichida jami ${results.length} ta test topshirdim va ${Math.round(totalTimeSeconds)} soniya sarfladim. Trendim: ${trend}. Eng zo'r tezligim: ${bestWpm} WPM bo'ldi (${bestDay} kuni). Shu natijalarim asosida o'zbek tilida juda batafsil, chiroyli formatda va motivatsion AI tahlil xulosasini yozib ber. Matnda natijalarimni maqta va kamchiliklarimga maslahat ber.`;
+          const prompt = `Men "TypeUZ" platformasi foydalanuvchisiman. Mening haftalik yozish o'rtacha tezligim ${avgWpm} WPM, aniqligim ${avgAccuracy}%. Men 7 kun ichida jami ${results.length} ta test topshirdim va ${Math.round(totalTimeSeconds)} soniya sarfladim. Trendim: ${trend}. Eng zo'r tezligim: ${bestWpm} WPM bo'ldi (${bestDay} kuni). Shu natijalarim asosida o'zbek tilida qisqa (2-3 abzas), chiroyli formatda va motivatsion AI tahlil xulosasini yozib ber. QAT'IY QOIDA: Matnda faqat men bergan haqiqiy raqamlarni (o'rtacha WPM, aniqlik) ishlating, o'zingizdan raqam to'qimang! Agar o'rtacha wpm ni eslatib o'tsangiz, aniq shu ${avgWpm} ni yozing. Natijalarni maqta va xatolarni kamaytirishga maslahat ber.`;
 
           const response = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiConfig.apiKey}`,
@@ -1725,7 +1725,7 @@ export async function getWeeklyAnalysis(
           } else {
             mockAI += `⚖️ **Barqaror natija:** Yozish tezligingiz hafta davomida bir xil barqarorlikni saqlab qoldi. Endi komfort zonadan chiqib, yana qattiqroq mashq qilib natijani yaxshilash vaqti keldi!\n\n`;
           }
-          mockAI += `✨ **Xulosa:** Tahlil xulosasiga ko'ra, siz keyingi haftada har kuni qat'iyat bilan kamida 10-15 daqiqa mashq qilsangiz, bemalol **${Math.round(avgWpm + 10)} WPM** marrasini zabt eta olasiz! Omad!`;
+          mockAI += `✨ **Xulosa:** Tahlil xulosasiga ko'ra, hozirgi o'rtacha tezligingiz ${Math.round(avgWpm)} WPM, agar keyingi haftada har kuni qat'iyat bilan kamida 10-15 daqiqa mashq qilsangiz, bemalol **${Math.round(avgWpm + 10)} WPM** marrasini zabt eta olasiz! Omad!`;
 
           recommendation = mockAI;
           aiUses.count++;
@@ -1820,6 +1820,7 @@ export async function getTestAnalysis(req: TypeUZRequest<undefined, {wpm: number
     return new TypeUZResponse(`Error`, `AI tahlil vaqtinchalik ishlamayapti.`);
   }
 }
+
 
 
 
