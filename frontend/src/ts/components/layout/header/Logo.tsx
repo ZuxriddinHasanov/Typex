@@ -11,7 +11,7 @@ export function Logo(): JSXElement {
   return (
     <a
       href="/"
-      aria-label="TypeUZ Home"
+      aria-label="TypeX Home"
       class="group flex items-center transition-transform duration-300 hover:scale-[1.02]"
       router-link
       data-ui-element="logo"
@@ -19,7 +19,11 @@ export function Logo(): JSXElement {
         if (getActivePage() === "test") restartTestEvent.dispatch();
       }}
     >
-      <img src={isDark() ? "/images/logo2.png" : "/images/logo.png"} alt="TypeUZ Logo" class="h-14 sm:h-16 w-auto object-contain" />
+      <img
+        src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
+        alt="TypeX Logo"
+        class="h-14 w-auto object-contain sm:h-16"
+      />
     </a>
   );
 }
