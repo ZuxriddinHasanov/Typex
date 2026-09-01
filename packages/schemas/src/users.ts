@@ -108,6 +108,7 @@ export const UserProfileDetailsSchema = z
   .object({
     bio: profileDetailsBase(z.string().max(250)).or(z.literal("")),
     keyboard: profileDetailsBase(z.string().max(75)).or(z.literal("")),
+    avatar: profileDetailsBase(z.string()).or(z.literal("")).optional(),
     socialProfiles: z
       .object({
         twitter: TwitterProfileSchema,
@@ -259,9 +260,9 @@ export const UserSchema = z.object({
   email: UserEmailSchema,
   uid: z.string(), //defined by firebase, no validation should be applied
   addedAt: z.number().int().nonnegative(),
-  gender: GenderSchema,
-  age: z.number().int().min(10).max(120).optional(),
-  avatar: z.string().optional(),
+  gender: GenderSchema.optional().nullable(),
+  age: z.number().int().min(10).max(120).optional().nullable(),
+  avatar: z.string().optional().nullable(),
   personalBests: PersonalBestsSchema,
   lastResultHashes: z.array(z.string()).optional(),
   completedTests: z.number().int().nonnegative().optional(),
@@ -292,6 +293,12 @@ export const UserSchema = z.object({
   quoteMod: QuoteModSchema.optional(),
   resultFilterPresets: z.array(ResultFiltersSchema).optional(),
   testActivity: TestActivitySchema.optional(),
+  aiUses: z
+    .object({
+      date: z.string(),
+      count: z.number().int().nonnegative(),
+    })
+    .optional(),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -310,6 +317,7 @@ export type TypingStats = z.infer<typeof TypingStatsSchema>;
 export const UserProfileSchema = UserSchema.pick({
   uid: true,
   name: true,
+  email: true,
   banned: true,
   addedAt: true,
   discordId: true,
@@ -323,6 +331,8 @@ export const UserProfileSchema = UserSchema.pick({
   gender: true,
   age: true,
   avatar: true,
+  firstName: true,
+  lastName: true,
 })
   .extend({
     typingStats: TypingStatsSchema,
@@ -330,6 +340,8 @@ export const UserProfileSchema = UserSchema.pick({
     streak: z.number().int().nonnegative(),
     maxStreak: z.number().int().nonnegative(),
     details: UserProfileDetailsSchema,
+    lastLoginAt: z.number().int().nonnegative().optional(),
+    lastResult: z.any().optional(),
   })
   .partial({
     //omitted for banned users
@@ -337,6 +349,7 @@ export const UserProfileSchema = UserSchema.pick({
     details: true,
     allTimeLbs: true,
     uid: true,
+    email: true,
   });
 export type UserProfile = z.infer<typeof UserProfileSchema>;
 
@@ -379,13 +392,8 @@ export type ReportUserReason = z.infer<typeof ReportUserReasonSchema>;
 // stricter schema used while password creation
 export const NewPasswordSchema = z
   .string()
-  .min(8, { message: "must be at least 8 characters" })
-  .max(64, { message: "must be at most 64 characters" })
-  .regex(/[A-Z]/, { message: "must contain at least one capital letter" })
-  .regex(/[\d]/, { message: "must contain at least one number" })
-  .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, {
-    message: "must contain at least one special character",
-  });
+  .min(6, { message: "kamida 6 ta belgi bo'lishi kerak" })
+  .max(64, { message: "eng ko'pi bilan 64 ta belgi bo'lishi kerak" });
 export type NewPassword = z.infer<typeof NewPasswordSchema>;
 
 // lenient schema for existing passwords

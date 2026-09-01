@@ -61,6 +61,11 @@ export const ConfigurationSchema = z.object({
     profiles: z.object({
       enabled: z.boolean(),
     }),
+    ai: z.object({
+      enabled: z.boolean(),
+      maxDailyUses: z.number().int().nonnegative(),
+      apiKey: z.string(),
+    }),
     discordIntegration: z.object({
       enabled: z.boolean(),
     }),

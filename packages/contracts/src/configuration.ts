@@ -30,7 +30,7 @@ export type PatchConfigurationRequest = z.infer<
   typeof PatchConfigurationRequestSchema
 >;
 
-export const ConfigurationSchemaResponseSchema = responseWithData(z.object({})); //TODO define schema?
+export const ConfigurationSchemaResponseSchema = responseWithData(z.record(z.any()));
 export type ConfigurationSchemaResponse = z.infer<
   typeof ConfigurationSchemaResponseSchema
 >;

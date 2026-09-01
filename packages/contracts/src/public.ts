@@ -34,6 +34,7 @@ export const PublicAdSlotInfoSchema = z.object({
   slotId: z.string(),
   imageUrl: z.string().optional(),
   targetUrl: z.string().optional(),
+  size: z.string().optional(),
 });
 export const PublicAdConfigResponseSchema = responseWithData(
   z.object({
@@ -88,6 +89,23 @@ export const publicContract = c.router(
           footer: z.object({ brandName: z.string(), tagline: z.string(), telegram: z.string() }),
         })),
       },
+    },
+    submitFeedback: {
+      summary: "submit global feedback with screenshot",
+      description: "Submit feedback with optional image base64, title and description",
+      method: "POST",
+      path: "/feedback",
+      body: z.object({
+        title: z.string().min(1),
+        description: z.string().min(1),
+        imageBase64: z.string().optional(),
+      }),
+      responses: {
+        200: responseWithData(z.object({ success: z.boolean() })),
+      },
+      metadata: meta({
+        authenticationOptions: { isPublic: true },
+      }),
     },
   },
   {
