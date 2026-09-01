@@ -36,7 +36,7 @@ export function Footer(): JSXElement {
                   <img
                     src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
                     alt="TypeX Logo"
-                    class="h-10 w-auto object-contain"
+                    class="h-24 w-auto object-contain sm:h-28"
                   />
                   TypeX.uz
                 </a>

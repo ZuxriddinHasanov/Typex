@@ -124,9 +124,9 @@ function getPlugins({
         start_url: "/",
         icons: [
           {
-            src: "/images/typex-logo.png",
+            src: "/images/favicon.svg",
             sizes: "512x512",
-            type: "image/png",
+            type: "image/svg+xml",
             purpose: "maskable any",
           },
         ],
