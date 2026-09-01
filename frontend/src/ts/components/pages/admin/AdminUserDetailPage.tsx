@@ -56,7 +56,7 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
           <div class="flex flex-col gap-6 p-6">
             <button 
               class="flex items-center gap-2 text-sub hover:text-main transition-colors w-fit font-bold"
-              onClick={() => navigate("/typeuz-hq/users")}
+              onClick={() => navigate("/boshqaruv-paneli-x9/users")}
             >
               <Fa icon="fa-arrow-left" /> Orqaga
             </button>
@@ -253,3 +253,4 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
     </Page>
   );
 }
+

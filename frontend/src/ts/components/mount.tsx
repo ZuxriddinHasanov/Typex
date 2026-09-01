@@ -53,7 +53,7 @@ const components: Record<string, () => JSXElement> = {
     // The Page component itself can read `PageController.options.params.uid`.
     const getUid = () => {
       // Very hacky but works for now to extract from URL if not using a real router hook
-      const match = location.pathname.match(/\/typeuz-hq\/users\/([^/]+)/);
+      const match = location.pathname.match(/\/boshqaruv-paneli-x9\/users\/([^/]+)/);
       return match ? match[1] : "";
     };
     return <AdminUserDetailPage uid={getUid()} />;
@@ -116,3 +116,4 @@ export function mountComponents(): void {
     }
   }
 }
+

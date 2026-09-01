@@ -2,9 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /account
-Disallow: /admin
-Disallow: /admin/dashboard
 Disallow: /onboarding
 Disallow: /login
 
 Sitemap: https://typex.uz/sitemap.xml
+

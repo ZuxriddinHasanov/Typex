@@ -244,7 +244,7 @@ export function AdminDashboardPage(): JSXElement {
               <For each={topUsersQuery.data}>
                 {(u: any, i) => (
                   <a
-                    href={`/typeuz-hq/users/${u.uid}`}
+                    href={`/boshqaruv-paneli-x9/users/${u.uid}`}
                     class="flex cursor-pointer items-center justify-between rounded-lg bg-sub-alt/30 px-4 py-2 text-xs transition-colors hover:bg-sub-alt/50"
                   >
                     <div class="flex items-center gap-3">
@@ -280,3 +280,4 @@ export function AdminDashboardPage(): JSXElement {
     </AdminLayout>
   );
 }
+

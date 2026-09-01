@@ -121,61 +121,61 @@ const routes: Route[] = [
     },
   },
   {
-    path: "/typeuz-hq",
+    path: "/boshqaruv-paneli-x9",
     load: async (_params, options) => {
       await PageController.change("adminLogin", options);
     },
   },
   {
-    path: "/typeuz-hq/dashboard",
+    path: "/boshqaruv-paneli-x9/dashboard",
     load: async (_params, options) => {
       await PageController.change("adminDashboard", options);
     },
   },
   {
-    path: "/typeuz-hq/users",
+    path: "/boshqaruv-paneli-x9/users",
     load: async (_params, options) => {
       await PageController.change("adminUsers", options);
     },
   },
   {
-    path: "/typeuz-hq/users/:uid",
+    path: "/boshqaruv-paneli-x9/users/:uid",
     load: async (params, options) => {
       await PageController.change("adminUserDetail", { ...options, params });
     },
   },
   {
-    path: "/typeuz-hq/content",
+    path: "/boshqaruv-paneli-x9/content",
     load: async (_params, options) => {
       await PageController.change("adminContent", options);
     },
   },
   {
-    path: "/typeuz-hq/analytics",
+    path: "/boshqaruv-paneli-x9/analytics",
     load: async (_params, options) => {
       await PageController.change("adminAnalytics", options);
     },
   },
   {
-    path: "/typeuz-hq/ai",
+    path: "/boshqaruv-paneli-x9/ai",
     load: async (_params, options) => {
       await PageController.change("adminAi", options);
     },
   },
   {
-    path: "/typeuz-hq/notifications",
+    path: "/boshqaruv-paneli-x9/notifications",
     load: async (_params, options) => {
       await PageController.change("adminNotifications", options);
     },
   },
   {
-    path: "/typeuz-hq/ads",
+    path: "/boshqaruv-paneli-x9/ads",
     load: async (_params, options) => {
       await PageController.change("adminAds", options);
     },
   },
   {
-    path: "/typeuz-hq/settings",
+    path: "/boshqaruv-paneli-x9/settings",
     load: async (_params, options) => {
       await PageController.change("adminSettings", options);
     },
@@ -333,3 +333,4 @@ authEvent.subscribe((event) => {
     });
   }
 });
+

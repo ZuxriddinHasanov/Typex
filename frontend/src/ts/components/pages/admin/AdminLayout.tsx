@@ -17,39 +17,39 @@ const navItems: NavItem[] = [
     id: "dashboard",
     label: "Dashboard",
     icon: "fa-chart-pie",
-    href: "/typeuz-hq/dashboard",
+    href: "/boshqaruv-paneli-x9/dashboard",
   },
   {
     id: "users",
     label: "Foydalanuvchilar",
     icon: "fa-users",
-    href: "/typeuz-hq/users",
+    href: "/boshqaruv-paneli-x9/users",
   },
   {
     id: "content",
     label: "Kontent",
     icon: "fa-pencil-alt",
-    href: "/typeuz-hq/content",
+    href: "/boshqaruv-paneli-x9/content",
   },
   {
     id: "analytics",
     label: "Analitika",
     icon: "fa-chart-bar",
-    href: "/typeuz-hq/analytics",
+    href: "/boshqaruv-paneli-x9/analytics",
   },
-  { id: "ai", label: "AI tahlil", icon: "fa-brain", href: "/typeuz-hq/ai" },
+  { id: "ai", label: "AI tahlil", icon: "fa-brain", href: "/boshqaruv-paneli-x9/ai" },
   {
     id: "notifications",
     label: "Bildirishnomalar",
     icon: "fa-bell",
-    href: "/typeuz-hq/notifications",
+    href: "/boshqaruv-paneli-x9/notifications",
   },
-  { id: "ads", label: "Reklama", icon: "fa-ad", href: "/typeuz-hq/ads" },
+  { id: "ads", label: "Reklama", icon: "fa-ad", href: "/boshqaruv-paneli-x9/ads" },
   {
     id: "settings",
     label: "Sozlamalar",
     icon: "fa-cog",
-    href: "/typeuz-hq/settings",
+    href: "/boshqaruv-paneli-x9/settings",
   },
 ];
 
@@ -151,3 +151,4 @@ export function AdminLayout(props: {
     </div>
   );
 }
+
