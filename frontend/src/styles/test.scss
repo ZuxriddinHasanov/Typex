@@ -1057,7 +1057,7 @@
         "wpm"
         "acc";
 
-      &.morestats {
+      &.morestats:not(.hidden) {
         display: grid;
         grid-auto-flow: column;
         grid-template-areas: none;

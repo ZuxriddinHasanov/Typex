@@ -1325,6 +1325,18 @@ qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
   restart();
 });
 
+qs(".pageTest")?.onChild("click", "#moreStatsToggle", (e) => {
+  const container = document.getElementById("moreStatsContainer");
+  const toggle = e.currentTarget as HTMLElement;
+  if (container) {
+    container.classList.toggle("hidden");
+    const isHidden = container.classList.contains("hidden");
+    toggle.innerHTML = isHidden 
+      ? '<i class="fas fa-chevron-down" style="margin-right: 0.5rem;"></i> Ko\'proq ma\'lumot'
+      : '<i class="fas fa-chevron-up" style="margin-right: 0.5rem;"></i> Kamroq ma\'lumot';
+  }
+});
+
 qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode === "zen") {
     showNoticeNotification("Repeat test disabled in zen mode");
