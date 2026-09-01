@@ -261,6 +261,7 @@ export function claimAllInboxItems(): void {
       mutateInboxItem({ id: it.id, status: "read" });
     }
   });
+  applyPendingInboxActions();
 }
 
 export function readAllInboxItems(): void {
@@ -271,6 +272,7 @@ export function readAllInboxItems(): void {
       mutateInboxItem({ id: it.id, status: "read" });
     }
   });
+  applyPendingInboxActions();
 }
 
 export function deleteAllInboxItems(): void {
@@ -279,6 +281,7 @@ export function deleteAllInboxItems(): void {
       mutateInboxItem({ id: it.id, status: "deleted" });
     }
   });
+  applyPendingInboxActions();
 }
 
 async function flushPendingChanges({
@@ -326,6 +329,9 @@ export function useInboxQuery(enabled: Accessor<boolean>) {
       .orderBy(({ inbox }) => inbox.subject, "asc");
   });
 }
+
+
+
 
 
 
