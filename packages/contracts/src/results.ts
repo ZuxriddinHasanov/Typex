@@ -141,9 +141,6 @@ export const resultsContract = c.router(
         466: TypeUZClientError.describe("Duplicate result"),
       },
       metadata: meta({
-        authenticationOptions: {
-          isPublic: true,
-        },
         rateLimit: "resultsAdd",
         requireConfiguration: {
           path: "results.savingEnabled",

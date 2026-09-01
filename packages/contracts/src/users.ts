@@ -1010,25 +1010,6 @@ export const usersContract = c.router(
         },
       }),
     },
-    getTestAnalysis: {
-      summary: "test analysis",
-      description: "Get AI-powered analysis of a specific test result",
-      method: "POST",
-      path: "/test-analysis",
-      body: z.object({
-        wpm: z.number(),
-        acc: z.number(),
-        duration: z.number(),
-        errors: z.number().optional(),
-      }),
-      responses: {
-        200: responseWithData(z.string()),
-        404: TypeUZClientError,
-      },
-      metadata: meta({
-        rateLimit: "userGet",
-      }),
-    },
     getWeeklyAnalysis: {
       summary: "weekly analysis",
       description:

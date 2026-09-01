@@ -34,7 +34,6 @@ export const PersonalBestsSchema = z.object({
   quote: z.record(StringNumberSchema, z.array(PersonalBestSchema)),
   custom: z.record(z.literal("custom"), z.array(PersonalBestSchema)),
   zen: z.record(z.literal("zen"), z.array(PersonalBestSchema)),
-  ai: z.record(z.literal("ai"), z.array(PersonalBestSchema)),
 });
 export type PersonalBests = z.infer<typeof PersonalBestsSchema>;
 
@@ -46,7 +45,6 @@ export const DefaultWordsModeSchema = z.union([
 ]);
 
 export const DefaultTimeModeSchema = z.union([
-  z.literal("10"),
   z.literal("15"),
   z.literal("30"),
   z.literal("60"),

@@ -17,7 +17,6 @@ export const LeaderboardEntrySchema = z.object({
   name: z.string(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
-  avatar: z.string().optional().nullable(),
   discordId: z.string().optional(),
   discordAvatar: z.string().optional(),
   rank: z.number().nonnegative().int(),
@@ -47,7 +46,6 @@ export const RedisXpLeaderboardEntrySchema = z.object({
     .optional()
     .or(z.null().transform((_val) => undefined)),
   discordAvatar: z.string().optional(),
-  avatar: z.string().optional().nullable(),
   badgeId: z.number().int().optional(),
   isPremium: z.boolean().optional(),
 });
