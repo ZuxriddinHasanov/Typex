@@ -6,6 +6,7 @@ import { setConfig } from "../config/setters";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController, { Quote } from "../controllers/quotes-controller";
 import * as DB from "../db";
+import * as SoundController from "../controllers/sound-controller";
 
 import { showLoaderBar, hideLoaderBar } from "../states/loader-bar";
 import {
@@ -330,6 +331,7 @@ function animateNumber(
   onUpdate: (val: number) => void,
 ): void {
   let startTime: number | null = null;
+  let lastInt = Math.floor(start);
   const easeOutExpo = (t: number): number =>
     t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
   function update(time: number): void {
@@ -340,6 +342,13 @@ function animateNumber(
     if (progress > 1) progress = 1;
     const current = start + (end - start) * easeOutExpo(progress);
     onUpdate(current);
+
+    let currentInt = Math.floor(current);
+    if (currentInt !== lastInt) {
+      lastInt = currentInt;
+      void SoundController.playClick();
+    }
+
     if (progress < 1) requestAnimationFrame(update);
   }
   requestAnimationFrame(update);
