@@ -944,12 +944,7 @@ const adminLimiter5m = rateLimit({
   legacyHeaders: false,
   validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
   keyGenerator: (req) => {
-    const ip =
-      (req.headers["cf-connecting-ip"] as string) ??
-      (req.headers["x-forwarded-for"] as string) ??
-      req.ip ??
-      "255.255.255.255";
-    return `admin-login-5m:${ip}`;
+    return `admin-login-5m:${(req.body as any)?.username ?? "unknown"}`;
   },
 });
 
@@ -963,12 +958,7 @@ const adminLimiter10m = rateLimit({
   legacyHeaders: false,
   validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
   keyGenerator: (req) => {
-    const ip =
-      (req.headers["cf-connecting-ip"] as string) ??
-      (req.headers["x-forwarded-for"] as string) ??
-      req.ip ??
-      "255.255.255.255";
-    return `admin-login-10m:${ip}`;
+    return `admin-login-10m:${(req.body as any)?.username ?? "unknown"}`;
   },
 });
 
@@ -982,12 +972,7 @@ const adminLimiter30m = rateLimit({
   legacyHeaders: false,
   validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
   keyGenerator: (req) => {
-    const ip =
-      (req.headers["cf-connecting-ip"] as string) ??
-      (req.headers["x-forwarded-for"] as string) ??
-      req.ip ??
-      "255.255.255.255";
-    return `admin-login-30m:${ip}`;
+    return `admin-login-30m:${(req.body as any)?.username ?? "unknown"}`;
   },
 });
 

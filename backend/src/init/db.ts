@@ -48,6 +48,14 @@ export async function connect(): Promise<void> {
 
   try {
     const client = await pool.connect();
+    
+    // Add ad_views column for the analytics feature
+    try {
+      await client.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS ad_views INT DEFAULT 0");
+    } catch (e) {
+      Logger.error(`Failed to add ad_views column: ${(e as Error).message}`);
+    }
+    
     client.release();
     Logger.success("Connected to PostgreSQL database");
   } catch (error) {

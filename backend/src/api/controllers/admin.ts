@@ -1547,3 +1547,12 @@ export async function listUsers(
     });
   }
 }
+
+export async function getTopAdWatchers(_req: TypeUZRequest): Promise<TypeUZResponse<Array<{ name: string; adViews: number }>>> {
+  const { getDb } = await import('../../init/db.js');
+  const db = getDb();
+  if (!db) return new TypeUZResponse('No DB', []);
+  const res = await db.query('SELECT name, ad_views FROM users WHERE ad_views > 0 ORDER BY ad_views DESC LIMIT 10');
+  return new TypeUZResponse('Success', res.rows.map(r => ({ name: r.name, adViews: r.ad_views })));
+}
+

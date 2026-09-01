@@ -1,9 +1,7 @@
 import Chart, { ChartConfiguration } from "chart.js/auto";
-import annotationPlugin from "chartjs-plugin-annotation";
-Chart.register(annotationPlugin);
 import { createEffect, onCleanup, JSXElement } from "solid-js";
 
-export function LineChart(props: {
+export function BarChart(props: {
   data: Array<Record<string, unknown>> | undefined;
   labelKey: string;
   valueKey: string;
@@ -19,19 +17,15 @@ export function LineChart(props: {
     const values = rawData.map((d) => (d[props.valueKey] as number) ?? 0);
 
     const config: ChartConfiguration = {
-      type: "line",
+      type: "bar",
       data: {
         labels,
         datasets: [
           {
             label: props.label ?? "Qiymat",
             data: values,
-            borderColor: props.color ?? "#FF5A1F",
-            backgroundColor: (props.color ?? "#FF5A1F") + "20",
-            fill: true,
-            tension: 0.4,
-            pointRadius: 3,
-            pointHoverRadius: 6,
+            backgroundColor: props.color ?? "#FF5A1F",
+            borderRadius: 4,
           },
         ],
       },
@@ -49,27 +43,14 @@ export function LineChart(props: {
           x: {
             display: true,
             grid: { display: false, drawBorder: false },
-            ticks: {
-              maxTicksLimit: 7,
-              color: "#888",
-              font: { size: 10 },
-            },
+            ticks: { maxTicksLimit: 10, color: "#888", font: { size: 10 } },
           },
           y: {
             display: true,
             beginAtZero: true,
             grid: { color: "#33333333", drawBorder: false },
-            ticks: {
-              maxTicksLimit: 5,
-              color: "#888",
-              font: { size: 10 },
-            },
+            ticks: { maxTicksLimit: 5, color: "#888", font: { size: 10 } },
           },
-        },
-        interaction: {
-          mode: "nearest",
-          axis: "x",
-          intersect: false,
         },
       },
     };
@@ -95,3 +76,4 @@ export function LineChart(props: {
     </div>
   );
 }
+

@@ -272,3 +272,15 @@ export async function submitFeedback(req: any) {
 
 
 
+
+export async function logAdView(req: TypeUZRequest): Promise<TypeUZResponse<null>> {
+  const { getDb } = await import('../../init/db.js');
+  const db = getDb();
+  if (!db) return new TypeUZResponse('No DB', null);
+  
+  if (req.ctx.decodedToken.uid) {
+    await db.query('UPDATE users SET ad_views = COALESCE(ad_views, 0) + 1 WHERE uid = ', [req.ctx.decodedToken.uid]);
+  }
+  return new TypeUZResponse('Logged', null);
+}
+

@@ -297,6 +297,15 @@ export type SendNotificationRequest = z.infer<
   typeof SendNotificationRequestSchema
 >;
 
+export const AdminTopAdWatchersResponseSchema = responseWithData(z.array(z.object({
+  name: z.string(),
+  adViews: z.number()
+})));
+
+// -----------------------------------------------------------------------------
+// Admin Contract
+// -----------------------------------------------------------------------------
+
 // --- Ad Config ---
 export const AdminCreativeSchema = z.object({
   id: z.string(),
@@ -670,6 +679,14 @@ export const adminContract = c.router(
       method: "GET",
       path: "/analytics/top-users",
       responses: { 200: AdminTopUsersResponseSchema },
+    },
+    getTopAdWatchers: {
+      summary: "top users by ad views",
+      method: "GET",
+      path: "/analytics/top-ad-watchers",
+      responses: { 
+        200: AdminTopAdWatchersResponseSchema,
+      },
     },
     getUserGrowth: {
       summary: "cumulative user growth",

@@ -14,6 +14,9 @@ export default s.router(publicContract, {
   getAdConfig: {
     handler: async (r) => (callController(PublicController.getPublicAdConfig) as any)(r),
   },
+  logAdView: {
+    handler: async (r) => (callController(PublicController.logAdView) as any)(r),
+  },
   getSiteContent: {
     handler: async (r) => (callController(PublicController.getSiteContent) as any)(r),
   },

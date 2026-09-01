@@ -1,6 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { CommonResponses, meta, responseWithData } from "./util/api";
+import { CommonResponses, meta, responseWithData, TypeUZResponseSchema } from "./util/api";
 import {
   SpeedHistogramSchema,
   TypingStatsSchema,
@@ -74,6 +74,16 @@ export const publicContract = c.router(
       path: "/ads",
       responses: {
         200: PublicAdConfigResponseSchema,
+      },
+    },
+    logAdView: {
+      summary: "log an ad view",
+      description: "Increment ad view count for the user",
+      method: "POST",
+      path: "/log-ad-view",
+      body: z.object({}),
+      responses: {
+        200: TypeUZResponseSchema,
       },
     },
     getSiteContent: {

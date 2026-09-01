@@ -5,6 +5,7 @@ import { JSXElement, Show, For } from "solid-js";
 import Ape from "../../../ape";
 import { AdminLayout } from "./AdminLayout";
 import { LineChart } from "../../common/LineChart";
+import { BarChart } from "../../common/BarChart";
 
 export function AdminAnalyticsPage(): JSXElement {
   const signupsQuery = createQuery(() => ({
@@ -53,6 +54,13 @@ export function AdminAnalyticsPage(): JSXElement {
     queryKey: ["admin", "growth"],
     queryFn: async () => {
       const r = await Ape.admin.getUserGrowth();
+      return r.status === 200 ? ((r.body.data as any) ?? []) : [];
+    },
+  }));
+  const adWatchersQuery = createQuery(() => ({
+    queryKey: ["admin", "topAdWatchers"],
+    queryFn: async () => {
+      const r = await Ape.admin.getTopAdWatchers();
       return r.status === 200 ? ((r.body.data as any) ?? []) : [];
     },
   }));
@@ -182,6 +190,24 @@ export function AdminAnalyticsPage(): JSXElement {
                 )}
               </For>
             </div>
+          </Show>
+        </div>
+      </div>
+      {/* Ad Watchers */}
+      <div class="mt-6">
+        <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
+          <h2 class="mb-4 text-sm font-bold text-text">Eng ko'p reklama ko'rganlar</h2>
+          <Show 
+            when={adWatchersQuery.data?.length > 0}
+            fallback={<p class="text-xs text-sub">Ma'lumot yo'q</p>}
+          >
+            <BarChart
+              data={adWatchersQuery.data}
+              labelKey="name"
+              valueKey="adViews"
+              color="#ef4444"
+              label="Reklama ko'rishlar"
+            />
           </Show>
         </div>
       </div>

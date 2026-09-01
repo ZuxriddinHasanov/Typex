@@ -89,6 +89,9 @@ export default s.router(adminContract, {
   getTopUsers: {
     handler: async (r) => callController(AdminController.getTopUsers)(r),
   },
+  getTopAdWatchers: {
+    handler: async (r) => callController(AdminController.getTopAdWatchers)(r),
+  },
   getUserGrowth: {
     handler: async (r) => callController(AdminController.getUserGrowth)(r),
   },

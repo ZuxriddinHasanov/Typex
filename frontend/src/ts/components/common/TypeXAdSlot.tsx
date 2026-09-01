@@ -57,6 +57,9 @@ export function TypeXAdSlot(props: {
             alt=""
             class="h-full w-full object-contain"
             loading="lazy"
+            onLoad={() => {
+              void Ape.public.logAdView({ body: {} });
+            }}
           />
         </a>
       )}
