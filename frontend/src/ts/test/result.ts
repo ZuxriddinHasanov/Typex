@@ -997,7 +997,7 @@ function updateOther(
         result.mode2 !== "10") ||
       (result.rawWpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
-      extra.push("xom tezlik");
+      extra.push("sof tezlik");
     }
     if (result.acc < 75 || result.acc > 100) {
       extra.push("aniqlik");
@@ -1563,3 +1563,4 @@ configEvent.subscribe(async ({ key }) => {
     ChartController.result.resize();
   }
 });
+

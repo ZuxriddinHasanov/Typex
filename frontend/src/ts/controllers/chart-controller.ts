@@ -220,7 +220,7 @@ export const result = new ChartWithUpdateColors<
         display: false,
         title: {
           display: true,
-          text: "Xom tezlik (Raw WPM)",
+          text: "Sof tezlik (Raw WPM)",
         },
         beginAtZero: true,
         min: 0,
@@ -533,3 +533,4 @@ createDebouncedEffectOn(125, getTheme, (theme) => {
 configEvent.subscribe(({ key, newValue }) => {
   if (key === "fontFamily") setDefaultFontFamily(newValue);
 });
+

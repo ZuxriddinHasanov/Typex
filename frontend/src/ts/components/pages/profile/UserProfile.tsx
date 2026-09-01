@@ -451,7 +451,7 @@ function LastTestCard(props: {
         </div>
         <div class="flex flex-col gap-1 rounded-xl bg-bg/50 p-4">
           <span class="text-[10px] font-bold tracking-widest text-sub uppercase">
-            Xom tezlik (Raw)
+            Sof tezlik (Raw)
           </span>
           <span class="text-2xl font-black text-text">
             {lr().rawWpm ?? lr().wpm ?? 0}
@@ -496,5 +496,6 @@ function LastTestCard(props: {
     </div>
   );
 }
+
 
 

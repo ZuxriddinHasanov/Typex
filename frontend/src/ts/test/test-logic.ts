@@ -1001,7 +1001,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
   ) {
-    showNoticeNotification("Haqiqiy bo'lmagan test - xom tezlik (Raw) juda yuqori");
+    showNoticeNotification("Haqiqiy bo'lmagan test - sof tezlik (Raw) juda yuqori");
     setIsTestInvalid(true);
     dontSave = true;
   } else if (
@@ -1390,3 +1390,4 @@ timerEvent.subscribe(({ key: eventKey, value: eventValue }) => {
   if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
   if (eventKey === "finish") void finish();
 });
+
