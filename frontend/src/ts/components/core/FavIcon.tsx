@@ -25,13 +25,14 @@ export function FavIcon(props: { theme: Theme }): JSXElement {
       </defs>
       <rect fill="${bg}" width="64" height="64" rx="14"/>
       <rect x="4" y="4" width="56" height="56" rx="12" fill="none" stroke="url(#fg)" stroke-width="1.5" opacity="0.2"/>
-      <text x="32" y="42" text-anchor="middle" fill="url(#fg)" font-size="34" font-weight="900" font-family="system-ui,sans-serif" letter-spacing="-1">TZ</text>
+      
     </svg>
     `;
-    return `data:image/svg+xml;base64,${btoa(svgPre)}`;
+    return "/images/favicon.svg";
   });
 
   return (
     <Link id="favicon" rel="shortcut icon" type="image/svg+xml" href={icon()} />
   );
 }
+

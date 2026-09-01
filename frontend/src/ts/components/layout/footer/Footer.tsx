@@ -36,10 +36,8 @@ export function Footer(): JSXElement {
                   <img
                     src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
                     alt="TypeX Logo"
-                    class="h-24 w-auto object-contain sm:h-28"
-                  />
-                  TypeX.uz
-                </a>
+                    class="h-24 w-auto object-contain sm:h-28" />
+</a>
                 <p class="max-w-xs text-sm leading-relaxed text-sub">
                   O&apos;zbekistonning birinchi raqamli yozuv tezligi testi
                   platformasi. AI tahlil orqali natijalaringizni kuzating va
@@ -172,3 +170,5 @@ export function Footer(): JSXElement {
     </Show>
   );
 }
+
+
