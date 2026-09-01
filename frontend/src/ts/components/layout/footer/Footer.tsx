@@ -1,11 +1,14 @@
-import { JSXElement, Show } from "solid-js";
+import { JSXElement, Show, createMemo } from "solid-js";
 
 import { getActivePage, getIsScreenshotting } from "../../../states/core";
 import { isTestActive as getIsTestActive } from "../../../states/test";
+import { getTheme } from "../../../states/theme";
 import { cn } from "../../../utils/cn";
+import { isColorDark } from "../../../utils/colors";
 import { Fa } from "../../common/Fa";
 
 export function Footer(): JSXElement {
+  const isDark = createMemo(() => isColorDark(getTheme().bg));
   const showFooter = () =>
     !getActivePage().startsWith("admin") &&
     getActivePage() !== "login" &&
@@ -30,9 +33,11 @@ export function Footer(): JSXElement {
                   class="flex items-center gap-2 text-2xl font-extrabold tracking-tight text-text transition-colors hover:text-main"
                   router-link
                 >
-                  <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-main text-bg">
-                    <span class="text-sm">TX</span>
-                  </div>
+                  <img
+                    src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
+                    alt="TypeX Logo"
+                    class="h-10 w-auto object-contain"
+                  />
                   TypeX.uz
                 </a>
                 <p class="max-w-xs text-sm leading-relaxed text-sub">
@@ -146,7 +151,6 @@ export function Footer(): JSXElement {
                     </span>
                     Instagram
                   </a>
-
                 </div>
               </div>
             </div>
