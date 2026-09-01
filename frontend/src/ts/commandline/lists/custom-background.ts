@@ -44,7 +44,7 @@ const customBackgroundCommand: Command = {
 
             // check type
             if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
-              showNoticeNotification("Unsupported image format");
+              showNoticeNotification("Noto'g'ri rasm formati");
               cleanup();
               return;
             }

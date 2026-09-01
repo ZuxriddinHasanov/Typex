@@ -432,7 +432,7 @@ export async function getTestActivityCalendar(
     showLoaderBar();
     const response = await Ape.users.getTestActivity();
     if (response.status !== 200) {
-      showErrorNotification("Error getting test activities", { response });
+      showErrorNotification("Test faoliyatini olishda xatolik", { response });
       hideLoaderBar();
       return undefined;
     }

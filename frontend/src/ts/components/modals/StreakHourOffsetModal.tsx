@@ -23,7 +23,7 @@ export function StreakHourOffsetModal() {
       offset: "0.0",
     },
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
     validators: {
       onChange: allFieldsMandatory(),
@@ -40,11 +40,11 @@ export function StreakHourOffsetModal() {
       hideLoaderBar();
 
       if (response.status !== 200) {
-        showErrorNotification("Failed to set streak hour offset", { response });
+        showErrorNotification("Seriya (streak) soati ofsetini o'rnatib bo'lmadi", { response });
         hideModal("StreakHourOffset");
         return;
       }
-      showSuccessNotification("Streak hour offset set");
+      showSuccessNotification("Seriya (streak) soat ofseti o'rnatildi");
       const snap = getSnapshot() as Snapshot;
 
       snap.streakHourOffset = hourOffset;

@@ -164,7 +164,7 @@ const authenticationMemos = Object.fromEntries(
 
 export async function sendVerificationEmail(): Promise<void> {
   if (!isAuthAvailable()) {
-    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
+    showErrorNotification("Autentifikatsiya ishga tushirilmadi", { durationMs: 3000 });
     return;
   }
 
@@ -172,10 +172,10 @@ export async function sendVerificationEmail(): Promise<void> {
   const response = await Ape.users.verificationEmail();
   if (response.status !== 200) {
     hideLoaderBar();
-    showErrorNotification("Failed to request verification email", { response });
+    showErrorNotification("Tasdiqlash elektron xatini so'rab bo'lmadi", { response });
   } else {
     hideLoaderBar();
-    showSuccessNotification("Verification email sent");
+    showSuccessNotification("Tasdiqlash elektron xati yuborildi");
   }
 }
 
@@ -217,7 +217,7 @@ async function getDataAndInit(): Promise<boolean> {
 
       showErrorNotification(`Failed to get user data: ${error.message}`);
     } else {
-      showErrorNotification("Failed to get user data", { error });
+      showErrorNotification("Foydalanuvchi ma'lumotlarini olib bo'lmadi", { error });
     }
     return false;
   }
@@ -567,7 +567,7 @@ export async function addAuthProvider(
       },
 ): Promise<void> {
   if (!isAuthAvailable()) {
-    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
+    showErrorNotification("Autentifikatsiya ishga tushirilmadi", { durationMs: 3000 });
     return;
   }
   const authMethod = options.authMethod;
@@ -677,7 +677,7 @@ export async function removeAuthProvider(
 
 export function signOut(): void {
   if (!isAuthAvailable()) {
-    showErrorNotification("Authentication uninitialized", { durationMs: 3000 });
+    showErrorNotification("Autentifikatsiya ishga tushirilmadi", { durationMs: 3000 });
     return;
   }
   if (!isAuthenticated()) return;
@@ -734,7 +734,7 @@ export async function signUp(
       await onAuthStateChanged(true, createdAuthUser.user);
       resetIgnoreAuthCallback();
 
-      showSuccessNotification("Account created");
+      showSuccessNotification("Akkaunt yaratildi");
       return { success: true };
     } catch (e) {
       let message = createErrorMessage(e, "Failed to create account");
@@ -772,7 +772,7 @@ export async function signUp(
   }
   setUserVerified(true);
   await onAuthStateChanged(true, { uid: res.uid } as unknown as User);
-  showSuccessNotification("Account created");
+  showSuccessNotification("Akkaunt yaratildi");
   return { success: true };
 }
 

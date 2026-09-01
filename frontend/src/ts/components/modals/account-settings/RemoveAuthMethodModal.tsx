@@ -21,7 +21,7 @@ export function showRemoveAuthMethodModal(options: {
   const hasRemainingAuth = hasAdditionalAuthMethods(options.authMethod);
 
   if (!hasRemainingAuth) {
-    showNoticeNotification("No remaining authentication enabled");
+    showNoticeNotification("Hech qanday autentifikatsiya yoqilmagan");
     return;
   }
 

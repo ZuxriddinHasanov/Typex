@@ -22,7 +22,7 @@ export function ForgotPasswordModal() {
       captcha: "",
     },
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
     onSubmit: async ({ value }) => {
       await apply(value);
@@ -60,7 +60,7 @@ export function ForgotPasswordModal() {
           children={(field) => <Captcha field={field} />}
         />
 
-        <SubmitButton form={form} text="request password reset" />
+        <SubmitButton form={form} text="parolni tiklash so'rovi" />
       </form>
     </AnimatedModal>
   );
@@ -73,7 +73,7 @@ async function apply(options: {
   const { email, captcha } = options;
 
   if (email === undefined || email === "") {
-    showNoticeNotification("Please enter your email address");
+    showNoticeNotification("Iltimos, elektron pochtangizni kiriting");
     return;
   }
 

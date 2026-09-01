@@ -54,7 +54,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     hideLoaderBar();
 
     if (response.status !== 200) {
-      showErrorNotification("Failed to link Discord", { response });
+      showErrorNotification("Discord ga ulab bo'lmadi", { response });
       return;
     }
 
@@ -123,7 +123,7 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const oldCustomThemeColors = Config.customThemeColors;
   try {
     setConfig("customThemeColors", colorArray);
-    showSuccessNotification("Custom theme applied");
+    showSuccessNotification("Maxsus mavzu qo'llanildi");
 
     if (image !== undefined && size !== undefined && filter !== undefined) {
       setConfig("customBackground", image);
@@ -337,7 +337,7 @@ export async function loadChallengeFromUrl(
       }
     })
     .catch((e: unknown) => {
-      showErrorNotification("Failed to load challenge");
+      showErrorNotification("Qiyinchilikni yuklab bo'lmadi");
       console.error(e);
     });
 }

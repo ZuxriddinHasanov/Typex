@@ -80,7 +80,7 @@ export function setConfig<T extends keyof ConfigSchemas.Config>(
 
   if (!canSetConfigWithCurrentFunboxes(key, value, Config.funbox)) {
     if (key === "words" || key === "time") {
-      showNoticeNotification("Active funboxes do not support infinite tests");
+      showNoticeNotification("Faol funbox'lar cheksiz testlarni qo'llab-quvvatlamaydi");
     } else {
       showNoticeNotification(
         `You can't set ${camelCaseToWords(

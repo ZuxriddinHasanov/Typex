@@ -57,15 +57,15 @@ export function QuoteSubmitModal(): JSXElement {
       hideLoaderBar();
 
       if (response.status !== 200) {
-        showErrorNotification("Failed to submit quote", { response });
+        showErrorNotification("Iqtibosni yuborib bo'lmadi", { response });
         return;
       }
 
-      showSuccessNotification("Quote submitted.");
+      showSuccessNotification("Iqtibos yuborildi.");
       hideModalAndClearChain("QuoteSubmit");
     },
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
     validators: {
       onChange: allFieldsMandatory(),
@@ -170,7 +170,7 @@ export function QuoteSubmitModal(): JSXElement {
           name="captcha"
           children={(field) => <Captcha field={field} />}
         />
-        <SubmitButton form={form} text="submit" />
+        <SubmitButton form={form} text="yuborish" />
       </form>
     </AnimatedModal>
   );

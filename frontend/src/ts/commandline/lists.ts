@@ -233,10 +233,10 @@ export const commands: CommandsSubgroup = {
         navigator.clipboard
           .writeText(JSON.stringify(lastEventLog))
           .then(() => {
-            showSuccessNotification("Copied to clipboard");
+            showSuccessNotification("Nusxalandi");
           })
           .catch((e: unknown) => {
-            showErrorNotification("Failed to copy to clipboard", { error: e });
+            showErrorNotification("Nusxalab bo'lmadi", { error: e });
           });
       },
     },

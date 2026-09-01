@@ -103,7 +103,7 @@ export function AccountPage(): JSXElement {
 
             <div class="grid grid-cols-3">
               <Button
-                text="Export CSV"
+                text="CSV yuklab olish"
                 fa={{ icon: "fa-file-csv" }}
                 class="col-start-3 w-full"
                 disabled={isExporting()}

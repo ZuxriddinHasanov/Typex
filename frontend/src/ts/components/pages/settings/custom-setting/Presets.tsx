@@ -68,7 +68,7 @@ export function Presets(): JSXElement {
             )}
           </For>
           <Button
-            text="add preset"
+            text="shablon qo'shish"
             onClick={() => {
               showModal("AddPresetModal");
             }}

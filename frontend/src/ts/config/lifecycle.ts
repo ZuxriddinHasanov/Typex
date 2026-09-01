@@ -34,10 +34,10 @@ export async function applyConfigFromJson(json: string): Promise<void> {
     );
     await applyConfig(parsedConfig);
     saveFullConfigToLocalStorage();
-    showSuccessNotification("Done");
+    showSuccessNotification("Bajarildi");
   } catch (e) {
     console.error(e);
-    showErrorNotification("Failed to import settings", { error: e });
+    showErrorNotification("Sozlamalarni import qilib bo'lmadi", { error: e });
   }
 }
 

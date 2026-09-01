@@ -15,12 +15,12 @@ export function FullOrPartial(props: {
       <div class="text-sub">preset type</div>
       <div class="grid grid-cols-2 gap-2">
         <Button
-          text="full"
+          text="to'liq"
           active={props.type === "full"}
           onClick={() => props.onTypeChange("full")}
         />
         <Button
-          text="partial"
+          text="qisman"
           active={props.type === "partial"}
           onClick={() => props.onTypeChange("partial")}
         />

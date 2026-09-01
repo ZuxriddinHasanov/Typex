@@ -18,7 +18,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={cn(buttonClass, "pl-6")}
           variant="text"
           href="#group_behavior"
-          text="behavior"
+          text="ishlash tartibi"
           fa={{
             icon: "fa-tools",
           }}
@@ -27,7 +27,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={buttonClass}
           variant="text"
           href="#group_input"
-          text="input"
+          text="kiritish"
           fa={{
             icon: "fa-keyboard",
           }}
@@ -36,7 +36,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={buttonClass}
           variant="text"
           href="#group_sound"
-          text="sound"
+          text="ovoz"
           fa={{
             icon: "fa-volume-up",
           }}
@@ -45,7 +45,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={buttonClass}
           variant="text"
           href="#group_caret"
-          text="caret"
+          text="kursor"
           fa={{
             icon: "fa-i-cursor",
           }}
@@ -54,7 +54,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={buttonClass}
           variant="text"
           href="#group_appearance"
-          text="appearance"
+          text="tashqi ko'rinish"
           fa={{
             icon: "fa-palette",
           }}
@@ -63,7 +63,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={buttonClass}
           variant="text"
           href="#group_theme"
-          text="theme"
+          text="mavzu"
           fa={{
             icon: "fa-brush",
           }}
@@ -72,7 +72,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={buttonClass}
           variant="text"
           href="#group_hideElements"
-          text="hide elements"
+          text="elementlarni yashirish"
           fa={{
             icon: "fa-eye-slash",
           }}
@@ -81,7 +81,7 @@ export function QuickNav(props: { class?: string }): JSXElement {
           class={cn(buttonClass, "pr-6")}
           variant="text"
           href="#group_dangerZone"
-          text="danger zone"
+          text="xavfli hudud"
           fa={{
             icon: "fa-exclamation-triangle",
           }}

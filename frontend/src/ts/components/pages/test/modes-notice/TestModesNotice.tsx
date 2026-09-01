@@ -83,7 +83,7 @@ function ResultSaving() {
       icon="fa-save"
       openCommandline="resultSaving"
       class="text-error"
-      text="saving disabled"
+      text="saqlash o'chirilgan"
     />
   );
 }

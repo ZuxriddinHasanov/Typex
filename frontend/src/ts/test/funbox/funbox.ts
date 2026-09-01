@@ -107,7 +107,7 @@ export async function activate(
     JSONData.getCurrentLanguage(Config.language),
   );
   if (error) {
-    showErrorNotification("Failed to activate funbox", { error });
+    showErrorNotification("Funbox ni faollashtirib bo'lmadi", { error });
     setConfig("funbox", [], {
       nosave: true,
     });

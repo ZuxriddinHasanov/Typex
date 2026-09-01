@@ -121,10 +121,10 @@ function DeepLinkButton(props: { key: string }) {
         navigator.clipboard
           .writeText(window.location.toString())
           .then(() => {
-            showSuccessNotification("Link copied to clipboard");
+            showSuccessNotification("Havola nusxalandi");
           })
           .catch((e: unknown) => {
-            showErrorNotification("Failed to copy to clipboard", {
+            showErrorNotification("Nusxalab bo'lmadi", {
               error: e,
             });
           });

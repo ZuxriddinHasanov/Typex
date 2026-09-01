@@ -37,7 +37,7 @@ export function LastSignedOutResultModal() {
   );
 
   const handleDiscard = () => {
-    showNoticeNotification("Last test result discarded");
+    showNoticeNotification("So'nggi test natijasi bekor qilindi");
     hideModal(modalId);
     setTimeout(() => {
       setLastSignedOutResult(null);
@@ -95,10 +95,10 @@ export function LastSignedOutResultModal() {
       */}
       <div class="grid grid-cols-1 gap-2 sm:hidden">
         <Button text="saqlash" onClick={handleSave} />
-        <Button text="discard" onClick={handleDiscard} />
+        <Button text="bekor qilish" onClick={handleDiscard} />
       </div>
       <div class="hidden grid-cols-2 gap-2 sm:grid">
-        <Button text="discard" onClick={handleDiscard} />
+        <Button text="bekor qilish" onClick={handleDiscard} />
         <Button text="saqlash" onClick={handleSave} />
       </div>
     </AnimatedModal>

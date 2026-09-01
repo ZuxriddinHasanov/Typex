@@ -22,7 +22,7 @@ export function ThemeIndicator(): JSXElement {
         return;
       }
       if (isAuthenticated() && themes().length < 1) {
-        showNoticeNotification("No custom themes!");
+        showNoticeNotification("Maxsus mavzular yo'q!");
         setConfig("customTheme", false);
         return;
       }

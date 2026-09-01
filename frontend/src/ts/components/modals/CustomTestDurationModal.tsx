@@ -22,7 +22,7 @@ export function CustomTestDurationModal(): JSXElement {
       const val = parseInput(value.duration);
 
       if (isNaN(val) || !isFinite(val) || val < 0) {
-        showNoticeNotification("Duration must be a positive number");
+        showNoticeNotification("Davomiylik musbat raqam bo'lishi kerak");
         return;
       }
 
@@ -40,7 +40,7 @@ export function CustomTestDurationModal(): JSXElement {
       restartTestEvent.dispatch();
 
       if (val >= 1200) {
-        showNoticeNotification("Stay safe and take breaks!");
+        showNoticeNotification("O'zingizni asrang va tanaffuslar qiling!");
       }
 
       hideModalAndClearChain("TestDuration");

@@ -32,7 +32,7 @@ export function UserReportModal() {
       form.reset();
     },
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
     validators: {
       onChange: allFieldsMandatory(),

@@ -286,7 +286,7 @@ export function handleConfigInput<T extends ConfigKey>({
     const didConfigSave = setConfig(configName, value);
 
     if (didConfigSave) {
-      showSuccessNotification("Saved", { durationMs: 1000 });
+      showSuccessNotification("Saqlandi", { durationMs: 1000 });
     }
   };
 

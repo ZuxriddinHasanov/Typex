@@ -37,12 +37,12 @@ export function QuoteReportModal(): JSXElement {
       const quoteLanguage = removeLanguageSize(Config.language);
 
       if (value.captcha === "") {
-        showNoticeNotification("Please complete the captcha");
+        showNoticeNotification("Iltimos, captchani to'ldiring");
         return;
       }
 
       if (id === "" || id === "0") {
-        showNoticeNotification("Please select a quote");
+        showNoticeNotification("Iltimos, iqtibos tanlang");
         return;
       }
 
@@ -67,15 +67,15 @@ export function QuoteReportModal(): JSXElement {
       hideLoaderBar();
 
       if (response.status !== 200) {
-        showErrorNotification("Failed to report quote", { response });
+        showErrorNotification("Iqtibos ustidan shikoyat qilib bo'lmadi", { response });
         return;
       }
 
-      showSuccessNotification("Report submitted. Thank you!");
+      showSuccessNotification("Shikoyat yuborildi. Rahmat!");
       hideModalAndClearChain("QuoteReport");
     },
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
     validators: {
       onChange: allFieldsMandatory(),
@@ -180,7 +180,7 @@ export function QuoteReportModal(): JSXElement {
           name="captcha"
           children={(field) => <Captcha field={field} />}
         />
-        <SubmitButton form={form} text="report" />
+        <SubmitButton form={form} text="shikoyat qilish" />
       </form>
     </AnimatedModal>
   );

@@ -207,7 +207,7 @@ export function WordFilterModal(props: {
         );
 
         if (error) {
-          showErrorNotification("Failed to filter language words", { error });
+          showErrorNotification("Til so'zlarini filtrlashda xatolik", { error });
           return;
         }
 
@@ -218,7 +218,7 @@ export function WordFilterModal(props: {
         }
 
         if (result.words.length === 0) {
-          showNoticeNotification("No words found");
+          showNoticeNotification("So'zlar topilmadi");
           return;
         }
         props.setChainedData({

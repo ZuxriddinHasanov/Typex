@@ -81,7 +81,7 @@ export async function handleOppositeShift(event: KeyboardEvent): Promise<void> {
       .getKeymapLayout()
       .catch(() => undefined);
     if (keymapLayout === undefined) {
-      showErrorNotification("Failed to load keymap layout");
+      showErrorNotification("Klaviatura xaritasini yuklab bo'lmadi");
 
       return;
     }

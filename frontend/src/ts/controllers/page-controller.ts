@@ -173,7 +173,7 @@ async function showSyncLoading({
         currentOffset,
       );
       void PageLoading.updateBar(100, 125);
-      PageLoading.updateText("Done");
+      PageLoading.updateText("Bajarildi");
     } else {
       await options.loadingPromise();
     }

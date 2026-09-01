@@ -37,7 +37,7 @@ export function ProfileSearchPage(): JSXElement {
       }
     },
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
   }));
 
@@ -63,7 +63,7 @@ export function ProfileSearchPage(): JSXElement {
           }}
         >
           <div class="text-center">
-            <H2 class="text-2xl" text="Profile lookup" />
+            <H2 class="text-2xl" text="Profilni qidirish" />
           </div>
 
           <div class="flex w-full gap-2 text-xl">

@@ -111,7 +111,7 @@ export function CustomGeneratorModal(props: {
     onSubmit: ({ value }) => {
       const input = value.characterSet.trim();
       if (input === "") {
-        showNoticeNotification("Character set cannot be empty");
+        showNoticeNotification("Belgilar to'plami bo'sh bo'lishi mumkin emas");
         return;
       }
 

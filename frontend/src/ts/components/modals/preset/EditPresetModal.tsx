@@ -54,7 +54,7 @@ export function EditPresetModal(): JSXElement {
         normalizeName(value.presetName),
       );
       if (!parsedName.success) {
-        showNoticeNotification("Preset name is not valid");
+        showNoticeNotification("Shablon nomi yaroqsiz");
         return;
       }
 
@@ -92,7 +92,7 @@ export function EditPresetModal(): JSXElement {
             name: parsedName.data,
           });
         }
-        showSuccessNotification("Preset updated");
+        showSuccessNotification("Shablon yangilandi");
       } catch (e) {
         showErrorNotification(
           e instanceof Error ? e.message : "Failed to edit preset",

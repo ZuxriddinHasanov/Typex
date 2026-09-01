@@ -14,7 +14,7 @@ import { showSimpleModal } from "../../../states/simple-modal";
 export function showUpdatePasswordModal(): void {
   if (!isAuthenticated()) return;
   if (!isUsingPasswordAuthentication()) {
-    showNoticeNotification("Password authentication is not enabled");
+    showNoticeNotification("Parol bilan autentifikatsiya yoqilmagan");
     return;
   }
   showSimpleModal({

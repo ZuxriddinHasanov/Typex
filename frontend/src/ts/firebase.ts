@@ -208,7 +208,7 @@ export async function signInWithEmailAndPassword(
   password: string,
   rememberMe: boolean,
 ): Promise<UserCredential> {
-  if (Auth === undefined) throw new Error("Authentication uninitialized");
+  if (Auth === undefined) throw new Error("Autentifikatsiya ishga tushirilmadi");
   await setPersistence(rememberMe, true);
 
   const { data: result, error } = await tryCatch(
@@ -244,7 +244,7 @@ export async function signInWithPopup(
   provider: AuthProvider,
   rememberMe: boolean,
 ): Promise<void> {
-  if (Auth === undefined) throw new Error("Authentication uninitialized");
+  if (Auth === undefined) throw new Error("Autentifikatsiya ishga tushirilmadi");
   await setPersistence(rememberMe, true);
   ignoreAuthCallback = true;
 
@@ -270,7 +270,7 @@ export async function createUserWithEmailAndPassword(
   email: string,
   password: string,
 ): Promise<UserCredential> {
-  if (Auth === undefined) throw new Error("Authentication uninitialized");
+  if (Auth === undefined) throw new Error("Autentifikatsiya ishga tushirilmadi");
   ignoreAuthCallback = true;
   const result = await firebaseCreateUserWithEmailAndPassword(
     Auth,
@@ -290,7 +290,7 @@ async function setPersistence(
   rememberMe: boolean,
   store = false,
 ): Promise<void> {
-  if (Auth === undefined) throw new Error("Authentication uninitialized");
+  if (Auth === undefined) throw new Error("Autentifikatsiya ishga tushirilmadi");
   const persistence = rememberMe
     ? indexedDBLocalPersistence
     : browserSessionPersistence;

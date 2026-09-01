@@ -58,7 +58,7 @@ export function AddPresetModal(): JSXElement {
         normalizeName(value.presetName),
       );
       if (!parsedName.success) {
-        showNoticeNotification("Preset name is not valid");
+        showNoticeNotification("Shablon nomi yaroqsiz");
         return;
       }
 
@@ -88,7 +88,7 @@ export function AddPresetModal(): JSXElement {
           settingGroups:
             presetType() === "partial" ? activeSettingGroups : undefined,
         });
-        showSuccessNotification("Preset added", { durationMs: 2000 });
+        showSuccessNotification("Shablon qo'shildi", { durationMs: 2000 });
       } catch (e) {
         showErrorNotification(
           e instanceof Error ? e.message : "Failed to add preset",

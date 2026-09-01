@@ -50,7 +50,7 @@ export function ViewApeKeyModal() {
 
       <Button
         onClick={() => hideModal("ViewApeKey")}
-        text="close"
+        text="yopish"
         disabled={isDisabled()}
       />
     </AnimatedModal>

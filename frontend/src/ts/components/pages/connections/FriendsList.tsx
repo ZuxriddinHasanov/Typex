@@ -45,7 +45,7 @@ export function FriendsList() {
   return (
     <div>
       <div class="items-bottom flex">
-        <H2 text="Friends" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
+        <H2 text="Do'stlar" fa={{ icon: "fa-user-friends", fixedWidth: true }} />
         <Show when={query.isRefetching}>
           <LoadingCircle />
         </Show>

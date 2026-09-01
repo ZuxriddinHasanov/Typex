@@ -109,7 +109,7 @@ export function init(
       Math.min(limit, Math.round(typedWords.length * 0.2)),
     );
     if (sortableSlowWords.length === 0) {
-      showNoticeNotification("Test too short to classify slow words.");
+      showNoticeNotification("Sekin so'zlarni tasniflash uchun test juda qisqa.");
     }
   }
 
@@ -122,7 +122,7 @@ export function init(
     sortableMissedBiwords.length === 0 &&
     sortableSlowWords.length === 0
   ) {
-    showNoticeNotification("Could not start a new custom test");
+    showNoticeNotification("Yangi maxsus testni boshlab bo'lmadi");
     return false;
   }
 

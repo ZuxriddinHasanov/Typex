@@ -106,7 +106,7 @@ export function CustomBackground(): JSXElement {
 
                   // check type
                   if (!/image\/(jpeg|jpg|png|gif|webp)/.exec(file.type)) {
-                    showNoticeNotification("Unsupported image format");
+                    showNoticeNotification("Noto'g'ri rasm formati");
                     fileInput.value = "";
                     return;
                   }

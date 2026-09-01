@@ -55,7 +55,7 @@ export function QuoteRateModal(): JSXElement {
 
   const submit = async (): Promise<void> => {
     if (rating() === 0) {
-      showNoticeNotification("Please select a rating");
+      showNoticeNotification("Iltimos, reyting tanlang");
       return;
     }
     const quote = selectedQuote();
@@ -70,7 +70,7 @@ export function QuoteRateModal(): JSXElement {
     hideLoaderBar();
 
     if (response.status !== 200) {
-      showErrorNotification("Failed to submit quote rating", { response });
+      showErrorNotification("Iqtibos reytingini yuborib bo'lmadi", { response });
       return;
     }
 
@@ -93,7 +93,7 @@ export function QuoteRateModal(): JSXElement {
         language: quote.language,
       };
       updateQuoteStats(newStats);
-      showSuccessNotification("Rating updated");
+      showSuccessNotification("Reyting yangilandi");
     } else {
       languageRatings[quote.id] = rating();
       if (isSafeNumber(stats?.ratings) && isSafeNumber(stats.totalRating)) {
@@ -112,7 +112,7 @@ export function QuoteRateModal(): JSXElement {
           language: quote.language,
         });
       }
-      showSuccessNotification("Rating submitted");
+      showSuccessNotification("Reyting yuborildi");
     }
 
     snapshot.quoteRatings = quoteRatings;

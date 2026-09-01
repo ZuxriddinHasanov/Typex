@@ -224,14 +224,14 @@ export function SimpleModal(): JSXElement {
         }
       } catch (error) {
         console.error("Error executing simple modal function:", error);
-        showErrorNotification("An unexpected error occurred", {
+        showErrorNotification("Kutilmagan xatolik yuz berdi", {
           error,
         });
         hideLoaderBar();
       }
     },
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
   }));
 

@@ -42,7 +42,7 @@ export async function apply(_id: string): Promise<void> {
     }
   }
   TestLogic.restart();
-  showSuccessNotification("Preset applied", { durationMs: 2000 });
+  showSuccessNotification("Shablon qo'llanildi", { durationMs: 2000 });
   saveFullConfigToLocalStorage();
 }
 

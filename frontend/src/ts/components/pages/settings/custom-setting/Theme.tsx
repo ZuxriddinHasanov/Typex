@@ -121,7 +121,7 @@ export function Theme(): JSXElement {
           }}
         />
         <Button
-          text="share"
+          text="ulashish"
           onClick={() => {
             showSimpleModal({
               title: "Share custom theme",
@@ -201,7 +201,7 @@ export function Theme(): JSXElement {
         />
         <Show when={isAuthenticated()}>
           <Button
-            text="save as new"
+            text="yangi sifatida saqlash"
             onClick={() => {
               if (customThemes().length >= 20) {
                 showNoticeNotification("Maxsus mavzular chegarasiga yetildi");

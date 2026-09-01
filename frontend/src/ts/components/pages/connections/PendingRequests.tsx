@@ -25,7 +25,7 @@ export function PendingRequests() {
         {({ pendingQueryData }) => (
           <Show when={pendingQueryData().length > 0}>
             <H2
-              text="Incoming Requests"
+              text="Kiruvchi so'rovlar"
               fa={{ icon: "fa-user-plus", fixedWidth: true }}
             />
             <DataTable

@@ -41,7 +41,7 @@ export function NotificationHistory(): JSXElement {
 
   return (
     <AlertsSection
-      title={<H3 fa={{ icon: "fa-comment-alt" }} text="Notifications" />}
+      title={<H3 fa={{ icon: "fa-comment-alt" }} text="Bildirishnomalar" />}
       body={
         <Show
           when={getNotificationHistory().length > 0}

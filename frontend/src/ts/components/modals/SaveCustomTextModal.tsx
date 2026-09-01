@@ -43,10 +43,10 @@ export function SaveCustomTextModal(props: {
       const saved = CustomText.setCustomText(value.name, text, value.isLong);
       if (saved) {
         setCustomTextIndicator(value);
-        showSuccessNotification("Custom text saved");
+        showSuccessNotification("Maxsus matn saqlandi");
         hideModal("SaveCustomText");
       } else {
-        showErrorNotification("Error saving custom text");
+        showErrorNotification("Maxsus matnni saqlashda xatolik");
       }
     },
   }));

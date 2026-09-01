@@ -33,7 +33,7 @@ export async function getCharFromEvent(
   try {
     layout = await __nonReactive.getInputLayout();
   } catch (e) {
-    showErrorNotification("Failed to emulate event", { error: e });
+    showErrorNotification("Hodisani emulyatsiya qilib bo'lmadi", { error: e });
     return null;
   }
 

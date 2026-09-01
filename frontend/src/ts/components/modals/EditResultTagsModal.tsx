@@ -82,7 +82,7 @@ export function EditResultTagsModal() {
             },
           })
             .then(() =>
-              showSuccessNotification("Tags updated", { durationMs: 2000 }),
+              showSuccessNotification("Teglar yangilandi", { durationMs: 2000 }),
             )
             .catch((e: unknown) => {
               const message = createErrorMessage(e, "Failed to update tags");

@@ -28,7 +28,7 @@ export function clearActive(): void {
     !challengeLoading &&
     !TestState.testRestarting
   ) {
-    showNoticeNotification("Challenge cleared");
+    showNoticeNotification("Qiyinchilikdan o'tildi");
     setLoadedChallenge(null);
   }
 }
@@ -209,7 +209,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
   let notitext;
   try {
     if (challenge === undefined || settings === undefined) {
-      showNoticeNotification("Challenge not found or missing settings");
+      showNoticeNotification("Qiyinchilik topilmadi yoki sozlamalar yetishmayapti");
       setTimeout(() => {
         qs("header .config")?.show();
         qs(".page.pageTest")?.show();
@@ -357,7 +357,7 @@ export async function setup(challengeName: ChallengeName): Promise<boolean> {
     setLoadedChallenge(challenge);
     return true;
   } catch (e) {
-    showErrorNotification("Failed to load challenge", { error: e });
+    showErrorNotification("Qiyinchilikni yuklab bo'lmadi", { error: e });
     return false;
   } finally {
     challengeLoading = false;

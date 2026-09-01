@@ -1924,11 +1924,11 @@ qs(".pageTest #copyMissedWordsListButton")?.on("click", async () => {
 async function copyToClipboard(content: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(content);
-    showNoticeNotification("Copied to clipboard", {
+    showNoticeNotification("Nusxalandi", {
       durationMs: 2000,
     });
   } catch (e) {
-    showErrorNotification("Could not copy to clipboard", { error: e });
+    showErrorNotification("Nusxalab bo'lmadi", { error: e });
   }
 }
 

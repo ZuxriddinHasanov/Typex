@@ -174,7 +174,7 @@ export async function onInsertText(options: OnInsertTextParams): Promise<void> {
     visualInputOverride = undefined;
     incrementIncorrectShiftsInARow();
     if (getIncorrectShiftsInARow() >= 5) {
-      showNoticeNotification("Opposite shift mode is on.", {
+      showNoticeNotification("Qarama-qarshi shift rejimi yoniq.", {
         important: true,
         customTitle: "Reminder",
       });

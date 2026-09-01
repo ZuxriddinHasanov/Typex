@@ -23,7 +23,7 @@ export function CustomWordAmountModal(): JSXElement {
       restartTestEvent.dispatch();
 
       if (val > 2000) {
-        showNoticeNotification("Stay safe and take breaks!");
+        showNoticeNotification("O'zingizni asrang va tanaffuslar qiling!");
       } else if (val === 0) {
         showNoticeNotification(
           "Infinite words! Make sure to use Bail Out from the command line to save your result.",

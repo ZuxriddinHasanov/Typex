@@ -20,7 +20,7 @@ export function showDeleteAccountModal(): void {
     buttonText: "delete",
     confirmText: `I understand that all my data will be deleted and cannot be recovered.`,
     action: async () => {
-      showNoticeNotification("Deleting all data...");
+      showNoticeNotification("Barcha ma'lumotlar o'chirilmoqda...");
       const response = await Ape.users.delete();
 
       if (response.status !== 200) {
@@ -72,12 +72,12 @@ export function showResetAccountModal(): void {
     buttonText: "reset",
     confirmText: `I understand that my account will be completely reset and that this cannot be undone.`,
     action: async () => {
-      showNoticeNotification("Resetting settings...");
+      showNoticeNotification("Sozlamalar qayta o'rnatilmoqda...");
       await resetConfig();
       await FileStorage.deleteFile("LocalBackgroundFile");
       await FileStorage.deleteFile("LocalFontFamilyFile");
 
-      showNoticeNotification("Resetting account...");
+      showNoticeNotification("Akkaunt qayta o'rnatilmoqda...");
       const response = await Ape.users.reset();
       if (response.status !== 200) {
         return {

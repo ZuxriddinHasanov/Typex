@@ -92,7 +92,7 @@ export function SavedTextsModal(props: {
     try {
       const data = new Blob([text.join(" ")], { type: "text/plain" });
       download({ filename: `${name}.txt`, data });
-      showSuccessNotification("custom text downloaded");
+      showSuccessNotification("maxsus matn yuklab olindi");
     } catch (e) {
       showErrorNotification(`failed to download custom text: ${e}`);
     }
@@ -162,7 +162,7 @@ export function SavedTextsModal(props: {
                   />
                   <Button
                     variant="button"
-                    text="reset"
+                    text="qayta o'rnatish"
                     disabled={!hasProgress()}
                     onClick={() => handleResetProgress(name())}
                   />

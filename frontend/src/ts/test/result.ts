@@ -1489,7 +1489,7 @@ qsa(".pageTest #result .chart .chartLegend button")?.on(
 
 qs(".pageTest #favoriteQuoteButton")?.on("click", async () => {
   if (quoteLang === undefined || quoteId === "") {
-    showErrorNotification("Could not get quote stats!");
+    showErrorNotification("Iqtibos statistikasini olib bo'lmadi!");
     return;
   }
 

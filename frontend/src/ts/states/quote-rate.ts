@@ -48,7 +48,7 @@ export async function getQuoteStats(
   });
 
   if (response.status !== 200) {
-    showErrorNotification("Failed to get quote ratings", { response });
+    showErrorNotification("Iqtibos reytingini olib bo'lmadi", { response });
     return;
   }
 

@@ -146,7 +146,7 @@ async function set(
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setConfig("autoSwitchTheme", false);
-    showNoticeNotification("Auto switch theme disabled");
+    showNoticeNotification("Mavzuni avtomatik almashtirish o'chirildi");
   }
 }
 

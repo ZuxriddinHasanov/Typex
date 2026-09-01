@@ -102,7 +102,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
   const src = qs("#result .wrapper");
   if (src === null) {
     console.error("Result wrapper not found for screenshot");
-    showErrorNotification("Screenshot target element not found");
+    showErrorNotification("Skrinshot qilinadigan element topilmadi");
     revert();
     return null;
   }
@@ -186,7 +186,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     canvas.height = scaledPaddedHCanvas;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
-      showErrorNotification("Failed to get canvas context for screenshot");
+      showErrorNotification("Skrinshot uchun canvas kontekstini olib bo'lmadi");
       return null;
     }
 
@@ -212,7 +212,7 @@ async function generateCanvas(): Promise<HTMLCanvasElement | null> {
     );
     return canvas;
   } catch (e) {
-    showErrorNotification("Error creating screenshot canvas", { error: e });
+    showErrorNotification("Skrinshot oynasini yaratishda xatolik", { error: e });
     return null;
   } finally {
     revert(); // Ensure UI is reverted on both success and error
@@ -247,7 +247,7 @@ export async function copyToClipboard(): Promise<void> {
         }),
       );
       await navigator.clipboard.write([clipItem]);
-      showSuccessNotification("Copied screenshot to clipboard", {
+      showSuccessNotification("Skrinshot nusxalandi", {
         durationMs: 2000,
       });
     } catch (e) {
@@ -278,7 +278,7 @@ export async function copyToClipboard(): Promise<void> {
         // No need to revoke URL immediately as the new tab needs it.
         // Browser usually handles cleanup when tab is closed or navigated away.
       } catch (openError) {
-        showErrorNotification("Failed to open screenshot in new tab");
+        showErrorNotification("Skrinshotni yangi oynada ochib bo'lmadi");
         console.error("Error opening blob URL:", openError);
       }
     }
@@ -300,7 +300,7 @@ async function getBlob(): Promise<Blob | null> {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
       if (!blob) {
-        showErrorNotification("Failed to convert canvas to Blob for download");
+        showErrorNotification("Yuklab olish uchun canvas ni Blob ga aylantirib bo'lmadi");
         resolve(null);
       } else {
         resolve(blob); // Return the generated blob
@@ -314,7 +314,7 @@ export async function download(): Promise<void> {
     const data = await getBlob();
 
     if (!data) {
-      showErrorNotification("Failed to generate screenshot data");
+      showErrorNotification("Skrinshot ma'lumotlarini yaratishda xatolik");
       return;
     }
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -322,10 +322,10 @@ export async function download(): Promise<void> {
 
     downloadFile({ data, filename });
 
-    showSuccessNotification("Screenshot download started");
+    showSuccessNotification("Skrinshot yuklanmoqda");
   } catch (error) {
     console.error("Error downloading screenshot:", error);
-    showErrorNotification("Failed to download screenshot");
+    showErrorNotification("Skrinshotni yuklab olishda xatolik");
   }
 }
 

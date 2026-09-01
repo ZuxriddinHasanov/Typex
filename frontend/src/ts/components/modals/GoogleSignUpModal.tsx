@@ -37,7 +37,7 @@ export function GoogleSignupModal() {
     },
     onSubmit: async ({ value }) => apply(value),
     onSubmitInvalid: () => {
-      showNoticeNotification("Please fill in all fields");
+      showNoticeNotification("Iltimos, barcha maydonlarni to'ldiring");
     },
     validators: {
       onChange: allFieldsMandatory(),
@@ -85,7 +85,7 @@ export function GoogleSignupModal() {
           )}
         />
 
-        <SubmitButton form={form} text="continue" />
+        <SubmitButton form={form} text="davom etish" />
       </form>
     </AnimatedModal>
   );
@@ -94,7 +94,7 @@ export function GoogleSignupModal() {
 async function afterHide(): Promise<void> {
   resetIgnoreAuthCallback();
   if (signedInUser !== undefined) {
-    showNoticeNotification("Sign up process cancelled", {
+    showNoticeNotification("Ro'yxatdan o'tish jarayoni bekor qilindi", {
       durationMs: 5000,
     });
     if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
@@ -119,7 +119,7 @@ async function apply(options: {
     return;
   }
   if (!captcha) {
-    showNoticeNotification("Please complete the captcha");
+    showNoticeNotification("Iltimos, captchani to'ldiring");
     return;
   }
 
@@ -136,7 +136,7 @@ async function apply(options: {
     setUserState(signedInUser.user);
     await updateProfile(signedInUser.user, { displayName: name });
     await sendEmailVerification(signedInUser.user);
-    showSuccessNotification("Account created");
+    showSuccessNotification("Akkaunt yaratildi");
     await loadUser(signedInUser.user);
 
     authEvent.dispatch({
@@ -146,7 +146,7 @@ async function apply(options: {
     signedInUser = undefined;
   } catch (e) {
     console.log(e);
-    showErrorNotification("Failed to sign in with Google", { error: e });
+    showErrorNotification("Google orqali tizimga kirib bo'lmadi", { error: e });
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser?.user.delete().catch(() => {

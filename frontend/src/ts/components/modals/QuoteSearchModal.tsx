@@ -415,8 +415,8 @@ export function QuoteSearchModal(): JSXElement {
       hideLoaderBar();
       showErrorNotification(
         alreadyFavorited
-          ? "Failed to remove quote from favorites"
-          : "Failed to add quote to favorites",
+          ? "Iqtibosni saralanganlardan olib tashlab bo'lmadi"
+          : "Iqtibosni saralanganlarga qo'shib bo'lmadi",
         { error: e },
       );
       return false;
@@ -456,14 +456,14 @@ export function QuoteSearchModal(): JSXElement {
             <Show when={isAuthenticated()}>
               <Button
                 fa={{ icon: "fa-plus" }}
-                text="Submit a quote"
+                text="Iqtibos yuborish"
                 onClick={() => void handleSubmitClick()}
               />
             </Show>
             <Show when={isQuoteMod()}>
               <Button
                 fa={{ icon: "fa-check" }}
-                text="Approve quotes"
+                text="Iqtiboslarni tasdiqlash"
                 onClick={() => showModal("QuoteApprove")}
               />
             </Show>

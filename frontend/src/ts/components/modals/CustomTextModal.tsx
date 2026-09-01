@@ -79,7 +79,7 @@ export function CustomTextModal(): JSXElement {
     },
     onSubmit: ({ value }) => {
       if (value.text === "") {
-        showNoticeNotification("Text cannot be empty");
+        showNoticeNotification("Matn bo'sh bo'lishi mumkin emas");
         return;
       }
 
@@ -89,7 +89,7 @@ export function CustomTextModal(): JSXElement {
         value.limitSection,
       ].filter((l) => l !== "");
       if (activeLimits.length > 1) {
-        showNoticeNotification("You can only specify one limit", {
+        showNoticeNotification("Faqat bitta chegara ko'rsata olasiz", {
           durationMs: 5000,
         });
         return;
@@ -101,7 +101,7 @@ export function CustomTextModal(): JSXElement {
         value.limitTime === "" &&
         value.limitSection === ""
       ) {
-        showNoticeNotification("You need to specify a limit", {
+        showNoticeNotification("Chegara ko'rsatishingiz kerak", {
           durationMs: 5000,
         });
         return;
@@ -120,7 +120,7 @@ export function CustomTextModal(): JSXElement {
 
       const text = cleanUpText();
       if (text.length === 0) {
-        showNoticeNotification("Text cannot be empty");
+        showNoticeNotification("Matn bo'sh bo'lishi mumkin emas");
         return;
       }
 
@@ -151,7 +151,7 @@ export function CustomTextModal(): JSXElement {
       }
 
       if (getLoadedChallenge() !== null) {
-        showNoticeNotification("Challenge cleared");
+        showNoticeNotification("Qiyinchilikdan o'tildi");
         setLoadedChallenge(null);
       }
       if (Config.mode !== "custom") {
@@ -290,7 +290,7 @@ export function CustomTextModal(): JSXElement {
 
     if (data.long !== true && getCustomTextIndicator()?.isLong) {
       setCustomTextIndicator(undefined);
-      showNoticeNotification("Disabled long custom text progress tracking", {
+      showNoticeNotification("Uzun maxsus matn jarayonini kuzatish o'chirildi", {
         durationMs: 5000,
       });
       setLongTextWarning(false);
@@ -325,7 +325,7 @@ export function CustomTextModal(): JSXElement {
     if (!file) return;
 
     if (file.type !== "text/plain") {
-      showErrorNotification("File is not a text file", { durationMs: 5000 });
+      showErrorNotification("Fayl matn formati (txt) da emas", { durationMs: 5000 });
       return;
     }
 
@@ -337,7 +337,7 @@ export function CustomTextModal(): JSXElement {
       fileInputRef.value = "";
     };
     reader.onerror = () => {
-      showErrorNotification("Failed to read file", { durationMs: 5000 });
+      showErrorNotification("Faylni o'qib bo'lmadi", { durationMs: 5000 });
     };
   };
 
@@ -364,7 +364,7 @@ export function CustomTextModal(): JSXElement {
     if (getCustomTextIndicator()?.isLong) {
       setCustomTextIndicator(undefined);
       setLongTextWarning(false);
-      showNoticeNotification("Disabled long custom text progress tracking", {
+      showNoticeNotification("Uzun maxsus matn jarayonini kuzatish o'chirildi", {
         durationMs: 5000,
       });
     }

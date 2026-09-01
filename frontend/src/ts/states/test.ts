@@ -158,7 +158,7 @@ export const __nonReactive = {
     await keymapLayoutPromise.promise;
     const result = keymapLayoutObject();
     if (result === undefined) {
-      throw new Error("Failed to load keymap layout");
+      throw new Error("Klaviatura xaritasini yuklab bo'lmadi");
     }
     return result;
   },

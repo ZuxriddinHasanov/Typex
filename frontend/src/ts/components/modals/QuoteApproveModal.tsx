@@ -46,7 +46,7 @@ function QuoteApproveItem(props: {
 
     if (response.status !== 200) {
       setDisabled(false);
-      showErrorNotification("Failed to approve quote", { response });
+      showErrorNotification("Iqtibosni tasdiqlab bo'lmadi", { response });
       return;
     }
 
@@ -66,11 +66,11 @@ function QuoteApproveItem(props: {
 
     if (response.status !== 200) {
       setDisabled(false);
-      showErrorNotification("Failed to refuse quote", { response });
+      showErrorNotification("Iqtibosni rad etib bo'lmadi", { response });
       return;
     }
 
-    showSuccessNotification("Quote refused.");
+    showSuccessNotification("Iqtibos rad etildi.");
     props.onRemove();
   };
 
@@ -90,7 +90,7 @@ function QuoteApproveItem(props: {
 
     if (response.status !== 200) {
       setDisabled(false);
-      showErrorNotification("Failed to approve quote", { response });
+      showErrorNotification("Iqtibosni tasdiqlab bo'lmadi", { response });
       return;
     }
 
@@ -190,7 +190,7 @@ export function QuoteApproveModal(): JSXElement {
     hideLoaderBar();
 
     if (response.status !== 200) {
-      showErrorNotification("Failed to get new quotes", { response });
+      showErrorNotification("Yangi iqtiboslarni olib bo'lmadi", { response });
       return;
     }
 
@@ -217,7 +217,7 @@ export function QuoteApproveModal(): JSXElement {
         <Button
           variant="text"
           fa={{ icon: "fa-sync-alt" }}
-          text="Refresh list"
+          text="Ro'yxatni yangilash"
           onClick={() => {
             setQuotes([]);
             void fetchQuotes();

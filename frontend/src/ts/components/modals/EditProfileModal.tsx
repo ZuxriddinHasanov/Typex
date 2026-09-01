@@ -80,7 +80,7 @@ export function EditProfile() {
       });
 
       if (response.status !== 200) {
-        showErrorNotification("Failed to update profile", { response });
+        showErrorNotification("Profilni yangilab bo'lmadi", { response });
         return;
       }
 
@@ -89,7 +89,7 @@ export function EditProfile() {
           body: { avatar: value.avatar },
         });
         if (detailsResponse.status !== 200) {
-          showErrorNotification("Failed to update avatar", { response: detailsResponse });
+          showErrorNotification("Avatarni yangilab bo'lmadi", { response: detailsResponse });
         }
       }
 

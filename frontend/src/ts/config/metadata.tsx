@@ -167,7 +167,7 @@ export const configMetadata: ConfigMetadataObject = {
   words: {
     key: "words",
     fa: { icon: "fa-font" },
-    displayString: "word count",
+    displayString: "so'zlar soni",
     changeRequiresRestart: true,
     group: "test",
     overrideConfig: ({ currentConfig }) => {
@@ -180,15 +180,15 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   time: {
-    key: "time",
+    key: "vaqt",
     fa: { icon: "fa-clock" },
     changeRequiresRestart: true,
-    displayString: "time",
+    displayString: "vaqt",
     group: "test",
     overrideConfig: ({ currentConfig }) => {
-      if (currentConfig.mode !== "time") {
+      if (currentConfig.mode !== "vaqt") {
         return {
-          mode: "time",
+          mode: "vaqt",
         };
       }
       return {};
@@ -237,7 +237,7 @@ export const configMetadata: ConfigMetadataObject = {
   quoteLength: {
     key: "quoteLength",
     fa: { icon: "fa-quote-right" },
-    displayString: "quote length",
+    displayString: "iqtibos uzunligi",
     changeRequiresRestart: true,
     group: "test",
     overrideConfig: ({ currentConfig }) => {
@@ -250,17 +250,17 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   language: {
-    key: "language",
+    key: "til",
     fa: { icon: "fa-language" },
-    displayString: "language",
+    displayString: "til",
     changeRequiresRestart: true,
     group: "test",
-    description: "Change in which language you want to type.",
+    description: "Qaysi tilda yozmoqchi ekanligingizni o'zgartiring.",
   },
   burstHeatmap: {
     key: "burstHeatmap",
     fa: { icon: "fa-fire" },
-    displayString: "word burst heatmap",
+    displayString: "so'z tezligi xaritasi (heatmap)",
     changeRequiresRestart: false,
     group: "test",
   },
@@ -277,7 +277,7 @@ export const configMetadata: ConfigMetadataObject = {
   quickRestart: {
     key: "quickRestart",
     fa: { icon: "fa-redo-alt" },
-    displayString: "quick restart",
+    displayString: "tezkor qayta boshlash",
     changeRequiresRestart: false,
     group: "behavior",
     description:
@@ -286,7 +286,7 @@ export const configMetadata: ConfigMetadataObject = {
   repeatQuotes: {
     key: "repeatQuotes",
     fa: { icon: "fa-sync-alt" },
-    displayString: "repeat quotes",
+    displayString: "iqtiboslarni takrorlash",
     changeRequiresRestart: false,
     group: "behavior",
     description:
@@ -295,7 +295,7 @@ export const configMetadata: ConfigMetadataObject = {
   resultSaving: {
     key: "resultSaving",
     fa: { icon: "fa-save" },
-    displayString: "result saving",
+    displayString: "natijani saqlash",
     changeRequiresRestart: false,
     group: "behavior",
     description:
@@ -311,7 +311,7 @@ export const configMetadata: ConfigMetadataObject = {
         displayString: " ",
       },
     },
-    displayString: "blind mode",
+    displayString: "ko'r-ko'rona rejim",
     changeRequiresRestart: false,
     group: "behavior",
     description:
@@ -320,7 +320,7 @@ export const configMetadata: ConfigMetadataObject = {
   alwaysShowWordsHistory: {
     key: "alwaysShowWordsHistory",
     fa: { icon: "fa-align-left" },
-    displayString: "always show words history",
+    displayString: "so'zlar tarixini doim ko'rsatish",
     changeRequiresRestart: false,
     group: "behavior",
     description:
@@ -329,7 +329,7 @@ export const configMetadata: ConfigMetadataObject = {
   singleListCommandLine: {
     key: "singleListCommandLine",
     fa: { icon: "fa-list" },
-    displayString: "single list command line",
+    displayString: "buyruqlar satrini bitta ro'yxatda ko'rsatish",
     changeRequiresRestart: false,
     group: "behavior",
     description:
@@ -338,16 +338,16 @@ export const configMetadata: ConfigMetadataObject = {
   minWpm: {
     key: "minWpm",
     fa: { icon: "fa-bomb" },
-    displayString: "min speed",
+    displayString: "minimal tezlik",
     changeRequiresRestart: true,
     group: "behavior",
     description:
-      "Automatically fails a test if your speed falls below a threshold.",
+      "Tezligingiz belgilangan chegaradan tushib ketsa, testni avtomatik ravishda to'xtatadi.",
   },
   minWpmCustomSpeed: {
     key: "minWpmCustomSpeed",
     fa: { icon: "fa-bomb" },
-    displayString: "min speed custom",
+    displayString: "maxsus minimal tezlik",
     changeRequiresRestart: true,
     group: "behavior",
     overrideConfig: ({ currentConfig }) => {
@@ -362,16 +362,16 @@ export const configMetadata: ConfigMetadataObject = {
   minAcc: {
     key: "minAcc",
     fa: { icon: "fa-bomb" },
-    displayString: "min accuracy",
+    displayString: "minimal aniqlik",
     changeRequiresRestart: true,
     group: "behavior",
     description:
-      "Automatically fails a test if your accuracy falls below a threshold.",
+      "Aniqligingiz belgilangan chegaradan tushib ketsa, testni avtomatik ravishda to'xtatadi (xato deb topadi).",
   },
   minAccCustom: {
     key: "minAccCustom",
     fa: { icon: "fa-bomb" },
-    displayString: "min accuracy custom",
+    displayString: "maxsus minimal aniqlik",
     changeRequiresRestart: true,
     group: "behavior",
     overrideConfig: ({ currentConfig }) => {
@@ -386,7 +386,7 @@ export const configMetadata: ConfigMetadataObject = {
   minBurst: {
     key: "minBurst",
     fa: { icon: "fa-bomb" },
-    displayString: "min word burst",
+    displayString: "minimal so'z tezligi (burst)",
     changeRequiresRestart: true,
     group: "behavior",
     description:
@@ -395,14 +395,14 @@ export const configMetadata: ConfigMetadataObject = {
   minBurstCustomSpeed: {
     key: "minBurstCustomSpeed",
     fa: { icon: "fa-bomb" },
-    displayString: "min word burst custom speed",
+    displayString: "maxsus minimal so'z tezligi",
     changeRequiresRestart: true,
     group: "behavior",
   },
   britishEnglish: {
     key: "britishEnglish",
     fa: { icon: "fa-language" },
-    displayString: "british english",
+    displayString: "inglizcha (Buyuk Britaniya)",
     changeRequiresRestart: true,
     group: "behavior",
     description:
@@ -441,7 +441,7 @@ export const configMetadata: ConfigMetadataObject = {
   customLayoutfluid: {
     key: "customLayoutfluid",
     fa: { icon: "fa-tint" },
-    displayString: "custom layoutfluid",
+    displayString: "maxsus layoutfluid",
     changeRequiresRestart: true,
     group: "behavior",
     description:
@@ -453,7 +453,7 @@ export const configMetadata: ConfigMetadataObject = {
   customPolyglot: {
     key: "customPolyglot",
     fa: { icon: "fa-language" },
-    displayString: "polyglot languages",
+    displayString: "polyglot tillari",
     changeRequiresRestart: false,
     group: "behavior",
     description: "Select which languages you want the polyglot funbox to use.",
@@ -470,7 +470,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "freedom mode",
     group: "input",
     description:
-      "Allows you to delete any word, even if it was typed correctly.",
+      "Har qanday so'zni, hatto to'g'ri yozilgan bo'lsa ham, o'chirishga imkon beradi.",
     overrideConfig: ({ value }) => {
       if (value) {
         return {
@@ -483,25 +483,25 @@ export const configMetadata: ConfigMetadataObject = {
   strictSpace: {
     key: "strictSpace",
     fa: { icon: "fa-minus" },
-    displayString: "strict space",
+    displayString: "qat'iy bo'sh joy (space)",
     changeRequiresRestart: true,
     group: "input",
     description:
-      "Pressing space at the beginning of a word will insert a space character when this mode is enabled.",
+      "Ushbu rejim yoqilganda so'z boshida bo'sh joy (space) ni bosish orqali haqiqiy bo'sh joy belgisi kiritiladi.",
   },
   oppositeShiftMode: {
     key: "oppositeShiftMode",
     fa: { icon: "fa-exchange-alt" },
-    displayString: "opposite shift mode",
+    displayString: "qarama-qarshi shift rejimi",
     changeRequiresRestart: false,
     group: "input",
     description:
-      'This mode will force you to use opposite shift keys for shifting. Using an incorrect one will count as an error. This feature ignores keys in locations B, Y, and ^ because many people use the other hand for those keys. If you\'re using external software to emulate your layout (including QMK), you should use the "keymap" mode - the standard "on" will not work. This will enforce opposite shift based on the "keymap layout" setting.',
+      'This mode will force you to use opposite shift keys for shifting. Using an incorrect one will count as an error. This feature ignores keys in locations B, Y, and ^ because many people use the other hand for those keys. If you\'re using external software to emulate your layout (including QMK), you should use the "keymap" mode - the standard "on" will not work. This will enforce opposite shift based on the "klaviatura xaritasi joylashuvi" setting.',
   },
   stopOnError: {
     key: "stopOnError",
     fa: { icon: "fa-hand-paper" },
-    displayString: "stop on error",
+    displayString: "xatoda to'xtash",
     changeRequiresRestart: true,
     group: "input",
     description:
@@ -518,7 +518,7 @@ export const configMetadata: ConfigMetadataObject = {
   confidenceMode: {
     key: "confidenceMode",
     fa: { icon: "fa-backspace" },
-    displayString: "confidence mode",
+    displayString: "ishonch rejimi",
     changeRequiresRestart: false,
     group: "input",
     description:
@@ -536,7 +536,7 @@ export const configMetadata: ConfigMetadataObject = {
   quickEnd: {
     key: "quickEnd",
     fa: { icon: "fa-step-forward" },
-    displayString: "quick end",
+    displayString: "tezkor tugatish",
     changeRequiresRestart: false,
     group: "input",
     description:
@@ -545,7 +545,7 @@ export const configMetadata: ConfigMetadataObject = {
   indicateTypos: {
     key: "indicateTypos",
     fa: { icon: "fa-exclamation" },
-    displayString: "indicate typos",
+    displayString: "xatoliklarni ko'rsatish",
     changeRequiresRestart: false,
     group: "input",
     description:
@@ -563,7 +563,7 @@ export const configMetadata: ConfigMetadataObject = {
   hideExtraLetters: {
     key: "hideExtraLetters",
     fa: { icon: "fa-eye-slash" },
-    displayString: "hide extra letters",
+    displayString: "ortiqcha harflarni yashirish",
     changeRequiresRestart: false,
     group: "input",
     description:
@@ -590,7 +590,7 @@ export const configMetadata: ConfigMetadataObject = {
   codeUnindentOnBackspace: {
     key: "codeUnindentOnBackspace",
     fa: { icon: "fa-code" },
-    displayString: "code unindent on backspace",
+    displayString: "backspace bosilganda kod chekinishini (unindent) bekor qilish",
     changeRequiresRestart: true,
     group: "input",
     description:
@@ -601,10 +601,10 @@ export const configMetadata: ConfigMetadataObject = {
   soundVolume: {
     key: "soundVolume",
     fa: { icon: "fa-volume-down" },
-    displayString: "sound volume",
+    displayString: "ovoz balandligi",
     changeRequiresRestart: false,
     group: "sound",
-    description: "Change the volume of the sound effects.",
+    description: "Ovoz effektlari balandligini o'zgartiring.",
   },
   playSoundOnClick: {
     key: "playSoundOnClick",
@@ -638,10 +638,10 @@ export const configMetadata: ConfigMetadataObject = {
       "26": { displayString: "trust gxt" },
     },
     fa: { icon: "fa-volume-up" },
-    displayString: "play sound on click",
+    displayString: "bosganda ovoz chiqarish",
     changeRequiresRestart: false,
     group: "sound",
-    description: "Plays a short sound when you press a key.",
+    description: "Tugmani bosganingizda qisqa ovoz chiqaradi.",
   },
   playSoundOnError: {
     key: "playSoundOnError",
@@ -653,11 +653,11 @@ export const configMetadata: ConfigMetadataObject = {
       "4": { displayString: "missed punch" },
     },
     fa: { icon: "fa-volume-mute" },
-    displayString: "play sound on error",
+    displayString: "xatoda ovoz chiqarish",
     changeRequiresRestart: false,
     group: "sound",
     description:
-      "Plays a short sound if you press an incorrect key or press space too early.",
+      "Xato tugmani bossangiz yoki bo'sh joyni (space) juda erta bossangiz qisqa ovoz chiqaradi.",
   },
   playTimeWarning: {
     key: "playTimeWarning",
@@ -669,42 +669,42 @@ export const configMetadata: ConfigMetadataObject = {
       "10": { displayString: "10 seconds" },
     },
     fa: { icon: "fa-exclamation-triangle" },
-    displayString: "play time warning",
+    displayString: "vaqt tugash ogohlantirishi (ovozli)",
     changeRequiresRestart: false,
     group: "sound",
     description:
-      "Play a short warning sound if you are close to the end of a timed test.",
+      "Vaqtli test tugashiga oz qolganda qisqa ogohlantiruvchi ovoz chiqaradi.",
   },
 
   // caret
   smoothCaret: {
     key: "smoothCaret",
     fa: { icon: "fa-i-cursor" },
-    displayString: "smooth caret",
+    displayString: "silliq kursor",
     changeRequiresRestart: false,
     group: "caret",
-    description: "The caret will move smoothly between letters and words.",
+    description: "Kursor harflar va so'zlar o'rtasida silliq harakatlanadi.",
   },
   caretStyle: {
     key: "caretStyle",
     fa: { icon: "fa-i-cursor" },
-    displayString: "caret style",
+    displayString: "kursor uslubi",
     changeRequiresRestart: false,
     group: "caret",
-    description: "Change the style of the caret during the test.",
+    description: "Test vaqtida kursor uslubini o'zgartiring.",
     optionsMetadata: caretOptionsMetadata,
   },
   paceCaret: {
     key: "paceCaret",
     fa: { icon: "fa-i-cursor" },
-    displayString: "pace caret",
+    displayString: "kursor tezligi (pace)",
     changeRequiresRestart: false,
     group: "caret",
     description:
-      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
+      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'teg PB' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
     optionsMetadata: {
       tagPb: {
-        displayString: "tag pb",
+        displayString: "teg PB",
       },
       average: {},
       custom: {},
@@ -717,7 +717,7 @@ export const configMetadata: ConfigMetadataObject = {
       if (document.readyState === "complete") {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
           showNoticeNotification(
-            `Pace caret "pb" and "tag pb" are unavailable without an account`,
+            `Pace caret "pb" and "teg PB" are unavailable without an account`,
           );
           return true;
         }
@@ -728,7 +728,7 @@ export const configMetadata: ConfigMetadataObject = {
   paceCaretCustomSpeed: {
     key: "paceCaretCustomSpeed",
     fa: { icon: "fa-i-cursor" },
-    displayString: "pace caret custom speed",
+    displayString: "maxsus kursor tezligi",
     changeRequiresRestart: false,
     group: "caret",
     overrideConfig: ({ currentConfig }) => {
@@ -743,16 +743,16 @@ export const configMetadata: ConfigMetadataObject = {
   paceCaretStyle: {
     key: "paceCaretStyle",
     fa: { icon: "fa-i-cursor" },
-    displayString: "pace caret style",
+    displayString: "tezlik kursori uslubi",
     changeRequiresRestart: false,
     group: "caret",
-    description: "Change the style of the pace caret during the test.",
+    description: "Test vaqtida tezlik kursori (pace) uslubini o'zgartiring.",
     optionsMetadata: caretOptionsMetadata,
   },
   repeatedPace: {
     key: "repeatedPace",
     fa: { icon: "fa-i-cursor" },
-    displayString: "repeated pace",
+    displayString: "takroriy tezlik (pace)",
     changeRequiresRestart: false,
     group: "caret",
     description:
@@ -763,7 +763,7 @@ export const configMetadata: ConfigMetadataObject = {
   timerStyle: {
     key: "timerStyle",
     fa: { icon: "fa-chart-pie" },
-    displayString: "live progress style",
+    displayString: "jonli jarayon uslubi",
     changeRequiresRestart: false,
     group: "appearance",
     description:
@@ -772,11 +772,11 @@ export const configMetadata: ConfigMetadataObject = {
   liveSpeedStyle: {
     key: "liveSpeedStyle",
     fa: { icon: "fa-tachometer-alt" },
-    displayString: "live speed style",
+    displayString: "jonli tezlik uslubi",
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Change the style of the live speed displayed during the test.",
+      "Test vaqtida ko'rsatiladigan jonli tezlik uslubini o'zgartiring.",
     overrideConfig: ({ value }) => {
       if (value === "text") {
         return {
@@ -789,11 +789,11 @@ export const configMetadata: ConfigMetadataObject = {
   liveAccStyle: {
     key: "liveAccStyle",
     fa: { icon: "fa-tachometer-alt" },
-    displayString: "live accuracy style",
+    displayString: "jonli aniqlik uslubi",
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Change the style of the live accuracy displayed during the test.",
+      "Test vaqtida ko'rsatiladigan jonli aniqlik uslubini o'zgartiring.",
     overrideConfig: ({ value }) => {
       if (value === "text") {
         return {
@@ -806,20 +806,20 @@ export const configMetadata: ConfigMetadataObject = {
   liveBurstStyle: {
     key: "liveBurstStyle",
     fa: { icon: "fa-tachometer-alt" },
-    displayString: "live word burst style",
+    displayString: "jonli so'z tezligi (burst) uslubi",
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Change the style of the live burst speed displayed during the test.",
+      "Test vaqtida ko'rsatiladigan jonli so'z tezligi (burst) uslubini o'zgartiring.",
   },
   timerColor: {
     key: "timerColor",
     fa: { icon: "fa-chart-pie" },
-    displayString: "timer color",
+    displayString: "taymer rangi",
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Change the color of the progress, live speed, accuracy and burst text.",
+      "Jarayon, jonli tezlik, aniqlik va burst matnining rangini o'zgartiring.",
   },
   timerOpacity: {
     key: "timerOpacity",
@@ -828,12 +828,12 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Change the opacity of the progress, live speed, burst and accuracy text.",
+      "Jarayon, jonli tezlik, burst va aniqlik matnining shaffofligini o'zgartiring.",
   },
   highlightMode: {
     key: "highlightMode",
     fa: { icon: "fa-highlighter" },
-    displayString: "highlight mode",
+    displayString: "ajratib ko'rsatish rejimi",
     changeRequiresRestart: false,
     group: "appearance",
     description: "Change what is highlighted during the test.",
@@ -841,17 +841,17 @@ export const configMetadata: ConfigMetadataObject = {
   typedEffect: {
     key: "typedEffect",
     fa: { icon: "fa-eye" },
-    displayString: "typed effect",
+    displayString: "yozilgan text effekti",
     changeRequiresRestart: false,
     group: "appearance",
-    description: "Change how typed words are shown.",
+    description: "Yozilgan so'zlar qanday ko'rsatilishini o'zgartiring.",
   },
   tapeMode: {
     key: "tapeMode",
     fa: { icon: "fa-tape" },
     triggerResize: true,
     changeRequiresRestart: false,
-    displayString: "tape mode",
+    displayString: "lenta (tape) rejimi",
     group: "appearance",
     description:
       "Only shows one line which scrolls horizontally. Setting this to 'word' will make it scroll after every word and 'letter' will scroll after every keypress. Works best with smooth line scroll enabled and a monospace font.",
@@ -867,7 +867,7 @@ export const configMetadata: ConfigMetadataObject = {
   tapeMargin: {
     key: "tapeMargin",
     fa: { icon: "fa-tape" },
-    displayString: "tape margin",
+    displayString: "lenta (tape) hoshiyasi",
     triggerResize: true,
     changeRequiresRestart: false,
     group: "appearance",
@@ -877,7 +877,7 @@ export const configMetadata: ConfigMetadataObject = {
   smoothLineScroll: {
     key: "smoothLineScroll",
     fa: { icon: "fa-align-left" },
-    displayString: "smooth line scroll",
+    displayString: "qatorni silliq surish",
     changeRequiresRestart: false,
     group: "appearance",
     description: "When enabled, the line transition will be animated.",
@@ -886,7 +886,7 @@ export const configMetadata: ConfigMetadataObject = {
     key: "showAllLines",
     fa: { icon: "fa-align-left" },
     changeRequiresRestart: false,
-    displayString: "show all lines",
+    displayString: "barcha qatorlarni ko'rsatish",
     group: "appearance",
     description:
       "When enabled, the website will show all lines for word, custom and quote mode tests - otherwise the lines will be limited to 3, and will automatically scroll. Using this could cause the timer text and live speed to not be visible.",
@@ -903,16 +903,16 @@ export const configMetadata: ConfigMetadataObject = {
     fa: {
       icon: "fa-ellipsis-h",
     },
-    displayString: "always show decimal places",
+    displayString: "doim o'nlik kasrlarni ko'rsatish",
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Always shows decimal places for values on the result page, without the need to hover over the stats.",
+      "Natijalar sahifasida raqamlar ustiga kursor obormasdan ham doimo o'nlik kasrlarni ko'rsatadi.",
   },
   typingSpeedUnit: {
     key: "typingSpeedUnit",
     fa: { icon: "fa-tachometer-alt" },
-    displayString: "typing speed unit",
+    displayString: "yozish tezligi o'lchovi",
     changeRequiresRestart: false,
     group: "appearance",
     description: "Display typing speed in the specified unit.",
@@ -920,18 +920,18 @@ export const configMetadata: ConfigMetadataObject = {
   startGraphsAtZero: {
     key: "startGraphsAtZero",
     fa: { icon: "fa-chart-line" },
-    displayString: "start graphs at zero",
+    displayString: "grafiklarni noldan boshlash",
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Force graph axis to always start at zero, no matter what the data is. Turning this off may exaggerate the value changes.",
+      "Grafik o'qi ma'lumotlar qanday bo'lishidan qat'iy nazar doim noldan boshlanishini majburlaydi.",
   },
   maxLineWidth: {
     key: "maxLineWidth",
     fa: { icon: "fa-text-width" },
     changeRequiresRestart: false,
     triggerResize: true,
-    displayString: "max line width",
+    displayString: "qatorning maksimal kengligi",
     group: "appearance",
     description:
       "Change the maximum width of the typing test, measured in characters. Setting this to 0 will align the words to the edges of the content area.",
@@ -941,18 +941,18 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-font" },
     changeRequiresRestart: false,
     triggerResize: true,
-    displayString: "font size",
+    displayString: "shrift o'lchami",
     group: "appearance",
-    description: "Change the font size of the test words.",
+    description: "Test so'zlarining shrift o'lchamini o'zgartiring.",
   },
   fontFamily: {
     key: "fontFamily",
     fa: { icon: "fa-font" },
-    displayString: "font family",
+    displayString: "shrift turi",
     changeRequiresRestart: false,
     group: "appearance",
     description:
-      "Change the font family used by the website. Using a local font will override your choice. ",
+      "Saytda ishlatiladigan shrift turini o'zgartiring. Mahalliy shriftdan foydalanish tanlovingizni bekor qiladi.",
     optionsMetadata: {
       Comic_Sans_MS: {
         displayString: "Helvetica",
@@ -962,7 +962,7 @@ export const configMetadata: ConfigMetadataObject = {
   keymapMode: {
     key: "keymapMode",
     fa: { icon: "fa-keyboard" },
-    displayString: "keymap mode",
+    displayString: "klaviatura xaritasi rejimi",
     changeRequiresRestart: false,
     group: "appearance",
     description:
@@ -971,7 +971,7 @@ export const configMetadata: ConfigMetadataObject = {
   keymapLayout: {
     key: "keymapLayout",
     fa: { icon: "fa-keyboard" },
-    displayString: "keymap layout",
+    displayString: "klaviatura xaritasi joylashuvi",
     changeRequiresRestart: false,
     group: "appearance",
     description: "Controls which layout is displayed on the keymap.",
@@ -981,7 +981,7 @@ export const configMetadata: ConfigMetadataObject = {
   keymapStyle: {
     key: "keymapStyle",
     fa: { icon: "fa-keyboard" },
-    displayString: "keymap style",
+    displayString: "klaviatura xaritasi uslubi",
     changeRequiresRestart: false,
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>
@@ -990,7 +990,7 @@ export const configMetadata: ConfigMetadataObject = {
   keymapLegendStyle: {
     key: "keymapLegendStyle",
     fa: { icon: "fa-keyboard" },
-    displayString: "keymap legend style",
+    displayString: "klaviatura yozuvlari uslubi",
     changeRequiresRestart: false,
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>
@@ -999,7 +999,7 @@ export const configMetadata: ConfigMetadataObject = {
   keymapKeys: {
     key: "keymapKeys",
     fa: { icon: "fa-keyboard" },
-    displayString: "keymap keys",
+    displayString: "klaviatura xaritasi tugmalari",
     changeRequiresRestart: false,
     group: "appearance",
     overrideConfig: ({ currentConfig }) =>
@@ -1010,7 +1010,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-keyboard" },
     triggerResize: true,
     changeRequiresRestart: false,
-    displayString: "keymap size",
+    displayString: "klaviatura xaritasi o'lchami",
     group: "appearance",
     description: "Change the size of the keymap.",
     overrideValue: ({ value }) => {
@@ -1026,27 +1026,27 @@ export const configMetadata: ConfigMetadataObject = {
   flipTestColors: {
     key: "flipTestColors",
     fa: { icon: "fa-adjust" },
-    displayString: "flip test colors",
+    displayString: "test ranglarini o'zgartirish",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     description:
       "By default, typed text is brighter than the future text. When enabled, the colors will be flipped and the future text will be brighter than the already typed text.",
   },
   colorfulMode: {
     key: "colorfulMode",
     fa: { icon: "fa-fill-drip" },
-    displayString: "colorful mode",
+    displayString: "rangli rejim",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     description:
       "When enabled, the test words will use the main color, instead of the text color, making the website more colorful.",
   },
   customBackground: {
     key: "customBackground",
     fa: { icon: "fa-link" },
-    displayString: "custom background",
+    displayString: "maxsus fon",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     overrideValue: ({ value }) => {
       return value.trim();
     },
@@ -1056,26 +1056,26 @@ export const configMetadata: ConfigMetadataObject = {
   customBackgroundSize: {
     key: "customBackgroundSize",
     fa: { icon: "fa-image" },
-    displayString: "custom background size",
+    displayString: "maxsus fon o'lchami",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     description:
       "Set an image url or local image to be a custom background image. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
   },
   customBackgroundFilter: {
     key: "customBackgroundFilter",
     fa: { icon: "fa-image" },
-    displayString: "custom background filter",
+    displayString: "maxsus fon filtri",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     description: "Apply various effects to the custom background.",
   },
   autoSwitchTheme: {
     key: "autoSwitchTheme",
     fa: { icon: "fa-palette" },
-    displayString: "auto switch theme",
+    displayString: "mavzuni avtomatik o'zgartirish",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     description:
       "Enabling this will automatically switch the theme between light and dark depending on the system theme.",
   },
@@ -1084,21 +1084,21 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-palette" },
     displayString: "theme light",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
   },
   themeDark: {
     key: "themeDark",
     fa: { icon: "fa-palette" },
     displayString: "theme dark",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
   },
   randomTheme: {
     key: "randomTheme",
     fa: { icon: "fa-palette" },
     changeRequiresRestart: false,
-    displayString: "random theme",
-    group: "theme",
+    displayString: "tasodifiy mavzu",
+    group: "mavzu",
     description:
       "After completing a test, the theme will be set to a random one. The random themes are not saved to your config. If set to 'favorite' only favorite themes will be randomized. If set to 'light' or 'dark', only presets with light or dark background colors will be randomized, respectively. If set to 'auto' dark or light themes are used, depending on your system theme. If set to 'custom', custom themes will be randomized.",
     optionsMetadata: {
@@ -1135,13 +1135,13 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-palette" },
     displayString: "favorite themes",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
   },
   theme: {
-    key: "theme",
+    key: "mavzu",
     fa: { icon: "fa-palette" },
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     description:
       "Completely change the look and feel of the website by picking one of the presets, or by creating your own completely custom theme.",
     overrideConfig: () => {
@@ -1153,16 +1153,16 @@ export const configMetadata: ConfigMetadataObject = {
   customTheme: {
     key: "customTheme",
     fa: { icon: "fa-palette" },
-    displayString: "custom theme",
+    displayString: "maxsus mavzu",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
   },
   customThemeColors: {
     key: "customThemeColors",
     fa: { icon: "fa-palette" },
-    displayString: "custom theme colors",
+    displayString: "maxsus mavzu ranglari",
     changeRequiresRestart: false,
-    group: "theme",
+    group: "mavzu",
     overrideValue: ({ value }) => {
       const allColorsThesame = value.every((color) => color === value[0]);
       if (allColorsThesame) {
@@ -1177,10 +1177,10 @@ export const configMetadata: ConfigMetadataObject = {
   showKeyTips: {
     key: "showKeyTips",
     fa: { icon: "fa-question" },
-    displayString: "show key tips",
+    displayString: "tugma maslahatlarini ko'rsatish",
     changeRequiresRestart: false,
     group: "hideElements",
-    description: "Shows the keybind tips at the bottom of the page.",
+    description: "Sahifaning pastki qismida tugmalar yorliqlarini (maslahatlarini) ko'rsatadi.",
     optionsMetadata: {
       true: { displayString: "show" },
       false: { displayString: "hide" },
@@ -1189,7 +1189,7 @@ export const configMetadata: ConfigMetadataObject = {
   showOutOfFocusWarning: {
     key: "showOutOfFocusWarning",
     fa: { icon: "fa-exclamation" },
-    displayString: "show out of focus warning",
+    displayString: "fokusdan chiqish ogohlantirishi",
     changeRequiresRestart: false,
     group: "hideElements",
     description:
@@ -1202,10 +1202,10 @@ export const configMetadata: ConfigMetadataObject = {
   capsLockWarning: {
     key: "capsLockWarning",
     fa: { icon: "fa-exclamation-triangle" },
-    displayString: "caps lock warning",
+    displayString: "caps lock ogohlantirishi",
     changeRequiresRestart: false,
     group: "hideElements",
-    description: "Displays a warning when caps lock is on.",
+    description: "Caps lock yoqilgan bo'lsa ogohlantirish ko'rsatadi.",
     optionsMetadata: {
       true: { displayString: "show" },
       false: { displayString: "hide" },
@@ -1214,16 +1214,16 @@ export const configMetadata: ConfigMetadataObject = {
   showAverage: {
     key: "showAverage",
     fa: { icon: "fa-chart-bar" },
-    displayString: "show average",
+    displayString: "o'rtachani ko'rsatish",
     changeRequiresRestart: false,
     group: "hideElements",
     description:
-      "Displays your average speed and/or accuracy over the last 10 tests.",
+      "So'nggi 10 ta testdagi o'rtacha tezligingizni va/yoki aniqligingizni ko'rsatadi.",
   },
   showPb: {
     key: "showPb",
     fa: { icon: "fa-crown" },
-    displayString: "show personal best",
+    displayString: "shaxsiy rekordni (PB) ko'rsatish",
     changeRequiresRestart: false,
     group: "hideElements",
   },
@@ -1232,7 +1232,7 @@ export const configMetadata: ConfigMetadataObject = {
   accountChart: {
     key: "accountChart",
     fa: { icon: "fa-chart-line" },
-    displayString: "account chart",
+    displayString: "profil grafiki",
     changeRequiresRestart: false,
     group: "hidden",
     overrideValue: ({ value, currentValue }) => {

@@ -115,7 +115,7 @@ export function Tags(): JSXElement {
             )}
           </For>
           <Button
-            text="add tag"
+            text="teg qo'shish"
             onClick={() => {
               showAddTagModal();
             }}

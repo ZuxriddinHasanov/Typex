@@ -49,7 +49,7 @@ qs(".pageTest #reportQuoteButton")?.on("click", async () => {
 
 testPage?.onChild("click", "#practiseWordsButton", () => {
   if (Config.mode === "zen") {
-    showNoticeNotification("Practice words is unsupported in zen mode");
+    showNoticeNotification("So'zlarni mashq qilish zen rejimida ishlamaydi");
     return;
   }
   PractiseWordsModal.show();

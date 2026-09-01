@@ -140,7 +140,7 @@ const commands: Command[] = [
     icon: "fa-copy",
     exec: (): void => {
       if (TestState.lastEventLog === null) {
-        showErrorNotification("No event log found!");
+        showErrorNotification("Hodisalar jurnali topilmadi!");
         return;
       }
 
@@ -156,10 +156,10 @@ const commands: Command[] = [
 
       navigator.clipboard.writeText(words).then(
         () => {
-          showSuccessNotification("Copied to clipboard");
+          showSuccessNotification("Nusxalandi");
         },
         () => {
-          showErrorNotification("Failed to copy!");
+          showErrorNotification("Nusxalashda xatolik!");
         },
       );
     },

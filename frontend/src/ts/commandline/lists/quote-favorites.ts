@@ -31,10 +31,10 @@ const commands: Command[] = [
           true,
         );
         hideLoaderBar();
-        showSuccessNotification("Quote added to favorites");
+        showSuccessNotification("Iqtibos saralanganlarga qo'shildi");
       } catch (e) {
         hideLoaderBar();
-        showErrorNotification("Failed to add quote to favorites", { error: e });
+        showErrorNotification("Iqtibosni saralanganlarga qo'shib bo'lmadi", { error: e });
       }
     },
   },
@@ -59,10 +59,10 @@ const commands: Command[] = [
           false,
         );
         hideLoaderBar();
-        showSuccessNotification("Quote removed from favorites");
+        showSuccessNotification("Iqtibos saralanganlardan olib tashlandi");
       } catch (e) {
         hideLoaderBar();
-        showErrorNotification("Failed to remove quote from favorites", {
+        showErrorNotification("Iqtibosni saralanganlardan olib tashlab bo'lmadi", {
           error: e,
         });
       }
