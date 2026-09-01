@@ -260,7 +260,7 @@ export const configMetadata: ConfigMetadataObject = {
   burstHeatmap: {
     key: "burstHeatmap",
     fa: { icon: "fa-fire" },
-    displayString: "so'z tezligi xaritasi (heatmap)",
+    displayString: "maksimal tezlanish xaritasi (heatmap)",
     changeRequiresRestart: false,
     group: "test",
   },
@@ -384,7 +384,7 @@ export const configMetadata: ConfigMetadataObject = {
   minBurst: {
     key: "minBurst",
     fa: { icon: "fa-bomb" },
-    displayString: "minimal so'z tezligi (burst)",
+    displayString: "eng past maksimal tezlanish",
     changeRequiresRestart: true,
     group: "behavior",
     description:
@@ -393,7 +393,7 @@ export const configMetadata: ConfigMetadataObject = {
   minBurstCustomSpeed: {
     key: "minBurstCustomSpeed",
     fa: { icon: "fa-bomb" },
-    displayString: "maxsus minimal so'z tezligi",
+    displayString: "maxsus eng past maksimal tezlanish",
     changeRequiresRestart: true,
     group: "behavior",
   },
@@ -408,6 +408,7 @@ export const configMetadata: ConfigMetadataObject = {
   },
   funbox: {
     key: "funbox",
+    displayString: "maxsus rejimlar",
     fa: { icon: "fa-gamepad" },
     changeRequiresRestart: true,
     group: "behavior",
@@ -438,6 +439,7 @@ export const configMetadata: ConfigMetadataObject = {
   },
   customLayoutfluid: {
     key: "customLayoutfluid",
+    displayString: "maxsus o'zgaruvchan klaviatura",
     fa: { icon: "fa-tint" },
     displayString: "maxsus layoutfluid",
     changeRequiresRestart: true,
@@ -690,6 +692,7 @@ export const configMetadata: ConfigMetadataObject = {
   },
   paceCaret: {
     key: "paceCaret",
+    displayString: "maqsad kursori",
     fa: { icon: "fa-i-cursor" },
     displayString: "kursor tezligi (pace)",
     changeRequiresRestart: false,
@@ -798,10 +801,10 @@ export const configMetadata: ConfigMetadataObject = {
   liveBurstStyle: {
     key: "liveBurstStyle",
     fa: { icon: "fa-tachometer-alt" },
-    displayString: "jonli so'z tezligi (burst) uslubi",
+    displayString: "jonli maksimal tezlanish uslubi",
     changeRequiresRestart: false,
     group: "appearance",
-    description: "Test vaqtida ko'rsatiladigan jonli so'z tezligi (burst) uslubini o'zgartiring.",
+    description: "Test vaqtida ko'rsatiladigan jonli maksimal tezlanish uslubini o'zgartiring.",
   },
   timerColor: {
     key: "timerColor",
@@ -837,6 +840,7 @@ export const configMetadata: ConfigMetadataObject = {
   },
   tapeMode: {
     key: "tapeMode",
+    displayString: "lenta rejimi",
     fa: { icon: "fa-tape" },
     triggerResize: true,
     changeRequiresRestart: false,
