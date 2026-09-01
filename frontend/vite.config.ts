@@ -124,9 +124,9 @@ function getPlugins({
         start_url: "/",
         icons: [
           {
-            src: "/images/favicon.svg",
+            src: "/images/favicon.png",
             sizes: "512x512",
-            type: "image/svg+xml",
+            type: "image/png",
             purpose: "maskable any",
           },
         ],

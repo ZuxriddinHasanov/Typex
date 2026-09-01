@@ -15,13 +15,10 @@ export function FavIcon(props: { theme: Theme }): JSXElement {
       main = "#eee";
     }
 
-    
-    return "/images/favicon.svg";
+    return "/images/favicon.png";
   });
 
   return (
-    <Link id="favicon" rel="shortcut icon" type="image/svg+xml" href={icon()} />
+    <Link id="favicon" rel="shortcut icon" type="image/png" href={icon()} />
   );
 }
-
-
