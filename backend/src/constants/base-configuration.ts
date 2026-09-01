@@ -66,7 +66,7 @@ export const BASE_CONFIGURATION: Configuration = {
     },
     ai: {
       enabled: true,
-      maxDailyUses: 5,
+      maxDailyUses: 3,
       apiKey: "",
     },
     xp: {
@@ -675,3 +675,4 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
     },
   },
 };
+

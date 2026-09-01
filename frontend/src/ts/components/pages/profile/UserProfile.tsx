@@ -135,8 +135,7 @@ function WeeklyAnalysis(): JSXElement {
               <div class="flex flex-col gap-6 text-left">
                 <div class="flex items-center justify-between">
                   <h3 class="text-xl font-bold tracking-tight text-text">
-                    Haftalik AI Tahlil
-                  </h3>
+                    Haftalik AI Tahlil <span class="ml-2 text-sm font-normal text-sub">(kuniga 3 marta)</span>`n                    </h3>
                   <span class="rounded-full bg-main/10 px-3 py-1 text-xs font-bold text-main">
                     AI Beta
                   </span>
@@ -496,6 +495,7 @@ function LastTestCard(props: {
     </div>
   );
 }
+
 
 
 

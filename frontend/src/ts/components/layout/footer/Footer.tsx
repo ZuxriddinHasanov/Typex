@@ -36,7 +36,7 @@ export function Footer(): JSXElement {
                   <img
                     src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
                     alt="TypeX Logo"
-                    class="h-24 w-auto object-contain sm:h-28"
+                    class="h-[90px] w-auto object-contain sm:h-[105px]"
                   />
                 </a>
                 <p class="max-w-xs text-sm leading-relaxed text-sub">
@@ -171,3 +171,4 @@ export function Footer(): JSXElement {
     </Show>
   );
 }
+

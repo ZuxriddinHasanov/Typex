@@ -270,22 +270,12 @@ export function LandingPage(): JSXElement {
     <main class="flex flex-col items-center">
       {/* Hero */}
       <section class="relative flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden px-6 pt-20 pb-48">
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-main/5 to-transparent"></div>
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-main/[0.02] via-bg to-transparent"></div>
 
         <div class="z-10 mt-12 flex w-full max-w-7xl flex-col items-center gap-24 lg:mt-0 lg:flex-row lg:justify-between lg:gap-8">
           {/* Left Column - Text & CTA */}
           <div class="flex max-w-2xl flex-col items-center text-center lg:items-start lg:text-left">
-            <div
-              class={cn(
-                "mb-6 inline-flex items-center gap-2 rounded-full border border-main/20 bg-main/5 px-4 py-1.5 text-xs font-semibold tracking-wide text-main transition-all duration-700 ease-out",
-                heroVisible()
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-4 opacity-0",
-              )}
-            >
-              <Fa icon="fa-bolt" class="mr-1" /> O'zbekistonning birinchi typing
-              platformasi
-            </div>
+            
 
             <h1
               class={cn(
@@ -483,7 +473,7 @@ export function LandingPage(): JSXElement {
       {/* Stats */}
       <AnimatedSection
         animationClass="scroll-fade"
-        class="flex w-full flex-col items-center gap-12 border-y border-sub/10 bg-gradient-to-b from-transparent via-main/5 to-transparent px-6 py-32"
+        class="flex w-full flex-col items-center gap-12 border-y border-sub/10 bg-gradient-to-b from-transparent via-main/[0.02] to-transparent px-6 py-32"
       >
         <div class="mb-8 flex flex-col items-center gap-4 text-center">
           <h2 class="text-4xl font-extrabold tracking-tight text-text sm:text-5xl">
@@ -526,7 +516,7 @@ export function LandingPage(): JSXElement {
                 <Fa icon="fa-chevron-down" />
               </span>
             </summary>
-            <p class="mt-3 text-base leading-relaxed text-sub">
+            <p class="mt-3 pb-2 text-base leading-relaxed text-sub">
               Ha, TypeX.uz butunlay bepul. Ro'yxatdan o'tish va barcha
               funksiyalardan foydalanish uchun hech qanday to'lov talab
               qilinmaydi.
@@ -539,7 +529,7 @@ export function LandingPage(): JSXElement {
                 <Fa icon="fa-chevron-down" />
               </span>
             </summary>
-            <p class="mt-3 text-base leading-relaxed text-sub">
+            <p class="mt-3 pb-2 text-base leading-relaxed text-sub">
               Ro'yxatdan o'tgan foydalanuvchilarning barcha natijalari
               profilingizda saqlanadi va istalgan vaqtda ko'rish mumkin.
             </p>
@@ -551,9 +541,19 @@ export function LandingPage(): JSXElement {
                 <Fa icon="fa-chevron-down" />
               </span>
             </summary>
-            <p class="mt-3 text-base leading-relaxed text-sub">
-              Hozirda o'zbek, ingliz va rus tillarida test topshirish mumkin.
-              Tez orada yana yangi tillar qo'shiladi.
+            <p class="mt-3 pb-2 text-base leading-relaxed text-sub">
+              TypeX platformasida jahondagi deyarli barcha tillarda (O'zbek, Ingliz, Rus va boshqa yuzlab tillar) test topshirishingiz mumkin!
+            </p>
+          </details>
+          <details class="group rounded-2xl border border-sub/10 bg-bg/50 p-5 transition-colors hover:border-main/20">
+            <summary class="flex cursor-pointer items-center justify-between font-medium text-text">
+              Sozlamalarni qayerdan o'zgartiraman?
+              <span class="text-sub transition-transform group-open:rotate-180">
+                <Fa icon="fa-chevron-down" />
+              </span>
+            </summary>
+            <p class="mt-3 pb-2 text-base leading-relaxed text-sub">
+              Istalgan vaqtda klaviaturangizdagi <strong class="text-main">Esc</strong> tugmasini bosib sozlamalar menyusini ochishingiz va o'zingizga moslashtirishingiz mumkin.
             </p>
           </details>
         </div>
@@ -595,3 +595,4 @@ export function LandingPage(): JSXElement {
     </main>
   );
 }
+
