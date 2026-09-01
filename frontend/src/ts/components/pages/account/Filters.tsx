@@ -240,31 +240,31 @@ export function Filters(props: {
         )}
       </AsyncContent>
       <div>
-        <H3 fa={{ icon: "fa-filter" }} text="filters" />
+        <H3 fa={{ icon: "fa-filter" }} text="filtrlar" />
         <div class="mb-4 grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full">
           <Button
-            text="all"
+            text="barchasi"
             onClick={() => props.onChangeFilters(fromDefaultSettings(tags()))}
           />
           <Button
-            text="current settings"
+            text="joriy sozlamalar"
             onClick={() => props.onChangeFilters(fromCurrentSettings(tags()))}
           />
           <Button
-            text="advanced"
+            text="qo'shimcha"
             active={isShowAdvanced()}
             onClick={() => setShowAdvanced((old) => !old)}
           />
           <Button
-            text="save as preset"
+            text="shablon sifatida saqlash"
             onClick={() =>
               showSimpleModal({
-                title: "New Filter Preset",
-                buttonText: "add",
+                title: "Yangi filtr shabloni",
+                buttonText: "qo'shish",
                 schema: z.object({ name: PresetNameSchema }),
                 inputs: {
                   name: {
-                    placeholder: "Preset Name",
+                    placeholder: "Shablon nomi",
                     type: "text",
                     preprocess: normalizeName,
                   },
@@ -280,12 +280,12 @@ export function Filters(props: {
                     });
                     return {
                       status: "success",
-                      message: "Filter preset created",
+                      message: "Filtr shabloni yaratildi",
                     };
                   } catch (e) {
                     const message = createErrorMessage(
                       e,
-                      "Error creating filter preset",
+                      "Filtr shablonini yaratishda xatolik",
                     );
                     return { status: "error", message };
                   }
@@ -300,42 +300,42 @@ export function Filters(props: {
           classOverride="grid gap-4 sm:grid-cols-2 lg:flex lg:justify-evenly [&>button]:w-full [&>button]:last:col-span-2"
           group="date"
           format={(val) => {
-            if (val === "all") return "all time";
-            if (val === "last_3months") return "last 3 months";
+            if (val === "all") return "barcha vaqt";
+            if (val === "last_3months") return "so'nggi 3 oy";
             return replaceUnderscoresWithSpaces(val);
           }}
         />
 
         <AnimeShow when={isShowAdvanced()} slide>
-          <H3 fa={{ icon: "fa-tools" }} text="advanced filters" class="mt-8" />
+          <H3 fa={{ icon: "fa-tools" }} text="qo'shimcha filtrlar" class="mt-8" />
 
           <Button
-            text="clear filters"
+            text="filtrlarni tozalash"
             onClick={() => props.onChangeFilters(noFilters())}
             class="mb-4 w-full"
           />
           <div class="gap-4 md:grid md:grid-cols-2">
-            <ButtonGroup text="difficulty" icon="fa-star" group="difficulty" />
-            <ButtonGroup text="personal best" icon="fa-crown" group="pb" />
-            <ButtonGroup text="mode" icon="fa-bars" group="mode" />
+            <ButtonGroup text="qiyinchilik" icon="fa-star" group="difficulty" />
+            <ButtonGroup text="shaxsiy rekord (PB)" icon="fa-crown" group="pb" />
+            <ButtonGroup text="rejim" icon="fa-bars" group="mode" />
             <ButtonGroup
-              text="quote length"
+              text="iqtibos uzunligi"
               icon="fa-quote-right"
               group="quoteLength"
             />
-            <ButtonGroup text="words" icon="fa-font" group="words" />
-            <ButtonGroup text="time" icon="fa-clock" group="time" />
-            <ButtonGroup text="punctuation" icon="fa-at" group="punctuation" />
-            <ButtonGroup text="numbers" icon="fa-hashtag" group="numbers" />
+            <ButtonGroup text="so'zlar" icon="fa-font" group="words" />
+            <ButtonGroup text="vaqt" icon="fa-clock" group="time" />
+            <ButtonGroup text="tinish belgilari" icon="fa-at" group="punctuation" />
+            <ButtonGroup text="raqamlar" icon="fa-hashtag" group="numbers" />
 
             <Show when={tags().length > 0}>
               <Dropdown
                 icon="fa-tag"
-                text="tags"
+                text="teglar"
                 group="tags"
                 format={(tag) =>
                   tag === "none"
-                    ? "no tag"
+                    ? "teg yo'q"
                     : (tags().find((it) => it._id === tag)?.name ?? tag)
                 }
               />
@@ -353,7 +353,7 @@ export function Filters(props: {
             />
             <Dropdown
               icon="fa-globe-americas"
-              text="language"
+              text="til"
               group="language"
               class="col-span-2"
               format={getLanguageDisplayString}

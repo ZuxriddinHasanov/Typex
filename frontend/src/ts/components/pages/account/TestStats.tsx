@@ -41,7 +41,7 @@ export function TestStats(props: {
             return (
               <>
                 <div class="flex items-center justify-center text-sub">
-                  estimated words typed{" "}
+                  taxminiy yozilgan so'zlar{" "}
                   <span class="p-5 text-5xl text-text lg:text-5xl">
                     {stats.words}
                   </span>
@@ -91,65 +91,65 @@ export function TestStats(props: {
                   />
 
                   <Stat
-                    header={`highest ${format().typingSpeedUnit}`}
+                    header={`eng yuqori ${format().typingSpeedUnit}`}
                     value={stats.maxWpm}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average ${format().typingSpeedUnit}`}
+                    header={`o'rtacha ${format().typingSpeedUnit}`}
                     value={stats.avgWpm}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average ${format().typingSpeedUnit} (last 10 tests)`}
+                    header={`o'rtacha ${format().typingSpeedUnit} (last 10 tests)`}
                     value={last10.avgWpm}
                     formatter={formatWpm}
                   />
 
                   <Stat
-                    header={`highest raw ${format().typingSpeedUnit}`}
+                    header={`eng yuqori raw ${format().typingSpeedUnit}`}
                     value={stats.maxRaw}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average raw ${format().typingSpeedUnit}`}
+                    header={`o'rtacha raw ${format().typingSpeedUnit}`}
                     value={stats.avgRaw}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`average raw ${format().typingSpeedUnit} (last 10 tests)`}
+                    header={`o'rtacha raw ${format().typingSpeedUnit} (last 10 tests)`}
                     value={last10.avgRaw}
                     formatter={formatWpm}
                   />
 
                   <Stat
-                    header={`highest acc`}
+                    header={`eng yuqori acc`}
                     value={stats.maxAcc}
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`average acc`}
+                    header={`o'rtacha acc`}
                     value={stats.avgAcc}
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`average acc (last 10 tests)`}
+                    header={`o'rtacha acc (last 10 tests)`}
                     value={last10.avgAcc}
                     formatter={formatPercentage}
                   />
 
                   <Stat
-                    header={`highest consistency`}
+                    header={`eng yuqori consistency`}
                     value={stats.maxConsistency}
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`average consistency`}
+                    header={`o'rtacha consistency`}
                     value={stats.avgConsistency}
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`average consistency (last 10 tests)`}
+                    header={`o'rtacha consistency (last 10 tests)`}
                     value={last10.avgConsistency}
                     formatter={formatPercentage}
                   />

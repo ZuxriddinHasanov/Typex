@@ -1111,9 +1111,9 @@ export async function update(
   qs("#result #replayWords")?.empty();
   qs("#retrySavingResultButton")?.hide();
   qs("#moreStatsContainer")?.addClass("hidden");
-  const toggleBtn = document.getElementById("moreStatsToggle");
+  const toggleBtn = qs("#moreStatsToggle");
   if (toggleBtn) {
-    toggleBtn.innerHTML = '<i class="fas fa-chevron-down" style="margin-right: 0.5rem;"></i> Ko\'proq ma\'lumot';
+    toggleBtn.html('<i class="fas fa-chevron-down" style="margin-right: 0.5rem;"></i> Ko\'proq ma\'lumot');
   }
   qs(".pageTest #result #rateQuoteButton .icon")
     ?.removeClass("fas")

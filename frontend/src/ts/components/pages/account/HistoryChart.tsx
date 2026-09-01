@@ -135,7 +135,7 @@ export function HistoryChart(props: {
     <>
       <div style={{ height: "400px" }}>
         <ChartJs
-          name="History"
+          name="Tarix"
           type="line"
           data={{
             labels: props.results.map((_, i) => i),
@@ -174,7 +174,7 @@ export function HistoryChart(props: {
             // responsive: true,
             maintainAspectRatio: false,
             hover: {
-              mode: "nearest",
+              rejim: "nearest",
               intersect: false,
             },
             onClick: (_, elements) => {
@@ -287,16 +287,16 @@ export function HistoryChart(props: {
                     }
 
                     let diff = result.difficulty ?? "normal";
-                    label += `\ndifficulty: ${diff}`;
+                    label += `\nqiyinchilik: ${diff}`;
 
                     label +=
                       "\n" +
-                      `punctuation: ${result.punctuation}` +
+                      `tinish belgilari: ${result.punctuation}` +
                       "\n" +
-                      `language: ${result.language}` +
-                      `${result.isPb ? "\n\nnew personal best" : ""}` +
+                      `til: ${result.language}` +
+                      `${result.isPb ? "\n\nyangi shaxsiy rekord" : ""}` +
                       "\n\n" +
-                      `date: ${dateFormat(
+                      `sana: ${dateFormat(
                         new Date(result.timestamp),
                         "dd MMM yyyy HH:mm",
                       )}`;

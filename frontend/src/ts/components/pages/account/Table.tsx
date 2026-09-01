@@ -207,7 +207,7 @@ function getColumns<M extends Mode>({
               aria-label={
                 hasChart
                   ? "View graph"
-                  : "Graph history is not available for long tests"
+                  : "Uzoq testlar uchun grafik tarixi mavjud emas"
               }
             >
               <Button
