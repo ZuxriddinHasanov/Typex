@@ -24,7 +24,6 @@ export function FavIcon(props: { theme: Theme }): JSXElement {
   return (
     <>
       <Link id="favicon-svg" rel="icon" type="image/svg+xml" href={iconSvg()} />
-      <Link id="favicon-png" rel="icon" type="image/png" href={iconPng()} />
       <Link id="favicon-apple" rel="apple-touch-icon" href={iconPng()} />
     </>
   );

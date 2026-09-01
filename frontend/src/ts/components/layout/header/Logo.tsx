@@ -20,7 +20,9 @@ export function Logo(): JSXElement {
       }}
     >
       <img
-        src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
+        src={
+          isDark() ? "/images/favicon-dark.svg" : "/images/favicon-light.svg"
+        }
         alt="TypeX Logo"
         class="h-24 w-auto object-contain sm:h-28"
       />
