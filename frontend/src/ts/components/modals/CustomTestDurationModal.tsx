@@ -10,7 +10,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { InputField } from "../ui/form/InputField";
 import { SubmitButton } from "../ui/form/SubmitButton";
 
-const MIN_DURATION = 10;
+const MIN_DURATION = 1;
 const MAX_DURATION = 1800;
 
 export function CustomTestDurationModal(): JSXElement {

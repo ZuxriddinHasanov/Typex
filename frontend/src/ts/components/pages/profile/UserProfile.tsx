@@ -10,6 +10,7 @@ import {
   createMemo,
   createResource,
   createSignal,
+  onMount,
   For,
   JSXElement,
   Show,
@@ -74,6 +75,34 @@ function StatsOverview(props: { profile: UserProfileType }): JSXElement {
 
 function WeeklyAnalysis(): JSXElement {
   const [trigger, setTrigger] = createSignal(false);
+  const [attempts, setAttempts] = createSignal(3);
+  const uid = getUserId();
+
+  onMount(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const keyDate = `ai_analysis_date_${uid ?? "guest"}`;
+    const keyAttempts = `ai_analysis_attempts_${uid ?? "guest"}`;
+    
+    const storedDate = localStorage.getItem(keyDate);
+    if (storedDate === today) {
+      const storedAttempts = localStorage.getItem(keyAttempts);
+      if (storedAttempts) setAttempts(parseInt(storedAttempts, 10));
+    } else {
+      localStorage.setItem(keyDate, today);
+      localStorage.setItem(keyAttempts, "3");
+    }
+  });
+
+  const handleStartAnalysis = () => {
+    if (attempts() > 0) {
+      const newAttempts = attempts() - 1;
+      setAttempts(newAttempts);
+      const keyAttempts = `ai_analysis_attempts_${uid ?? "guest"}`;
+      localStorage.setItem(keyAttempts, newAttempts.toString());
+      setTrigger(true);
+    }
+  };
+
   const [analysis] = createResource(
     () => (trigger() && isAuthenticated() ? "fetch" : null),
     async () => {
@@ -92,10 +121,24 @@ function WeeklyAnalysis(): JSXElement {
       <Show when={!trigger()}>
         <button
           type="button"
-          class="w-full rounded-xl bg-gradient-to-r from-main to-main/80 px-6 py-4 text-lg font-bold text-bg transition-all hover:scale-[1.01] hover:shadow-lg active:scale-95"
-          onClick={() => setTrigger(true)}
+          disabled={attempts() <= 0}
+          class={cn(
+            "relative w-full rounded-xl px-6 py-4 text-lg font-bold transition-all",
+            attempts() > 0 
+              ? "bg-gradient-to-r from-main to-main/80 text-bg hover:scale-[1.01] hover:shadow-lg active:scale-95" 
+              : "bg-sub-alt/30 text-sub cursor-not-allowed"
+          )}
+          onClick={handleStartAnalysis}
         >
-          <Fa icon="fa-robot" class="mr-2" /> AI Tahlilni Boshlash (Haftalik)
+          <div class="flex items-center justify-center gap-2">
+            <Fa icon="fa-robot" /> 
+            <span>{attempts() > 0 ? "AI Tahlilni Boshlash (Haftalik)" : "Bugungi imkoniyat tugadi"}</span>
+            <Show when={attempts() > 0}>
+              <span class="ml-2 flex h-6 w-6 items-center justify-center rounded-full bg-bg text-sm font-black text-main shadow-sm">
+                {attempts()}
+              </span>
+            </Show>
+          </div>
         </button>
       </Show>
 

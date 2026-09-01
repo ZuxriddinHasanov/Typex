@@ -515,6 +515,7 @@ export async function addResult(
     canFunboxGetPb(completedEvent) &&
     !completedEvent.bailedOut &&
     userEligibleForLeaderboard &&
+    completedEvent.testDuration >= 10 &&
     !stopOnLetterTriggered;
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
