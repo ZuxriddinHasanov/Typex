@@ -2,23 +2,30 @@ import { Link } from "@solidjs/meta";
 import { createMemo, JSXElement } from "solid-js";
 
 import { Theme } from "../../constants/themes";
+import { isColorDark } from "../../utils/colors";
 import { isDevEnvironment } from "../../utils/env";
 
 export function FavIcon(props: { theme: Theme }): JSXElement {
-  const icon = createMemo<string>(() => {
-    let { main, bg } = props.theme;
+  const isDark = createMemo(() => {
+    let bg = props.theme.bg;
     if (isDevEnvironment()) {
-      [main, bg] = [bg, main];
+      bg = props.theme.main;
     }
-    if (bg === main) {
-      bg = "#111";
-      main = "#eee";
-    }
-
-    return "/images/favicon.png";
+    return isColorDark(bg);
   });
 
+  const iconPng = createMemo(() =>
+    isDark() ? "/images/favicon-dark.png" : "/images/favicon-light.png",
+  );
+  const iconSvg = createMemo(() =>
+    isDark() ? "/images/favicon-dark.svg" : "/images/favicon-light.svg",
+  );
+
   return (
-    <Link id="favicon" rel="shortcut icon" type="image/png" href={icon()} />
+    <>
+      <Link id="favicon-svg" rel="icon" type="image/svg+xml" href={iconSvg()} />
+      <Link id="favicon-png" rel="icon" type="image/png" href={iconPng()} />
+      <Link id="favicon-apple" rel="apple-touch-icon" href={iconPng()} />
+    </>
   );
 }
