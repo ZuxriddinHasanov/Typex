@@ -934,11 +934,12 @@ async function saveAdminCredDoc(doc: AdminCredDoc): Promise<void> {
   }
 }
 
-const adminLoginLimiter1 = rateLimit({
-  windowMs: 60 * 1000,
-  max: 5,
+const adminLimiter5m = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 3,
+  skipSuccessfulRequests: true,
   skip: () => isDevEnvironment(),
-  message: { message: "Ketma-ket xatoliklar: 1 daqiqa kuting" },
+  message: { message: "Ketma-ket 3 ta xato: 5 daqiqa bloklandi!" },
   standardHeaders: true,
   legacyHeaders: false,
   validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
@@ -948,15 +949,16 @@ const adminLoginLimiter1 = rateLimit({
       (req.headers["x-forwarded-for"] as string) ??
       req.ip ??
       "255.255.255.255";
-    return `admin-login-1m:${ip}`;
+    return `admin-login-5m:${ip}`;
   },
 });
 
-const adminLoginLimiter2 = rateLimit({
+const adminLimiter10m = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 10,
+  max: 6,
+  skipSuccessfulRequests: true,
   skip: () => isDevEnvironment(),
-  message: { message: "Juda ko'p urinish: 10 daqiqa bloklandi!" },
+  message: { message: "Ketma-ket 6 ta xato: 10 daqiqa bloklandi!" },
   standardHeaders: true,
   legacyHeaders: false,
   validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
@@ -970,10 +972,30 @@ const adminLoginLimiter2 = rateLimit({
   },
 });
 
+const adminLimiter30m = rateLimit({
+  windowMs: 30 * 60 * 1000, // 30 minutes
+  max: 9,
+  skipSuccessfulRequests: true,
+  skip: () => isDevEnvironment(),
+  message: { message: "Juda ko'p xato (9 ta): YARIM SOAT bloklandi!" },
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
+  keyGenerator: (req) => {
+    const ip =
+      (req.headers["cf-connecting-ip"] as string) ??
+      (req.headers["x-forwarded-for"] as string) ??
+      req.ip ??
+      "255.255.255.255";
+    return `admin-login-30m:${ip}`;
+  },
+});
+
 router.post(
   "/admin/login",
-  adminLoginLimiter2,
-  adminLoginLimiter1,
+  adminLimiter30m,
+  adminLimiter10m,
+  adminLimiter5m,
   async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body as {

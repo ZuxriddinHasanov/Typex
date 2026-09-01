@@ -59,15 +59,24 @@ export function AdminNotificationsPage(): JSXElement {
             }}
             class="flex flex-col gap-3"
           >
-            <label class="flex cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                checked={sendAll()}
-                onChange={(e) => setSendAll(e.currentTarget.checked)}
-                class="h-4 w-4 accent-main"
-              />
-              <span class="text-sm text-text">Barchaga yuborish</span>
-            </label>
+            <div class="flex gap-2 p-1 rounded-xl bg-bg/50 border border-sub/10">
+              <button
+                type="button"
+                class={"flex-1 rounded-lg py-2 text-xs font-medium transition-colors " + (!sendAll() ? "bg-main text-bg" : "text-sub hover:text-text")}
+                onClick={() => setSendAll(false)}
+              >
+                <Fa icon="fa-user" class="mr-2" />
+                Shaxsiy xabar
+              </button>
+              <button
+                type="button"
+                class={"flex-1 rounded-lg py-2 text-xs font-medium transition-colors " + (sendAll() ? "bg-main text-bg" : "text-sub hover:text-text")}
+                onClick={() => setSendAll(true)}
+              >
+                <Fa icon="fa-bullhorn" class="mr-2" />
+                Umumiy e'lon
+              </button>
+            </div>
             <Show
               when={!sendAll()}
               fallback={

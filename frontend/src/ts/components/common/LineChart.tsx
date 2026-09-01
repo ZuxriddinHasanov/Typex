@@ -1,7 +1,7 @@
-import { Chart, ChartConfiguration, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler } from "chart.js";
+import { Chart, ChartConfiguration, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip, Legend } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
 
-Chart.register(annotationPlugin, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler);
+Chart.register(annotationPlugin, LineController, LineElement, PointElement, LinearScale, CategoryScale, Filler, Tooltip, Legend);
 import { createEffect, onCleanup, JSXElement } from "solid-js";
 
 export function LineChart(props: {

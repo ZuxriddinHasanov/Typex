@@ -132,25 +132,27 @@ export function AdminAnalyticsPage(): JSXElement {
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
           <h2 class="mb-4 text-sm font-bold text-text">WPM taqsimoti</h2>
           <Show
-            when={wpmQuery.data?.length > 0}
+            when={(wpmQuery.data?.length ?? 0) > 0}
             fallback={<p class="text-xs text-sub">Ma'lumot yo'q</p>}
           >
             <div class="space-y-2">
               <For each={wpmQuery.data}>
-                {(b: any) => (
-                  <div class="flex items-center gap-3">
-                    <span class="w-12 text-xs text-sub">{b.range}</span>
-                    <div class="h-5 flex-1 rounded-full bg-sub-alt">
-                      <div
-                        class="h-full rounded-full bg-main transition-all"
-                        style={{ width: `${Math.min(100, b.count)}%` }}
-                      ></div>
+                {(b: any) => {
+                  const maxCount = Math.max(...(wpmQuery.data?.map((x: any) => x.count) ?? [1]), 1);
+                  const width = (b.count / maxCount) * 100;
+                  return (
+                    <div class="flex items-center gap-3">
+                      <span class="w-12 text-xs text-sub">{b.range}</span>
+                      <div class="h-5 flex-1 overflow-hidden rounded-full bg-sub-alt/30">
+                        <div
+                          class="h-full rounded-full bg-main transition-all"
+                          style={{ width: `${width}%` }}
+                        ></div>
+                      </div>
+                      <span class="w-12 text-right text-xs text-text">{b.count} ta</span>
                     </div>
-                    <span class="w-8 text-right text-xs text-text">
-                      {b.count}
-                    </span>
-                  </div>
-                )}
+                  );
+                }}
               </For>
             </div>
           </Show>

@@ -57,7 +57,7 @@ export function ActivityCalendar(props: {
       if (!props.isAccountPage) {
         // oxlint-disable-next-line typescript/no-non-null-assertion
         const title = element()!.qsr(".top .title");
-        title.appendHtml(" last 12 months");
+        title.appendHtml(" so'nggi 12 oy");
       }
     })(),
   );
@@ -70,7 +70,7 @@ export function ActivityCalendar(props: {
     const currentYear = new Date().getFullYear();
     const years: SlimSelectProps["options"] = [
       {
-        text: "last 12 months",
+        text: "so'nggi 12 oy",
         value: "current",
       },
     ];
@@ -116,21 +116,21 @@ export function ActivityCalendar(props: {
           </Show>
           <div class="title"></div>
           <div class="legend">
-            <span>less</span>
+            <span>kam</span>
             <div data-level="0"></div>
             <div data-level="1"></div>
             <div data-level="2"></div>
             <div data-level="3"></div>
             <div data-level="4"></div>
-            <span>more</span>
+            <span>ko'p</span>
           </div>
         </div>
         <div class="activity"></div>
         <div class="months"></div>
         <div class="daysFull"></div>
         <div class="days"></div>
-        <div class="nodata hidden">No data found.</div>
-        <div class="note">Note: All activity data is using UTC time.</div>
+        <div class="nodata hidden">Ma'lumot topilmadi.</div>
+        <div class="note">Eslatma: Barcha ma'lumotlar UTC vaqtida ko'rsatilgan.</div>
       </div>
     </div>
   );
