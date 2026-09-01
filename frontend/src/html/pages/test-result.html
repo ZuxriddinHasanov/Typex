@@ -25,22 +25,14 @@
         <div class="bottom" aria-label="" data-balloon-pos="down" data-balloon-length="large" data-balloon-break>-</div>
       </div>
     </div>
-    
-    
-    <div class="morestats-wrapper" style="grid-area: morestats; width: 100%;">
-      <div id="aiAnalysisContainer" class="hidden" style="text-align: center; margin-top: 1.5rem; margin-bottom: 0.5rem;">
-        <button id="aiAnalysisButton" class="textButton" style="display: inline-block; padding: 10px 20px; background: var(--main-color); color: var(--bg-color); border-radius: 10px; font-weight: bold; transition: all 0.2s;"><i class="fas fa-robot"></i> AI Tahlil (Ushbu natija uchun)</button>
-        <div id="aiAnalysisResult" style="margin-top: 10px; font-size: 14px; color: var(--sub-color);"></div>
-      </div>
-
-      <div id="moreStatsToggle" style="text-align: center; margin-top: 1rem; margin-bottom: 1rem; cursor: pointer; color: var(--sub-color); transition: 0.2s; font-size: 0.9rem;" onmouseover="this.style.color='var(--main-color)'" onmouseout="this.style.color='var(--sub-color)'">
-        <i class="fas fa-chevron-down" style="margin-right: 0.5rem;"></i> Ko'proq ma'lumot
-      </div>
-
-      <div id="moreStatsContainer" class="stats morestats hidden" style="grid-area: auto;">
-        <div class="group testType">
+    <div class="stats morestats">
+      <div class="group testType">
         <div class="top">Test turi</div>
-        <div class="bottom">-</div>
+        <div class="bottom">
+      <div id="aiAnalysisContainer" style="margin-bottom: 20px;">
+        <button id="aiAnalysisButton" class="textButton" style="display: inline-block; padding: 10px 20px; background: var(--main-color); color: var(--bg-color); border-radius: 10px; font-weight: bold;"><i class="fas fa-robot"></i> AI Tahlil</button>
+        <div id="aiAnalysisResult" style="margin-top: 10px; font-size: 14px; color: var(--sub-color);"></div>
+      </div>-</div>
         <div class="tags hidden" style="margin-top: 0.5rem">
           <div class="top">
             <span>tags</span>
@@ -142,7 +134,6 @@
         </div>
         <div class="bottom">-</div>
       </div>
-    </div>
     </div>
     <div class="chart">
       <div class="chartLegend">
@@ -261,6 +252,33 @@
           data-balloon-pos="down"
         >
           <i class="fas fa-fw fa-sync-alt"></i>
+        </button>
+        <button
+          class="text"
+          id="practiseWordsButton"
+          aria-label="So'zlarni mashq qilish"
+          role="button"
+          data-balloon-pos="down"
+        >
+          <i class="fas fa-fw fa-exclamation-triangle"></i>
+        </button>
+        <button
+          class="text"
+          id="showWordHistoryButton"
+          aria-label="So'zlar tarixini ko'rsatish"
+          role="button"
+          data-balloon-pos="down"
+        >
+          <i class="fas fa-fw fa-align-left"></i>
+        </button>
+        <button
+          class="text"
+          id="watchReplayButton"
+          aria-label="Qaytadan ko'rish"
+          role="button"
+          data-balloon-pos="down"
+        >
+          <i class="fas fa-fw fa-backward"></i>
         </button>
         <button
           class="text"

@@ -1325,17 +1325,7 @@ qs(".pageTest")?.onChild("click", "#nextTestButton", () => {
   restart();
 });
 
-qs(".pageTest")?.onChild("click", "#moreStatsToggle", (e) => {
-  const container = qs("#moreStatsContainer");
-  const toggle = e.currentTarget as HTMLElement;
-  if (container) {
-    container.toggleClass("hidden");
-    const isHidden = container.hasClass("hidden");
-    toggle.innerHTML = isHidden 
-      ? '<i class="fas fa-chevron-down" style="margin-right: 0.5rem;"></i> Ko\'proq ma\'lumot'
-      : '<i class="fas fa-chevron-up" style="margin-right: 0.5rem;"></i> Kamroq ma\'lumot';
-  }
-});
+
 
 qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode === "zen") {
