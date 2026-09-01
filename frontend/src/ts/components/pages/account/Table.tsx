@@ -113,7 +113,7 @@ function getColumns<M extends Mode>({
         format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
     }),
     defineColumn("rawWpm", {
-      header: "raw",
+      header: "sof tezlik (raw)",
       cell: (info) =>
         format.typingSpeed(info.getValue(), { showDecimalPlaces: true }),
       meta: {
@@ -121,7 +121,7 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("acc", {
-      header: "accuracy",
+      header: "aniqlik",
       cell: (info) =>
         format.percentage(info.getValue(), { showDecimalPlaces: true }),
       meta: {
@@ -129,7 +129,7 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("consistency", {
-      header: "consistency",
+      header: "barqarorlik",
       cell: (info) =>
         format.percentage(info.getValue(), { showDecimalPlaces: true }),
       meta: {
@@ -137,7 +137,7 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("charStats", {
-      header: "chars",
+      header: "belgilar",
       cell: (info) =>
         `${info.row.original.charStats[0]}/${info.row.original.charStats[1]}/${info.row.original.charStats[2]}/${info.row.original.charStats[3]}`,
       meta: {
@@ -145,7 +145,7 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("mode", {
-      header: "mode",
+      header: "rejim",
       enableSorting: false,
       cell: (info) =>
         `${info.getValue()} ${info.row.original.mode2 === "custom" ? "" : info.row.original.mode2}`,
@@ -154,7 +154,7 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("_id", {
-      header: "info",
+      header: "ma'lumot",
       enableSorting: false,
       cell: (info) => {
         const hasChart =
@@ -173,22 +173,22 @@ function getColumns<M extends Mode>({
               <Fa {...difficultyIcon(info.row.original.difficulty)} />
             </span>
             <Show when={info.row.original.punctuation}>
-              <span aria-label="punctuation" data-balloon-pos="up">
+              <span aria-label="tinish belgilari" data-balloon-pos="up">
                 <Fa icon="fa-at" fixedWidth={true} />
               </span>
             </Show>
             <Show when={info.row.original.numbers}>
-              <span aria-label="numbers" data-balloon-pos="up">
+              <span aria-label="raqamlar" data-balloon-pos="up">
                 <Fa icon="fa-hashtag" fixedWidth={true} />
               </span>
             </Show>
             <Show when={info.row.original.blindMode}>
-              <span aria-label="blind mode" data-balloon-pos="up">
+              <span aria-label="ko'r-ko'rona rejim" data-balloon-pos="up">
                 <Fa icon="fa-eye-slash" fixedWidth={true} />
               </span>
             </Show>
             <Show when={info.row.original.lazyMode}>
-              <span aria-label="lazy mode" data-balloon-pos="up">
+              <span aria-label="dangasa rejim" data-balloon-pos="up">
                 <Fa icon="fa-couch" fixedWidth={true} />
               </span>
             </Show>
@@ -228,7 +228,7 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("tags", {
-      header: "tags",
+      header: "teglar",
       enableSorting: false,
       cell: (info) => {
         const hasTags = () => info.getValue().length > 0;
@@ -249,15 +249,15 @@ function getColumns<M extends Mode>({
                     .map(
                       (it) =>
                         tags.find((tag) => tag._id === it)?.name ??
-                        "unknown tag",
+                        "noma'lum teg",
                     )
                     .join(", ")
-                : "no tags",
+                : "teglar yo'q",
             }}
             onClick={() => {
               if (tags.length === 0) {
                 showNoticeNotification(
-                  "You have no tags. You can create one in the tags section of the settings page.",
+                  "Sizda teglar yo'q. Sozlamalar sahifasining teglar bo'limida yaratishingiz mumkin.",
                 );
                 return;
               }
@@ -275,7 +275,7 @@ function getColumns<M extends Mode>({
       },
     }),
     defineColumn("timestamp", {
-      header: "date",
+      header: "sana",
       cell: (info) => (
         <>
           <div class="text-em-sm">

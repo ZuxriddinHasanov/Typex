@@ -349,7 +349,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         onClick={(e) => {
           e.stopPropagation();
           showSimpleModal({
-            title: "Update custom theme",
+            title: "Maxsus mavzuni yangilash",
             schema: z.object({
               name: CustomThemeNameSchema,
               updateColors: z.boolean(),
@@ -362,7 +362,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
               },
               updateColors: {
                 type: "checkbox",
-                label: "Update custom theme to current colors",
+                label: "Maxsus mavzuni joriy ranglarga moslab yangilash",
               },
             },
             buttonText: "update",
@@ -387,7 +387,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
                   showErrorNotification(
                     e instanceof Error
                       ? e.message
-                      : "Failed to update custom theme",
+                      : "Maxsus mavzuni yangilab bo'lmadi",
                   );
                 });
 
@@ -414,8 +414,8 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
         onClick={(e) => {
           e.stopPropagation();
           showSimpleModal({
-            title: "Delete custom theme",
-            text: `Are you sure you want to delete the custom theme "${replaceUnderscoresWithSpaces(props.theme.name)}"? This action cannot be undone.`,
+            title: "Maxsus mavzuni o'chirish",
+            text: `Haqiqatan ham maxsus mavzuni o'chirmoqchimisiz "${replaceUnderscoresWithSpaces(props.theme.name)}"? Bu amalni bekor qilib bo'lmaydi.`,
             buttonText: "delete",
             execFn: async () => {
               void deleteCustomTheme({
@@ -423,7 +423,7 @@ function CustomThemeButton(props: { theme: CustomTheme }): JSXElement {
               });
               return {
                 status: "success",
-                message: "Custom theme deleted",
+                message: "Maxsus mavzu o'chirildi",
               };
             },
           });

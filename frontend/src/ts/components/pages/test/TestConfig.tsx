@@ -126,9 +126,7 @@ export function TestConfig(): JSXElement {
                 )
               }
             >
-              <i class="fas fa-sliders-h"></i>
-              Custom
-            </button>
+              <i class="fas fa-sliders-h"></i> Maxsus </button>
           </div>
         </Show>
 

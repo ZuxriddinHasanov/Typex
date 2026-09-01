@@ -334,13 +334,13 @@ export function HistoryChart(props: {
           />
           <Button
             fa={{ icon: "fa-chart-line", fixedWidth: true }}
-            text="Avg of 10"
+            text="10 tasining o'rtachasi"
             onClick={toggleAccountChart(2)}
             active={getConfig.accountChart[2] === "on"}
           />
           <Button
             fa={{ icon: "fa-chart-line", fixedWidth: true }}
-            text="Avg of 100"
+            text="100 tasining o'rtachasi"
             onClick={toggleAccountChart(3)}
             active={getConfig.accountChart[3] === "on"}
           />
@@ -367,7 +367,7 @@ function Trend(props: { results: SnapshotResult<Mode>[] }): JSXElement {
     const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
     const plus = wpmChangePerHour > 0 ? "+" : "";
 
-    return `Speed change per hour spent typing: ${plus}${format().typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })} ${format().typingSpeedUnit}`;
+    return `Yozishga sarflangan har soatdagi tezlik o'zgarishi: ${plus}${format().typingSpeed(wpmChangePerHour, { showDecimalPlaces: true })} ${format().typingSpeedUnit}`;
   });
 
   return (

@@ -147,7 +147,7 @@ export const commands: CommandsSubgroup = {
 
     {
       id: "randomizeTheme",
-      display: "Next random theme",
+      display: "Keyingi tasodifiy mavzu",
       icon: "fa-random",
       exec: async (): Promise<void> => randomizeTheme(),
       available: (): boolean => {
@@ -172,7 +172,7 @@ export const commands: CommandsSubgroup = {
     ...NavigationCommands,
     {
       id: "importSettingsJSON",
-      display: "Import settings JSON",
+      display: "Sozlamalar JSON import qilish",
       icon: "fa-cog",
       alias: "import config",
       input: true,
@@ -183,7 +183,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "exportSettingsJSON",
-      display: "Export settings JSON",
+      display: "Sozlamalar JSON yuklab olish",
       icon: "fa-cog",
       alias: "export config",
       input: true,
@@ -193,7 +193,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "clearNotifications",
-      display: "Clear all notifications",
+      display: "Barcha bildirishnomalarni tozalash",
       icon: "fa-trash-alt",
       alias: "dismiss",
       exec: async (): Promise<void> => {
@@ -202,7 +202,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "clearSwCache",
-      display: "Clear SW cache",
+      display: "SW keshini tozalash",
       icon: "fa-cog",
       exec: async (): Promise<void> => {
         const clist = await caches.keys();
@@ -214,7 +214,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "getSwCache",
-      display: "Get SW cache",
+      display: "SW keshini olish",
       icon: "fa-cog",
       exec: async (): Promise<void> => {
         alert(await caches.keys());
@@ -222,7 +222,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "copyResultStats",
-      display: "Copy last event log (result data)",
+      display: "So'nggi hodisalar jurnalidan nusxa olish",
       alias: "stats events",
       icon: "fa-cog",
       visible: false,
@@ -242,15 +242,15 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "fpsCounter",
-      display: "FPS counter...",
+      display: "FPS hisoblagich...",
       icon: "fa-cog",
       visible: false,
       subgroup: {
-        title: "FPS counter...",
+        title: "FPS hisoblagich...",
         list: [
           {
             id: "startFpsCounter",
-            display: "show",
+            display: "ko'rsatish",
             icon: "fa-cog",
             exec: (): void => {
               showFpsCounter();
@@ -258,7 +258,7 @@ export const commands: CommandsSubgroup = {
           },
           {
             id: "stopFpsCounter",
-            display: "hide",
+            display: "yashirish",
             icon: "fa-cog",
             exec: (): void => {
               hideFpsCounter();
@@ -269,7 +269,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "fixSkillIssue",
-      display: "Fix skill issue",
+      display: "Mahorat etishmasligini tuzatish",
       icon: "fa-wrench",
       visible: false,
       exec: async (): Promise<void> => {
@@ -292,7 +292,7 @@ export const commands: CommandsSubgroup = {
     },
     {
       id: "signOut",
-      display: "Sign out",
+      display: "Chiqish",
       icon: "fa-sign-out-alt",
       exec: (): void => {
         void signOut();

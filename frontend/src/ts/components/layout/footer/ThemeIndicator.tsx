@@ -38,7 +38,7 @@ export function ThemeIndicator(): JSXElement {
     <button
       type="button"
       class="textButton"
-      aria-label="Shift-click to toggle custom theme"
+      aria-label="Maxsus mavzuni yoqish/o'chirish uchun Shift-tugmasi bilan bosing"
       data-balloon-pos="left"
       onClick={handleClick}
     >

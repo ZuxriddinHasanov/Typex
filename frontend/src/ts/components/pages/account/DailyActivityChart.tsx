@@ -105,7 +105,7 @@ export function DailyActivityChart(props: {
                   display: true,
                   title: {
                     display: true,
-                    text: "Time typing (minutes)",
+                    text: "Yozishga sarflangan vaqt (daqiqa)",
                   },
                   grid: { display: false },
                 },
@@ -159,8 +159,8 @@ export function DailyActivityChart(props: {
                       if (item === undefined) return "unknown";
 
                       return `
-Time Typing: ${secondsToString(Math.round(item.timeTyping), true, true)}
-Tests Completed: ${item.completed}
+Yozishga sarflangan vaqt: ${secondsToString(Math.round(item.timeTyping), true, true)}
+Tugallangan testlar: ${item.completed}
 Restarts per test: ${roundTo2(item.restarted / item.completed)}
 Highest  ${props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.maxWpm)}
 Average ${props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.avgWpm)}

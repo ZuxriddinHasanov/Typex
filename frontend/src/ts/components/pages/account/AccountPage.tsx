@@ -138,7 +138,7 @@ export function AccountPage(): JSXElement {
                     selectedRowId={selectedResultId}
                   />
                   <Button
-                    text="load more"
+                    text="ko'proq yuklash"
                     disabled={
                       resultsQuery.isLoading ||
                       resultsQueryData().length <= limit()

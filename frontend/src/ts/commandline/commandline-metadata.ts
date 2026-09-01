@@ -227,14 +227,14 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   minWpm: {
-    display: "Minimum speed...",
+    display: "Minimal tezlik...",
     alias: "wpm",
     subgroup: {
       options: ["off"],
     },
     input: {
       configValue: "custom",
-      display: "custom...",
+      display: "maxsus...",
       secondKey: "minWpmCustomSpeed",
       inputValueConvert: (value) => {
         let newVal = Number(value);
@@ -244,13 +244,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   minAcc: {
-    display: "Minimum accuracy...",
+    display: "Minimal aniqlik...",
     subgroup: {
       options: ["off"],
     },
     input: {
       configValue: "custom",
-      display: "custom...",
+      display: "maxsus...",
       secondKey: "minAccCustom",
       inputValueConvert: (value) => {
         return Number(value);
@@ -373,7 +373,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   playSoundOnClick: {
     alias: "play",
-    display: "Sound on click...",
+    display: "Bosganda ovoz...",
     subgroup: {
       options: "fromSchema",
       display: (value) => {
@@ -421,7 +421,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
   },
   playSoundOnError: {
     alias: "play",
-    display: "Sound on error...",
+    display: "Xatoda ovoz...",
     subgroup: {
       options: "fromSchema",
       display: (value) => {
@@ -480,7 +480,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   paceCaret: {
-    display: "Pace caret mode...",
+    display: "Maqsad kursori rejimi...",
     subgroup: {
       options: ["off", "pb", "tagPb", "last", "average", "daily"],
       afterExec: () => {
@@ -539,7 +539,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     alias: "timer",
   },
   timerColor: {
-    display: "Live progress color...",
+    display: "Jonli jarayon rangi...",
     alias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
@@ -547,7 +547,7 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     },
   },
   timerOpacity: {
-    display: "Live progress opacity...",
+    display: "Jonli jarayon shaffofligi...",
     alias: "timer speed wpm burst acc",
     subgroup: {
       options: "fromSchema",
@@ -714,13 +714,13 @@ export const commandlineConfigMetadata: CommandlineConfigMetadataObject = {
     subgroup: {
       options: "fromSchema",
     },
-    display: "Key tips...",
+    display: "Tugma maslahatlari...",
   },
   showOutOfFocusWarning: {
     subgroup: {
       options: "fromSchema",
     },
-    display: "Out of focus warning...",
+    display: "Fokusdan chiqish ogohlantirishi...",
   },
   capsLockWarning: {
     subgroup: {

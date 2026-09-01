@@ -195,7 +195,7 @@ function getColumns({
       },
     }),
     defineColumn("timeTyping", {
-      header: "time typing",
+      header: "yozishga sarflangan vaqt",
       enableSorting: true,
       cell: ({ getValue }) =>
         secondsToString(Math.round(getValue() ?? 0), true, true),

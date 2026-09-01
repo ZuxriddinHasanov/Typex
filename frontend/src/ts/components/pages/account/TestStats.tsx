@@ -48,12 +48,12 @@ export function TestStats(props: {
                 </div>
                 <div class="grid grid-cols-3 gap-4">
                   <Stat
-                    header="tests started"
+                    header="testlar boshlangan"
                     value={stats.restarted + stats.completed}
                   />
                   <div>
                     <div class="text-sub">
-                      tests completed{" "}
+                      testlar tugallangan{" "}
                       <span
                         data-balloon-length="xlarge"
                         data-balloon-pos="up"
@@ -83,7 +83,7 @@ export function TestStats(props: {
                   </div>
 
                   <Stat
-                    header="time typing"
+                    header="yozishga sarflangan vaqt"
                     value={stats.timeTyping}
                     formatter={(val) =>
                       secondsToString(Math.round(val), true, true)
@@ -101,7 +101,7 @@ export function TestStats(props: {
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`o'rtacha ${format().typingSpeedUnit} (last 10 tests)`}
+                    header={`o'rtacha ${format().typingSpeedUnit} (so'nggi 10 ta test)`}
                     value={last10.avgWpm}
                     formatter={formatWpm}
                   />
@@ -112,12 +112,12 @@ export function TestStats(props: {
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`o'rtacha raw ${format().typingSpeedUnit}`}
+                    header={`o'rtacha sof tezlik (raw) ${format().typingSpeedUnit}`}
                     value={stats.avgRaw}
                     formatter={formatWpm}
                   />
                   <Stat
-                    header={`o'rtacha raw ${format().typingSpeedUnit} (last 10 tests)`}
+                    header={`o'rtacha sof tezlik (raw) ${format().typingSpeedUnit} (so'nggi 10 ta test)`}
                     value={last10.avgRaw}
                     formatter={formatWpm}
                   />
@@ -128,12 +128,12 @@ export function TestStats(props: {
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`o'rtacha acc`}
+                    header={`o'rtacha aniqlik (acc)`}
                     value={stats.avgAcc}
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`o'rtacha acc (last 10 tests)`}
+                    header={`o'rtacha aniqlik (acc) (so'nggi 10 ta test)`}
                     value={last10.avgAcc}
                     formatter={formatPercentage}
                   />
@@ -144,12 +144,12 @@ export function TestStats(props: {
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`o'rtacha consistency`}
+                    header={`o'rtacha barqarorlik`}
                     value={stats.avgConsistency}
                     formatter={formatPercentage}
                   />
                   <Stat
-                    header={`o'rtacha consistency (last 10 tests)`}
+                    header={`o'rtacha barqarorlik (so'nggi 10 ta test)`}
                     value={last10.avgConsistency}
                     formatter={formatPercentage}
                   />
