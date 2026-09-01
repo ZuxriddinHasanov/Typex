@@ -180,15 +180,15 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   time: {
-    key: "vaqt",
+    key: "time",
     fa: { icon: "fa-clock" },
     changeRequiresRestart: true,
     displayString: "vaqt",
     group: "test",
     overrideConfig: ({ currentConfig }) => {
-      if (currentConfig.mode !== "vaqt") {
+      if (currentConfig.mode !== "time") {
         return {
-          mode: "vaqt",
+          mode: "time",
         };
       }
       return {};
@@ -250,7 +250,7 @@ export const configMetadata: ConfigMetadataObject = {
     },
   },
   language: {
-    key: "til",
+    key: "language",
     fa: { icon: "fa-language" },
     displayString: "til",
     changeRequiresRestart: true,
@@ -341,8 +341,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "minimal tezlik",
     changeRequiresRestart: true,
     group: "behavior",
-    description:
-      "Tezligingiz belgilangan chegaradan tushib ketsa, testni avtomatik ravishda to'xtatadi.",
+    description: "Tezligingiz belgilangan chegaradan tushib ketsa, testni avtomatik ravishda to'xtatadi.",
   },
   minWpmCustomSpeed: {
     key: "minWpmCustomSpeed",
@@ -365,8 +364,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "minimal aniqlik",
     changeRequiresRestart: true,
     group: "behavior",
-    description:
-      "Aniqligingiz belgilangan chegaradan tushib ketsa, testni avtomatik ravishda to'xtatadi (xato deb topadi).",
+    description: "Aniqligingiz belgilangan chegaradan tushib ketsa, testni avtomatik ravishda to'xtatadi (xato deb topadi).",
   },
   minAccCustom: {
     key: "minAccCustom",
@@ -469,8 +467,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     displayString: "freedom mode",
     group: "input",
-    description:
-      "Har qanday so'zni, hatto to'g'ri yozilgan bo'lsa ham, o'chirishga imkon beradi.",
+    description: "Har qanday so'zni, hatto to'g'ri yozilgan bo'lsa ham, o'chirishga imkon beradi.",
     overrideConfig: ({ value }) => {
       if (value) {
         return {
@@ -486,8 +483,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "qat'iy bo'sh joy (space)",
     changeRequiresRestart: true,
     group: "input",
-    description:
-      "Ushbu rejim yoqilganda so'z boshida bo'sh joy (space) ni bosish orqali haqiqiy bo'sh joy belgisi kiritiladi.",
+    description: "Ushbu rejim yoqilganda so'z boshida bo'sh joy (space) ni bosish orqali haqiqiy bo'sh joy belgisi kiritiladi.",
   },
   oppositeShiftMode: {
     key: "oppositeShiftMode",
@@ -496,7 +492,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "input",
     description:
-      'This mode will force you to use opposite shift keys for shifting. Using an incorrect one will count as an error. This feature ignores keys in locations B, Y, and ^ because many people use the other hand for those keys. If you\'re using external software to emulate your layout (including QMK), you should use the "keymap" mode - the standard "on" will not work. This will enforce opposite shift based on the "klaviatura xaritasi joylashuvi" setting.',
+      'This mode will force you to use opposite shift keys for shifting. Using an incorrect one will count as an error. This feature ignores keys in locations B, Y, and ^ because many people use the other hand for those keys. If you\'re using external software to emulate your layout (including QMK), you should use the "keymap" mode - the standard "on" will not work. This will enforce opposite shift based on the "keymap layout" setting.',
   },
   stopOnError: {
     key: "stopOnError",
@@ -656,8 +652,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "xatoda ovoz chiqarish",
     changeRequiresRestart: false,
     group: "sound",
-    description:
-      "Xato tugmani bossangiz yoki bo'sh joyni (space) juda erta bossangiz qisqa ovoz chiqaradi.",
+    description: "Xato tugmani bossangiz yoki bo'sh joyni (space) juda erta bossangiz qisqa ovoz chiqaradi.",
   },
   playTimeWarning: {
     key: "playTimeWarning",
@@ -672,8 +667,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "vaqt tugash ogohlantirishi (ovozli)",
     changeRequiresRestart: false,
     group: "sound",
-    description:
-      "Vaqtli test tugashiga oz qolganda qisqa ogohlantiruvchi ovoz chiqaradi.",
+    description: "Vaqtli test tugashiga oz qolganda qisqa ogohlantiruvchi ovoz chiqaradi.",
   },
 
   // caret
@@ -701,7 +695,7 @@ export const configMetadata: ConfigMetadataObject = {
     changeRequiresRestart: false,
     group: "caret",
     description:
-      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'teg PB' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
+      "Displays a second caret that moves at constant speed. The 'average' option averages the speed of last 10 results. The 'tag pb' option takes the highest PB of any active tag. The 'daily' option takes the highest speed of the last 24 hours.",
     optionsMetadata: {
       tagPb: {
         displayString: "teg PB",
@@ -717,7 +711,7 @@ export const configMetadata: ConfigMetadataObject = {
       if (document.readyState === "complete") {
         if ((value === "pb" || value === "tagPb") && !isAuthenticated()) {
           showNoticeNotification(
-            `Pace caret "pb" and "teg PB" are unavailable without an account`,
+            `Pace caret "pb" and "tag pb" are unavailable without an account`,
           );
           return true;
         }
@@ -775,8 +769,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "jonli tezlik uslubi",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Test vaqtida ko'rsatiladigan jonli tezlik uslubini o'zgartiring.",
+    description: "Test vaqtida ko'rsatiladigan jonli tezlik uslubini o'zgartiring.",
     overrideConfig: ({ value }) => {
       if (value === "text") {
         return {
@@ -792,8 +785,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "jonli aniqlik uslubi",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Test vaqtida ko'rsatiladigan jonli aniqlik uslubini o'zgartiring.",
+    description: "Test vaqtida ko'rsatiladigan jonli aniqlik uslubini o'zgartiring.",
     overrideConfig: ({ value }) => {
       if (value === "text") {
         return {
@@ -809,8 +801,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "jonli so'z tezligi (burst) uslubi",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Test vaqtida ko'rsatiladigan jonli so'z tezligi (burst) uslubini o'zgartiring.",
+    description: "Test vaqtida ko'rsatiladigan jonli so'z tezligi (burst) uslubini o'zgartiring.",
   },
   timerColor: {
     key: "timerColor",
@@ -818,8 +809,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "taymer rangi",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Jarayon, jonli tezlik, aniqlik va burst matnining rangini o'zgartiring.",
+    description: "Jarayon, jonli tezlik, aniqlik va burst matnining rangini o'zgartiring.",
   },
   timerOpacity: {
     key: "timerOpacity",
@@ -827,8 +817,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "timer opacity",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Jarayon, jonli tezlik, burst va aniqlik matnining shaffofligini o'zgartiring.",
+    description: "Jarayon, jonli tezlik, burst va aniqlik matnining shaffofligini o'zgartiring.",
   },
   highlightMode: {
     key: "highlightMode",
@@ -906,8 +895,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "doim o'nlik kasrlarni ko'rsatish",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Natijalar sahifasida raqamlar ustiga kursor obormasdan ham doimo o'nlik kasrlarni ko'rsatadi.",
+    description: "Natijalar sahifasida raqamlar ustiga kursor obormasdan ham doimo o'nlik kasrlarni ko'rsatadi.",
   },
   typingSpeedUnit: {
     key: "typingSpeedUnit",
@@ -923,8 +911,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "grafiklarni noldan boshlash",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Grafik o'qi ma'lumotlar qanday bo'lishidan qat'iy nazar doim noldan boshlanishini majburlaydi.",
+    description: "Grafik o'qi ma'lumotlar qanday bo'lishidan qat'iy nazar doim noldan boshlanishini majburlaydi.",
   },
   maxLineWidth: {
     key: "maxLineWidth",
@@ -951,8 +938,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "shrift turi",
     changeRequiresRestart: false,
     group: "appearance",
-    description:
-      "Saytda ishlatiladigan shrift turini o'zgartiring. Mahalliy shriftdan foydalanish tanlovingizni bekor qiladi.",
+    description: "Saytda ishlatiladigan shrift turini o'zgartiring. Mahalliy shriftdan foydalanish tanlovingizni bekor qiladi.",
     optionsMetadata: {
       Comic_Sans_MS: {
         displayString: "Helvetica",
@@ -1028,7 +1014,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-adjust" },
     displayString: "test ranglarini o'zgartirish",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     description:
       "By default, typed text is brighter than the future text. When enabled, the colors will be flipped and the future text will be brighter than the already typed text.",
   },
@@ -1037,7 +1023,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-fill-drip" },
     displayString: "rangli rejim",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     description:
       "When enabled, the test words will use the main color, instead of the text color, making the website more colorful.",
   },
@@ -1046,7 +1032,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-link" },
     displayString: "maxsus fon",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     overrideValue: ({ value }) => {
       return value.trim();
     },
@@ -1058,7 +1044,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-image" },
     displayString: "maxsus fon o'lchami",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     description:
       "Set an image url or local image to be a custom background image. Cover fits the image to cover the screen. Contain fits the image to be fully visible. Max fits the image corner to corner.",
   },
@@ -1067,7 +1053,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-image" },
     displayString: "maxsus fon filtri",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     description: "Apply various effects to the custom background.",
   },
   autoSwitchTheme: {
@@ -1075,7 +1061,7 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-palette" },
     displayString: "mavzuni avtomatik o'zgartirish",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     description:
       "Enabling this will automatically switch the theme between light and dark depending on the system theme.",
   },
@@ -1084,21 +1070,21 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-palette" },
     displayString: "theme light",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
   },
   themeDark: {
     key: "themeDark",
     fa: { icon: "fa-palette" },
     displayString: "theme dark",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
   },
   randomTheme: {
     key: "randomTheme",
     fa: { icon: "fa-palette" },
     changeRequiresRestart: false,
     displayString: "tasodifiy mavzu",
-    group: "mavzu",
+    group: "theme",
     description:
       "After completing a test, the theme will be set to a random one. The random themes are not saved to your config. If set to 'favorite' only favorite themes will be randomized. If set to 'light' or 'dark', only presets with light or dark background colors will be randomized, respectively. If set to 'auto' dark or light themes are used, depending on your system theme. If set to 'custom', custom themes will be randomized.",
     optionsMetadata: {
@@ -1135,13 +1121,13 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-palette" },
     displayString: "favorite themes",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
   },
   theme: {
-    key: "mavzu",
+    key: "theme",
     fa: { icon: "fa-palette" },
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     description:
       "Completely change the look and feel of the website by picking one of the presets, or by creating your own completely custom theme.",
     overrideConfig: () => {
@@ -1155,14 +1141,14 @@ export const configMetadata: ConfigMetadataObject = {
     fa: { icon: "fa-palette" },
     displayString: "maxsus mavzu",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
   },
   customThemeColors: {
     key: "customThemeColors",
     fa: { icon: "fa-palette" },
     displayString: "maxsus mavzu ranglari",
     changeRequiresRestart: false,
-    group: "mavzu",
+    group: "theme",
     overrideValue: ({ value }) => {
       const allColorsThesame = value.every((color) => color === value[0]);
       if (allColorsThesame) {
@@ -1217,8 +1203,7 @@ export const configMetadata: ConfigMetadataObject = {
     displayString: "o'rtachani ko'rsatish",
     changeRequiresRestart: false,
     group: "hideElements",
-    description:
-      "So'nggi 10 ta testdagi o'rtacha tezligingizni va/yoki aniqligingizni ko'rsatadi.",
+    description: "So'nggi 10 ta testdagi o'rtacha tezligingizni va/yoki aniqligingizni ko'rsatadi.",
   },
   showPb: {
     key: "showPb",
