@@ -12,6 +12,7 @@ import { isSafeNumber } from "@typeuz/util/numbers";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { formatDate } from "date-fns/format";
 import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
+import { uz } from "date-fns/locale";
 import { For, JSXElement, Show } from "solid-js";
 
 import { addConnection, hasConnection } from "../../../collections/connections";
@@ -239,11 +240,11 @@ function AvatarAndName(props: {
   const accountAgeHint = () => {
     const creationDate = new Date(props.profile.addedAt);
     const diffDays = differenceInDays(new Date(), creationDate);
-    return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
+    return `${diffDays} kun oldin`;
   };
 
   const formatStreak = (length: number) =>
-    `${length} ${length === 1 ? "day" : "days"}`;
+    `${length} kun`;
 
   const extraStreakText = () => {
     if (!props.isAccountPage) return "";
@@ -272,18 +273,18 @@ function AvatarAndName(props: {
         : "";
 
       if (isToday) {
-        hoverText += `\nClaimed today: yes`;
-        hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
+        hoverText += `\nBugun olingan: ha`;
+        hoverText += `\nQaytish vaqti: ${timeDif} ${offsetString}`;
       } else if (isYesterday) {
-        hoverText += `\nClaimed today: no`;
-        hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+        hoverText += `\nBugun olingan: yo'q`;
+        hoverText += `\nSeriya yakunlanishiga: ${timeDif} ${offsetString}`;
       } else {
-        hoverText += `\nStreak lost ${timeDif} ${offsetString} ago`;
-        hoverText += `\nIt will be removed from your profile on the next result save`;
+        hoverText += `\nSeriya yakunlanganiga ${timeDif} ${offsetString} bo'ldi`;
+        hoverText += `\nNavbatdagi natija saqlanganda u profilingizdan o'chiriladi`;
       }
 
       if (streakOffset === undefined) {
-        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Account Settings > Account > Set streak hour offset.`;
+        hoverText += `\n\nAgar seriyaning yangilanish vaqti vaqt mintaqangizga to'g'ri kelmasa, uni Hisob sozlamalari (Account Settings) > Account qismidan to'g'rilashingiz mumkin.`;
       }
     }
     return hoverText;
@@ -403,17 +404,17 @@ function AvatarAndName(props: {
               position={balloonPosition()}
             >
               A&apos;zo bo&apos;ldi:{" "}
-              {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy")}
+              {formatDate(props.profile.addedAt ?? 0, "dd MMM yyyy", { locale: uz })}
             </Balloon>
             <Show when={(props.profile.streak ?? 0) > 1}>
               <Balloon
                 inline
-                text={`Eng uzun streak: ${formatStreak(props.profile.maxStreak)}${extraStreakText()}`}
+                text={`Eng uzun seriya: ${formatStreak(props.profile.maxStreak)}${extraStreakText()}`}
                 position={balloonPosition()}
                 break
                 length="large"
               >
-                Joriy streak: {formatStreak(props.profile.streak)}
+                Joriy seriya: {formatStreak(props.profile.streak)}
               </Balloon>
             </Show>
           </div>
@@ -446,7 +447,7 @@ function BioAndKeyboard(props: {
       <Show when={props.details?.keyboard}>
         <div class="flex flex-col gap-2">
           <span class="text-xs font-bold tracking-wider text-sub uppercase">
-            Keyboard
+            Klaviatura
           </span>
           <p class="text-base font-medium text-text">
             {props.details?.keyboard}
@@ -596,7 +597,7 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
           class="shrink-0 text-xl leading-none font-black tracking-tight text-text"
           text={`Jami: ${formatXp(props.xp ?? 0)} xp`}
         >
-          Lvl {xpDetails().level}
+          Daraja {xpDetails().level}
         </Balloon>
         <Balloon
           class="mb-[2px] shrink-0 text-[10px] leading-none font-bold tracking-wider text-sub uppercase"
@@ -617,4 +618,5 @@ function LevelAndBar(props: { xp?: number }): JSXElement {
     </div>
   );
 }
+
 

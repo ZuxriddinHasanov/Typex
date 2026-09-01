@@ -24,7 +24,13 @@ import {
   getUserId,
 } from "../../../states/core";
 import { cn } from "../../../utils/cn";
-import { formatTopPercentage } from "../../../utils/misc";
+import {
+  formatTopPercentage,
+  isUsersProfile,
+} from "../../../utils/misc";
+import { formatDistanceToNowStrict } from "date-fns/formatDistanceToNowStrict";
+import { uz } from "date-fns/locale";
+import { bp } from "../../../states/breakpoints";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
 import { ActivityCalendar } from "./ActivityCalendar";
@@ -463,7 +469,7 @@ function LastTestCard(props: {
             </h3>
             <span class="text-xs text-sub">
               {lr().timestamp
-                ? formatDate(lr().timestamp, "dd MMM yyyy, HH:mm")
+                ? formatDate(lr().timestamp, "dd MMM yyyy, HH:mm", { locale: uz })
                 : "Yaqinda topshirilgan"}
             </span>
           </div>
@@ -538,6 +544,7 @@ function LastTestCard(props: {
     </div>
   );
 }
+
 
 
 

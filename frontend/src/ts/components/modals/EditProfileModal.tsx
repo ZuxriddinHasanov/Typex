@@ -108,14 +108,14 @@ export function EditProfile() {
         inventory: { ...snapshot.inventory, badges: newBadges },
       });
       void invalidateMyProfile();
-      showSuccessNotification("Profile updated");
+      showSuccessNotification("Profil yangilandi");
     },
   }));
 
   return (
     <AnimatedModal
       id="EditProfile"
-      title="Edit Profile"
+      title="Profilni tahrirlash"
       modalClass="max-w-[600px]"
     >
       <form

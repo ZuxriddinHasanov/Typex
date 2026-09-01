@@ -451,7 +451,7 @@ export async function addResult(
   let isPb = false;
   let tagPbs: string[] = [];
 
-  if (!completedEvent.bailedOut) {
+  if (!completedEvent.bailedOut && completedEvent.testDuration >= 10) {
     [isPb, tagPbs] = await Promise.all([
       UserDAL.checkIfPb(uid, user, completedEvent),
       UserDAL.checkIfTagPb(uid, user, completedEvent),

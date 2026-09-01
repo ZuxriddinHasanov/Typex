@@ -267,7 +267,7 @@ export function restart(options = {} as RestartOptions): void {
     !options.withSameWordset &&
     !options.practiseMissed
   ) {
-    showNoticeNotification("Reverting to previous settings.");
+    showNoticeNotification("Oldingi sozlamalarga qaytarilmoqda.");
     if (PractiseWords.before.punctuation !== null) {
       setConfig("punctuation", PractiseWords.before.punctuation);
     }
@@ -407,7 +407,7 @@ async function init(): Promise<boolean> {
   hideLoaderBar();
 
   if (error) {
-    showErrorNotification("Failed to load language", { error });
+    showErrorNotification("Tilni yuklashda xatolik yuz berdi", { error });
   }
 
   if (!language || language.name !== Config.language) {
@@ -434,7 +434,7 @@ async function init(): Promise<boolean> {
         JSONData.getLanguage(langName),
       );
       if (error) {
-        showErrorNotification(`Failed to load language: ${langName}`, {
+        showErrorNotification(`Tilni yuklashda xatolik yuz berdi: ${langName}`, {
           error,
         });
       }
@@ -467,7 +467,7 @@ async function init(): Promise<boolean> {
     if (Config.lazyMode && !allowLazyMode) {
       LazyModeState.setRemember(true);
       if (!showedLazyModeNotification) {
-        showNoticeNotification("This language does not support lazy mode.", {
+        showNoticeNotification("Ushbu til dangasa (lazy) rejimini qo'llab-quvvatlamaydi.", {
           important: true,
         });
         showedLazyModeNotification = true;
@@ -529,7 +529,7 @@ async function init(): Promise<boolean> {
         });
       }
     } else {
-      showErrorNotification("Failed to generate words", {
+      showErrorNotification("So'zlarni yaratishda xatolik yuz berdi", {
         error: e,
         important: true,
       });
@@ -725,7 +725,7 @@ export async function retrySavingResult(): Promise<void> {
   retrySaving.canRetry = false;
   qs("#retrySavingResultButton")?.hide();
 
-  showNoticeNotification("Retrying to save...");
+  showNoticeNotification("Saqlashga qayta urinilmoqda...");
 
   await saveResult(completedEvent, true);
 }
@@ -1056,7 +1056,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      showSuccessNotification("Long custom text progress saved", {
+      showSuccessNotification("Uzun maxsus matn jarayoni saqlandi", {
         durationMs: 5000,
         important: true,
       });
@@ -1069,7 +1069,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       CustomText.setCustomTextLongProgress(customTextName, 0);
       const text = CustomText.getCustomText(customTextName, true);
       CustomText.setText(text);
-      showSuccessNotification("Long custom text completed", {
+      showSuccessNotification("Uzun maxsus matn tugatildi", {
         durationMs: 5000,
         important: true,
       });
@@ -1142,9 +1142,9 @@ async function saveResult(
   isRetrying: boolean,
 ): Promise<null | Awaited<ReturnType<typeof Ape.results.add>>> {
   if (!Config.resultSaving) {
-    showErrorNotification("Result not saved: disabled by user", {
+    showErrorNotification("Natija saqlanmadi: foydalanuvchi tomonidan o'chirilgan", {
       durationMs: 3000,
-      customTitle: "Notice",
+      customTitle: "Eslatma",
       important: true,
     });
     return null;
@@ -1176,18 +1176,18 @@ async function saveResult(
         retrySaving.completedEvent = result;
       }
     }
-    console.log("Error saving result", result);
+    console.log("Natijani saqlashda xatolik", result);
     if (response.body.message === "Old key data format") {
       response.body.message =
-        "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
+        "Klaviatura ma'lumotlari formati eskirgan. Yangilanishni yuklab olish uchun sahifani yangilang. Agar muammo davom etsa, qo'llab-quvvatlash xizmatiga murojaat qiling.";
     }
     if (
       /"result\..+" is (not allowed|required)/gi.test(response.body.message)
     ) {
       response.body.message =
-        "Looks like your result data is using an incorrect schema. Please refresh the page to download the new update. If the problem persists, please contact support.";
+        "Natija ma'lumotlari noto'g'ri sxemadan foydalanayotgan ko'rinadi. Yangilanishni yuklab olish uchun sahifani yangilang. Agar muammo davom etsa, qo'llab-quvvatlash xizmatiga murojaat qiling.";
     }
-    showErrorNotification("Failed to save result", { response });
+    showErrorNotification("Natijani saqlashda xatolik yuz berdi", { response });
     return response;
   }
 
@@ -1261,7 +1261,7 @@ async function saveResult(
 
   qs("#retrySavingResultButton")?.hide();
   if (isRetrying) {
-    showSuccessNotification("Result saved", { important: true });
+    showSuccessNotification("Natija saqlandi", { important: true });
   }
   DB.saveLocalResult(localDataToSave);
   return response;
@@ -1339,7 +1339,7 @@ qs(".pageTest")?.onChild("click", "#moreStatsToggle", (e) => {
 
 qs(".pageTest")?.onChild("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode === "zen") {
-    showNoticeNotification("Repeat test disabled in zen mode");
+    showNoticeNotification("Zen rejimida testni takrorlash o'chirilgan");
     return;
   }
   restart({
@@ -1402,4 +1402,5 @@ timerEvent.subscribe(({ key: eventKey, value: eventValue }) => {
   if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
   if (eventKey === "finish") void finish();
 });
+
 

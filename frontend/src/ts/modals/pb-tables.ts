@@ -1,5 +1,6 @@
 import * as DB from "../db";
 import { format } from "date-fns/format";
+import { uz } from "date-fns/locale";
 import { getLanguageDisplayString } from "../utils/strings";
 import { Config } from "../config/store";
 import Format from "../singletons/format";
@@ -52,9 +53,10 @@ function update(mode: Mode): void {
     let dateText = `-<br><span class="sub">-</span>`;
     const date = new Date(pb.timestamp);
     if (pb.timestamp) {
-      dateText = `${format(date, "dd MMM yyyy")}<br><div class='sub'>${format(
+      dateText = `${format(date, "dd MMM yyyy", { locale: uz })}<br><div class='sub'>${format(
         date,
         "HH:mm",
+        { locale: uz }
       )}</div>`;
     }
     currentTbody?.insertAdjacentHTML(
@@ -105,3 +107,4 @@ export function show(mode: Mode): void {
 const modal = new AnimatedModal({
   dialogId: "pbTablesModal",
 });
+

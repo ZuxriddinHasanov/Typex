@@ -19,6 +19,7 @@ import {
   Day,
   nextDay,
 } from "date-fns";
+import { uz } from "date-fns/locale";
 
 export type TestActivityDay = {
   level: string;
@@ -109,7 +110,7 @@ export class TestActivityCalendar implements TestActivityCalendar {
       const weeks = differenceInWeeks(end, start, { roundingMethod: "ceil" });
       if (weeks > 2) {
         results.push({
-          text: format(month, "MMM").toLowerCase(),
+          text: format(month, "MMM", { locale: uz }).toLowerCase(),
           weeks: weeks,
         });
       } else if (i === 0) {
@@ -144,14 +145,16 @@ export class TestActivityCalendar implements TestActivityCalendar {
     let currentDate = this.startDay;
     for (let i = 0; i <= days; i++) {
       const count = this.data[i];
-      const day = format(currentDate, "EEEE dd MMM yyyy");
+      const day = format(currentDate, "EEEE, dd-MMM, yyyy", { locale: uz });
 
       result.push({
         level: getValue(count),
         label:
           count !== undefined && count !== null
-            ? `${count} ${count === 1 ? "test" : "tests"} on ${day}`
-            : `no activity on ${day}`,
+            ? count === 0
+              ? `Test ishlanmagan, ${day}`
+              : `${count} ta test, ${day}`
+            : `Ma'lumot yo'q, ${day}`,
       });
       currentDate = addDays(currentDate, 1);
     }
@@ -254,3 +257,4 @@ export class ModifiableTestActivityCalendar
     }
   }
 }
+
