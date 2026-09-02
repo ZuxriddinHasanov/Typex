@@ -496,7 +496,7 @@ export function LandingPage(): JSXElement {
             targetValue={85000}
           />
           <StatsCard value="45 WPM" label="O'rtacha tezlik" targetValue={45} />
-          <StatsCard value="3 ta" label="Tillar" targetValue={3} />
+          <StatsCard value="100+" label="Tillar" targetValue={100} />
         </div>
       </AnimatedSection>
 

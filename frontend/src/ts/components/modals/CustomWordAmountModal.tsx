@@ -26,7 +26,7 @@ export function CustomWordAmountModal(): JSXElement {
         showNoticeNotification("O'zingizni asrang va tanaffuslar qiling!");
       } else if (val === 0) {
         showNoticeNotification(
-          "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+          "Cheksiz so'zlar! Natijani saqlash uchun buyruqlar panelidan (command line) Bail Out qilishni unutmang.",
           { durationMs: 7000 },
         );
       }
@@ -38,7 +38,7 @@ export function CustomWordAmountModal(): JSXElement {
   return (
     <AnimatedModal
       id="CustomWordAmount"
-      title="Custom word amount"
+      title="Maxsus so'zlar miqdori"
       focusFirstInput="focusAndSelect"
       beforeShow={() => {
         form.reset({ words: getConfig.words });
@@ -58,12 +58,12 @@ export function CustomWordAmountModal(): JSXElement {
             onChange: fromSchema(z.number().nonnegative().safe()),
           }}
           children={(field) => (
-            <InputField field={field} type="number" placeholder="word amount" />
+            <InputField field={field} type="number" placeholder="so'zlar miqdori" />
           )}
         />
         <div class="text-xs">
-          You can start an infinite test by inputting 0. Then, to stop the test,
-          use the Bail Out feature:
+          0 raqamini kiritish orqali cheksiz testni boshlashingiz mumkin. Keyin testni to'xtatish uchun,
+          Bail Out funksiyasidan foydalaning:
           <br />(<kbd>esc</kbd> or <kbd>ctrl/cmd</kbd> + <kbd>shift</kbd> +{" "}
           <kbd>p</kbd> &gt; Bail Out)
         </div>

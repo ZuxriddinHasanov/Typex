@@ -5,8 +5,8 @@ import { qs, qsa } from "../utils/dom";
 const outOfFocusTimeouts: (number | NodeJS.Timeout)[] = [];
 
 const messages = {
-  default: "Click here or press any key to focus",
-  window: "Click anywhere to focus the window",
+  default: "Fokuslash uchun shu yerni yoki istalgan tugmani bosing",
+  window: "Oynani fokuslash uchun istalgan joyni bosing",
 };
 
 export function hide(): void {

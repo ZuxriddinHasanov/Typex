@@ -27,12 +27,12 @@ export function CustomTestDurationModal(): JSXElement {
       }
 
       if (val !== 0 && val < MIN_DURATION) {
-        showNoticeNotification(`Minimum duration is ${MIN_DURATION} seconds`);
+        showNoticeNotification(`Minimal davomiylik: ${MIN_DURATION} soniya`);
         return;
       }
 
       if (val > MAX_DURATION) {
-        showNoticeNotification(`Maximum duration is ${MAX_DURATION / 60} minutes`);
+        showNoticeNotification(`Maximum duration is ${MAX_DURATION / 60} daqiqa`);
         return;
       }
 
@@ -52,13 +52,13 @@ export function CustomTestDurationModal(): JSXElement {
   const validationError = () => {
     const val = parseInput(durationValue());
     if (isNaN(val) || !isFinite(val)) {
-      return "Must be a number";
+      return "Raqam bo'lishi kerak";
     }
     if (val !== 0 && val < MIN_DURATION) {
-      return `Minimum is ${MIN_DURATION} seconds`;
+      return `Minimal: ${MIN_DURATION} soniya`;
     }
     if (val > MAX_DURATION) {
-      return `Maximum is ${MAX_DURATION / 60} minutes`;
+      return `Maksimal: ${MAX_DURATION / 60} daqiqa`;
     }
     return undefined;
   };
@@ -69,7 +69,7 @@ export function CustomTestDurationModal(): JSXElement {
     if (isNaN(duration) || duration < 0) {
       return "";
     } else if (duration === 0) {
-      return "Infinite test";
+      return "Cheksiz test";
     } else {
       return format(duration);
     }
@@ -78,7 +78,7 @@ export function CustomTestDurationModal(): JSXElement {
   return (
     <AnimatedModal
       id="TestDuration"
-      title="Test Duration"
+      title="Test davomiyligi"
       focusFirstInput="focusAndSelect"
       beforeShow={() => {
         form.reset({ duration: getConfig.time.toString() });
@@ -108,7 +108,7 @@ export function CustomTestDurationModal(): JSXElement {
             <InputField
               field={field}
               type="text"
-              placeholder={`${MIN_DURATION}-${MAX_DURATION} seconds`}
+              placeholder={`${MIN_DURATION}-${MAX_DURATION} soniya`}
             />
           )}
         />
@@ -116,7 +116,7 @@ export function CustomTestDurationModal(): JSXElement {
           <span class="text-xs text-error">{validationError()}</span>
         </Show>
         <div class="text-xs text-sub/60">
-          Range: {MIN_DURATION}s – {MAX_DURATION / 60} min. Press Enter to confirm.
+          Chegara: {MIN_DURATION}s – {MAX_DURATION / 60} daq. Tasdiqlash uchun Enter tugmasini bosing.
         </div>
         <SubmitButton
           form={form}
@@ -131,8 +131,8 @@ export function CustomTestDurationModal(): JSXElement {
 
 function format(duration: number): string {
   const hours = Math.floor(duration / 3600);
-  const minutes = Math.floor((duration % 3600) / 60);
-  const seconds = duration % 60;
+  const daqiqa = Math.floor((duration % 3600) / 60);
+  const soniya = duration % 60;
 
   const time = [];
 
@@ -140,12 +140,12 @@ function format(duration: number): string {
     time.push(`${hours}h`);
   }
 
-  if (minutes > 0) {
-    time.push(`${minutes}m`);
+  if (daqiqa > 0) {
+    time.push(`${daqiqa}m`);
   }
 
-  if (seconds > 0) {
-    time.push(`${seconds}s`);
+  if (soniya > 0) {
+    time.push(`${soniya}s`);
   }
 
   if (time.length === 0) {
@@ -157,7 +157,7 @@ function format(duration: number): string {
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
-  const seconds = [...input.toLowerCase().matchAll(re)]
+  const soniya = [...input.toLowerCase().matchAll(re)]
     .map((match) => {
       const part = match[0];
       const duration = parseFloat(part.replace(/\s+/g, ""));
@@ -172,5 +172,5 @@ function parseInput(input: string): number {
     })
     .reduce((total, dur) => total + dur, 0);
 
-  return Math.floor(seconds);
+  return Math.floor(soniya);
 }

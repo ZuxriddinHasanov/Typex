@@ -14,7 +14,7 @@ export function AboutPage(): JSXElement {
         <p class="mx-auto max-w-2xl text-lg leading-relaxed text-sub">
           <span class="font-semibold text-text">TypeX.uz</span> &mdash;
           O&apos;zbekistonning 1-raqamli yozuv tezligi platformasi. Ushbu
-          platformada O&apos;zbek, Ingliz va Rus tillarida yozish tezligingizni
+          platformada 100 dan ortiq tillarda yozish tezligingizni
           sinab ko&apos;ring, natijalaringizni AI yordamida tahlil qiling va
           reytingda yuksaling.
         </p>
@@ -25,7 +25,7 @@ export function AboutPage(): JSXElement {
         <For
           each={[
             { value: "50,000+", label: "test", icon: "fa-keyboard" },
-            { value: "3", label: "til", icon: "fa-language" },
+            { value: "100+", label: "til", icon: "fa-language" },
             { value: "12,000+", label: "foydalanuvchi", icon: "fa-users" },
             { value: "98%", label: "o'rtacha aniqlik", icon: "fa-bullseye" },
           ]}
@@ -112,7 +112,7 @@ export function AboutPage(): JSXElement {
           <p>
             Birgina shaxsiy loyiha sifatida boshlangan TypeX.uz, bugungi kunda{" "}
             <span class="font-semibold text-text">12 000+</span> foydalanuvchiga
-            ega platformaga aylandi. O&apos;zbek, Ingliz va Rus tillaridagi
+            ega platformaga aylandi. 100 dan ortiq tillardagi
             testlar, AI yordamida haftalik tahlil va interaktiv reyting tizimi
             orqali foydalanuvchilarimiz o&apos;z ko&apos;nikmalarini muntazam
             oshirib borishmoqda.
@@ -142,7 +142,7 @@ export function AboutPage(): JSXElement {
               {
                 icon: "fa-language",
                 title: "Ko'p tilli qo'llab-quvvatlash",
-                text: "O'zbek, Ingliz va Rus tillarida matnlar. Har bir til alohida statistikaga ega.",
+                text: "100 dan ortiq tillardagi matnlar. Har bir til alohida statistikaga ega.",
               },
               {
                 icon: "fa-tachometer-alt",
@@ -284,15 +284,15 @@ export function AboutPage(): JSXElement {
               },
               {
                 q: "TypeX.uz nima?",
-                a: "TypeX.uz — Zuxriddin Hasanov va Yaxyo Jabborov tomonidan yaratilgan bepul yozuv tezligi testi. O'zbek, Ingliz va Rus tillarida yozish tezligi va aniqligini o'lchash imkonini beradi.",
+                a: "TypeX.uz — Zuxriddin Hasanov va Yaxyo Jabborov tomonidan yaratilgan bepul yozuv tezligi testi. 100 dan ortiq tillarda yozish tezligi va aniqligini o'lchash imkonini beradi.",
               },
               {
                 q: "TypeX.uz bepulmi?",
                 a: "Ha, TypeX.uz to'liq bepul. Barcha asosiy funksiyalar, jumladan AI tahlil va reyting tizimi hech qanday to'lov talab qilmaydi.",
               },
               {
-                q: "Qanday tillar mavjud?",
-                a: "Hozirda O'zbek, Ingliz va Rus tillari qo'llab-quvvatlanadi. Har bir til uchun alohida testlar va statistika yuritiladi.",
+                q: "Qanday tillar mavjud va ularga qanday o'tish mumkin?",
+                a: "Platformada 100 dan ortiq tillar mavjud. Ularni tanlash uchun klaviaturangizdagi Esc tugmasini bosing, 'tillar' deb yozing va xohlagan tilingizni tanlang. Har bir til uchun alohida statistika yuritiladi.",
               },
               {
                 q: "Natijalarimni qanday saqlashim mumkin?",
