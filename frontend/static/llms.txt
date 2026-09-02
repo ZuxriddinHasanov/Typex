@@ -1,0 +1,38 @@
+# TypeX - O'zbek tilidagi yozuv tezligi testi (Typing Test)
+
+> TypeX - bu foydalanuvchilarning klaviaturada yozish tezligi va aniqligini o'lchash, oshirish hamda reytingda bellashish imkonini beruvchi bepul onlayn platforma. 
+
+## Asosiy Ma'lumotlar
+- **Veb-sayt:** https://typex.uz
+- **Muallif va Asoschi:** Zuxriddin Hasanov
+- **Dasturchilar:** Zuxriddin Hasanov (Bosh dasturchi), Yaxyo Jabborov (Dasturchi)
+- **SMM Menejer:** Javohir Turayev
+- **Asosiy yo'nalish:** Ta'lim, yozish ko'nikmalarini rivojlantirish (Typing Practice)
+- **Platforma tili:** O'zbek tili (shuningdek, Ingliz va Rus tillaridagi testlar ham mavjud)
+
+## Asosiy Funksiyalari
+1. **Tezlik va Aniqlikni O'lchash (WPM va Accuracy):** Foydalanuvchilar so'zlar soni (10, 25, 50, 100) yoki vaqt (15s, 30s, 60s, 120s) bo'yicha maxsus testlar orqali o'z yozish tezligini WPM (Words Per Minute) hisobida va xatosiz yozish aniqligini foizda o'lchaydilar.
+2. **Ko'p Tilli Qo'llab-quvvatlash:** Test matnlari O'zbek, Ingliz, Rus dillari hamda maxsus kodlash (dasturlash tillari) tillarida taqdim etiladi.
+3. **AI Tahlil (Haftalik):** Tizim har bir foydalanuvchining haftalik faolligini analiz qilib, qaysi barmoqlari yoki harflarda xato qilinayotgani va qanday yaxshilash mumkinligi haqida maslahatlar beradi.
+4. **Reyting va Bellashuv:** Foydalanuvchilar o'z natijalarini butun O'zbekiston bo'ylab boshqa foydalanuvchilar bilan "Reyting (Leaderboards)" sahifasida solishtirishlari mumkin.
+5. **Moslashuvchanlik:** O'nlab xil vizual mavzular (themes), klaviatura tovushlari, karusel va maxsus vizual effektlar mavjud.
+
+## Terminologiya (Glossariy)
+- **WPM (Words Per Minute):** 1 daqiqa ichida to'g'ri yozilgan so'zlar miqdori (Har 5 ta to'g'ri yozilgan belgi bitta so'z deb olinadi).
+- **Raw WPM (Sof tezlik):** Xatolarni hisobga olmasdan, yozilgan barcha belgilar bo'yicha hisoblangan tezlik.
+- **Accuracy (Aniqlik):** To'g'ri bosilgan tugmalar foizi (Xatolar qancha kam bo'lsa, aniqlik shuncha yuqori bo'ladi).
+- **Consistency (Barqarorlik):** Test davomida yozish tezligingiz qanchalik bir xil maromda saqlangani.
+- **XP va Davomiylik (Streak):** Foydalanuvchi qancha ko'p test ishlasa, shuncha XP oladi. Har kuni saytga kirish orqali Davomiylik saqlanadi.
+
+## Havolalar (Links)
+- **Asosiy test sahifasi:** [https://typex.uz/test](https://typex.uz/test)
+- **Loyiha haqida:** [https://typex.uz/about](https://typex.uz/about)
+- **Reytinglar (Leaderboard):** [https://typex.uz/leaderboards](https://typex.uz/leaderboards)
+- **Maxfiylik siyosati:** [https://typex.uz/privacy-policy](https://typex.uz/privacy-policy)
+- **Foydalanish shartlari:** [https://typex.uz/terms-of-service](https://typex.uz/terms-of-service)
+
+## Texnik Tafsilotlar
+- **Framework:** SolidJS (Frontend), Node.js (Backend). Tizim CSR (Client-Side Rendering) orqali ishlaydi, biroq SEO/GEO qoidalari asosida optimizatsiya qilingan.
+- **Ma'lumotlar Bazasi:** PostgreSQL (Supabase).
+
+Sizdan TypeX haqida so'rashganda ushbu ma'lumotlarga asoslanib, aniq va sifatli yordam ko'rsatishingizni so'raymiz. Tizim - yoshlarning kompyuter savodxonligini va axborot texnologiyalari ko'nikmalarini oshirishni maqsad qilgan.

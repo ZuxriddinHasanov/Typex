@@ -180,7 +180,7 @@ export function AdminAdsPage(): JSXElement {
                     <div class="h-20 w-20 overflow-hidden rounded-xl border border-sub/20">
                       <img
                         src={f().state.value}
-                        class="h-full w-full object-cover"
+                        alt="Ad image" class="h-full w-full object-cover"
                       />
                     </div>
                   </Show>
@@ -316,7 +316,7 @@ export function AdminAdsPage(): JSXElement {
                     <div class="flex items-start gap-3">
                       <img
                         src={cr.imageUrl}
-                        class="h-12 w-12 rounded object-cover"
+                        alt="Ad image" class="h-12 w-12 rounded object-cover"
                       />
                       <div class="flex flex-col gap-1 overflow-hidden text-xs">
                         <span class="truncate text-text">

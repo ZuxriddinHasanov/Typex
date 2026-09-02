@@ -103,6 +103,7 @@ export function DiscordAvatar(props: {
                   : `https://cdn.discordapp.com/avatars/${props.discordId}/${props.discordAvatar}.png?size=${props.size ?? 32}`
               }
               class={cn("col-start-1 row-start-1 h-full w-full rounded-full object-cover", props.imgClass)}
+              alt="User avatar"
               referrerPolicy="no-referrer"
               onLoad={() => {
                 setAvatar(cacheKey(), true);
