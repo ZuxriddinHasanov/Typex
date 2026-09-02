@@ -121,30 +121,26 @@ export async function getWpmDistribution(
   const ranges = ["0-20", "21-40", "41-60", "61-80", "81-100", "100+"];
   for (const r of ranges) buckets.set(r, 0);
   for (const u of users) {
-    const pbs = u["pbs"] as Record<string, unknown> | undefined;
+    const pbs = (u["personal_bests"] || (u["personal_bests"] || u["pbs"])) as Record<string, unknown> | undefined;
     if (pbs === undefined) continue;
+    let maxWpm = 0;
     for (const [modeKey, val] of Object.entries(pbs)) {
       if (val && typeof val === "object") {
         for (const [mode2Key, arr] of Object.entries(val)) {
           if (Array.isArray(arr) && arr.length > 0) {
             const wpm = arr[0]?.wpm ?? 0;
-            if (wpm <= 20) {
-              buckets.set("0-20", (buckets.get("0-20") ?? 0) + 1);
-            } else if (wpm <= 40) {
-              buckets.set("21-40", (buckets.get("21-40") ?? 0) + 1);
-            } else if (wpm <= 60) {
-              buckets.set("41-60", (buckets.get("41-60") ?? 0) + 1);
-            } else if (wpm <= 80) {
-              buckets.set("61-80", (buckets.get("61-80") ?? 0) + 1);
-            } else if (wpm <= 100) {
-              buckets.set("81-100", (buckets.get("81-100") ?? 0) + 1);
-            } else {
-              buckets.set("100+", (buckets.get("100+") ?? 0) + 1);
-            }
+            if (wpm > maxWpm) maxWpm = wpm;
           }
         }
       }
-      break;
+    }
+    if (maxWpm > 0) {
+      if (maxWpm <= 20) buckets.set("0-20", (buckets.get("0-20") ?? 0) + 1);
+      else if (maxWpm <= 40) buckets.set("21-40", (buckets.get("21-40") ?? 0) + 1);
+      else if (maxWpm <= 60) buckets.set("41-60", (buckets.get("41-60") ?? 0) + 1);
+      else if (maxWpm <= 80) buckets.set("61-80", (buckets.get("61-80") ?? 0) + 1);
+      else if (maxWpm <= 100) buckets.set("81-100", (buckets.get("81-100") ?? 0) + 1);
+      else buckets.set("100+", (buckets.get("100+") ?? 0) + 1);
     }
   }
   const data = Array.from(buckets.entries()).map(([range, count]) => ({
@@ -168,7 +164,7 @@ export async function getTopUsers(_req: TypeUZRequest): Promise<
   const users = await getUsersArray();
   const scored = users
     .map((u) => {
-      const pbs = u["pbs"] as Record<string, any> | undefined;
+      const pbs = (u["personal_bests"] || u["pbs"]) as Record<string, any> | undefined;
       let bestWpm = 0;
       let bestAcc = 0;
       if (pbs) {
@@ -574,7 +570,7 @@ export async function searchUsers(
             gender: (profile["gender"] as string) ?? null,
             age: (profile["age"] as number) ?? null,
             avatar: (profile["avatar"] as string) ?? null,
-            pbs: (profile["pbs"] as Record<string, number>) ?? {},
+            pbs: ((profile["personal_bests"] || profile["pbs"]) as Record<string, number>) ?? {},
             personalBests:
               (profile["personalBests"] as Record<string, unknown>) ?? {},
           };
@@ -1414,7 +1410,7 @@ export async function listUsers(
         gender: (profile["gender"] as string) ?? null,
         age: (profile["age"] as number) ?? null,
         avatar: (profile["avatar"] as string) ?? null,
-        pbs: (profile["pbs"] as Record<string, number>) ?? {},
+        pbs: ((profile["personal_bests"] || profile["pbs"]) as Record<string, number>) ?? {},
         personalBests:
           (profile["personalBests"] as Record<string, unknown>) ?? {},
       };
@@ -1463,7 +1459,7 @@ export async function listUsers(
               gender: (profile["gender"] as string) ?? null,
               age: (profile["age"] as number) ?? null,
               avatar: (profile["avatar"] as string) ?? null,
-              pbs: (profile["pbs"] as Record<string, number>) ?? {},
+              pbs: ((profile["personal_bests"] || profile["pbs"]) as Record<string, number>) ?? {},
               personalBests:
                 (profile["personalBests"] as Record<string, unknown>) ?? {},
             };
@@ -1542,7 +1538,7 @@ export async function listUsers(
           timeTyping: u["timeTyping"] as number | undefined,
           lastLoginAt: (u["lastLoginAt"] as number) ?? undefined,
           streak: u["streak"] as number | undefined,
-          pbs: u["pbs"] as Record<string, number> | undefined,
+          pbs: (u["personal_bests"] || u["pbs"]) as Record<string, number> | undefined,
         })),
     });
   }
