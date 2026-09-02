@@ -35,7 +35,7 @@ export function SettingsSearch(): JSXElement {
           variant="text"
           class="absolute top-1/2 right-2 -translate-y-1/2"
           fa={{ icon: "fa-times" }}
-          balloon={{ text: "clear search", position: "left" }}
+          balloon={{ text: "qidiruvni tozalash", position: "left" }}
           onClick={() => setSettingsSearch("")}
         />
       </Show>

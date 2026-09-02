@@ -121,7 +121,7 @@ export function DailyActivityChart(props: {
                   position: "right",
                   title: {
                     display: true,
-                    text: `Average ${props.format.typingSpeedUnit.toUpperCase()}`,
+                    text: `O'rtacha \$\{props.format.typingSpeedUnit.toUpperCase()}`,
                   },
                   grid: {
                     display: false,
@@ -147,7 +147,7 @@ export function DailyActivityChart(props: {
                       >;
 
                       const item = dataQueryData()[firstItem.dataIndex];
-                      if (item === undefined) return "unknown";
+                      if (item === undefined) return "noma'lum";
 
                       return dateFormat(
                         new Date(item.dayTimestamp as number),
@@ -156,16 +156,16 @@ export function DailyActivityChart(props: {
                     },
                     beforeLabel: function (tooltipItem): string {
                       const item = dataQueryData()[tooltipItem.dataIndex];
-                      if (item === undefined) return "unknown";
+                      if (item === undefined) return "noma'lum";
 
                       return `
 Yozishga sarflangan vaqt: ${secondsToString(Math.round(item.timeTyping), true, true)}
 Tugallangan testlar: ${item.completed}
-Restarts per test: ${roundTo2(item.restarted / item.completed)}
-Highest  ${props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.maxWpm)}
-Average ${props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.avgWpm)}
-Average Accuracy: ${props.format.accuracy(item.avgAcc, { showDecimalPlaces: true })}
-Average Consistency: ${props.format.percentage(item.avgConsistency, { showDecimalPlaces: true })}
+Har bir testga qayta boshlashlar: ${roundTo2(item.restarted / item.completed)}
+Eng yuqori \$\{props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.maxWpm)}
+O'rtacha \$\{props.format.typingSpeedUnit.toUpperCase()}: ${formatSpeed(item.avgWpm)}
+O'rtacha aniqlik: ${props.format.accuracy(item.avgAcc, { showDecimalPlaces: true })}
+O'rtacha barqarorlik: ${props.format.percentage(item.avgConsistency, { showDecimalPlaces: true })}
                       `;
                     },
                     label: function (): string {

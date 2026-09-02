@@ -157,7 +157,7 @@ export function pauseReplay(): void {
   if (btn === undefined) return;
 
   btn.className = "fas fa-play";
-  (btn.parentNode as Element)?.setAttribute("aria-label", "Resume replay");
+  (btn.parentNode as Element)?.setAttribute("aria-label", "Takroriyni davom ettirish");
 }
 
 function playSound(error = false): void {
@@ -267,7 +267,7 @@ function toggleReplayDisplay(): void {
   } else {
     if (
       (toggleButton()?.parentNode as Element)?.getAttribute("aria-label") !==
-      "Start replay"
+      "Takroriyni boshlash"
     ) {
       pauseReplay();
     }
@@ -297,7 +297,7 @@ function playReplay(): void {
   if (btn === undefined) return;
 
   btn.className = "fas fa-pause";
-  (btn.parentNode as Element)?.setAttribute("aria-label", "Pause replay");
+  (btn.parentNode as Element)?.setAttribute("aria-label", "Takroriyni to'xtatib turish");
   initializeReplayPrompt();
   const startingIndex = loadOldReplay();
   const lastTime = replayData[startingIndex]?.time;
@@ -336,7 +336,7 @@ function playReplay(): void {
         targetCurPos = 0;
         targetWordPos = 0;
         btn.className = "fas fa-play";
-        (btn.parentNode as Element).setAttribute("aria-label", "Start replay");
+        (btn.parentNode as Element).setAttribute("aria-label", "Takroriyni boshlash");
       },
       (Arrays.lastElementFromArray(replayData) as Replay).time - lastTime,
     ),

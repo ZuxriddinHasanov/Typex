@@ -163,11 +163,11 @@ function getColumns<M extends Mode>({
 
         return (
           <div class="flex gap-0.5">
-            <span aria-label={info.row.original.language} data-balloon-pos="up">
+            <span aria-label={info.row.original.language.replace("english", "ingliz").replace("uzbek", "o'zbek").replace("russian", "rus")} data-balloon-pos="up">
               <Fa icon="fa-globe-americas" fixedWidth={true} />
             </span>
             <span
-              aria-label={info.row.original.difficulty}
+              aria-label={info.row.original.difficulty === "normal" ? "oddiy" : info.row.original.difficulty === "expert" ? "ekspert" : info.row.original.difficulty === "master" ? "master" : info.row.original.difficulty}
               data-balloon-pos="up"
             >
               <Fa {...difficultyIcon(info.row.original.difficulty)} />

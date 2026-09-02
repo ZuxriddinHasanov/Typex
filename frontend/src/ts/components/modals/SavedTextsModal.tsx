@@ -55,7 +55,7 @@ export function SavedTextsModal(props: {
     showSimpleModal({
       title: "Delete custom text",
       text: `Are you sure you want to delete custom text ${name}?`,
-      buttonText: "delete",
+      buttonText: "o'chirish",
       execFn: async () => {
         CustomText.deleteCustomText(name, long);
         setCustomTextIndicator(undefined);
@@ -121,14 +121,14 @@ export function SavedTextsModal(props: {
                 />
                 <Button
                   variant="button"
-                  balloon={{ text: "download" }}
+                  balloon={{ text: "yuklab olish" }}
                   fa={{ icon: "fa-file-download", fixedWidth: true }}
                   onClick={() => handleDownload(name, false)}
                 />
                 <Button
                   variant="button"
                   fa={{ icon: "fa-trash", fixedWidth: true }}
-                  balloon={{ text: "delete" }}
+                  balloon={{ text: "o'chirish" }}
                   onClick={() => handleDelete(name, false)}
                 />
               </div>
@@ -168,14 +168,14 @@ export function SavedTextsModal(props: {
                   />
                   <Button
                     variant="button"
-                    balloon={{ text: "download" }}
+                    balloon={{ text: "yuklab olish" }}
                     fa={{ icon: "fa-file-download", fixedWidth: true }}
                     onClick={() => handleDownload(name(), true)}
                   />
                   <Button
                     variant="button"
                     fa={{ icon: "fa-trash", fixedWidth: true }}
-                    balloon={{ text: "delete" }}
+                    balloon={{ text: "o'chirish" }}
                     onClick={() => handleDelete(name(), true)}
                   />
                 </div>

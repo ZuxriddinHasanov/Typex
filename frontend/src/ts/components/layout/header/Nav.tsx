@@ -60,7 +60,7 @@ export function Nav(): JSXElement {
           setConfig("theme", (isDark ? "typeuz_light" : "typeuz") as ThemeName);
         }}
         class="ml-2 flex h-9 w-9 items-center justify-center rounded-full text-sub transition-all duration-300 hover:bg-sub-alt hover:text-text"
-        aria-label="Toggle theme"
+        aria-label="Mavzuni o'zgartirish"
       >
         <Fa
           icon={getConfig.theme === "typeuz" ? "fa-sun" : "fa-moon"}
@@ -92,7 +92,7 @@ export function Nav(): JSXElement {
           setConfig("language", nextLang);
         }}
         class="ml-2 flex h-9 items-center justify-center rounded-full px-3 text-xs font-bold text-sub uppercase transition-all duration-300 hover:bg-sub-alt hover:text-text"
-        aria-label="Toggle test language"
+        aria-label="Test tilini o'zgartirish"
       >
         {getConfig.language === "uzbek"
           ? "UZ"

@@ -97,7 +97,7 @@ function FilterSummary(props: {
 
     return (
       <span
-        aria-label={capitalizeFirstLetter(options.group)}
+        aria-label={{"wpm": "Tezlik", "acc": "Aniqlik", "rawWpm": "Sof tezlik", "consistency": "Barqarorlik"}[options.group as string] || capitalizeFirstLetter(options.group)}
         data-balloon-pos="up"
       >
         <Fa icon={options.icon} fixedWidth />

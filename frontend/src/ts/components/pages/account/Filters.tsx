@@ -63,9 +63,9 @@ export function Filters(props: {
                     fa={{ icon: "fa-trash", fixedWidth: true }}
                     onClick={() =>
                       showSimpleModal({
-                        title: "Delete Filter Preset",
-                        buttonText: "delete",
-                        text: `Are you sure you want to delete preset ${preset.name}?`,
+                        title: "Filtr shablonini o'chirish",
+                        buttonText: "o'chirish",
+                        text: `Haqiqatan ham quyidagi shablonni o'chirmoqchimisiz: ${preset.name}?`,
 
                         execFn: async () => {
                           try {

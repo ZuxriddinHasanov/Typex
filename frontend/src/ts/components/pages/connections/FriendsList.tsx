@@ -158,7 +158,7 @@ function getColumns({
             ? {}
             : {
                 "data-balloon-pos": "up",
-                "aria-label": `since ${dateFormat(value, "dd MMM yyy HH:mm")}`,
+                "aria-label": `shu vaqtdan boshlab: \$\{dateFormat(value, "dd MMM yyy HH:mm")}`,
               },
       },
     }),
@@ -172,7 +172,7 @@ function getColumns({
             ? {}
             : {
                 "data-balloon-pos": "up",
-                "aria-label": `total xp: ${formatXp(value)}`,
+                "aria-label": `umumiy xp: \$\{formatXp(value)}`,
               },
       },
     }),
@@ -205,7 +205,7 @@ function getColumns({
     }),
 
     defineColumn("streak.length", {
-      header: "streak",
+      header: "davomiylik",
       enableSorting: true,
       cell: ({ getValue }) => formatStreak(getValue()),
       meta: {
@@ -216,14 +216,14 @@ function getColumns({
             ? {}
             : {
                 "data-balloon-pos": "up",
-                "aria-label": formatStreak(value, "longest streak"),
+                "aria-label": formatStreak(value, "eng uzun davomiylik"),
               };
         },
       },
     }),
 
     defineColumn("top15.wpm", {
-      header: "time 15 pb",
+      header: "vaqt 15 rekord",
 
       enableSorting: true,
       cell: (info) => {
@@ -247,7 +247,7 @@ function getColumns({
       },
     }),
     defineColumn("top60.wpm", {
-      header: "time 60 pb",
+      header: "vaqt 60 rekord",
       enableSorting: true,
       cell: (info) => {
         const pb = formatPb(info.row.original.top60, { format });
@@ -278,7 +278,7 @@ function getColumns({
             onClick={() =>
               showSimpleModal({
                 title: `remove user ${info.row.original.name}?`,
-                buttonText: "remove friend",
+                buttonText: "do'stlikdan o'chirish",
                 execFn: async () => {
                   await rejectConnection({ id: info.getValue() as string });
                   return {
@@ -288,7 +288,7 @@ function getColumns({
                 },
               })
             }
-            balloon={{ text: "remove friend" }}
+            balloon={{ text: "do'stlikdan o'chirish" }}
             fa={{ icon: "fa-user-times", fixedWidth: true }}
           />
         ) : (
@@ -338,13 +338,13 @@ function formatPb(
   ];
 
   if (isSafeNumber(entry.acc)) {
-    details.push(`${result.acc} acc`);
+    details.push(`\$\{result.acc\} aniqlik`);
   }
   if (isSafeNumber(entry.raw)) {
-    details.push(`${result.raw} raw`);
+    details.push(`\$\{result.raw\} sof tezlik`);
   }
   if (isSafeNumber(entry.consistency)) {
-    details.push(`${result.con} con`);
+    details.push(`\$\{result.con\} barqarorlik`);
   }
   if (isSafeNumber(entry.timestamp)) {
     details.push(`${dateFormat(entry.timestamp, "dd MMM yyyy")}`);

@@ -61,7 +61,7 @@ function getColumns(): DataTableColumnDef<Connection>[] {
       cell: (info) => `${formatAge(info.getValue())} ago`,
       meta: {
         cellMeta: ({ value }) => ({
-          "aria-label": `since ${dateFormat(value, "dd MMM yyyy HH:mm")}`,
+          "aria-label": `shu vaqtdan boshlab: ${dateFormat(value, "dd MMM yyyy HH:mm")}`,
           "data-balloon-pos": "up",
         }),
         breakpoint: "md",
@@ -74,17 +74,17 @@ function getColumns(): DataTableColumnDef<Connection>[] {
         <div class="flex justify-end gap-2">
           <Button
             onClick={() => void acceptConnection({ id: info.getValue() })}
-            balloon={{ text: "accept" }}
+            balloon={{ text: "qabul qilish" }}
             fa={{ icon: "fa-check", fixedWidth: true }}
           />
           <Button
             onClick={() => void rejectConnection({ id: info.getValue() })}
-            balloon={{ text: "reject" }}
+            balloon={{ text: "rad etish" }}
             fa={{ icon: "fa-times", fixedWidth: true }}
           />
           <Button
             onClick={() => void blockConnection({ id: info.getValue() })}
-            balloon={{ text: "block" }}
+            balloon={{ text: "bloklash" }}
             fa={{ icon: "fa-shield-alt", fixedWidth: true }}
           />
         </div>

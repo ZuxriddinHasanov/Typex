@@ -145,7 +145,7 @@ const friendsRankColumn = () =>
     meta: {
       align: "center",
       headerMeta: {
-        "aria-label": "Friends rank",
+        "aria-label": "Do'stlar reytingi",
         "data-balloon-pos": "down",
       },
     },
@@ -159,7 +159,7 @@ const rankColumn = (friendsOnly: boolean) =>
     meta: {
       align: "center",
       headerMeta: {
-        "aria-label": "Global rank",
+        "aria-label": "Umumiy reyting",
         "data-balloon-pos": "down",
       },
     },

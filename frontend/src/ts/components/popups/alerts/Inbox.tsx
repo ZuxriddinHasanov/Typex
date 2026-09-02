@@ -141,7 +141,7 @@ function Entry(props: {
           <Button
             variant="text"
             fa={{ icon: "fa-gift", fixedWidth: true }}
-            balloon={{ text: "Claim", position: "left" }}
+            balloon={{ text: "Qabul qilish", position: "left" }}
             onClick={() => {
               props.mutate({ id: props.entry.id, status: "read" });
             }}
@@ -152,7 +152,7 @@ function Entry(props: {
           <Button
             variant="text"
             fa={{ icon: "fa-trash", fixedWidth: true }}
-            balloon={{ text: "Delete", position: "left" }}
+            balloon={{ text: "O'chirish", position: "left" }}
             onClick={() =>
               props.mutate({ id: props.entry.id, status: "deleted" })
             }

@@ -57,7 +57,7 @@ export function TestStats(props: {
                       <span
                         data-balloon-length="xlarge"
                         data-balloon-pos="up"
-                        aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
+                        aria-label="Ma'lumotlar bazasida natijalar soni ko'payganligi sababli, endi faqat oxirgi 1000 ta natijangizni batafsil ko'rishingiz mumkin. Yozishga sarflangan umumiy vaqt, boshlangan va tugallangan testlar statistikasi filtrlarning yuqorisida, sahifaning tepasida doimiy yangilanib turadi."
                         role="alertdialog"
                       >
                         <Fa icon="fa-question-circle" />

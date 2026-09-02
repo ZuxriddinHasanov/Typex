@@ -226,7 +226,7 @@ export function HistoryChart(props: {
                 display: true,
                 title: {
                   display: true,
-                  text: "Accuracy",
+                  text: "Aniqlik",
                 },
                 grid: {
                   display: false,
@@ -265,20 +265,20 @@ export function HistoryChart(props: {
 
                   beforeLabel: function (tooltipItem): string {
                     const result = props.results[tooltipItem.dataIndex];
-                    if (result === undefined) return "unknown";
+                    if (result === undefined) return "noma'lum";
 
                     if (tooltipItem.datasetIndex !== 0) {
-                      return `error rate: ${formatAccuracy(100 - result.acc)}\nacc: ${formatAccuracy(result.acc)}`;
+                      return `xatolar darajasi: ${formatAccuracy(100 - result.acc)}\naniqlik: ${formatAccuracy(result.acc)}`;
                     }
 
                     let label =
                       `${getConfig.typingSpeedUnit}: ${formatSpeed(result.wpm)}` +
                       "\n" +
-                      `raw: ${formatSpeed(result.rawWpm)}` +
+                      `sof tezlik: ${formatSpeed(result.rawWpm)}` +
                       "\n" +
                       `acc: ${formatAccuracy(result.acc)}` +
                       "\n\n" +
-                      `mode: ${result.mode} `;
+                      `rejim: ${result.mode} `;
 
                     if (result.mode === "time") {
                       label += result.mode2;
