@@ -19,6 +19,7 @@ export function TextareaField(props: {
     <div class="grid w-full">
       <textarea
         ref={props.ref}
+        aria-label={props.placeholder ?? (props.field().name as string)}
         class={cn(
           "col-start-1 row-start-1 w-full resize-y",
           "rounded border-none bg-sub-alt p-[0.5em] text-em-base leading-[1.25em] caret-main outline-none",

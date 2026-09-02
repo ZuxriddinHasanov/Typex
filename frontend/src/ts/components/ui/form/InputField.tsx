@@ -66,6 +66,7 @@ export function InputField(props: {
           props.class,
         )}
         type={props.type ?? "text"}
+        aria-label={props.placeholder ?? (props.field().name as string)}
         placeholder={props.placeholder ?? ""}
         autocomplete={props.autocomplete}
         name={props.field().name as string}
