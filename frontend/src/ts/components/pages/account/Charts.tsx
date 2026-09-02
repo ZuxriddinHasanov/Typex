@@ -88,7 +88,7 @@ function FilterSummary(props: {
   }): JSXElement => {
     const values = createMemo(() =>
       isAllSet(props.filters[options.group])
-        ? "all"
+        ? "barchasi"
         : Object.entries(props.filters[options.group])
             .filter(([_, v]) => v)
             .map(([it]) => options.format?.(it as K) ?? it)
@@ -97,7 +97,7 @@ function FilterSummary(props: {
 
     return (
       <span
-        aria-label={{"wpm": "Tezlik", "acc": "Aniqlik", "rawWpm": "Sof tezlik", "consistency": "Barqarorlik"}[options.group as string] || capitalizeFirstLetter(options.group)}
+        aria-label={{"wpm": "Tezlik", "acc": "Aniqlik", "rawWpm": "Sof tezlik", "consistency": "Barqarorlik", "date": "sana", "mode": "rejim", "time": "vaqt", "words": "so'zlar", "difficulty": "qiyinchilik", "punctuation": "tinish belgilari", "numbers": "raqamlar", "language": "til", "funbox": "maxsus rejimlar", "tags": "teglar"}[options.group as string] || capitalizeFirstLetter(options.group)}
         data-balloon-pos="up"
       >
         <Fa icon={options.icon} fixedWidth />

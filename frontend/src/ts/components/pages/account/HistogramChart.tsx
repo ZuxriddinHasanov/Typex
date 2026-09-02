@@ -65,7 +65,8 @@ export function HistogramChart(props: {
             },
           },
           plugins: {
-            annotation: {
+legend: { display: false },
+annotation: {
               annotations: [],
             },
             tooltip: {

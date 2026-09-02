@@ -236,7 +236,8 @@ export function HistoryChart(props: {
             },
 
             plugins: {
-              annotation: {
+legend: { display: false },
+annotation: {
                 annotations: [],
               },
               tooltip: {
@@ -322,13 +323,13 @@ export function HistoryChart(props: {
         <div class="grid grid-cols-4 gap-2 text-em-xs max-[475px]:grid-cols-2">
           <Button
             fa={{ icon: "fa-tachometer-alt", fixedWidth: true }}
-            text="Speed"
+            text="Tezlik"
             onClick={toggleAccountChart(0)}
             active={getConfig.accountChart[0] === "on"}
           />
           <Button
             fa={{ icon: "fa-bullseye", fixedWidth: true }}
-            text="Accuracy"
+            text="Aniqlik"
             onClick={toggleAccountChart(1)}
             active={getConfig.accountChart[1] === "on"}
           />

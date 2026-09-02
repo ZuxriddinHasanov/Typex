@@ -129,7 +129,8 @@ export function DailyActivityChart(props: {
                 },
               },
               plugins: {
-                annotation: {
+legend: { display: false },
+annotation: {
                   annotations: [],
                 },
                 tooltip: {

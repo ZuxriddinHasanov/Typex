@@ -302,6 +302,9 @@ export function Filters(props: {
           format={(val) => {
             if (val === "all") return "barcha vaqt";
             if (val === "last_3months") return "so'nggi 3 oy";
+            if (val === "last_day") return "oxirgi kun";
+            if (val === "last_week") return "oxirgi hafta";
+            if (val === "last_month") return "oxirgi oy";
             return replaceUnderscoresWithSpaces(val);
           }}
         />
