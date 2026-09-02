@@ -14,7 +14,7 @@ import { cn } from "../../../utils/cn";
 import AsyncContent from "../../common/AsyncContent";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { H3 } from "../../common/Headers";
+import { H2 } from "../../common/Headers";
 import { LoadingCircle } from "../../common/LoadingCircle";
 import { AlertsSection } from "./AlertsSection";
 
@@ -35,7 +35,7 @@ export function Inbox(): JSXElement {
     <AlertsSection
       title={
         <>
-          <H3 fa={{ icon: "fa-inbox" }} text="Kiruvchi xabarlar" />
+          <H2 fa={{ icon: "fa-inbox" }} text="Kiruvchi xabarlar" />
           <InboxCounter
             size={inboxSize()}
             maxSize={maxMailboxSize()}

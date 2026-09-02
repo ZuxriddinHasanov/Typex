@@ -183,8 +183,8 @@ function WeeklyAnalysis(): JSXElement {
             {(data) => (
               <div class="flex flex-col gap-6 text-left">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-xl font-bold tracking-tight text-text">
-                    Haftalik AI Tahlil <span class="ml-2 text-sm font-normal text-sub">(kuniga 3 marta)</span>`n                    </h3>
+                  <h2 class="text-xl font-bold tracking-tight text-text">
+                    Haftalik AI Tahlil <span class="ml-2 text-sm font-normal text-sub">(kuniga 3 marta)</span>`n                    </h2>
                   <span class="rounded-full bg-main/10 px-3 py-1 text-xs font-bold text-main">
                     AI Beta
                   </span>
@@ -209,9 +209,9 @@ function WeeklyAnalysis(): JSXElement {
                 </div>
                 <Show when={data().recommendation}>
                   <div class="rounded-xl border border-main/20 bg-main/5 p-5">
-                    <h4 class="mb-2 flex items-center gap-2 text-sm font-bold text-main">
+                    <h3 class="mb-2 flex items-center gap-2 text-sm font-bold text-main">
                       <Fa icon="fa-bolt" /> AI Maslahati
-                    </h4>
+                    </h3>
                     <div class="text-sm leading-relaxed text-text/90"><TypewriterText text={data().recommendation} speed={10} /></div>
                   </div>
                 </Show>
@@ -464,9 +464,9 @@ function LastTestCard(props: {
             <Fa icon="fa-chart-line" class="text-lg" />
           </div>
           <div>
-            <h3 class="text-base font-bold text-text">
+            <h2 class="text-base font-bold text-text">
               So&apos;nggi test natijasi
-            </h3>
+            </h2>
             <span class="text-xs text-sub">
               {lr().timestamp
                 ? formatDate(lr().timestamp, "dd MMM yyyy, HH:mm", { locale: uz })

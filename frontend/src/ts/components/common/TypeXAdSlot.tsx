@@ -54,7 +54,7 @@ export function TypeXAdSlot(props: {
         >
           <img
             src={s().imageUrl}
-            alt=""
+            alt="Ad" width="300" height="250"
             class="h-full w-full object-contain"
             loading="lazy"
             onLoad={() => {

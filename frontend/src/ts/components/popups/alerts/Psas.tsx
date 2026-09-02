@@ -2,7 +2,7 @@ import { For, JSXElement, Show } from "solid-js";
 
 import { AlertPsa, getPsas } from "../../../states/psas";
 import { cn } from "../../../utils/cn";
-import { H3 } from "../../common/Headers";
+import { H2 } from "../../common/Headers";
 import { AlertsSection } from "./AlertsSection";
 
 function levelClass(level: number): string {
@@ -14,7 +14,7 @@ function levelClass(level: number): string {
 export function Psas(): JSXElement {
   return (
     <AlertsSection
-      title={<H3 fa={{ icon: "fa-bullhorn" }} text="Announcements" />}
+      title={<H2 fa={{ icon: "fa-bullhorn" }} text="Announcements" />}
       body={
         <Show
           when={getPsas().length > 0}

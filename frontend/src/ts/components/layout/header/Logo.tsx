@@ -21,7 +21,7 @@ export function Logo(): JSXElement {
     >
       <img
         src={isDark() ? "/images/logo2.png" : "/images/logo.png"}
-        alt="TypeX Logo"
+        alt="TypeX Logo" width="400" height="105"
         class="h-[90px] w-auto object-contain sm:h-[105px]"
       />
     </a>

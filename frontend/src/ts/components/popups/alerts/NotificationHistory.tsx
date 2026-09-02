@@ -7,7 +7,7 @@ import {
 } from "../../../states/notifications";
 import { cn } from "../../../utils/cn";
 import { Button } from "../../common/Button";
-import { H3 } from "../../common/Headers";
+import { H2 } from "../../common/Headers";
 import { AlertsSection } from "./AlertsSection";
 
 function levelClass(level: NotificationLevel): string {
@@ -41,7 +41,7 @@ export function NotificationHistory(): JSXElement {
 
   return (
     <AlertsSection
-      title={<H3 fa={{ icon: "fa-comment-alt" }} text="Bildirishnomalar" />}
+      title={<H2 fa={{ icon: "fa-comment-alt" }} text="Bildirishnomalar" />}
       body={
         <Show
           when={getNotificationHistory().length > 0}

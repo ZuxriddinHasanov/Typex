@@ -7,7 +7,7 @@ import { AnimatedModal } from "../common/AnimatedModal";
 import { AnimeSwitch } from "../common/anime";
 import { AnimeMatch } from "../common/anime/AnimeMatch";
 import { Button } from "../common/Button";
-import { H3 } from "../common/Headers";
+import { H2 } from "../common/Headers";
 
 export function CookiesModal(): JSXElement {
   const [showSettings, setShowSettings] = createSignal(false);
@@ -41,7 +41,7 @@ export function CookiesModal(): JSXElement {
       closeOnEscape={false}
       closeOnWrapperClick={false}
     >
-      <H3
+      <H2
         text="Aytgancha, biz cookie fayllaridan foydalanamiz"
         fa={{ icon: "fa-cookie-bite" }}
         class="mb-0 pb-0 text-2xl"
