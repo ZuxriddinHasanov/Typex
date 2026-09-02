@@ -735,7 +735,7 @@
 }
 
 #result {
-  &:focus-visible {
+  &:focus-within, &:focus-visible {
     outline: none;
   }
 
@@ -1476,7 +1476,7 @@ main.focus .pageTest {
   #typingTest {
     transform: translateY(-1.5rem);
   }
-  #restartTestButton {
+  #testButtonsWrapper, #restartTestButton {
     opacity: 0 !important;
     &:focus-visible {
       opacity: 1 !important;

@@ -1650,9 +1650,9 @@ function updateLiveStatsColor(value: TimerColor): void {
 
 function showHideTestRestartButton(showHide: boolean): void {
   if (showHide) {
-    qs(".pageTest #restartTestButton")?.show();
+    qs(".pageTest #testButtonsWrapper")?.show();
   } else {
-    qs(".pageTest #restartTestButton")?.hide();
+    qs(".pageTest #testButtonsWrapper")?.hide();
   }
 }
 

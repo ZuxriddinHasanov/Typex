@@ -442,10 +442,7 @@ async function showCommands(): Promise<void> {
     throw new Error("Commandline element not found");
   }
 
-  if (inputValue === "" && usingSingleList) {
-    hideCommands();
-    return;
-  }
+  /* if (inputValue === "" && usingSingleList) { hideCommands(); return; } */
 
   const subgroup = await getSubgroup();
 

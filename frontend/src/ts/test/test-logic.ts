@@ -1300,6 +1300,12 @@ qs(".pageTest")?.onChild("click", "#testInitFailed button.restart", () => {
   restart();
 });
 
+qs(".pageTest")?.onChild("click", "#settingsTestButton", () => {
+  import("../states/modals").then((m) => {
+    m.showModal("Commandline");
+  });
+});
+
 qs(".pageTest")?.onChild("click", "#restartTestButton", () => {
   if (TestState.resultCalculating) return;
   if (
