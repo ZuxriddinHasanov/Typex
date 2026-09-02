@@ -56,12 +56,12 @@ function StatsOverview(props: { profile: UserProfileType }): JSXElement {
           Vaqt
         </span>
         <span class="mt-1 text-3xl font-black tracking-tight text-text">
-          {totalTimeHours()}h
+          {totalTimeHours()} soat
         </span>
       </div>
       <div class="flex flex-col items-start gap-1 rounded-md border-2 border-sub-alt/50 bg-bg p-6 shadow-sm transition-colors hover:border-sub-alt">
         <span class="text-xs font-bold tracking-wider text-sub uppercase">
-          XP
+          Tajriba (XP)
         </span>
         <span class="mt-1 text-3xl font-black tracking-tight text-text">
           {props.profile.xp ?? 0}
@@ -69,7 +69,7 @@ function StatsOverview(props: { profile: UserProfileType }): JSXElement {
       </div>
       <div class="flex flex-col items-start gap-1 rounded-md border-2 border-sub-alt/50 bg-bg p-6 shadow-sm transition-colors hover:border-sub-alt">
         <span class="text-xs font-bold tracking-wider text-sub uppercase">
-          Streak
+          Davomiylik
         </span>
         <span class="mt-1 text-3xl font-black tracking-tight text-text">
           {props.profile.streak ?? 0}
