@@ -248,7 +248,7 @@ export function DataTable<TData extends Object, TValue = any>(
                             columnVisibility()[header.column.id],
                           )}
                         >
-                          <button
+                          <button aria-label="Button"
                             type="button"
                             role="button"
                             onClick={(e) => {

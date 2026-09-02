@@ -25,7 +25,7 @@ export function Slider(props: Props): JSXElement {
   return (
     <div class="grid grid-cols-[3ch_1fr] items-center gap-4">
       <div>{textToDisplay()}</div>
-      <input
+      <input aria-label="Input field"
         ref={props.ref}
         type="range"
         min={props.min}

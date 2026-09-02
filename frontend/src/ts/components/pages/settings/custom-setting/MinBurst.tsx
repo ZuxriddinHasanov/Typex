@@ -71,7 +71,7 @@ export function MinBurst(): JSXElement {
               )}
             />
           </form>
-          {/* <input class="w-full" value={inputValue()} /> */}
+          {/* <input aria-label="Input field" class="w-full" value={inputValue()} /> */}
           <div class="grid grid-cols-3 gap-2">
             <Button
               active={getConfig.minBurst === "off"}

@@ -40,7 +40,7 @@ export function AdminAIPage(): JSXElement {
           Ushbu bo'lim orqali foydalanuvchilarning so'nggi 7 kunlik yozuv
           tezligi tahlilini ko'rish mumkin.
         </p>
-        <button
+        <button aria-label="Button"
           type="button"
           onClick={run}
           disabled={loading()}

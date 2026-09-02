@@ -125,7 +125,7 @@ function WeeklyAnalysis(): JSXElement {
   return (
     <div class="relative overflow-hidden rounded-md border-2 border-sub-alt/50 bg-bg p-8 text-center shadow-sm">
       <Show when={!trigger()}>
-        <button
+        <button aria-label="Button"
           type="button"
           disabled={attempts() <= 0}
           class={cn(
@@ -474,7 +474,7 @@ function LastTestCard(props: {
             </span>
           </div>
         </div>
-        <button
+        <button aria-label="Button"
           type="button"
           onClick={() => setExpanded(!expanded())}
           class="flex items-center gap-2 rounded-xl bg-sub-alt/60 px-4 py-2 text-xs font-bold text-text transition-colors hover:bg-main hover:text-bg"

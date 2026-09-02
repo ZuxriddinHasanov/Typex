@@ -91,7 +91,7 @@ export function AdminLayout(props: {
           </For>
         </nav>
         <div class="border-t border-sub/10 p-6">
-          <button
+          <button aria-label="Button"
             type="button"
             onClick={() => {
               signOut();

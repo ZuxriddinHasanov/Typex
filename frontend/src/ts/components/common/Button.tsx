@@ -87,7 +87,7 @@ export function Button(props: ButtonProps | AnchorProps): JSXElement {
     <Show
       when={isAnchor()}
       fallback={
-        <button
+        <button aria-label="Button"
           // oxlint-disable-next-line button-has-type
           type={(props as ButtonProps).type ?? "button"}
           class={getClasses()}

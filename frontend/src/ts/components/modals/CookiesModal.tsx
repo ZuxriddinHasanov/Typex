@@ -73,7 +73,7 @@ export function CookiesModal(): JSXElement {
               <label class="mb-1 block text-sm font-medium text-text">
                 Leaderboard uchun ism (Ixtiyoriy)
               </label>
-              <input
+              <input aria-label="Input field"
                 type="text"
                 value={guestName()}
                 onInput={(e) => setGuestName(e.currentTarget.value)}
@@ -196,7 +196,7 @@ function SettingsSection(props: {
         <div class="text-sub">{props.title}</div>
         <div class="text-text">{props.description}</div>
       </div>
-      <input
+      <input aria-label="Input field"
         type="checkbox"
         class="text-2xl"
         checked={props.checked}

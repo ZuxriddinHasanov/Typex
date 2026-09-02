@@ -170,7 +170,7 @@ export function AdminUserDetailPage(props: { uid: string }): JSXElement {
                       }
                     }}
                   >
-                    <input
+                    <input aria-label="Input field"
                       name="newPassword"
                       type="password"
                       placeholder="Yangi parol..."

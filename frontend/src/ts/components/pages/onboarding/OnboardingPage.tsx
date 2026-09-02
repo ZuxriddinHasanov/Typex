@@ -146,7 +146,7 @@ export function OnboardingPage(): JSXElement {
               <Fa icon="fa-tachometer-alt" />
             </div>
             <div>
-              <h3 class="font-semibold text-text">Tezlikni o&apos;lchash</h3>
+              <h2 class="font-semibold text-text">Tezlikni o&apos;lchash</h2>
               <p class="mt-1 text-sm text-sub">
                 WPM, aniqlik, vaqt va boshqa ko&apos;rsatkichlarni real vaqtda
                 kuzating
@@ -158,7 +158,7 @@ export function OnboardingPage(): JSXElement {
               <Fa icon="fa-chart-line" />
             </div>
             <div>
-              <h3 class="font-semibold text-text">Statistika va reyting</h3>
+              <h2 class="font-semibold text-text">Statistika va reyting</h2>
               <p class="mt-1 text-sm text-sub">
                 Barcha natijalaringiz profilingizda saqlanadi va reytingda
                 o&apos;rningizni ko&apos;rasiz
@@ -170,7 +170,7 @@ export function OnboardingPage(): JSXElement {
               <Fa icon="fa-language" />
             </div>
             <div>
-              <h3 class="font-semibold text-text">3 tilda test</h3>
+              <h2 class="font-semibold text-text">3 tilda test</h2>
               <p class="mt-1 text-sm text-sub">
                 O&apos;zbek, ingliz va rus tillarida yozuv tezligi testini
                 topshirishingiz mumkin
@@ -253,7 +253,7 @@ export function OnboardingPage(): JSXElement {
                 <div class="grid grid-cols-6 gap-1.5">
                   <For each={AVATARS}>
                     {(icon) => (
-                      <button
+                      <button aria-label="Button"
                         type="button"
                         onClick={() =>
                           setSelectedAvatar(
@@ -279,7 +279,7 @@ export function OnboardingPage(): JSXElement {
                   text={saving() ? "Saqlanmoqda..." : "Saqlash va davom etish"}
                   disabled={saving()}
                 />
-                <button
+                <button aria-label="Button"
                   type="button"
                   onClick={() => {
                     localStorage.setItem("typeuz_onboarding_done", "true");
@@ -295,7 +295,7 @@ export function OnboardingPage(): JSXElement {
           </div>
         </Show>
 
-        <button
+        <button aria-label="Button"
           type="button"
           onClick={() => {
             localStorage.setItem("typeuz_onboarding_done", "true");

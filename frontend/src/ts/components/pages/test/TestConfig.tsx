@@ -54,7 +54,7 @@ export function TestConfig(): JSXElement {
         <div class="flex items-center gap-1">
           <For each={modes}>
             {(mode) => (
-              <button
+              <button aria-label="Button"
                 type="button"
                 class={cn(
                   "rounded-xl px-5 py-2 text-sm font-semibold transition-all duration-200",
@@ -82,7 +82,7 @@ export function TestConfig(): JSXElement {
           <div class="flex items-center gap-1">
             <For each={getConfig.mode === "time" ? times : words}>
               {(val) => (
-                <button
+                <button aria-label="Button"
                   type="button"
                   class={cn(
                     "min-w-[3rem] rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
@@ -108,7 +108,7 @@ export function TestConfig(): JSXElement {
               )}
             </For>
 
-            <button
+            <button aria-label="Button"
               type="button"
               class={cn(
                 "flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
@@ -164,7 +164,7 @@ export function TestConfig(): JSXElement {
         <div class="flex gap-1">
           <For each={contentTypes}>
             {(ct) => (
-              <button
+              <button aria-label="Button"
                 type="button"
                 class={cn(
                   "rounded-lg px-4 py-1.5 text-xs font-semibold transition-all duration-200",

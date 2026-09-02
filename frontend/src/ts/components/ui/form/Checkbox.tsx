@@ -21,7 +21,7 @@ export function Checkbox(props: {
           props.class,
         )}
       >
-        <input
+        <input aria-label="Input field"
           id={props.field().name as string}
           name={props.field().name as string}
           onBlur={() => props.field().handleBlur()}

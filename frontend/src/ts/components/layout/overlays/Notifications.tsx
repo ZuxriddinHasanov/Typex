@@ -127,7 +127,7 @@ export function Notifications(): JSXElement {
       style={{ "margin-top": `${getGlobalOffsetTop()}px` }}
     >
       <AnimeShow when={stickyCount() > 1}>
-        <button
+        <button aria-label="Button"
           type="button"
           class="text-white mb-4 w-full overflow-hidden text-xs"
           onClick={() => clearAllNotifications()}

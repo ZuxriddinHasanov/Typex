@@ -160,7 +160,7 @@ export function AdminAdsPage(): JSXElement {
             <creativeForm.Field name="imageUrl">
               {(f) => (
                 <div class="flex flex-col gap-2">
-                  <input
+                  <input aria-label="Input field"
                     type="file"
                     accept="image/*,image/gif"
                     onChange={(e) => {
@@ -189,7 +189,7 @@ export function AdminAdsPage(): JSXElement {
             </creativeForm.Field>
             <creativeForm.Field name="targetUrl">
               {(f) => (
-                <input
+                <input aria-label="Input field"
                   value={f().state.value}
                   onInput={(e) => f().handleChange(e.currentTarget.value)}
                   placeholder="Havola URL (https://...)"

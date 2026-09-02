@@ -119,7 +119,7 @@ export function GlobalFeedbackModal() {
             <label class="cursor-pointer flex items-center justify-center gap-2 rounded-md bg-sub-alt/30 hover:bg-sub-alt/60 px-4 py-2 transition-all">
               <Fa icon="fa-image" class="text-sub" />
               <span class="text-sm font-semibold text-text">Rasm tanlash</span>
-              <input
+              <input aria-label="Input field"
                 type="file"
                 accept="image/*"
                 class="hidden"

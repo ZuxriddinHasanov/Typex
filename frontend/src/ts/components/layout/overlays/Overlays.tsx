@@ -14,7 +14,7 @@ export function Overlays(): JSXElement {
   return (
     <>
       <ScrollToTop />
-      <button
+      <button aria-label="Button"
         type="button"
         id="commandLineMobileButton"
         class={cn(

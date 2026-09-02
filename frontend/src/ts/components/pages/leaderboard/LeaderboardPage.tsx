@@ -153,7 +153,7 @@ export function LeaderboardPage(): JSXElement {
             <div class="flex flex-wrap items-center gap-2 rounded-2xl bg-sub-alt/30 p-1.5 shadow-inner backdrop-blur-sm self-start">
               <For each={LbTABS}>
                 {(tab) => (
-                  <button
+                  <button aria-label="Button"
                     type="button"
                     onClick={() => {
                       setActiveTab(tab.id);
@@ -191,7 +191,7 @@ export function LeaderboardPage(): JSXElement {
               <div class="flex flex-wrap items-center gap-2 rounded-2xl bg-sub-alt/30 p-1.5 shadow-inner backdrop-blur-sm self-start">
               <For each={PERIODS}>
                 {(period) => (
-                  <button
+                  <button aria-label="Button"
                     type="button"
                     onClick={() => {
                       setActivePeriod(period.id);
@@ -216,7 +216,7 @@ export function LeaderboardPage(): JSXElement {
                 <div class="flex flex-wrap items-center gap-1 sm:gap-2 rounded-2xl bg-sub-alt/10 p-1.5 shadow-sm">
                   <For each={durationOptions}>
                     {(d) => (
-                      <button
+                      <button aria-label="Button"
                         type="button"
                         onClick={() => {
                           setSelection({
@@ -244,7 +244,7 @@ export function LeaderboardPage(): JSXElement {
                 <div class="flex flex-wrap items-center gap-1 sm:gap-2 rounded-2xl bg-sub-alt/10 p-1.5 shadow-sm">
                   <For each={wordCountOptions}>
                     {(w) => (
-                      <button
+                      <button aria-label="Button"
                         type="button"
                         onClick={() => {
                           setSelection({
@@ -630,7 +630,7 @@ export function LeaderboardPage(): JSXElement {
         </AsyncContent>
 
         <div class="flex items-center justify-center gap-4">
-          <button
+          <button aria-label="Button"
             onClick={() => goToPage(-1)}
             type="button"
             disabled={page() === 0 || lbQuery.isFetching}
@@ -639,7 +639,7 @@ export function LeaderboardPage(): JSXElement {
             Oldingi
           </button>
           <span class="text-sm text-sub">{page() + 1}-sahifa</span>
-          <button
+          <button aria-label="Button"
             type="button"
             onClick={() => goToPage(1)}
             disabled={

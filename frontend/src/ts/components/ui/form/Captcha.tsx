@@ -89,7 +89,7 @@ export function Captcha(props: {
     fallback.className = "flex flex-col items-center gap-2 p-4 text-center";
     fallback.innerHTML = `
       <span class="text-sm text-sub">Captcha yuklanmadi.</span>
-      <button type="button" class="rounded-lg bg-main px-4 py-2 text-sm font-medium text-bg">Qayta urinish</button>
+      <button aria-label="Button" type="button" class="rounded-lg bg-main px-4 py-2 text-sm font-medium text-bg">Qayta urinish</button>
     `;
     container.appendChild(fallback);
     fallback.querySelector("button")?.addEventListener("click", () => {

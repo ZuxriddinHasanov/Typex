@@ -71,7 +71,7 @@ export function MinAcc(): JSXElement {
               )}
             />
           </form>
-          {/* <input class="w-full" value={inputValue()} /> */}
+          {/* <input aria-label="Input field" class="w-full" value={inputValue()} /> */}
           <div class="grid grid-cols-2 gap-2">
             <Button
               active={getConfig.minAcc === "off"}

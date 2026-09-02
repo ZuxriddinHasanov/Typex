@@ -39,7 +39,7 @@ export function VersionButton(): JSXElement {
     getVersion().isNew && indicatorVisible();
 
   return (
-    <button type="button" class="textButton flex" onClick={handleClick}>
+    <button aria-label="Button" type="button" class="textButton flex" onClick={handleClick}>
       <Fa icon="fa-code-branch" fixedWidth />
       <div class="text">{getVersionText()}</div>
       <Show when={showNewIndicator()}>

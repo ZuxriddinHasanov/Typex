@@ -18,7 +18,7 @@ export function SettingsSearch(): JSXElement {
         icon="fa-search"
         class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-sub"
       />
-      <input
+      <input aria-label="Input field"
         class={cn(
           "w-full rounded border-none bg-sub-alt py-3 pr-10 pl-10",
           "text-em-base text-text caret-main outline-none placeholder:text-sub",

@@ -536,7 +536,7 @@ export function CustomTextModal(): JSXElement {
               <div class={cn("flex w-full items-center gap-4")}>
                 <form.Field name="limitWord">
                   {(field) => (
-                    <input
+                    <input aria-label="Input field"
                       type="number"
                       class={cn("w-full", !showWordLimit() && "hidden")}
                       min="0"
@@ -553,7 +553,7 @@ export function CustomTextModal(): JSXElement {
                 </form.Field>
                 <form.Field name="limitSection">
                   {(field) => (
-                    <input
+                    <input aria-label="Input field"
                       type="number"
                       class={cn("w-full", !showSectionLimit() && "hidden")}
                       min="0"
@@ -571,7 +571,7 @@ export function CustomTextModal(): JSXElement {
                 <span class="text-sub">or</span>
                 <form.Field name="limitTime">
                   {(field) => (
-                    <input
+                    <input aria-label="Input field"
                       type="number"
                       class="w-full"
                       min="0"
@@ -614,7 +614,7 @@ export function CustomTextModal(): JSXElement {
             </SettingsGroup>
             <Separator />
             <div class="grid gap-2">
-              <input
+              <input aria-label="Input field"
                 ref={fileInputRef}
                 type="file"
                 class="hidden"

@@ -569,7 +569,7 @@ function Picker(props: { color: ColorName }): JSXElement {
       }}
     >
       <div>{text()}</div>
-      <input
+      <input aria-label="Input field"
         class="w-full"
         type="text"
         value={getTheme()[props.color]}
@@ -584,7 +584,7 @@ function Picker(props: { color: ColorName }): JSXElement {
         }}
       />
       <div class="grid">
-        <input
+        <input aria-label="Input field"
           ref={(el) => (colorInputRef = el)}
           type="color"
           value={getTheme()[props.color]}

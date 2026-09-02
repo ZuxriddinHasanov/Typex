@@ -17,7 +17,7 @@ function Input(props: {
   class?: string;
 }): JSXElement {
   return (
-    <input
+    <input aria-label="Input field"
       value={props.value}
       onInput={(e) => props.onInput(e.currentTarget.value)}
       placeholder={props.placeholder}

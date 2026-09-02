@@ -87,7 +87,7 @@ export function AdminNotificationsPage(): JSXElement {
             >
               <form.Field name="uid">
                 {(f) => (
-                  <input
+                  <input aria-label="Input field"
                     value={f().state.value}
                     onInput={(e) => f().handleChange(e.currentTarget.value)}
                     placeholder="Foydalanuvchi UID"
@@ -98,7 +98,7 @@ export function AdminNotificationsPage(): JSXElement {
             </Show>
             <form.Field name="subject">
               {(f) => (
-                <input
+                <input aria-label="Input field"
                   value={f().state.value}
                   onInput={(e) => f().handleChange(e.currentTarget.value)}
                   placeholder="Mavzu"

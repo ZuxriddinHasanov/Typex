@@ -47,9 +47,9 @@ export function Footer(): JSXElement {
               </div>
 
               <div class="flex flex-col gap-4">
-                <h4 class="text-sm font-bold tracking-widest text-text uppercase">
+                <h2 class="text-sm font-bold tracking-widest text-text uppercase">
                   Platforma
-                </h4>
+                </h2>
                 <div class="flex flex-col gap-3">
                   <a
                     href="/test"
@@ -85,9 +85,9 @@ export function Footer(): JSXElement {
               </div>
 
               <div class="flex flex-col gap-4">
-                <h4 class="text-sm font-bold tracking-widest text-text uppercase">
+                <h2 class="text-sm font-bold tracking-widest text-text uppercase">
                   Huquqiy
-                </h4>
+                </h2>
                 <div class="flex flex-col gap-3">
                   <a
                     href="/privacy-policy"
@@ -123,9 +123,9 @@ export function Footer(): JSXElement {
               </div>
 
               <div class="flex flex-col gap-4">
-                <h4 class="text-sm font-bold tracking-widest text-text uppercase">
+                <h2 class="text-sm font-bold tracking-widest text-text uppercase">
                   Ijtimoiy tarmoqlar
-                </h4>
+                </h2>
                 <div class="flex flex-col gap-3">
                   <a
                     href="https://t.me/typex_uz"

@@ -90,7 +90,7 @@ export function AdminUsersPage(): JSXElement {
                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sub transition-colors group-focus-within:text-main">
                   <Fa icon="fa-search" class="text-sm" />
                 </div>
-                <input
+                <input aria-label="Input field"
                   value={searchQ()}
                   onInput={(e) => {
                     setSearchQ(e.currentTarget.value);
@@ -395,7 +395,7 @@ export function AdminUsersPage(): JSXElement {
                 >
                   <banForm.Field name="uid">
                     {(field) => (
-                      <input
+                      <input aria-label="Input field"
                         name={field().name}
                         value={field().state.value}
                         onInput={(e) =>

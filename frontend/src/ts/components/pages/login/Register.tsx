@@ -139,7 +139,7 @@ export function Register(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-4 sm:w-96">
-      <H1 text="ro'yxatdan o'tish" fa={{ icon: "fa-user-plus" }} class="p-0" />
+      <H1 text="ro'yxatdan o'tish" fa={{ icon: "fa-user-plus" }} class="p-0 text-[1em] font-normal text-sub" />
       <form
         onSubmit={(e) => {
           e.preventDefault();

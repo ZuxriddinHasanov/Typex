@@ -103,7 +103,7 @@ export function AdminSettingsPage(): JSXElement {
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
           <h2 class="mb-4 text-sm font-bold text-text">Akkent rangi</h2>
           <div class="flex items-center gap-4">
-            <input
+            <input aria-label="Input field"
               type="color"
               value={accentColor()}
               onInput={(e) => setAccentColor(e.currentTarget.value)}
@@ -153,7 +153,7 @@ export function AdminSettingsPage(): JSXElement {
         <div class="rounded-2xl border border-sub/10 bg-bg/60 p-5">
           <h2 class="mb-4 text-sm font-bold text-text">Parolni o'zgartirish</h2>
           <form onSubmit={changePassword} class="flex flex-col gap-3">
-            <input
+            <input aria-label="Input field"
               name="currentPassword"
               type="password"
               placeholder="Joriy parol"
@@ -162,7 +162,7 @@ export function AdminSettingsPage(): JSXElement {
               minLength={1}
               class="w-full rounded-xl bg-sub-alt p-3 text-sm text-text ring-1 ring-sub/20 outline-none focus:ring-main"
             />
-            <input
+            <input aria-label="Input field"
               name="newPassword"
               type="password"
               placeholder="Yangi parol (8+ belgi)"
@@ -171,7 +171,7 @@ export function AdminSettingsPage(): JSXElement {
               minLength={8}
               class="w-full rounded-xl bg-sub-alt p-3 text-sm text-text ring-1 ring-sub/20 outline-none focus:ring-main"
             />
-            <input
+            <input aria-label="Input field"
               name="confirmPassword"
               type="password"
               placeholder="Yangi parolni takrorlang"

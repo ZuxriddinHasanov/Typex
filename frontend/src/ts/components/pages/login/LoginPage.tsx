@@ -52,7 +52,7 @@ export function LoginPage(): JSXElement {
                   <div class="rounded-2xl border border-sub/10 bg-bg/50 p-4">
                     <p class="mb-2 text-sm font-semibold text-sub">Dev Login</p>
                     <div class="flex gap-2">
-                      <input
+                      <input aria-label="Input field"
                         type="text"
                         placeholder="Username"
                         value={devLoginUsername()}

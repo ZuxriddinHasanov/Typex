@@ -29,7 +29,7 @@ export function NotificationsPage(): JSXElement {
           </a>
           <h1 class="text-3xl font-black tracking-tight text-text">Bildirishnomalar</h1>
           <Show when={hasUnreadInbox()}>
-            <button type="button" onClick={() => readAllInboxItems()} class="ml-auto flex items-center gap-2 rounded-full bg-main/10 px-4 py-2 text-sm font-bold text-main transition-colors hover:bg-main/20">
+            <button aria-label="Button" type="button" onClick={() => readAllInboxItems()} class="ml-auto flex items-center gap-2 rounded-full bg-main/10 px-4 py-2 text-sm font-bold text-main transition-colors hover:bg-main/20">
               <Fa icon="fa-check-double" /> Barchasini o`qilgan qilish
             </button>
           </Show>

@@ -69,7 +69,7 @@ export function Login(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-4 sm:w-96">
-      <H1 text="tizimga kirish" fa={{ icon: "fa-sign-in-alt" }} class="p-0" />
+      <H1 text="tizimga kirish" fa={{ icon: "fa-sign-in-alt" }} class="p-0 text-[1em] font-normal text-sub" />
       <div class="grid grid-cols-2 gap-4">
         <Button
           fa={{ icon: "fa-google", variant: "brand" }}

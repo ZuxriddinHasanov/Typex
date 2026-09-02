@@ -53,7 +53,7 @@ function Banner(props: BannerType): JSXElement {
         <Show
           when={props.important === true}
           fallback={
-            <button
+            <button aria-label="Button"
               type="button"
               class="text -mr-2 self-center text-bg hover:text-text"
               onClick={() => {
@@ -86,7 +86,7 @@ export function Banners(): JSXElement {
           customContent: (
             <>
               You need to update your account name.{" "}
-              <button
+              <button aria-label="Button"
                 type="button"
                 class="px-2 py-1"
                 onClick={() => showUpdateNameModal()}

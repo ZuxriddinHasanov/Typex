@@ -141,7 +141,7 @@ export function EditProfile() {
               <div class="flex flex-wrap gap-2 mt-2">
                 <For each={AVATARS}>
                   {(icon) => (
-                    <button
+                    <button aria-label="Button"
                       type="button"
                       class={cn(
                         "grid h-12 w-12 place-items-center rounded-xl text-xl transition-all",

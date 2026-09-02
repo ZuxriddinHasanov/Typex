@@ -138,7 +138,7 @@ function ActionButtons(props: {
         fallback={
           <>
             <Show when={!isUsersProfile()}>
-              <button
+              <button aria-label="Button"
                 type="button"
                 class="group flex items-center gap-2 rounded-md border border-sub-alt bg-sub-alt/30 px-4 py-2 text-sm font-medium text-sub shadow-none transition-colors hover:bg-sub-alt/60 hover:text-text"
                 onClick={() => {
@@ -166,7 +166,7 @@ function ActionButtons(props: {
           <span>Bildirishnomalar</span>
 <NotificationBubble show={hasUnreadInbox()} count={unreadInboxCount()} variant="fromCorner" />
 </a>
-        <button
+        <button aria-label="Button"
           type="button"
           onClick={() => {
             if (props.profile.banned === true) {
@@ -185,7 +185,7 @@ function ActionButtons(props: {
           />
           <span>Sozlamalar & Tahrirlash</span>
         </button>
-        <button
+        <button aria-label="Button"
           type="button"
           onClick={() =>
             showNoticeNotification("Sertifikatlar tez orada qo'shiladi!")
@@ -195,7 +195,7 @@ function ActionButtons(props: {
           <Fa icon="fa-certificate" class="text-main" />
           <span>Sertifikatlar</span>
         </button>
-        <button
+        <button aria-label="Button"
           type="button"
           onClick={async () => {
             const { signOut } = await import("../../../auth");
@@ -208,7 +208,7 @@ function ActionButtons(props: {
         </button>
       </Show>
 
-      <button
+      <button aria-label="Button"
         type="button"
         class="group flex items-center gap-2 rounded-md border-2 border-sub-alt/50 bg-transparent px-4 py-2.5 text-sm font-medium text-sub transition-colors hover:border-sub-alt hover:bg-sub-alt/20 hover:text-text"
         onClick={() => {

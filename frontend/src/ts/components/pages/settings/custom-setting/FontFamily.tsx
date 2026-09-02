@@ -73,7 +73,7 @@ export function FontFamily(): JSXElement {
             }
           >
             <>
-              <input
+              <input aria-label="Input field"
                 type="file"
                 id="customFontUploadSolid"
                 accept="font/woff,font/woff2,font/ttf,font/otf"

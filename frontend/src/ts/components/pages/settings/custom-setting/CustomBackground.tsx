@@ -91,7 +91,7 @@ export function CustomBackground(): JSXElement {
             }
           >
             <>
-              <input
+              <input aria-label="Input field"
                 type="file"
                 id="customBackgroundUploadSolid"
                 accept="image/*"
