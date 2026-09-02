@@ -20,7 +20,7 @@ import {
 } from "../../../states/notifications";
 import { Button } from "../../common/Button";
 import { Fa } from "../../common/Fa";
-import { H3 } from "../../common/Headers";
+import { H1 } from "../../common/Headers";
 import { Separator } from "../../common/Separator";
 import { Checkbox } from "../../ui/form/Checkbox";
 import { InputField } from "../../ui/form/InputField";
@@ -69,7 +69,7 @@ export function Login(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-4 sm:w-96">
-      <H3 text="tizimga kirish" fa={{ icon: "fa-sign-in-alt" }} class="p-0" />
+      <H1 text="tizimga kirish" fa={{ icon: "fa-sign-in-alt" }} class="p-0" />
       <div class="grid grid-cols-2 gap-4">
         <Button
           fa={{ icon: "fa-google", variant: "brand" }}

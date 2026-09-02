@@ -17,7 +17,7 @@ import {
   showNoticeNotification,
 } from "../../../states/notifications";
 import { remoteValidationForm } from "../../../utils/remote-validation";
-import { H3 } from "../../common/Headers";
+import { H1 } from "../../common/Headers";
 import { showRegisterCaptchaModal } from "../../modals/RegisterCaptchaModal";
 import { InputField } from "../../ui/form/InputField";
 import { SubmitButton } from "../../ui/form/SubmitButton";
@@ -139,7 +139,7 @@ export function Register(): JSXElement {
 
   return (
     <div class="grid w-full grid-cols-1 justify-center gap-4 sm:w-96">
-      <H3 text="ro'yxatdan o'tish" fa={{ icon: "fa-user-plus" }} class="p-0" />
+      <H1 text="ro'yxatdan o'tish" fa={{ icon: "fa-user-plus" }} class="p-0" />
       <form
         onSubmit={(e) => {
           e.preventDefault();

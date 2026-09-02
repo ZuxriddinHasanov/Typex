@@ -21,8 +21,7 @@ function u(path: string): string {
 
 export const seoConfig: Record<string, SeoConfig> = {
   landing: {
-    title:
-      "TypeX | O'zbek tilidagi yozuv tezligi testi — bepul onlayn typing test",
+    title: "TypeX — O'zbek tilidagi yozuv tezligi testi",
     description:
       "O'zbek tilidagi eng zamonaviy yozuv tezligi testi. WPM va aniqlikni o'lchang, reytingda yuksaling, do'stlaringiz bilan bellashing. Bepul, ro'yxatsiz sinab ko'ring! Klaviaturada tez yozishni o'rganing.",
     canonical: u("/"),
@@ -115,21 +114,21 @@ export const seoConfig: Record<string, SeoConfig> = {
   },
 
   test: {
-    title: "TypeX | Yozuv tezligi testi — WPM va aniqlikni o'lchang",
+    title: "TypeX — Yozuv tezligi testi (WPM)",
     description:
       "Bepul onlayn yozuv tezligi testi. O'zbek, ingliz va rus tillarida WPM (so'z/minut) va aniqlik foizini o'lchang. 15 soniyadan 30 daqiqagacha bo'lgan testlar. Klaviaturada tez yozishni sinab ko'ring.",
     canonical: u("/test"),
   },
 
   about: {
-    title: "TypeX | Loyiha haqida — O'zbek tilidagi typing test platformasi",
+    title: "TypeX — Loyiha haqida",
     description:
       "TypeX — O'zbekistonning eng zamonaviy yozuv tezligi testi platformasi. IT O'quv Markazi tomonidan yaratilgan. Bepul typing test, AI tahlil, reyting va statistika.",
     canonical: u("/about"),
   },
 
   leaderboards: {
-    title: "TypeX | Reyting — Eng tez yozuvchilar",
+    title: "TypeX — Reytinglar",
     description:
       "TypeX reyting jadvali. O'zbek, ingliz va rus tillarida eng tez yozuvchilar bilan bellashing. O'z WPM ko'rsatkichingizni butun O'zbekiston bo'ylab solishtiring.",
     canonical: u("/leaderboards"),
@@ -160,7 +159,7 @@ export const seoConfig: Record<string, SeoConfig> = {
   },
 
   login: {
-    title: "TypeX | Kirish — Ro'yxatdan o'tish",
+    title: "TypeX — Kirish",
     description:
       "TypeX ga kirish yoki ro'yxatdan o'tish. Natijalaringizni saqlang, reytingda qatnashing va shaxsiy profilingizni boshqaring.",
     canonical: u("/login"),
@@ -175,7 +174,7 @@ export const seoConfig: Record<string, SeoConfig> = {
   },
 
   adminLogin: {
-    title: "TypeX | Admin panel — Kirish",
+    title: "TypeX — Admin Panel",
     description: "Admin panelga kirish.",
     canonical: u("/TypeX-hq"),
     robots: "noindex, nofollow",
@@ -189,7 +188,7 @@ export const seoConfig: Record<string, SeoConfig> = {
   },
 
   onboarding: {
-    title: "TypeX | Kirish — Sozlamalar",
+    title: "TypeX — Sozlamalar",
     description: "TypeX platformasiga xush kelibsiz! Profilingizni sozlang.",
     canonical: u("/onboarding"),
     robots: "noindex, follow",

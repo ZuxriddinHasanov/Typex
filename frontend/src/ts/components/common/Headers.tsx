@@ -45,3 +45,26 @@ export function H3(props: {
     </h3>
   );
 }
+
+// oxlint-disable-next-line typeuz-rules/one-component-per-file
+export function H1(props: {
+  id?: string;
+  class?: string;
+  text: string;
+  fa?: FaProps;
+}): JSXElement {
+  return (
+    <h1
+      id={props.id}
+      class={cn(
+        "flex place-items-center gap-[0.5em] pb-[0.5em] text-[2.5em] font-bold text-text",
+        props.class,
+      )}
+    >
+      <Show when={props.fa}>
+        <Fa {...(props.fa as FaProps)} />
+      </Show>
+      {props.text}
+    </h1>
+  );
+}
