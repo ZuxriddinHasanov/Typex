@@ -75,6 +75,7 @@
   },
   "devDependencies": {
     "@actions/core": "3.0.1",
+    "@axe-core/playwright": "4.13.0",
     "@eslint/json": "1.2.0",
     "@fortawesome/fontawesome-free": "5.15.4",
     "@solid-devtools/overlay": "0.33.5",
@@ -113,8 +114,10 @@
     "normalize.css": "8.0.1",
     "oxlint": "1.73.0",
     "oxlint-tsgolint": "0.24.0",
+    "playwright": "^1.58.2",
     "postcss": "8.5.15",
     "prettier": "3.7.1",
+    "puppeteer": "25.9.0",
     "sass": "1.70.0",
     "solid-devtools": "0.34.5",
     "solid-js": "1.9.13",
