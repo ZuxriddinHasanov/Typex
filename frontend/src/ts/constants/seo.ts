@@ -117,7 +117,7 @@ export const seoConfig: Record<string, SeoConfig> = {
     title: "TypeX — Yozuv tezligi testi (WPM)",
     description:
       "Bepul onlayn yozuv tezligi testi. O'zbek, ingliz va rus tillarida WPM (so'z/minut) va aniqlik foizini o'lchang. 15 soniyadan 30 daqiqagacha bo'lgan testlar. Klaviaturada tez yozishni sinab ko'ring.",
-    canonical: u("/test"),
+    canonical: u("/"),
   },
 
   about: {

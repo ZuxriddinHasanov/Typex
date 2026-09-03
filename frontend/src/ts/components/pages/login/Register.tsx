@@ -224,7 +224,7 @@ export function Register(): JSXElement {
             <InputField
               field={field}
               placeholder="foydalanuvchi nomi"
-              autocomplete="new-username"
+              autocomplete="username"
               disabled={!getLoginPageInputsEnabled()}
               onFocus={() => {
                 usernameManuallyEdited = true;
@@ -244,7 +244,7 @@ export function Register(): JSXElement {
             <InputField
               field={field}
               placeholder="email"
-              autocomplete="new-email"
+              autocomplete="email"
               disabled={!getLoginPageInputsEnabled()}
               onFocus={() => {
                 if (!moduleLoadAttempted) {

@@ -117,7 +117,7 @@ export function Login(): JSXElement {
               <InputField
                 field={field}
                 placeholder="email yoki username"
-                autocomplete="current-email"
+                autocomplete="email"
                 disabled={!getLoginPageInputsEnabled()}
                 class="pl-[2.4em]"
               />
