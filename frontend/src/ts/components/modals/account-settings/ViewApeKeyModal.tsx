@@ -35,7 +35,7 @@ export function ViewApeKeyModal() {
       closeOnWrapperClick={!isDisabled()}
     >
       <H2 text="Ape key" />
-      <textarea class="h-25 opacity-100" disabled>
+      <textarea aria-label="Input field" class="h-25 opacity-100" disabled>
         {getLastGeneratedApeKey()}
       </textarea>
       <p>

@@ -26,7 +26,7 @@ export function SelectField(props: {
         <label class="text-xs font-medium text-sub">{props.label}</label>
       </Show>
       <div class="relative">
-        <select
+        <select aria-label="Select field"
           value={props.field ? String(props.field().state.value) : props.value}
           onChange={(e) => {
             if (props.field) {

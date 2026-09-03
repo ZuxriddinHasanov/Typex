@@ -502,7 +502,7 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       ref={(el) => (containerRef = el)}
       class={`relative${props.appendTo === "container" ? " [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!" : ""}`}
     >
-      <select ref={(el) => (selectRef = el)} multiple={props.multiple}>
+      <select aria-label="Select field" ref={(el) => (selectRef = el)} multiple={props.multiple}>
         {props.children}
       </select>
     </div>
