@@ -362,22 +362,21 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     };
 
     slimSelect = new SlimSelectCore(config);
-    const fixA11y = () => {
-      if (containerRef === undefined || containerRef === null) return;
-      const content = containerRef.querySelector(".ss-content");
-      if (content && !content.hasAttribute("aria-label")) {
-        content.setAttribute("aria-label", "Select field");
-      }
-      const select = containerRef.querySelector("select");
-      if (select) {
-        select
-          .querySelectorAll("option")
-          .forEach((o) => o.removeAttribute("id"));
-      }
+    const applySafeA11yFix = () => {
+      requestAnimationFrame(() => {
+        if (containerRef === undefined || containerRef === null) return;
+        const content = containerRef.querySelector(".ss-content");
+        if (content && !content.hasAttribute("aria-label")) {
+          content.setAttribute("aria-label", "Select field");
+        }
+        containerRef.querySelectorAll(".ss-option").forEach((o) => {
+          if (o.id && !o.id.endsWith("_visual")) {
+            o.id = `${o.id}_visual`;
+          }
+        });
+      });
     };
-    const observer = new MutationObserver(fixA11y);
-    observer.observe(containerRef, { childList: true, subtree: true });
-    fixA11y();
+    applySafeA11yFix();
 
     lastOptionsReference = props.options;
     props.ref?.(slimSelect);
@@ -496,6 +495,22 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
 
       slimSelect.render.renderValues();
       slimSelect.render.renderOptions(slimSelect.store.getData());
+      const applySafeA11yFix = () => {
+        requestAnimationFrame(() => {
+          if (containerRef === undefined || containerRef === null) return;
+          const content = containerRef.querySelector(".ss-content");
+          if (content && !content.hasAttribute("aria-label")) {
+            content.setAttribute("aria-label", "Select field");
+          }
+          containerRef.querySelectorAll(".ss-option").forEach((o) => {
+            if (o.id && !o.id.endsWith("_visual")) {
+              o.id = `${o.id}_visual`;
+            }
+          });
+        });
+      };
+      applySafeA11yFix();
+
       lastOptionsReference = options;
 
       if (props.selected !== undefined) {
