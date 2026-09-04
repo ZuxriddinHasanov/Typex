@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /login
+Disallow: /account
+Disallow: /boshqaruv-paneli-x9
+Disallow: /profile
+Disallow: /onboarding
 
 Sitemap: https://typex.uz/sitemap.xml

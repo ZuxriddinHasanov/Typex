@@ -44,6 +44,6 @@ export function activateAnalytics(): void {
     gtag("config", "UA-165993088-1");
   </script>`);
   } catch (e) {
-    console.error(createErrorMessage(e, "Failed to activate analytics"));
+    console.warn(createErrorMessage(e, "Failed to activate analytics"));
   }
 }

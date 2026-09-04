@@ -362,6 +362,23 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
     };
 
     slimSelect = new SlimSelectCore(config);
+    const fixA11y = () => {
+      if (containerRef === undefined || containerRef === null) return;
+      const content = containerRef.querySelector(".ss-content");
+      if (content && !content.hasAttribute("aria-label")) {
+        content.setAttribute("aria-label", "Select field");
+      }
+      const select = containerRef.querySelector("select");
+      if (select) {
+        select
+          .querySelectorAll("option")
+          .forEach((o) => o.removeAttribute("id"));
+      }
+    };
+    const observer = new MutationObserver(fixA11y);
+    observer.observe(containerRef, { childList: true, subtree: true });
+    fixA11y();
+
     lastOptionsReference = props.options;
     props.ref?.(slimSelect);
 
@@ -502,7 +519,11 @@ export default function SlimSelect(props: SlimSelectProps): JSXElement {
       ref={(el) => (containerRef = el)}
       class={`relative${props.appendTo === "container" ? " [&>.ss-content]:top-full! [&>.ss-content]:left-0! [&>.ss-content]:w-full!" : ""}`}
     >
-      <select aria-label="Select field" ref={(el) => (selectRef = el)} multiple={props.multiple}>
+      <select
+        aria-label="Select field"
+        ref={(el) => (selectRef = el)}
+        multiple={props.multiple}
+      >
         {props.children}
       </select>
     </div>
