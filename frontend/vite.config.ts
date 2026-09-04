@@ -339,7 +339,7 @@ export default defineConfig(({ mode }): UserConfig => {
 
   return {
     plugins: getPlugins({ isDevelopment, useSentry: useSentry, env }),
-    build: getBuildOptions({ enableSourceMaps: useSentry }),
+    build: getBuildOptions({ enableSourceMaps: true }),
     css: getCssOptions({ isDevelopment }),
     server: {
       allowedHosts: true,
