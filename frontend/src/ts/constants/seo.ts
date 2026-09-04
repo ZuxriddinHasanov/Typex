@@ -163,49 +163,42 @@ export const seoConfig: Record<string, SeoConfig> = {
     description:
       "TypeX ga kirish yoki ro'yxatdan o'tish. Natijalaringizni saqlang, reytingda qatnashing va shaxsiy profilingizni boshqaring.",
     canonical: u("/login"),
-    robots: "noindex, follow",
   },
 
   account: {
     title: "TypeX | Mening profilim",
     description: "Shaxsiy profilingiz, natijalaringiz va statistika.",
     canonical: u("/account"),
-    robots: "noindex, follow",
   },
 
   adminLogin: {
     title: "TypeX — Admin Panel",
     description: "Admin panelga kirish.",
     canonical: u("/TypeX-hq"),
-    robots: "noindex, nofollow",
   },
 
   adminDashboard: {
     title: "TypeX | Admin panel",
     description: "Admin panel boshqaruvi.",
     canonical: u("/TypeX-hq/dashboard"),
-    robots: "noindex, nofollow",
   },
 
   onboarding: {
     title: "TypeX — Sozlamalar",
     description: "TypeX platformasiga xush kelibsiz! Profilingizni sozlang.",
     canonical: u("/onboarding"),
-    robots: "noindex, follow",
   },
 
   profile: {
     title: "TypeX | Foydalanuvchi profili",
     description: "Foydalanuvchi profili va statistika.",
     canonical: u("/profile"),
-    robots: "noindex, follow",
   },
 
   "404": {
     title: "TypeX | Sahifa topilmadi (404)",
     description: "Qidirilayotgan sahifa topilmadi. Bosh sahifaga qaytish.",
     canonical: u("/404"),
-    robots: "noindex, follow",
   },
 };
 
@@ -239,10 +232,7 @@ export function updateSeo(
   document.title = title;
 
   setMeta("description", cfg.description);
-  setMeta(
-    "robots",
-    cfg.noindex ? "noindex, nofollow" : (cfg.robots ?? "index, follow"),
-  );
+  setMeta("robots", cfg.robots ?? "index, follow");
   setMeta("keywords", buildKeywords(pageName));
 
   setMeta("og:title", cfg.ogTitle ?? cfg.title);
