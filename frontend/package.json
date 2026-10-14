@@ -116,7 +116,7 @@
     "normalize.css": "8.0.1",
     "oxlint": "1.73.0",
     "oxlint-tsgolint": "0.24.0",
-    "playwright": "^1.58.2",
+    "playwright": "^1.64.0",
     "postcss": "8.5.15",
     "prettier": "3.7.1",
     "puppeteer": "25.9.0",
